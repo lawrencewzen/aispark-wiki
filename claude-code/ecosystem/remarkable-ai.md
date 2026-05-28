@@ -1,84 +1,84 @@
 > 📚 **AI Spark Wiki** · Claude Code 知识库
 
 ---
-title: "reMarkable 2 + AI : Hacks, Outils et Workflows"
-description: "Cartographie complète des intégrations AI pour reMarkable 2 — MCP server, OCR, pipelines Obsidian/Notion, et automatisations"
+title: "reMarkable 2 + AI：黑客技巧、工具与工作流"
+description: "reMarkable 2 AI 集成完整地图——MCP 服务器、OCR、Obsidian/Notion 流水线与自动化"
 tags: [mcp, integration, hardware, workflow, remarkable]
 ---
 
-# reMarkable 2 + AI : Cartographie complète des hacks, outils et workflows
+# reMarkable 2 + AI：黑客技巧、工具与工作流完整地图
 
-> **Last verified**: February 2026
+> **最后验证**：2026 年 2 月
 
-La reMarkable 2 est une tablette e-ink Linux full-root-access. Sa philosophie de distraction zéro en fait un outil de pensée, mais ses intégrations natives sont minimalistes. Cette page couvre tout ce qui existe pour l'augmenter avec l'AI — du plus simple au plus technique.
+reMarkable 2 是一款具备完整 root 访问权限的 Linux 电子墨水平板。其零干扰的设计理念使其成为出色的思考工具，但原生集成极为简约。本页涵盖所有利用 AI 增强它的方法——从最简单到最技术性。
 
-## Table of Contents
+## 目录
 
-1. [remarkable-mcp : Le game-changer](#1-remarkable-mcp--le-game-changer)
-2. [Ghostwriter : Interface Vision-LLM](#2-ghostwriter--interface-vision-llm)
-3. [Sync reMarkable → Obsidian](#3-sync-remarkable--obsidian)
-4. [OCR + AI Pipeline custom](#4-ocr--ai-pipeline-custom)
-5. [Accès SSH et outils communautaires](#5-accès-ssh-et-outils-communautaires)
-6. [Features natives sous-exploitées](#6-features-natives-sous-exploitées)
-7. [API et Developer Portal officiel](#7-api-et-developer-portal-officiel)
-8. [Automatisation Zapier](#8-automatisation-zapier)
-9. [Read-it-later : Web → reMarkable](#9-read-it-later--web--remarkable)
-10. [Meeting Notes → AI Summary](#10-meeting-notes--ai-summary)
-11. [Zotero → reMarkable (recherche)](#11-zotero--remarkable-recherche)
-12. [Screen sharing comme whiteboard AI-assisté](#12-screen-sharing-comme-whiteboard-ai-assisté)
-13. [Apps custom et hacks fun](#13-apps-custom-et-hacks-fun)
-14. [Workflows AI-augmentés à construire](#14-workflows-ai-augmentés-à-construire)
-15. [Par où commencer](#15-par-où-commencer)
+1. [remarkable-mcp：游戏规则改变者](#1-remarkable-mcp游戏规则改变者)
+2. [Ghostwriter：Vision-LLM 接口](#2-ghostwritervision-llm-接口)
+3. [reMarkable → Obsidian 同步](#3-remarkable--obsidian-同步)
+4. [OCR + AI 自定义流水线](#4-ocr--ai-自定义流水线)
+5. [SSH 访问与社区工具](#5-ssh-访问与社区工具)
+6. [未充分利用的原生功能](#6-未充分利用的原生功能)
+7. [官方 API 与开发者门户](#7-官方-api-与开发者门户)
+8. [Zapier 自动化](#8-zapier-自动化)
+9. [Read-it-later：网页 → reMarkable](#9-read-it-later网页--remarkable)
+10. [会议记录 → AI 摘要](#10-会议记录--ai-摘要)
+11. [Zotero → reMarkable（研究用途）](#11-zotero--remarkable研究用途)
+12. [屏幕共享作为 AI 辅助白板](#12-屏幕共享作为-ai-辅助白板)
+13. [自定义应用与趣味黑客](#13-自定义应用与趣味黑客)
+14. [待构建的 AI 增强工作流](#14-待构建的-ai-增强工作流)
+15. [从哪里开始](#15-从哪里开始)
 
 ---
 
-## 1. remarkable-mcp : Le game-changer
+## 1. remarkable-mcp：游戏规则改变者
 
-**ROI : maximal | Effort : moyen | Connexion : SSH over USB (sans cloud)**
+**ROI：最大化 | 难度：中等 | 连接方式：USB SSH（无需云端）**
 
-Sam Morrow a créé un **serveur MCP** qui connecte directement la reMarkable à Claude Code, VS Code Copilot, et tout assistant AI compatible MCP.
+Sam Morrow 创建了一个 **MCP 服务器**，将 reMarkable 直接连接到 Claude Code、VS Code Copilot 以及所有兼容 MCP 的 AI 助手。
 
-| Attribut | Détails |
+| 属性 | 详情 |
 |---------|---------|
-| **Repo** | https://github.com/SamMorrowDrums/remarkable-mcp |
-| **Blog** | https://sam-morrow.com/blog/building-an-mcp-server-for-remarkable |
-| **Connexion** | SSH over USB — pas de cloud, pas d'abonnement |
-| **Langage** | Python (FastMCP) |
+| **仓库** | https://github.com/SamMorrowDrums/remarkable-mcp |
+| **博客** | https://sam-morrow.com/blog/building-an-mcp-server-for-remarkable |
+| **连接方式** | USB SSH——无需云端，无需订阅 |
+| **语言** | Python（FastMCP） |
 
-### Ce que ça fait
+### 功能
 
-- **Extraction native du texte tapé** (Type Folio / clavier virtuel) — instant, sans OCR
-- **OCR handwriting** via Google Cloud Vision (1000 requêtes gratuites/mois)
-- **Recherche intelligente** dans toute ta bibliothèque
-- **Extraction de texte** depuis PDF et EPUB + annotations
-- **Traverse complète** des documents
+- **原生提取输入文字**（Type Folio / 虚拟键盘）——即时，无需 OCR
+- **手写 OCR**——通过 Google Cloud Vision（每月 1000 次免费请求）
+- **智能搜索**——在你的整个文库中搜索
+- **文本提取**——从 PDF 和 EPUB 及其注释中提取
+- **完整文档遍历**
 
-### Pourquoi c'est le #1
+### 为什么排名第一
 
-Tu peux demander à Claude "qu'est-ce que j'ai noté sur X pendant la réunion du 15 janvier ?" — il va chercher dans tes notes manuscrites. La reMarkable devient un **second brain queryable**.
+你可以问 Claude"我在 1 月 15 日会议上关于 X 记了什么？"——它会在你的手写笔记中搜索。reMarkable 成为一个**可查询的第二大脑**。
 
-### Stack technique
+### 技术栈
 
 ```
-FastMCP + rmscene (parsing .rm natif) + PyMuPDF (PDF)
-+ Google Cloud Vision (OCR) + Paramiko (SSH)
+FastMCP + rmscene（原生 .rm 解析）+ PyMuPDF（PDF）
++ Google Cloud Vision（OCR）+ Paramiko（SSH）
 ```
 
-### Installation rapide
+### 快速安装
 
 ```bash
-# 1. Activer SSH sur la reMarkable
-# Settings → Help → Copyrights and licenses → IP + mot de passe root
+# 1. 在 reMarkable 上启用 SSH
+# 设置 → 帮助 → 版权与许可证 → IP + root 密码
 
-# 2. Cloner le repo
+# 2. 克隆仓库
 git clone https://github.com/SamMorrowDrums/remarkable-mcp
 cd remarkable-mcp && pip install -e .
 
-# 3. Ajouter à Claude Code
-# Dans ~/.claude.json ou via "claude mcp add"
+# 3. 添加到 Claude Code
+# 在 ~/.claude.json 中或通过 "claude mcp add"
 ```
 
-### Configuration dans Claude Code
+### Claude Code 配置
 
 ```json
 {
@@ -97,411 +97,411 @@ cd remarkable-mcp && pip install -e .
 
 ---
 
-## 2. Ghostwriter : Interface Vision-LLM
+## 2. Ghostwriter：Vision-LLM 接口
 
-**ROI : expérimental | Effort : faible (un binary Rust à copier)**
+**ROI：实验性 | 难度：低（复制一个 Rust 二进制文件）**
 
-| Attribut | Détails |
+| 属性 | 详情 |
 |---------|---------|
-| **Repo** | https://github.com/awwaiid/ghostwriter |
-| **Modèle** | GPT-4o Vision |
-| **HN discussion** | https://news.ycombinator.com/item?id=42979986 |
+| **仓库** | https://github.com/awwaiid/ghostwriter |
+| **模型** | GPT-4o Vision |
+| **HN 讨论** | https://news.ycombinator.com/item?id=42979986 |
 
-### Concept
+### 概念
 
-Tu écris un prompt à la main sur la reMarkable. Un vision-LLM (GPT-4o) lit ton écriture + tes dessins et répond **directement sur la tablette**.
+你在 reMarkable 上手写一个提示词。Vision-LLM（GPT-4o）读取你的笔迹和图画，**直接在平板上**回复。
 
-### Installation
+### 安装
 
 ```bash
-# 1. Télécharger le binary Rust compilé
+# 1. 下载已编译的 Rust 二进制文件
 scp ghostwriter root@10.11.99.1:/home/root/
 
-# 2. SSH + lancer
+# 2. SSH + 启动
 ssh root@10.11.99.1
 chmod +x ghostwriter && ./ghostwriter
 ```
 
-### Interactions supportées
+### 支持的交互
 
-- Handwriting recognition
-- Analyse de croquis (wireframes, schémas)
-- Petit langage iconographique
-- Gestes
+- 手写识别
+- 草图分析（线框图、原理图）
+- 小型图标语言
+- 手势
 
-### Use case concret
+### 实际用例
 
-Tu dessines un schéma d'architecture, tu écris "optimise ça" — le LLM analyse visuellement et répond. Prototype fascinant pour l'interaction humain-AI par le stylo.
+画一个架构图，写上"优化这个"——LLM 视觉分析后回复。这是一个引人入胜的原型，探索通过手写笔进行人机 AI 交互。
 
-**Limite honnête** : L'app native de dessin de la reMarkable est minimaliste (pas de placement libre de texte dans la réponse).
+**客观局限性**：reMarkable 的原生绘图应用极为简约（回复中无法自由放置文本）。
 
 ---
 
-## 3. Sync reMarkable → Obsidian
+## 3. reMarkable → Obsidian 同步
 
-**ROI : élevé si tu utilises Obsidian | Effort : faible à moyen**
+**ROI：使用 Obsidian 时很高 | 难度：低至中等**
 
-### Option A : Scrybble (le plus complet)
+### 选项 A：Scrybble（最完整）
 
-| Attribut | Détails |
+| 属性 | 详情 |
 |---------|---------|
-| **Site** | scrybble.ink |
-| **Plugin Obsidian** | Plugin communautaire (vault settings) |
-| **Hébergement** | Self-hosted ou serveur Scrybble |
-| **Discussion** | https://forum.obsidian.md/t/scrybble-sync-plugin/103194 |
+| **网站** | scrybble.ink |
+| **Obsidian 插件** | 社区插件（vault 设置） |
+| **托管** | 自托管或 Scrybble 服务器 |
+| **讨论** | https://forum.obsidian.md/t/scrybble-sync-plugin/103194 |
 
-**Ce que ça fait :**
+**功能：**
 
-- Sync notebooks, PDFs, ePubs → vault Obsidian
-- Extraction highlights PDF/ePub en Markdown
-- Extraction du texte tapé en Markdown
-- Rendu complet des notebooks en PDF dans le vault
-- Organisation par page avec tags
+- 将笔记本、PDF、ePub 同步到 Obsidian vault
+- 将 PDF/ePub 高亮提取为 Markdown
+- 将输入文字提取为 Markdown
+- 在 vault 中将完整笔记本渲染为 PDF
+- 带标签的按页组织
 
-**Use case** : Recherche académique, prise de notes en réunion avec recherche Obsidian derrière.
+**用例**：学术研究、会议记录，背后有 Obsidian 搜索支持。
 
-### Option B : Plugin custom Cloud Sync
+### 选项 B：自定义云同步插件
 
-- **Démo** : https://www.youtube.com/watch?v=EsRdi8J9Cnc
-- Commande "remarkable insert" → pull fichiers depuis le cloud reMarkable
-- PDF dans dossier `rm/` → embed dans notes Obsidian
-- Re-fetch automatique quand tu modifies sur la tablette
+- **演示**：https://www.youtube.com/watch?v=EsRdi8J9Cnc
+- "remarkable insert" 命令 → 从 reMarkable 云端拉取文件
+- `rm/` 文件夹中的 PDF → 嵌入到 Obsidian 笔记
+- 在平板上修改时自动重新获取
 
 ---
 
-## 4. OCR + AI Pipeline custom
+## 4. OCR + AI 自定义流水线
 
-**ROI : élevé pour un workflow sur-mesure | Effort : moyen-élevé**
+**ROI：定制工作流时很高 | 难度：中至高**
 
-### rmirror + Claude API (Pattern recommandé)
+### rmirror + Claude API（推荐模式）
 
-Source : https://news.ycombinator.com/item?id=47110872 (février 2026)
+来源：https://news.ycombinator.com/item?id=47110872（2026 年 2 月）
 
-**Concept** : Agent macOS background qui :
-1. Sync les notebooks depuis la reMarkable
-2. OCR via Claude API (meilleur que Tesseract pour le manuscrit avec contexte)
-3. Push les notes transcrites vers Notion comme pages searchables
+**概念**：macOS 后台智能体，功能如下：
+1. 从 reMarkable 同步笔记本
+2. 通过 Claude API 进行 OCR（对手写体的上下文理解优于 Tesseract）
+3. 将转录的笔记作为可搜索页面推送到 Notion
 
-**Pourquoi Claude > Tesseract pour l'OCR** : Claude comprend le contexte, corrige les mots mal formés, structure les listes et tableaux automatiquement.
+**为什么 Claude 优于 Tesseract 做 OCR**：Claude 理解上下文，纠正写得不好的词语，自动组织列表和表格。
 
-### Pipeline DIY
+### 自制流水线
 
 ```
 reMarkable → SSH/USB
-  → extract .rm files
-  → rmscene parse (texte natif si Type Folio)
-  → Claude Vision API (screenshot des pages pour handwriting)
-  → texte structuré + tags auto
-  → Notion/Obsidian/GitHub via API
+  → 提取 .rm 文件
+  → rmscene 解析（Type Folio 时提取原生文字）
+  → Claude Vision API（页面截图用于手写识别）
+  → 结构化文本 + 自动标签
+  → 通过 API 推送到 Notion/Obsidian/GitHub
 ```
 
-### Outils de parsing
+### 解析工具
 
-| Outil | Usage | Lien |
+| 工具 | 用途 | 链接 |
 |-------|-------|------|
-| **rmscene** | Parsing natif des fichiers .rm | https://github.com/ricklupton/rmscene |
-| **rmc** | Convertit .rm → SVG/PNG | https://github.com/ricklupton/rmc |
-| **rmapi** | Interface Cloud API en Go | https://github.com/juruen/rmapi |
+| **rmscene** | 原生解析 .rm 文件 | https://github.com/ricklupton/rmscene |
+| **rmc** | 将 .rm 转换为 SVG/PNG | https://github.com/ricklupton/rmc |
+| **rmapi** | Go 语言云 API 接口 | https://github.com/juruen/rmapi |
 
 ---
 
-## 5. Accès SSH et outils communautaires
+## 5. SSH 访问与社区工具
 
-**Base indispensable pour tout le reste**
+**其他一切的必要基础**
 
-### Activer SSH
+### 启用 SSH
 
 ```bash
-# Via l'interface tablette :
-# Settings → Help → Copyrights and licenses
-# → Affiche : IP + mot de passe root
+# 通过平板界面：
+# 设置 → 帮助 → 版权与许可证
+# → 显示：IP + root 密码
 
-# USB (connexion directe)
+# USB（直接连接）
 ssh root@10.11.99.1
 
-# WiFi (après activation)
+# WiFi（启用后）
 rm-ssh-over-wlan on
-# ou via "Simply Customize It"
+# 或通过 "Simply Customize It"
 ```
 
-### Outils essentiels
+### 核心工具
 
-| Outil | Usage | Lien |
+| 工具 | 用途 | 链接 |
 |-------|-------|------|
-| **RMHacks/xovi** | Framework de mods pour rM1/2/Paper Pro | https://www.nilorea.net/2025/08/11/latest-rmhacks-with-xovi-for-remarkable-1-2-paper-pro/ |
-| **Simply Customize It** | GUI pour toggler features (WLAN SSH, etc.) | App tierce |
-| **ReMy** | GUI pour browse/preview/exporter docs via SSH (sans cloud) | https://github.com/bordaigorl/remy |
-| **rmirro** | Sync PDFs bidirectionnel tablette ↔ dossier local | https://github.com/hersle/rmirro |
-| **reStream** | Stream l'écran de la reMarkable sur Mac/PC | https://github.com/rien/reStream |
-| **KOReader** | Reader alternatif (plus de formats, customisable) | Via SSH |
-| **reGitable** | Backup auto via git | awesome-reMarkable |
+| **RMHacks/xovi** | rM1/2/Paper Pro 的 mod 框架 | https://www.nilorea.net/2025/08/11/latest-rmhacks-with-xovi-for-remarkable-1-2-paper-pro/ |
+| **Simply Customize It** | 切换功能的 GUI（WLAN SSH 等） | 第三方应用 |
+| **ReMy** | 通过 SSH 浏览/预览/导出文档的 GUI（无需云端） | https://github.com/bordaigorl/remy |
+| **rmirro** | 平板 ↔ 本地文件夹的 PDF 双向同步 | https://github.com/hersle/rmirro |
+| **reStream** | 在 Mac/PC 上流式传输 reMarkable 屏幕 | https://github.com/rien/reStream |
+| **KOReader** | 替代阅读器（更多格式，可定制） | 通过 SSH |
+| **reGitable** | 通过 git 自动备份 | awesome-reMarkable |
 
-### Templates custom
+### 自定义模板
 
 ```bash
-# Créer un SVG template → copier via SSH
-scp mon-template.svg root@10.11.99.1:/usr/share/remarkable/templates/
+# 创建 SVG 模板 → 通过 SSH 复制
+scp my-template.svg root@10.11.99.1:/usr/share/remarkable/templates/
 
-# Editer templates.json pour l'enregistrer
+# 编辑 templates.json 进行注册
 ssh root@10.11.99.1 'vi /usr/share/remarkable/templates/templates.json'
 ```
 
-**Outils de génération** : ReCalendar.me, Remarkable Grid Generator, Remarkably Planner Builder
+**生成工具**：ReCalendar.me、Remarkable Grid Generator、Remarkably Planner Builder
 
 ---
 
-## 6. Features natives sous-exploitées
+## 6. 未充分利用的原生功能
 
-**Effort : zéro | Inclus dans Connect (~6€/mois)**
+**难度：零 | 含在 Connect 中（约 6 欧元/月）**
 
-| Feature | Usage |
+| 功能 | 用途 |
 |---------|-------|
-| **Handwriting conversion** | Sélectionner → Convertir → Copier/Coller dans n'importe quelle app |
-| **Cloud sync** | Google Drive, Dropbox, OneDrive |
-| **Send to Slack** | Partager des notes de réunion direct dans un channel |
-| **Handwriting search** (beta AI) | Recherche dans tes notes manuscrites passées |
-| **Screen sharing** | Partager l'écran sur PC (présentations, meetings) |
-| **Send to email** | Envoyer comme PDF ou PNG |
+| **手写转文字** | 选中 → 转换 → 复制/粘贴到任意应用 |
+| **云同步** | Google Drive、Dropbox、OneDrive |
+| **发送到 Slack** | 直接将会议记录分享到频道 |
+| **手写搜索**（AI 测试版） | 在历史手写笔记中搜索 |
+| **屏幕共享** | 在 PC 上共享屏幕（演示、会议） |
+| **发送到邮件** | 以 PDF 或 PNG 发送 |
 
-**Astuce** : La conversion handwriting → texte fonctionne bien pour les mots isolés mais moins bien pour les phrases cursives denses. Privilégier l'impression pour la conversion.
+**使用技巧**：手写转文字对孤立词语效果良好，但对密集的连笔句子效果较差。使用印刷体书写以获得更好的转换效果。
 
 ---
 
-## 7. API et Developer Portal officiel
+## 7. 官方 API 与开发者门户
 
-| Ressource | Lien |
+| 资源 | 链接 |
 |-----------|------|
-| **Developer Portal** | https://developer.remarkable.com |
-| **Cloud API docs** | https://github.com/splitbrain/ReMarkableAPI |
-| **Community guide** | https://remarkable.guide/ |
-| **rmfakecloud** | Self-hosted Cloud (sans abonnement Connect) |
+| **开发者门户** | https://developer.remarkable.com |
+| **云 API 文档** | https://github.com/splitbrain/ReMarkableAPI |
+| **社区指南** | https://remarkable.guide/ |
+| **rmfakecloud** | 自托管云（无需 Connect 订阅） |
 
-**OS** : Linux (Codex), full SSH root access, GPL-compliant. Le cross-compiler toolchain permet de déployer des apps custom natives.
+**操作系统**：Linux（Codex），完整 SSH root 访问，GPL 合规。交叉编译工具链允许部署自定义原生应用。
 
-**rmfakecloud** : Alternative open-source au cloud reMarkable pour self-héberger la sync et se passer de l'abonnement Connect.
-
----
-
-## 8. Automatisation Zapier
-
-**ROI : moyen | Effort : faible | Aucun code nécessaire**
-
-**Mécanisme** : reMarkable → email (my@remarkable.com) → Zapier intercepte → action automatique
-
-### Destinations possibles
-
-Google Drive, Asana, ClickUp, Trello, Slack, WordPress, Evernote, Notion
-
-### Plan gratuit
-
-- 100 tasks/mois
-- Zaps 2 étapes
-- Check toutes les 15 min
-
-### Workflows concrets
-
-```
-Notes de réunion → PDF auto-uploadé dans Google Drive
-Croquis → Fichier envoyé dans un channel Slack
-Action items → Tâches créées dans Asana/ClickUp
-```
-
-**Source** : https://myremarkable.substack.com/p/integrating-remarkable
+**rmfakecloud**：reMarkable 云的开源替代方案，用于自托管同步，无需 Connect 订阅。
 
 ---
 
-## 9. Read-it-later : Web → reMarkable
+## 8. Zapier 自动化
 
-**ROI : élevé pour la lecture | Effort : quasi nul**
+**ROI：中等 | 难度：低 | 无需代码**
 
-| Outil | Description |
+**机制**：reMarkable → 邮件（my@remarkable.com）→ Zapier 拦截 → 自动操作
+
+### 可用目的地
+
+Google Drive、Asana、ClickUp、Trello、Slack、WordPress、Evernote、Notion
+
+### 免费计划
+
+- 每月 100 个任务
+- 2 步 Zap
+- 每 15 分钟检查一次
+
+### 实际工作流
+
+```
+会议记录 → PDF 自动上传到 Google Drive
+草图 → 文件发送到 Slack 频道
+行动项 → 在 Asana/ClickUp 创建任务
+```
+
+**来源**：https://myremarkable.substack.com/p/integrating-remarkable
+
+---
+
+## 9. Read-it-later：网页 → reMarkable
+
+**ROI：阅读场景很高 | 难度：几乎为零**
+
+| 工具 | 说明 |
 |-------|-------------|
-| **Extension Chrome "Read on reMarkable"** | Save n'importe quelle page web → EPUB/PDF sur la tablette (ads supprimées) |
-| **Goosepaper** | Flux RSS + news + Wikipedia quotidien → formaté e-ink |
-| **remarkable_news** | News/comics/images du jour comme écran de veille |
-| **Instapaper workaround** | Download articles en EPUB → import via app desktop |
+| **Chrome 扩展 "Read on reMarkable"** | 将任意网页保存为 EPUB/PDF 发送到平板（去除广告） |
+| **Goosepaper** | RSS + 新闻 + 每日 Wikipedia → 格式化为电子墨水 |
+| **remarkable_news** | 当日新闻/漫画/图片作为屏保 |
+| **Instapaper 变通方案** | 以 EPUB 下载文章 → 通过桌面应用导入 |
 
-**Option PDF** : Clic droit sur l'extension → "Read on reMarkable as PDF" (marges ajustables pour annoter).
-
----
-
-## 10. Meeting Notes → AI Summary
-
-**ROI : élevé | Effort : très faible**
-
-### Workflow manuel (sans MCP)
-
-```
-1. Notes manuscrites pendant la réunion
-2. Screenshot via l'app mobile reMarkable (ou sync cloud)
-3. Upload l'image dans Claude/ChatGPT
-4. Prompt : "Résume ces notes, extrais les action items avec deadlines et responsables"
-```
-
-### Workflow MCP (avec remarkable-mcp installé)
-
-```
-Claude, résume mes notes de la réunion d'aujourd'hui
-→ Claude fetch les fichiers via SSH
-→ OCR si nécessaire
-→ Résumé structuré directement
-```
-
-**Avantage MCP** : Skip les étapes de screenshot et d'upload. Fonctionne même sans abonnement Connect.
-
-### Template recommandé
-
-Paper Pro Move Meeting Notebook : 60 meetings, 5 pages interlinked par meeting (overview + notes + action items + follow-up).
+**PDF 选项**：右键点击扩展 → "Read on reMarkable as PDF"（可调整边距以便注释）。
 
 ---
 
-## 11. Zotero → reMarkable (recherche)
+## 10. 会议记录 → AI 摘要
 
-**ROI : élevé si tu lis des papers | Effort : moyen**
+**ROI：很高 | 难度：极低**
 
-| Outil | Usage |
+### 手动工作流（无 MCP）
+
+```
+1. 会议期间手写笔记
+2. 通过 reMarkable 移动应用截图（或云同步）
+3. 上传图片到 Claude/ChatGPT
+4. 提示词："总结这些笔记，提取带截止日期和负责人的行动项"
+```
+
+### MCP 工作流（安装 remarkable-mcp 后）
+
+```
+Claude，总结我今天会议的笔记
+→ Claude 通过 SSH 获取文件
+→ 必要时进行 OCR
+→ 直接输出结构化摘要
+```
+
+**MCP 优势**：跳过截图和上传步骤。即使没有 Connect 订阅也能工作。
+
+### 推荐模板
+
+Paper Pro Move 会议笔记本：60 次会议，每次 5 个相互关联的页面（概览 + 笔记 + 行动项 + 跟进）。
+
+---
+
+## 11. Zotero → reMarkable（研究用途）
+
+**ROI：阅读论文时很高 | 难度：中等**
+
+| 工具 | 用途 |
 |-------|-------|
-| **Zotero2reMarkable Bridge** | Sync PDFs depuis Zotero avec support des highlights |
-| **KOReader + Toltec + plugin Zotero** | Meilleure lecture PDFs 2 colonnes, sync bidirectionnelle |
-| **sync_zotero_remarkable** | Alternative plus légère |
+| **Zotero2reMarkable Bridge** | 从 Zotero 同步 PDF，支持高亮 |
+| **KOReader + Toltec + Zotero 插件** | 更好的双栏 PDF 阅读，双向同步 |
+| **sync_zotero_remarkable** | 更轻量的替代方案 |
 
-**Limitation honnête** : reMarkable est un système fermé. L'intégration Zotero demande des workarounds. Pas aussi fluide qu'un Android e-reader avec Zotero natif. Fonctionnel mais avec friction.
-
----
-
-## 12. Screen sharing comme whiteboard AI-assisté
-
-**ROI : présentation/facilitation | Effort : nul (feature native Connect)**
-
-- **Screen Share** : Ton écriture live apparaît sur l'écran externe/meeting virtuel
-- **Laser pointer** : Stylo proche du haut de l'écran → active un pointeur laser
-- **Workflow combo** : Screen Share + un collègue qui envoie tes notes dans ChatGPT en temps réel = whiteboard augmenté
-
-**Prix** : Inclus dans Connect (~30$/an US, ~6€/mois EU).
+**客观局限性**：reMarkable 是封闭系统。Zotero 集成需要变通方案。不如原生支持 Zotero 的 Android 电子阅读器流畅。可用但有摩擦。
 
 ---
 
-## 13. Apps custom et hacks fun
+## 12. 屏幕共享作为 AI 辅助白板
 
-| App/Hack | Description |
+**ROI：演示/会议引导 | 难度：零（Connect 原生功能）**
+
+- **屏幕共享**：你的实时书写出现在外部屏幕/虚拟会议上
+- **激光笔**：触控笔靠近屏幕顶部 → 激活激光笔
+- **组合工作流**：屏幕共享 + 同事实时将你的笔记发送给 ChatGPT = 增强白板
+
+**价格**：含在 Connect 中（美国约 30 美元/年，欧盟约 6 欧元/月）。
+
+---
+
+## 13. 自定义应用与趣味黑客
+
+| 应用/黑客 | 说明 |
 |----------|-------------|
-| **Ephemeris** | Agenda quotidien généré depuis tes calendriers (Python) |
-| **Remarcal** | Sync Google/Outlook/Apple calendriers → reMarkable |
-| **reMarkable keywriter** | App de notes clavier distraction-free |
-| **remarkable-wikipedia** | Lecteur Wikipedia offline |
-| **whiteboard-hypercard** | Collaboration live, dessin partagé |
-| **NetSurf** | Navigateur web minimaliste (via SSH) |
-| **pdf2remarkable** | Upload PDFs au cloud depuis la ligne de commande |
-| **send-to-remarkable** | Upload docs par email (style send-to-Kindle) |
-| **libreMarkable** | Framework pour développer des apps natives |
-| **oxide/remux/draft** | Launchers pour multitasking |
-| **latex-yearly-planner** | Planner annuel généré en LaTeX |
+| **Ephemeris** | 从你的日历生成的每日议程（Python） |
+| **Remarcal** | 同步 Google/Outlook/Apple 日历到 reMarkable |
+| **reMarkable keywriter** | 零干扰键盘笔记应用 |
+| **remarkable-wikipedia** | 离线 Wikipedia 阅读器 |
+| **whiteboard-hypercard** | 实时协作，共享绘图 |
+| **NetSurf** | 极简网页浏览器（通过 SSH） |
+| **pdf2remarkable** | 从命令行上传 PDF 到云端 |
+| **send-to-remarkable** | 通过邮件上传文档（类似发送到 Kindle） |
+| **libreMarkable** | 开发原生应用的框架 |
+| **oxide/remux/draft** | 多任务启动器 |
+| **latex-yearly-planner** | LaTeX 生成的年度计划器 |
 
-**Catalogue complet** : https://github.com/reHackable/awesome-reMarkable
-
----
-
-## 14. Workflows AI-augmentés à construire
-
-Workflows pas encore packagés mais réalisables avec les briques disponibles.
-
-### A. Journal de bord AI-analysé
-
-```
-Chaque soir → écrire 1 page de réflexion sur la reMarkable
-→ remarkable-mcp + Claude → analyse hebdo des patterns, émotions, décisions
-→ Output : insights dans Obsidian avec graph de connexions
-```
-
-### B. Inbox processing assisté
-
-```
-Papiers/articles lus et annotés sur reMarkable
-→ OCR via Claude Vision → résumés structurés
-→ Tags automatiques + classement dans Obsidian/Notion
-```
-
-### C. Sketch-to-code
-
-```
-Dessiner un wireframe UI sur reMarkable
-→ Screenshot → Claude Vision → code HTML/React
-```
-
-### D. Flashcards automatiques
-
-```
-Notes de cours/lectures sur reMarkable
-→ remarkable-mcp → Claude extrait les concepts clés
-→ Génère des flashcards Anki automatiquement
-```
-
-### E. Daily standup automatisé
-
-```
-TODOs écrits chaque matin (template custom)
-→ OCR → Slack/email formaté automatiquement
-→ Fin de journée : cocher les items, diff envoyé
-```
-
-### F. Brainstorm capture → Mind map
-
-```
-Idées griffonnées librement
-→ Claude Vision analyse le layout spatial + le texte
-→ Génère une mind map structurée (Mermaid/Markmap)
-```
+**完整目录**：https://github.com/reHackable/awesome-reMarkable
 
 ---
 
-## 15. Par où commencer
+## 14. 待构建的 AI 增强工作流
 
-### Phase 1 — Ce week-end (2h)
+利用现有积木可以实现但尚未打包的工作流。
 
-1. Activer le SSH via Settings → Help → Copyrights and licenses
-2. Installer **remarkable-mcp** et le connecter à Claude Code
-3. Test : demander à Claude de chercher dans tes notes
+### A. AI 分析日记
 
-### Phase 2 — Semaine suivante
+```
+每晚 → 在 reMarkable 上写一页反思
+→ remarkable-mcp + Claude → 每周分析模式、情绪、决策
+→ 输出：带连接图的 Obsidian 洞察
+```
 
-4. Si tu utilises Obsidian → installer Scrybble
-5. Tester **Ghostwriter** (10 min d'install, fun garanti)
+### B. 辅助收件箱处理
 
-### Phase 3 — Quand tu veux aller plus loin
+```
+在 reMarkable 上阅读和注释的论文/文章
+→ Claude Vision OCR → 结构化摘要
+→ 自动标签 + 分类到 Obsidian/Notion
+```
 
-6. Monter un pipeline OCR custom avec Claude Vision API
-7. Explorer rmfakecloud pour se passer de l'abonnement Connect
+### C. 草图转代码
+
+```
+在 reMarkable 上画 UI 线框图
+→ 截图 → Claude Vision → HTML/React 代码
+```
+
+### D. 自动闪卡
+
+```
+课堂/阅读笔记在 reMarkable 上
+→ remarkable-mcp → Claude 提取关键概念
+→ 自动生成 Anki 闪卡
+```
+
+### E. 每日站会自动化
+
+```
+每天早晨写 TODO（自定义模板）
+→ OCR → 自动格式化发送到 Slack/邮件
+→ 当天结束：勾选完成项，发送差异对比
+```
+
+### F. 头脑风暴捕获 → 思维导图
+
+```
+自由涂鸦想法
+→ Claude Vision 分析空间布局 + 文字
+→ 生成结构化思维导图（Mermaid/Markmap）
+```
 
 ---
 
-## Sources
+## 15. 从哪里开始
 
-**Projets GitHub**
+### 第一阶段——本周末（2 小时）
 
-- https://github.com/SamMorrowDrums/remarkable-mcp (MCP server, nov 2025)
-- https://github.com/awwaiid/ghostwriter (Vision-LLM interface)
-- https://github.com/reHackable/awesome-reMarkable (catalogue communautaire)
-- https://github.com/hersle/rmirro (sync sans cloud)
-- https://github.com/bordaigorl/remy (GUI SSH)
-- https://github.com/rien/reStream (screen streaming)
-- https://github.com/splitbrain/ReMarkableAPI (Cloud API docs)
-- https://github.com/ricklupton/rmscene (parsing .rm natif)
+1. 通过设置 → 帮助 → 版权与许可证启用 SSH
+2. 安装 **remarkable-mcp** 并连接到 Claude Code
+3. 测试：让 Claude 在你的笔记中搜索
 
-**Articles et discussions**
+### 第二阶段——下周
+
+4. 如果你使用 Obsidian → 安装 Scrybble
+5. 测试 **Ghostwriter**（10 分钟安装，保证有趣）
+
+### 第三阶段——想深入时
+
+6. 搭建带 Claude Vision API 的自定义 OCR 流水线
+7. 探索 rmfakecloud 以摆脱 Connect 订阅
+
+---
+
+## 来源
+
+**GitHub 项目**
+
+- https://github.com/SamMorrowDrums/remarkable-mcp（MCP 服务器，2025 年 11 月）
+- https://github.com/awwaiid/ghostwriter（Vision-LLM 接口）
+- https://github.com/reHackable/awesome-reMarkable（社区目录）
+- https://github.com/hersle/rmirro（无云同步）
+- https://github.com/bordaigorl/remy（SSH GUI）
+- https://github.com/rien/reStream（屏幕流式传输）
+- https://github.com/splitbrain/ReMarkableAPI（云 API 文档）
+- https://github.com/ricklupton/rmscene（原生 .rm 解析）
+
+**文章与讨论**
 
 - https://sam-morrow.com/blog/building-an-mcp-server-for-remarkable
-- https://news.ycombinator.com/item?id=47110872 (rmirror + Claude OCR, fév 2026)
-- https://news.ycombinator.com/item?id=42979986 (Ghostwriter HN)
-- https://news.ycombinator.com/item?id=46099997 (Hacking reMarkable 2, HN 2025)
-- https://sgt.hootr.club/blog/hacking-on-the-remarkable-2/ (guide SSH hacking)
-- https://myremarkable.substack.com/p/integrating-remarkable (Zapier integration)
+- https://news.ycombinator.com/item?id=47110872（rmirror + Claude OCR，2026 年 2 月）
+- https://news.ycombinator.com/item?id=42979986（Ghostwriter HN）
+- https://news.ycombinator.com/item?id=46099997（Hacking reMarkable 2，HN 2025）
+- https://sgt.hootr.club/blog/hacking-on-the-remarkable-2/（SSH 黑客指南）
+- https://myremarkable.substack.com/p/integrating-remarkable（Zapier 集成）
 
 **Obsidian**
 
 - https://forum.obsidian.md/t/scrybble-sync-plugin/103194
-- https://www.youtube.com/watch?v=EsRdi8J9Cnc (Cloud sync démo)
+- https://www.youtube.com/watch?v=EsRdi8J9Cnc（云同步演示）
 
-**Officiel**
+**官方资源**
 
-- https://developer.remarkable.com (Developer Portal, SDK, API)
-- https://remarkable.guide/ (Community guide)
+- https://developer.remarkable.com（开发者门户、SDK、API）
+- https://remarkable.guide/（社区指南）

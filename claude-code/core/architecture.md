@@ -1,76 +1,74 @@
 > 📚 **AI Spark Wiki** · Claude Code 知识库
 
 ---
-title: "How Claude Code Works: Architecture & Internals"
-description: "Technical deep-dive into Claude Code internal mechanisms and architecture"
+title: "Claude Code 工作原理：架构与内部机制"
+description: "深入剖析 Claude Code 内部机制与架构的技术文档"
 tags: [architecture, guide, performance]
 ---
 
-# How Claude Code Works: Architecture & Internals
+# Claude Code 工作原理：架构与内部机制
 
-> A technical deep-dive into Claude Code's internal mechanisms, based on official Anthropic documentation and verified community analysis.
+> 基于 Anthropic 官方文档和经社区验证的分析，对 Claude Code 内部机制进行技术层面的深度剖析。
 
-**Author**: Florian BRUNIAUX | Contributions from Claude (Anthropic)
+**阅读时间**：完整版约 25 分钟 | 仅 TL;DR 约 5 分钟
 
-**Reading time**: ~25 minutes (full) | ~5 minutes (TL;DR only)
-
-**Last verified**: February 2026 (Claude Code v2.1.34)
+**最后核实**：2026 年 2 月（Claude Code v2.1.34）
 
 ---
 
-## Source Transparency
+## 来源透明度说明
 
-This document combines three tiers of sources:
+本文档综合了三类来源：
 
-| Tier | Description | Confidence | Example |
-|------|-------------|------------|---------|
-| **Tier 1** | Official Anthropic documentation | 100% | anthropic.com/engineering/* |
-| **Tier 2** | Verified reverse-engineering | 70-90% | PromptLayer analysis, code.claude.com behavior |
-| **Tier 3** | Community inference | 40-70% | Observed but not officially confirmed |
+| 级别 | 描述 | 置信度 | 示例 |
+|------|------|--------|------|
+| **Tier 1** | Anthropic 官方文档 | 100% | anthropic.com/engineering/* |
+| **Tier 2** | 经核实的逆向工程分析 | 70-90% | PromptLayer 分析、code.claude.com 行为观察 |
+| **Tier 3** | 社区推断 | 40-70% | 有观察依据但未经官方确认 |
 
-Each claim is marked with its confidence level. **Always prefer official documentation** when available.
-
----
-
-## TL;DR - 5 Bullet Summary
-
-1. **Simple Loop**: Claude Code runs a `while(tool_call)` loop — no DAGs, no classifiers, no RAG. The model decides everything.
-
-2. **Eight Core Tools**: Bash (universal adapter), Read, Edit, Write, Grep, Glob, Task (sub-agents), TodoWrite. That's the entire arsenal.
-
-   **Search Strategy Evolution**: Early Claude Code versions experimented with RAG using Voyage embeddings for semantic code search. Anthropic switched to grep-based (ripgrep) agentic search after internal benchmarks showed superior performance with lower operational complexity — no index sync required, no security liabilities from external embedding providers. This "Search, Don't Index" philosophy trades latency/tokens for simplicity/security. Community plugins (ast-grep for AST patterns) and MCP servers (Serena for symbols, grepai for RAG) available for specialized needs.
-
-   *Source*: [Latent Space podcast](https://www.latent.space/p/claude-code) (May 2025), ast-grep documentation
-
-3. **200K Token Budget**: Context window shared between system prompt, history, tool results, and response buffer. Auto-compacts at ~75-92% capacity.
-
-4. **Sub-agents = Isolation**: The `Task` tool spawns sub-agents with their own context. They cannot spawn more sub-agents (depth=1). Only their summary returns.
-
-5. **Philosophy**: "Less scaffolding, more model" — trust Claude's reasoning instead of building complex orchestration systems around it.
+每项信息均标注置信度。**有官方文档时，优先参考官方文档。**
 
 ---
 
-## Visual Overview
+## TL;DR — 5 条要点
 
-Claude Code is not a new AI model. It's an orchestration layer that wraps Claude (Opus/Sonnet/Haiku) with the ability to read files, run shell commands, navigate repositories, and spawn sub-agents — all in a continuous loop until the task is done.
+1. **简单循环**：Claude Code 运行的是 `while(tool_call)` 循环——没有 DAG、没有分类器、没有 RAG。所有决策均由模型自主做出。
+
+2. **八个核心工具**：Bash 工具（万能适配器）、读取工具、编辑工具、写入工具、搜索工具、文件匹配工具、任务工具（子智能体）、TodoWrite。这就是全部工具集。
+
+   **搜索策略演变**：早期 Claude Code 版本曾尝试使用 Voyage 嵌入实现语义代码搜索的 RAG。Anthropic 内部基准测试显示，基于 ripgrep 的 agentic 搜索表现更优、运维复杂度更低——无需索引同步，也不存在外部嵌入提供商的安全风险——因此切换至此方案。这一"搜索而非索引"的哲学以简单性和安全性换取了延迟和 Token 成本。社区插件（用于 AST 模式的 ast-grep）和 MCP 服务器（用于符号的 Serena、用于 RAG（检索增强生成）的 grepai）可满足专业化需求。
+
+   *来源*：[Latent Space 播客](https://www.latent.space/p/claude-code)（2025 年 5 月）、ast-grep 文档
+
+3. **200K Token（词元）预算**：上下文窗口由系统提示、历史记录、工具结果和响应缓冲区共享。容量达到 ~75-92% 时自动压缩。
+
+4. **子智能体 = 隔离**：任务工具派生的子智能体拥有独立的上下文窗口。子智能体不能再派生子子智能体（深度=1）。仅摘要文本返回主上下文。
+
+5. **设计哲学**："少框架，重模型"——信任 Claude 的推理能力，而非围绕它构建复杂的编排系统。
+
+---
+
+## 总体架构图
+
+Claude Code 并非新的 AI 模型，而是一个编排层，它将 Claude（Opus/Sonnet/Haiku）包装为可读取文件、执行 shell 命令、导航代码库、派生子智能体的系统——一切在一个持续循环中运行，直到任务完成。
 
 ```mermaid
 flowchart TB
-    DEV([Developer]) --> CC
+    DEV([开发者]) --> CC
 
-    subgraph CC["Claude Code — Orchestration Layer"]
-        CLAUDE["Claude Model\n(Opus / Sonnet / Haiku)"]
-        TOOLS["Tool Arsenal\n(Read · Edit · Bash · Task · Grep…)"]
+    subgraph CC["Claude Code — 编排层"]
+        CLAUDE["Claude 模型\n(Opus / Sonnet / Haiku)"]
+        TOOLS["工具集\n(Read · Edit · Bash · Task · Grep…)"]
         CLAUDE <--> TOOLS
     end
 
     CC --> ENV
 
-    subgraph ENV["Your Development Environment"]
-        FS[File System]
-        GIT[Git Repository]
+    subgraph ENV["你的开发环境"]
+        FS[文件系统]
+        GIT[Git 仓库]
         SHELL[Shell / CLI]
-        MCP[MCP Servers]
+        MCP[MCP 服务器]
     end
 
     style CC fill:#E87E2F,color:#fff
@@ -83,37 +81,37 @@ flowchart TB
     style MCP fill:#B8B8B8,color:#333
 ```
 
-*Inspired by [Mohamed Ali Ben Salem's architecture diagram](https://www.linkedin.com/posts/mohamed-ali-ben-salem-2b777b9a_en-ce-moment-je-vois-passer-des-posts-du-activity-7420592149110362112-eY5a) — See [Architecture Internals diagrams](../diagrams/04-architecture-internals.md) for a deeper breakdown.*
+*参考 [Mohamed Ali Ben Salem 的架构图](https://www.linkedin.com/posts/mohamed-ali-ben-salem-2b777b9a_en-ce-moment-je-vois-passer-des-posts-du-activity-7420592149110362112-eY5a)——更深入的分解见[架构内部图表](../diagrams/04-architecture-internals.md)。*
 
 ---
 
-## Table of Contents
+## 目录
 
-- [Visual Overview](#visual-overview)
+- [总体架构图](#总体架构图)
 
-1. [The Master Loop](#1-the-master-loop)
-2. [The Tool Arsenal](#2-the-tool-arsenal)
-3. [Context Management Internals](#3-context-management-internals)
-4. [Sub-Agent Architecture](#4-sub-agent-architecture)
-5. [Permission & Security Model](#5-permission--security-model)
-6. [MCP Integration](#6-mcp-integration)
-7. [Advanced Tool Use Patterns (API)](#7-advanced-tool-use-patterns-api)
-8. [The Edit Tool: How It Actually Works](#8-the-edit-tool-how-it-actually-works)
-9. [Session Persistence](#9-session-persistence)
-10. [Philosophy: Less Scaffolding, More Model](#10-philosophy-less-scaffolding-more-model)
-11. [Claude Code vs Alternatives](#11-claude-code-vs-alternatives)
-12. [Sources & References](#12-sources--references)
-13. [Appendix: What We Don't Know](#13-appendix-what-we-dont-know)
+1. [主循环](#1-主循环)
+2. [工具集](#2-工具集)
+3. [上下文管理内部机制](#3-上下文管理内部机制)
+4. [子智能体架构](#4-子智能体架构)
+5. [权限与安全模型](#5-权限与安全模型)
+6. [MCP 集成](#6-mcp-集成)
+7. [高级工具调用模式（API）](#7-高级工具调用模式api)
+8. [编辑工具：实际工作原理](#8-编辑工具实际工作原理)
+9. [会话持久化](#9-会话持久化)
+10. [设计哲学：少框架，重模型](#10-设计哲学少框架重模型)
+11. [Claude Code 与竞品对比](#11-claude-code-与竞品对比)
+12. [来源与参考](#12-来源与参考)
+13. [附录：尚不明确的内容](#13-附录尚不明确的内容)
 
 
 ---
 
-## 1. The Master Loop
+## 1. 主循环
 
-**Confidence**: 100% (Tier 1 - Official)
-**Source**: [Anthropic Engineering Blog](https://www.anthropic.com/engineering/claude-code-best-practices)
+**置信度**：100%（Tier 1 - 官方）
+**来源**：[Anthropic 工程博客](https://www.anthropic.com/engineering/claude-code-best-practices)
 
-At its core, Claude Code is remarkably simple:
+Claude Code 的核心机制出奇简单：
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -121,50 +119,49 @@ At its core, Claude Code is remarkably simple:
 ├─────────────────────────────────────────────────────────────┤
 │                                                             │
 │   ┌──────────────┐                                          │
-│   │  Your Prompt │                                          │
+│   │  你的提示词  │                                          │
 │   └──────┬───────┘                                          │
 │          │                                                  │
 │          ▼                                                  │
 │   ┌──────────────────────────────────────────────────────┐  │
 │   │                                                      │  │
-│   │                  CLAUDE REASONS                      │  │
-│   │        (No classifier, no routing layer)             │  │
+│   │                  CLAUDE 推理                         │  │
+│   │        （无分类器，无路由层）                        │  │
 │   │                                                      │  │
 │   └────────────────────────┬─────────────────────────────┘  │
 │                            │                                │
 │                            ▼                                │
 │                   ┌────────────────┐                        │
-│                   │  Tool Call?    │                        │
+│                   │  工具调用？    │                        │
 │                   └───────┬────────┘                        │
 │                           │                                 │
-│              YES          │           NO                    │
+│              是           │           否                    │
 │         ┌─────────────────┴─────────────────┐               │
 │         │                                   │               │
 │         ▼                                   ▼               │
 │  ┌────────────┐                      ┌────────────┐         │
-│  │  Execute   │                      │   Text     │         │
-│  │   Tool     │                      │  Response  │         │
-│  │            │                      │   (DONE)   │         │
+│  │  执行工具  │                      │  文本响应  │         │
+│  │            │                      │  （完成）  │         │
 │  └─────┬──────┘                      └────────────┘         │
 │        │                                                    │
 │        ▼                                                    │
 │  ┌─────────────┐                                            │
-│  │ Feed Result │                                            │
-│  │  to Claude  │──────────────────┐                         │
+│  │ 将结果返回  │                                            │
+│  │  给 Claude  │──────────────────┐                         │
 │  └─────────────┘                  │                         │
 │                                   │                         │
 │                                   ▼                         │
 │                          ┌────────────────┐                 │
-│                          │   LOOP BACK    │                 │
-│                          │  (Next turn)   │                 │
+│                          │    循环继续    │                 │
+│                          │  （下一轮次）  │                 │
 │                          └────────────────┘                 │
 │                                                             │
 └─────────────────────────────────────────────────────────────┘
 ```
 
-### What This Means
+### 这意味着什么
 
-The entire architecture is a simple `while` loop:
+整个架构就是一个简单的 `while` 循环：
 
 ```
 while (claude_response.has_tool_call):
@@ -173,33 +170,33 @@ while (claude_response.has_tool_call):
 return claude_response.text
 ```
 
-**There is no:**
-- Intent classifier
-- Task router
-- RAG/embedding pipeline
-- DAG orchestrator
-- Planner/executor split
+**不存在：**
+- 意图分类器
+- 任务路由器
+- RAG（检索增强生成）/嵌入流水线
+- DAG 编排器
+- 规划/执行拆分
 
-The model itself decides when to call tools, which tools to call, and when it's done. This is the "agentic loop" pattern described in Anthropic's engineering blog.
+模型自行决定何时调用工具、调用哪个工具、以及何时完成。这就是 Anthropic 工程博客中描述的"智能体循环"模式。
 
-### Why This Design?
+### 为何采用此设计？
 
-1. **Simplicity**: Fewer components = fewer failure modes
-2. **Model-driven**: Claude's reasoning is better than hand-coded heuristics
-3. **Flexibility**: No rigid pipeline constraining what Claude can do
-4. **Debuggability**: Easy to understand what happened and why
+1. **简单性**：组件越少，故障点越少
+2. **模型驱动**：Claude 的推理能力优于人工编写的启发式规则
+3. **灵活性**：无刚性流水线限制 Claude 的能力
+4. **可调试性**：出问题时，有清晰的排查路径
 
-### Agentic Loop API Vocabulary
+### 智能体循环 API 词汇表
 
-The master loop diagram above shows the flow conceptually, but the Anthropic API exposes it through concrete `stop_reason` values. Every API response includes a `stop_reason` field — it's how Claude signals what should happen next. Understanding these three values is essential for building custom agents on top of the Anthropic SDK.
+上述主循环图从概念层面展示了流程，而 Anthropic API 通过具体的 `stop_reason` 值将其暴露出来。每个 API 响应都包含 `stop_reason` 字段——这是 Claude 发出的"下一步应做什么"信号。理解这三个值对于在 Anthropic SDK 上构建自定义智能体至关重要。
 
-| `stop_reason` | Meaning | Loop action |
-|---------------|---------|-------------|
-| `tool_use` | Claude wants to call one or more tools | Execute tools, feed results back, continue loop |
-| `end_turn` | Claude decided it has finished | Exit loop, return the text response |
-| `max_tokens` | Context limit reached before finishing | Rethink context strategy, likely need summarization |
+| `stop_reason` | 含义 | 循环动作 |
+|---------------|------|----------|
+| `tool_use` | Claude 希望调用一个或多个工具 | 执行工具，将结果回传，继续循环 |
+| `end_turn` | Claude 判断任务已完成 | 退出循环，返回文本响应 |
+| `max_tokens` | 在完成前已达上下文限制 | 重新考虑上下文策略，可能需要摘要处理 |
 
-The pseudocode becomes precise with these names:
+结合这些名称，伪代码变得更加精确：
 
 ```python
 messages = [{"role": "user", "content": user_prompt}]
@@ -208,10 +205,10 @@ while True:
     response = client.messages.create(model=model, messages=messages, tools=tools)
 
     if response.stop_reason == "end_turn":
-        return response.content[0].text  # done
+        return response.content[0].text  # 完成
 
     if response.stop_reason == "tool_use":
-        # Process every tool_use block in the response
+        # 处理响应中的每个 tool_use 块
         tool_results = []
         for block in response.content:
             if block.type == "tool_use":
@@ -223,507 +220,506 @@ while True:
                 })
         messages.append({"role": "assistant", "content": response.content})
         messages.append({"role": "user", "content": tool_results})
-        # loop continues
+        # 循环继续
 ```
 
-The `tool_use` block inside `response.content` has three fields you act on: `id` (to match results back), `name` (which function to call), and `input` (a dict of arguments). The result you send back must reference `tool_use_id` so the model can correlate call and response.
+`response.content` 中的 `tool_use` 块包含三个需要操作的字段：`id`（用于匹配结果）、`name`（要调用的函数）和 `input`（参数字典）。回传的结果必须引用 `tool_use_id`，以便模型将调用和响应关联起来。
 
-**`fork_session`** is a higher-level concept built on this loop: it creates an independent branch of the current conversation, sharing the same message history up to the fork point. Both branches can explore different approaches or configurations simultaneously, like `git branch` but for agent sessions. Each fork runs its own agentic loop independently — useful for comparing responses under different tool configurations or prompt variants without re-running the full conversation from scratch.
+**`fork_session`（分叉会话）** 是在此循环之上构建的高层概念：它从当前对话创建一个独立分支，两个分支共享分叉点之前的消息历史。两个分支可以同时探索不同的方法或配置，类似于 `git branch` 但作用于智能体会话。每个分叉独立运行自己的智能体循环——适合在不同工具配置或提示变体下比较响应，而无需从头重新运行完整对话。
 
-#### Controlling loop depth with max_turns
+#### 用 max_turns 控制循环深度
 
-`max_turns` caps the number of assistant/tool iterations before the orchestrator exits. Without an explicit limit, a runaway loop can exhaust budget or context window in ways that are hard to diagnose after the fact.
+`max_turns` 限制编排器退出前的助手/工具迭代次数。没有明确限制时，失控的循环可能耗尽预算或上下文窗口，且事后难以诊断。
 
-Practical ranges by task type:
+各任务类型的实际范围：
 
-| Task type | Recommended `max_turns` |
-|---|---|
-| Simple retrieval (single lookup) | 5 |
-| Research or multi-step coding | 20-30 |
-| Extended autonomous workflows | 50 |
+| 任务类型 | 推荐 `max_turns` |
+|---------|----------------|
+| 简单检索（单次查找） | 5 |
+| 研究或多步骤编码 | 20-30 |
+| 扩展自主工作流 | 50 |
 
-When `max_turns` is reached, the loop exits with whatever state was last written. The task may be incomplete. Always check the final `stop_reason` and implement a fallback path:
+达到 `max_turns` 时，循环以最后写入的状态退出，任务可能未完成。务必检查最终 `stop_reason` 并实现回退路径：
 
 ```python
 result = agent.run(task, max_turns=20)
 if result.stop_reason == "max_turns":
-    # escalate or summarize partial progress
+    # 升级处理或汇总部分进度
     handle_incomplete(result)
 ```
 
-Setting `max_turns` per task type rather than globally prevents a single slow task from starving others in a multi-agent pipeline. A nightly batch job that legitimately needs 50 turns should not inherit the same cap as a quick lookup that should resolve in 5.
+按任务类型而非全局设置 `max_turns`，可防止单个慢任务在多智能体流水线中"饿死"其他任务。一个合理需要 50 轮次的夜间批处理作业，不应继承只需 5 轮次即可完成的快速查询的相同上限。
 
-### Native Capabilities Audit
+### 原生能力审查
 
-Use this checklist to verify you understand Claude Code's full surface area. Each capability is documented in detail elsewhere in this guide.
+使用以下清单验证你是否了解 Claude Code 的全部功能。每项能力在本指南的其他部分均有详细文档。
 
-**The 11 Native Capabilities**:
+**11 项原生能力**：
 
-- [ ] **Event Hooks** — Bash/PowerShell scripts triggered on tool execution
-  - PreToolUse, PostToolUse, UserPromptSubmit, Notification
-  - See: [Section 5 Hooks](#5-permission--security-model)
+- [ ] **事件钩子（Hooks）** — 由工具执行触发的 Bash/PowerShell 脚本
+  - 工具前钩子（PreToolUse）、工具后钩子（PostToolUse）、用户提交钩子（UserPromptSubmit）、通知
+  - 参见：[第 5 节 Hooks](#5-权限与安全模型)
 
-- [ ] **Skill-Scoped Hooks** — Event hooks specific to skill execution context
-  - Lifecycle management per skill
-  - See: [Ultimate Guide Section 5.11](#51-understanding-skills)
+- [ ] **技能作用域 Hooks** — 特定于技能执行上下文的事件钩子
+  - 按技能管理生命周期
+  - 参见：[终极指南第 5.11 节](#51-understanding-skills)
 
-- [ ] **Background Agents** — Async task execution (test suites, long operations)
-  - Non-blocking agent spawning
-  - See: [Section 4.2 Sub-Agent Architecture](#4-sub-agent-architecture)
+- [ ] **后台智能体** — 异步任务执行（测试套件、长时操作）
+  - 非阻塞智能体派生
+  - 参见：[第 4.2 节 子智能体架构](#4-子智能体架构)
 
-- [ ] **Explore Subagent** — `/explore` for codebase analysis
-  - Read-only codebase exploration
-  - See: [Section 4.2 Sub-Agents](#4-sub-agent-architecture)
+- [ ] **探索子智能体** — `/explore` 用于代码库分析
+  - 只读代码库探索
+  - 参见：[第 4.2 节 子智能体](#4-子智能体架构)
 
-- [ ] **Plan Subagent** — `/plan` for read-only planning mode
-  - Safe architectural exploration
-  - See: [Ultimate Guide Section 2.3](#23-plan-mode)
+- [ ] **计划子智能体** — `/plan` 用于只读计划模式（计划模式）
+  - 安全的架构探索
+  - 参见：[终极指南第 2.3 节](#23-plan-mode)
 
-- [ ] **Task Tool** — Hierarchical task delegation to specialized agents
-  - Parallel task execution, depth=1 sub-agents
-  - See: [Section 4.2 Sub-Agent Architecture](#4-sub-agent-architecture)
+- [ ] **任务工具** — 向专业化智能体进行层级任务委托
+  - 并行任务执行，深度=1 的子智能体
+  - 参见：[第 4.2 节 子智能体架构](#4-子智能体架构)
 
-- [ ] **Agent Teams** — Multi-agent parallel coordination (experimental v2.1.32+)
-  - Git-based coordination, autonomous task claiming
-  - See: [Ultimate Guide Section 9.20](#920-agent-teams-multi-agent-coordination)
+- [ ] **智能体团队** — 多智能体并行协调（实验性，v2.1.32+）
+  - 基于 Git 的协调，自主任务认领
+  - 参见：[终极指南第 9.20 节](#920-agent-teams-multi-agent-coordination)
 
-- [ ] **Per-Task Model Selection** — Dynamic model switching mid-session
-  - `/model opus|sonnet|haiku` on task boundaries
-  - See: [Section 10 Cost Optimization](#10-claude-code-vs-alternatives)
+- [ ] **按任务选择模型** — 动态模型切换，在会话中途按需切换
+  - 在任务边界执行 `/model opus|sonnet|haiku`
+  - 参见：[第 10 节 成本优化](#10-claude-code-与竞品对比)
 
-- [ ] **MCP Protocol Integration** — Model Context Protocol for tool extensions
-  - Context7, Sequential, Serena, Playwright, etc.
-  - See: [Section 6 MCP Integration](#6-mcp-integration)
+- [ ] **MCP（模型上下文协议）集成** — 用于工具扩展的 MCP 协议
+  - Context7、Sequential、Serena、Playwright 等
+  - 参见：[第 6 节 MCP 集成](#6-mcp-集成)
 
-- [ ] **Permission Modes** — Fine-grained control over tool execution
-  - Default, auto-accept, plan mode, custom rules
-  - See: [Section 5 Permission & Security Model](#5-permission--security-model)
+- [ ] **权限模式** — 对工具执行的细粒度控制
+  - 默认、自动接受、计划模式、自定义规则
+  - 参见：[第 5 节 权限与安全模型](#5-权限与安全模型)
 
-- [ ] **Session Memory** — Persistent context across sessions
-  - CLAUDE.md, memory files, project state
-  - See: [Section 8 Session Persistence](#8-session-persistence)
+- [ ] **会话记忆** — 跨会话的持久上下文
+  - CLAUDE.md、记忆文件、项目状态
+  - 参见：[第 8 节 会话持久化](#8-会话持久化)
 
-**Onboarding Tip**: If you haven't explored all 11 capabilities, you're likely missing productivity opportunities. Focus on the unchecked items above.
+**入门提示**：如果你还没有探索全部 11 项能力，你很可能错过了提升生产力的机会。重点关注上面未勾选的项目。
 
-**Source**: Synthesized from [Gur Sannikov analysis](https://www.linkedin.com/posts/gursannikov_claudecode-embeddedengineering-aiagents-activity-7423851983331328001-DrFb)
+**来源**：综合自 [Gur Sannikov 分析](https://www.linkedin.com/posts/gursannikov_claudecode-embeddedengineering-aiagents-activity-7423851983331328001-DrFb)
 
 ---
 
-## 2. The Tool Arsenal
+## 2. 工具集
 
-**Confidence**: 100% (Tier 1 - Official)
-**Source**: [code.claude.com/docs](https://code.claude.com/docs/en/setup)
+**置信度**：100%（Tier 1 - 官方）
+**来源**：[code.claude.com/docs](https://code.claude.com/docs/en/setup)
 
-Claude Code has exactly 8 core tools:
+Claude Code 共有 8 个核心工具：
 
-| Tool | Purpose | Key Behavior | Token Cost |
-|------|---------|--------------|------------|
-| `Bash` | Execute shell commands | Universal adapter, most powerful | Low (command) + Variable (output) |
-| `Read` | Read file contents | Max 2000 lines, handles truncation | High for large files |
-| `Edit` | Modify existing files | Diff-based, requires exact match | Medium |
-| `Write` | Create/overwrite files | Must read first if file exists | Medium |
-| `Grep` | Search file contents | Ripgrep-based (regex), replaced RAG/embedding approach. For structural code search (AST-based), see ast-grep plugin. Trade-off: Grep (fast, simple) vs ast-grep (precise, setup required) vs Serena MCP (semantic, symbol-aware) | Low |
-| `Glob` | Find files by pattern | Path matching, sorted by mtime | Low |
-| `Task` | Spawn sub-agents | Isolated context, depth=1 limit | High (new context) |
-| `TodoWrite` | Track progress | Structured task management | Low |
+| 工具 | 用途 | 关键行为 | Token 成本 |
+|------|------|----------|------------|
+| `Bash` | 执行 shell 命令 | 万能适配器，功能最强 | 低（命令）+ 可变（输出） |
+| `Read` | 读取文件内容 | 最多 2000 行，自动处理截断 | 大文件成本高 |
+| `Edit` | 修改现有文件 | 基于 diff，要求精确匹配 | 中等 |
+| `Write` | 创建/覆盖文件 | 若文件已存在必须先读取 | 中等 |
+| `Grep` | 搜索文件内容 | 基于 ripgrep（正则），替代了 RAG（检索增强生成）/嵌入方案。如需结构化代码搜索（基于 AST），参见 ast-grep 插件。权衡：Grep（快速、简单）vs ast-grep（精确、需配置）vs Serena MCP（语义、符号感知） | 低 |
+| `Glob` | 按模式查找文件 | 路径匹配，按修改时间排序 | 低 |
+| `Task` | 派生子智能体 | 独立上下文，深度=1 限制 | 高（新上下文） |
+| `TodoWrite` | 跟踪进度 | 结构化任务管理 | 低 |
 
-### The Bash Universal Adapter
+### Bash 万能适配器
 
-**Key insight**: Bash is Claude's swiss-army knife. It can:
+**核心洞见**：Bash 工具是 Claude 的瑞士军刀，它可以：
 
-- Run any CLI tool (git, npm, docker, curl...)
-- Execute scripts
-- Chain commands with pipes
-- Access system state
+- 运行任意 CLI 工具（git、npm、docker、curl…）
+- 执行脚本
+- 通过管道链接命令
+- 访问系统状态
 
-The model has been trained on massive amounts of shell data, making it highly effective at using Bash as a universal adapter when specialized tools aren't enough.
+模型经过海量 shell 数据训练，在专用工具不够用时，能非常高效地将 Bash 工具用作万能适配器。
 
-### Tool Selection Logic
+### 工具选择逻辑
 
-Claude decides which tool to use based on the task. There's no hardcoded routing:
+Claude 根据任务决定使用哪个工具，没有硬编码的路由规则：
 
 ```
 ┌─────────────────────────────────────────────────────┐
-│              TOOL SELECTION (Model-Driven)          │
+│              工具选择（模型驱动）                   │
 ├─────────────────────────────────────────────────────┤
 │                                                     │
-│  "Read auth.ts"           → Read tool               │
-│  "Find all test files"    → Glob tool               │
-│  "Search for TODO"        → Grep tool               │
-│  "Run npm test"           → Bash tool               │
-│  "Explore the codebase"   → Task tool (sub-agent)   │
-│  "Track my progress"      → TodoWrite tool          │
+│  "读取 auth.ts"           → 读取工具                │
+│  "找出所有测试文件"        → 文件匹配工具            │
+│  "搜索 TODO"              → 搜索工具                 │
+│  "运行 npm test"          → Bash 工具               │
+│  "探索代码库"             → 任务工具（子智能体）     │
+│  "跟踪我的进度"           → TodoWrite 工具          │
 │                                                     │
-│  The model learns these patterns during training,   │
-│  not from explicit rules.                           │
+│  模型在训练时学习这些模式，                         │
+│  而非通过显式规则。                                 │
 │                                                     │
 └─────────────────────────────────────────────────────┘
 ```
 
-### Extended Tool Ecosystem
+### 扩展工具生态系统
 
-Beyond the 8 core tools, Claude Code can leverage:
+除 8 个核心工具外，Claude Code 还可以利用：
 
-**MCP Servers** (Model Context Protocol):
-- **Serena**: Symbol-aware code navigation + session memory
-- **grepai**: Semantic search + call graph analysis (Ollama-based)
-- **Context7**: Official library documentation lookup
-- **Sequential**: Structured multi-step reasoning
-- **Playwright**: Browser automation and E2E testing
-- **claude-code-ultimate-guide**: 12 tools — guide search, release tracking, `compare_versions`, security threat lookup (`get_threat`, `list_threats` with 28 CVEs + 655 malicious skills), template search (`search_examples`) — `npx -y claude-code-ultimate-guide-mcp`
+**MCP 服务器**（MCP（模型上下文协议））：
+- **Serena**：符号感知代码导航 + 会话记忆
+- **grepai**：语义搜索 + 调用图分析（基于 Ollama）
+- **Context7**：官方库文档查询
+- **Sequential**：结构化多步推理
+- **Playwright**：浏览器自动化和端到端测试
+- **claude-code-ultimate-guide**：12 个工具——指南搜索、发布跟踪、`compare_versions`、安全威胁查询（`get_threat`、`list_threats`，含 28 个 CVE + 655 个恶意技能）、模板搜索（`search_examples`）——`npx -y claude-code-ultimate-guide-mcp`
 
-**Community Plugins**:
-- **ast-grep**: AST-based structural code search (explicit invocation)
+**社区插件**：
+- **ast-grep**：基于 AST 的结构化代码搜索（需显式调用）
 
-### Search Tool Selection Matrix
+### 搜索工具选择矩阵
 
-Claude Code offers multiple ways to search code, each with specific strengths:
+Claude Code 提供多种代码搜索方式，各有其优势：
 
-| Search Need | Native Tool | MCP/Plugin Alternative | When to Escalate |
-|-------------|-------------|----------------------|------------------|
-| Exact text | `Grep` (ripgrep) | - | Never (fastest) |
-| Function name | `Grep` | Serena `find_symbol` | Multi-file refactoring |
-| By meaning | - | grepai `search` | Don't know exact text |
-| Call graph | - | grepai `trace_callers` | Dependency analysis |
-| Structural pattern | - | ast-grep | Large migrations (>50k lines) |
-| File structure | - | Serena `get_symbols_overview` | Need symbol context |
+| 搜索需求 | 原生工具 | MCP/插件替代方案 | 何时升级 |
+|---------|---------|----------------|---------|
+| 精确文本 | `Grep`（ripgrep） | - | 永不（最快） |
+| 函数名 | `Grep` | Serena `find_symbol` | 多文件重构 |
+| 按含义搜索 | - | grepai `search` | 不知道确切文本 |
+| 调用图 | - | grepai `trace_callers` | 依赖分析 |
+| 结构化模式 | - | ast-grep | 大规模迁移（>5 万行） |
+| 文件结构 | - | Serena `get_symbols_overview` | 需要符号上下文 |
 
-**Performance Comparison**:
+**性能对比**：
 
-| Tool | Speed | Setup | Use Case |
-|------|-------|-------|----------|
-| Grep (ripgrep) | ⚡ ~20ms | ✅ None | 90% of searches |
-| Serena | ⚡ ~100ms | ⚠️ MCP | Refactoring, symbols |
-| grepai | 🐢 ~500ms | ⚠️ Ollama + MCP | Semantic, call graph |
-| ast-grep | 🕐 ~200ms | ⚠️ Plugin | AST patterns, migrations |
+| 工具 | 速度 | 配置 | 适用场景 |
+|------|------|------|---------|
+| Grep（ripgrep） | ⚡ ~20ms | ✅ 无需 | 90% 的搜索场景 |
+| Serena | ⚡ ~100ms | ⚠️ MCP | 重构、符号 |
+| grepai | 🐢 ~500ms | ⚠️ Ollama + MCP | 语义搜索、调用图 |
+| ast-grep | 🕐 ~200ms | ⚠️ 插件 | AST 模式、迁移 |
 
-**Decision principle**: Start with Grep (fastest), escalate to specialized tools only when needed.
+**决策原则**：从 Grep（最快）开始，仅在必要时升级到专用工具。
 
-> **📖 Deep Dive**: See [Search Tools Mastery](../workflows/search-tools-mastery.md) for comprehensive workflows combining all search tools.
+> **📖 深度阅读**：完整的多工具组合工作流，参见[搜索工具精通](../workflows/search-tools-mastery.md)。
 
 ---
 
-## 3. Context Management Internals
+## 3. 上下文管理内部机制
 
-**Confidence**: 80% (Tier 2 - Partially Official)
-**Sources**:
-- [platform.claude.com/docs](https://platform.claude.com/docs/en/build-with-claude/context-windows) (Tier 1)
-- Observed behavior (Tier 2)
+**置信度**：80%（Tier 2 - 部分官方）
+**来源**：
+- [platform.claude.com/docs](https://platform.claude.com/docs/en/build-with-claude/context-windows)（Tier 1）
+- 观察到的行为（Tier 2）
 
-Claude Code operates within a fixed context window (~200K tokens, varies by model).
+Claude Code 在固定的上下文窗口内运行（约 200K Token（词元），因模型而异）。
 
-### Context Budget Breakdown
+### 上下文预算分解
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                 CONTEXT BUDGET (~200K tokens)               │
+│               上下文预算（约 200K Token（词元））            │
 ├─────────────────────────────────────────────────────────────┤
 │                                                             │
 │  ┌──────────────────────────────────────────────────────┐   │
-│  │ System Prompt                            (~5-15K)    │   │
-│  │ • Tool definitions                                   │   │
-│  │ • Safety instructions                                │   │
-│  │ • Behavioral guidelines                              │   │
-│  │ • See detailed breakdown below ↓                     │   │
+│  │ 系统提示                              (~5-15K)        │   │
+│  │ • 工具定义                                           │   │
+│  │ • 安全指令                                           │   │
+│  │ • 行为准则                                           │   │
+│  │ • 详细分解见下方 ↓                                   │   │
 │  ├──────────────────────────────────────────────────────┤   │
-│  │ CLAUDE.md Files                          (~1-10K)    │   │
-│  │ • Global ~/.claude/CLAUDE.md                         │   │
-│  │ • Project /CLAUDE.md                                 │   │
-│  │ • Local /.claude/CLAUDE.md                           │   │
+│  │ CLAUDE.md 文件                       (~1-10K)        │   │
+│  │ • 全局 ~/.claude/CLAUDE.md                           │   │
+│  │ • 项目 /CLAUDE.md                                    │   │
+│  │ • 本地 /.claude/CLAUDE.md                            │   │
 │  ├──────────────────────────────────────────────────────┤   │
-│  │ Conversation History                     (variable)  │   │
-│  │ • Your prompts                                       │   │
-│  │ • Claude's responses                                 │   │
-│  │ • Tool call records                                  │   │
+│  │ 对话历史                              （可变）        │   │
+│  │ • 你的提示词                                         │   │
+│  │ • Claude 的响应                                      │   │
+│  │ • 工具调用记录                                       │   │
 │  ├──────────────────────────────────────────────────────┤   │
-│  │ Tool Results                             (variable)  │   │
-│  │ • File contents from Read                            │   │
-│  │ • Command outputs from Bash                          │   │
-│  │ • Search results from Grep                           │   │
+│  │ 工具结果                              （可变）        │   │
+│  │ • 读取工具读取的文件内容                              │   │
+│  │ • Bash 工具的命令输出                                 │   │
+│  │ • 搜索工具的搜索结果                                  │   │
 │  ├──────────────────────────────────────────────────────┤   │
-│  │ Reserved for Response                    (~40-45K)   │   │
-│  │ • Claude's thinking                                  │   │
-│  │ • Generated code/text                                │   │
+│  │ 响应保留空间                         (~40-45K)        │   │
+│  │ • Claude 的深度思考                                  │   │
+│  │ • 生成的代码/文本                                    │   │
 │  └──────────────────────────────────────────────────────┘   │
 │                                                             │
-│  USABLE = Total - System - Reserved ≈ 140-150K tokens       │
+│  可用 = 总量 - 系统 - 保留 ≈ 140-150K Token（词元）         │
 │                                                             │
 └─────────────────────────────────────────────────────────────┘
 ```
 
-### System Prompt Contents
+### 系统提示内容
 
-**Confidence**: 100% (Tier 1 - Official Anthropic Documentation)
-**Sources**:
-- [Anthropic System Prompts Release Notes](https://platform.claude.com/docs/en/release-notes/system-prompts)
-- [Anthropic Engineering: Claude Code Best Practices](https://www.anthropic.com/engineering/claude-code-best-practices)
+**置信度**：100%（Tier 1 - 官方 Anthropic 文档）
+**来源**：
+- [Anthropic 系统提示发布说明](https://platform.claude.com/docs/en/release-notes/system-prompts)
+- [Anthropic 工程：Claude Code 最佳实践](https://www.anthropic.com/engineering/claude-code-best-practices)
 
-Claude system prompts (~5-15K tokens) are **publicly published** by Anthropic as part of their transparency commitment. These prompts define:
+Claude 系统提示（约 5-15K Token（词元））由 Anthropic **公开发布**，作为其透明度承诺的一部分。这些提示定义了：
 
-**Core Components**:
-- **Tool definitions**: Bash, Read, Edit, Write, Grep, Glob, Task, TodoWrite
-- **Safety instructions**: Content policies, refusal patterns (see [Security Hardening](../security/security-hardening.md))
-- **Behavioral guidelines**: Task-first approach, MVP-first, no over-engineering
-- **Context instructions**: How to gather and use project context
+**核心组件**：
+- **工具定义**：Bash 工具、读取工具、编辑工具、写入工具、搜索工具、文件匹配工具、任务工具、TodoWrite
+- **安全指令**：内容政策、拒绝模式（参见[安全加固](../security/security-hardening.md)）
+- **行为准则**：任务优先方法、MVP 优先、避免过度工程化
+- **上下文指令**：如何收集和使用项目上下文
 
-**Important Distinctions**:
-- **Claude.ai/Mobile**: Published prompts available publicly
-- **Anthropic API**: Different default instructions, configurable by developers
-- **Claude Code CLI**: Agentic coding assistant with context-gathering behavior
+**重要区别**：
+- **Claude.ai/移动端**：公开发布的提示词可公开查阅
+- **Anthropic API**：不同的默认指令，可由开发者配置
+- **Claude Code CLI**：具有上下文收集行为的 agentic 编码助手
 
-**Community Analysis** (for deeper understanding):
-- **Simon Willison's Claude 4 Analysis** (May 2025): [Deep-dive into thinking blocks, search rules, safety guardrails](https://simonwillison.net/2025/May/25/claude-4-system-prompt/)
-- **PromptHub Technical Breakdown** (June 2025): [Detailed analysis of prompt engineering patterns](https://www.prompthub.us/blog/an-analysis-of-the-claude-4-system-prompt)
+**社区分析**（供深入理解）：
+- **Simon Willison 的 Claude 4 分析**（2025 年 5 月）：[深度解析思考块、搜索规则、安全护栏](https://simonwillison.net/2025/May/25/claude-4-system-prompt/)
+- **PromptHub 技术分解**（2025 年 6 月）：[提示词工程模式详细分析](https://www.prompthub.us/blog/an-analysis-of-the-claude-4-system-prompt)
 
-→ **Cross-reference**: For security implications, see [Section 5: Permission & Security Model](#5-permission--security-model)
+→ **交叉参考**：安全影响见[第 5 节：权限与安全模型](#5-权限与安全模型)
 
-**Note**: Claude Code system prompts may differ from Claude.ai/mobile versions. The above sources cover the Claude family; Code-specific prompts are integrated into the CLI tool's behavior.
+**注**：Claude Code 系统提示可能与 Claude.ai/移动端版本不同。上述来源涵盖 Claude 系列；Code 专用提示已集成到 CLI 工具行为中。
 
 ---
 
-### Auto-Compaction
+### 自动压缩
 
-**Confidence**: 75% (Tier 2 - Community-verified with research backing)
+**置信度**：75%（Tier 2 - 社区验证，有研究支持）
 
-When context usage exceeds a threshold, Claude Code automatically summarizes older conversation turns:
+上下文使用率超过阈值时，Claude Code 会自动摘要旧的对话轮次：
 
-| Source | Reported Threshold | Notes |
-|--------|-------------------|-------|
-| VS Code extension | ~75% usage (25% remaining) | [GitHub #11819](https://github.com/anthropics/claude-code/issues/11819) (Nov 2025) |
-| CLI version | 1-5% remaining | More conservative than VS Code |
-| PromptLayer analysis | 92% | Historical observation |
-| Steve Kinney | 95% | [Session Management Guide](https://stevekinney.com/courses/ai-development/claude-code-session-management) (Jul 2025) |
-| User-triggered `/compact` | Anytime | Manual control |
+| 来源 | 报告的阈值 | 备注 |
+|------|-----------|------|
+| VS Code 扩展 | ~75% 使用率（剩余 25%） | [GitHub #11819](https://github.com/anthropics/claude-code/issues/11819)（2025 年 11 月） |
+| CLI 版本 | 剩余 1-5% | 比 VS Code 更保守 |
+| PromptLayer 分析 | 92% | 历史观测 |
+| Steve Kinney | 95% | [会话管理指南](https://stevekinney.com/courses/ai-development/claude-code-session-management)（2025 年 7 月） |
+| 用户触发的 `/compact` | 随时 | 手动控制 |
 
-**What happens during compaction:**
+**压缩期间发生了什么：**
 
-1. Older conversation turns are summarized
-2. Tool results are condensed
-3. Recent context is preserved in full
-4. The model receives a "context was compacted" signal
+1. 旧的对话轮次被摘要
+2. 工具结果被压缩
+3. 近期上下文完整保留
+4. 模型收到"上下文已压缩"信号
 
-**Performance Impact** (Research-backed):
+**性能影响**（有研究支持）：
 
-Recent research and practitioner observations confirm **quality degradation with auto-compaction**:
+近期研究和从业者观察证实了**自动压缩会导致质量下降**：
 
-- **LLM performance drops 50-70% on complex tasks** as context grows from 1K to 32K tokens ([Context Rot Research](https://research.trychroma.com/context-rot), Jul 2025)
-- **11 out of 12 models fall below 50% of their short-context performance** at 32K tokens (NoLiMa benchmark)
-- **Auto-compact loses nuance and breaks references** through repeated compression cycles ([Claude Saves Tokens, Forgets Everything](https://golev.com/post/claude-saves-tokens-forgets-everything/), Jan 2026)
-- **Attention mechanism struggles** with retrieval burden in high-context scenarios
+- **上下文从 1K 增长到 32K Token（词元）时，LLM 在复杂任务上的性能下降 50-70%**（[上下文退化研究](https://research.trychroma.com/context-rot)，2025 年 7 月）
+- **12 个模型中有 11 个在 32K Token（词元）时跌破其短上下文性能的 50%**（NoLiMa 基准测试）
+- **自动压缩通过反复压缩循环会丢失细节并破坏引用**（[Claude 节省 Token 却遗忘一切](https://golev.com/post/claude-saves-tokens-forgets-everything/)，2026 年 1 月）
+- **注意力机制在高上下文场景下难以承受检索负担**
 
-**Community Consensus**: Manual `/compact` at logical breakpoints > waiting for auto-compact to trigger.
+**社区共识**：在逻辑断点处手动 `/compact` > 等待自动压缩触发。
 
-**Recommended Strategy** ([Lorenz, 2026](https://www.linkedin.com/posts/robin-lorenz-54055412a_claudecode-contextengineering-aiengineering-activity-7425136701515251713)):
+**推荐策略**（[Lorenz，2026](https://www.linkedin.com/posts/robin-lorenz-54055412a_claudecode-contextengineering-aiengineering-activity-7425136701515251713)）：
 
-| Context % | Action | Rationale |
-|-----------|--------|-----------|
-| **70%** | Warning - Plan cleanup | Early awareness |
-| **85%** | Manual handoff recommended | Prevent auto-compact degradation |
-| **95%** | Force handoff | Severe quality degradation |
+| 上下文百分比 | 操作 | 理由 |
+|------------|------|------|
+| **70%** | 警告 - 计划清理 | 提前感知 |
+| **85%** | 建议手动交接 | 防止自动压缩质量下降 |
+| **95%** | 强制交接 | 严重质量下降 |
 
-**User control**: Use `/compact` manually to trigger summarization at logical breakpoints, or use **session handoffs** (see [Session Handoffs](#session-handoffs)) to preserve intent over compressed history.
+**用户控制**：使用 `/compact` 在逻辑断点处手动触发摘要，或使用**会话交接**（参见[会话交接](#会话交接)）在压缩历史上保留意图。
 
-### Context Preservation Strategies
+### 上下文保留策略
 
-| Strategy | When to Use | How |
-|----------|-------------|-----|
-| Sub-agents | Exploratory tasks | `Task` tool for isolated search |
-| Manual compact | Proactive cleanup | `/compact` command |
-| Clear session | Fresh start needed | `/clear` command |
-| Specific reads | Know what you need | Read exact files, not directories |
-| CLAUDE.md | Persistent context | Store conventions in memory files |
+| 策略 | 使用时机 | 方法 |
+|------|---------|------|
+| 子智能体 | 探索性任务 | 使用任务工具进行隔离搜索 |
+| 手动压缩 | 主动清理 | `/compact` 命令 |
+| 清除会话 | 需要全新开始 | `/clear` 命令 |
+| 精确读取 | 知道需要什么 | 读取特定文件，不读整个目录 |
+| CLAUDE.md | 持久上下文 | 将规范存入记忆文件 |
 
-### Session Degradation Limits
+### 会话质量下限
 
-**Confidence**: 70% (Tier 2 - Practitioner studies, arXiv research)
+**置信度**：70%（Tier 2 - 从业者研究、arXiv 研究）
 
-Claude Code's effectiveness degrades predictably under certain conditions:
+Claude Code 在某些条件下性能会可预测地下降：
 
-| Condition | Observed Threshold | Symptom |
-|-----------|-------------------|---------|
-| Conversation turns | **15-25 turns** | Loses track of earlier constraints |
-| Token accumulation | **80-100K tokens** | Ignores requirements stated early in session |
-| Problem scope | **>5 files simultaneously** | Inconsistent changes, missed files |
+| 条件 | 观察到的阈值 | 症状 |
+|------|------------|------|
+| 对话轮次 | **15-25 轮** | 丢失对早期约束的追踪 |
+| Token 累积 | **80-100K Token（词元）** | 忽略会话早期声明的需求 |
+| 问题范围 | **同时超过 5 个文件** | 变更不一致、文件遗漏 |
 
-**Success rates by scope** (from practitioner studies):
+**按范围划分的成功率**（来自从业者研究）：
 
-| Scope | Success Rate | Example |
-|-------|--------------|---------|
-| 1-3 files | ~85% | Fix bug in single module |
-| 4-7 files | ~60% | Refactor feature across components |
-| 8+ files | ~40% | Codebase-wide changes |
+| 范围 | 成功率 | 示例 |
+|------|--------|------|
+| 1-3 个文件 | ~85% | 修复单模块 bug |
+| 4-7 个文件 | ~60% | 跨组件重构特性 |
+| 8+ 个文件 | ~40% | 代码库范围的全局改动 |
 
-**Mitigation strategies**:
+**缓解策略**：
 
-1. **Checkpoint prompts**: "Before continuing, recap the current requirements and constraints."
-2. **Session resets**: Start fresh for new tasks (`/clear`)
-3. **Scope tightly**: Break large tasks into focused sub-tasks
-4. **Use sub-agents**: Delegate exploration to `Task` tool to preserve main context
+1. **检查点提示**："继续之前，请总结当前需求和约束条件。"
+2. **会话重置**：新任务时全新开始（`/clear`）
+3. **收紧范围**：将大任务分解为专注的子任务
+4. **使用子智能体**：将探索委托给任务工具以保留主上下文
 
-### Failure-Triggered Context Drift
+### 失败触发的上下文漂移
 
-A separate degradation mode that does not depend on context size: repeated tool failures. When a tool call fails and Claude retries, error output accumulates in the context window. Stack traces, retry noise, and error messages dilute the original intent — subsequent attempts follow the error narrative rather than the task goal. The context window is not full, but the signal-to-noise ratio has degraded.
+与上下文大小无关的另一种退化模式：重复的工具失败。工具调用失败且 Claude 重试时，错误输出在上下文窗口中积累。堆栈跟踪、重试噪声和错误消息稀释了原始意图——后续尝试会跟随错误叙述而非任务目标。上下文窗口并未满，但信噪比已经下降。
 
-This is distinct from compaction drift. Compaction addresses context *size*; failure re-injection addresses context *quality* within a bounded window.
+这与压缩漂移不同。压缩解决的是上下文*大小*问题；失败重注解决的是有限窗口内的上下文*质量*问题。
 
-**Pattern**: re-inject the core task instruction on every command failure, not just after `/compact`. A `PostToolUse` hook can prefix retried prompts with a condensed version of the original task and constraints:
+**模式**：每次命令失败时都重新注入核心任务指令，而不仅仅是 `/compact` 之后。`PostToolUse` 工具后钩子可以在重试提示中添加原始任务和约束的精简版本：
 
 ```bash
-# PostToolUse hook: re-inject intent after failures
+# PostToolUse 工具后钩子：失败后重新注入意图
 if [[ "$CLAUDE_TOOL_EXIT_CODE" != "0" ]]; then
-  echo "REMINDER: The current task is: $ORIGINAL_TASK_SUMMARY. Ignore the above error if non-blocking and continue toward that goal."
+  echo "提醒：当前任务是：$ORIGINAL_TASK_SUMMARY。如果上述错误不影响进程，请忽略并继续完成目标。"
 fi
 ```
 
-Source: [Nick Tune — Workflow DSL: Domain-Driven Claude Code Workflows](https://nick-tune.me/blog/2026-03-01-workflow-dsl-domain-driven-claude-code-workflows/) (2026-03-01)
+来源：[Nick Tune — 工作流 DSL：领域驱动的 Claude Code 工作流](https://nick-tune.me/blog/2026-03-01-workflow-dsl-domain-driven-claude-code-workflows/)（2026-03-01）
 
 ---
 
-## 4. Sub-Agent Architecture
+## 4. 子智能体架构
 
-**Confidence**: 100% (Tier 1 - Documented behavior)
-**Source**: [code.claude.com/docs](https://code.claude.com/docs/en/setup) + System prompt (visible in tool definitions)
+**置信度**：100%（Tier 1 - 已记录行为）
+**来源**：[code.claude.com/docs](https://code.claude.com/docs/en/setup) + 系统提示（工具定义中可见）
 
-The `Task` tool spawns sub-agents for parallel or isolated work.
+任务工具派生子智能体，用于并行或隔离工作。
 
-### Isolation Model
+### 隔离模型
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                        MAIN AGENT                           │
+│                          主智能体                           │
 │                                                             │
 │  ┌───────────────────────────────────────────────────────┐  │
-│  │ Context: Full conversation + all file reads           │  │
+│  │ 上下文：完整对话 + 所有文件读取                        │  │
 │  │                                                       │  │
-│  │         Task("Explore authentication patterns")       │  │
+│  │         Task("探索身份认证模式")                      │  │
 │  │                        │                              │  │
 │  │                        ▼                              │  │
 │  │  ┌─────────────────────────────────────────────────┐  │  │
-│  │  │             SUB-AGENT (Spawned)                 │  │  │
+│  │  │             子智能体（已派生）                  │  │  │
 │  │  │                                                 │  │  │
-│  │  │  • Own fresh context window                     │  │  │
-│  │  │  • Receives: task description only              │  │  │
-│  │  │  • Has access to: same tools (except Task)      │  │  │
-│  │  │  • CANNOT spawn sub-sub-agents (depth = 1)      │  │  │
-│  │  │  • Returns: summary text only                   │  │  │
+│  │  │  • 独立的全新上下文窗口                         │  │  │
+│  │  │  • 接收：仅任务描述                             │  │  │
+│  │  │  • 可使用：相同工具（除任务工具外）              │  │  │
+│  │  │  • 不能派生子子智能体（深度 = 1）               │  │  │
+│  │  │  • 返回：仅摘要文本                             │  │  │
 │  │  │                                                 │  │  │
 │  │  └─────────────────────────────────────────────────┘  │  │
 │  │                        │                              │  │
 │  │                        ▼                              │  │
-│  │         Result: "Found 3 auth patterns: JWT in..."    │  │
-│  │         (Only this text enters main context)          │  │
+│  │         结果："发现 3 种认证模式：JWT 在..."          │  │
+│  │         （只有这段文本进入主上下文）                  │  │
 │  │                                                       │  │
 │  └───────────────────────────────────────────────────────┘  │
 │                                                             │
 └─────────────────────────────────────────────────────────────┘
 ```
 
-### Why Depth = 1?
+### 为何深度 = 1？
 
-Limiting sub-agents to one level prevents:
+将子智能体限制在一个层级可以防止：
 
-1. **Recursive explosion**: Agent-ception would consume infinite resources
-2. **Context pollution**: Each level would accumulate context
-3. **Debugging nightmares**: Tracking multi-level agent chains is hard
-4. **Unpredictable costs**: Nested agents = unpredictable token usage
+1. **递归爆炸**：智能体套娃会消耗无限资源
+2. **上下文污染**：每层都会积累上下文
+3. **调试噩梦**：追踪多层智能体链非常困难
+4. **不可预测的成本**：嵌套智能体 = 不可预测的 Token（词元）消耗
 
-### Sub-Agent Types
+### 子智能体类型
 
-Claude Code offers specialized sub-agent types via the `subagent_type` parameter:
+Claude Code 通过 `subagent_type` 参数提供专用子智能体类型：
 
-| Type | Purpose | Tools Available |
-|------|---------|-----------------|
-| `Explore` | Codebase exploration | All read-only tools |
-| `Plan` | Architecture planning | All except Edit/Write |
-| `Bash` | Command execution | Bash only |
-| `general-purpose` | Complex multi-step | All tools |
+| 类型 | 用途 | 可用工具 |
+|------|------|---------|
+| `Explore` | 代码库探索 | 所有只读工具 |
+| `Plan` | 架构规划 | 除编辑工具/写入工具外的所有工具 |
+| `Bash` | 命令执行 | 仅 Bash 工具 |
+| `general-purpose` | 复杂多步骤 | 所有工具 |
 
-### When to Use Sub-Agents
+### 何时使用子智能体
 
-| Use Case | Why Sub-Agent Helps |
-|----------|---------------------|
-| Searching large codebases | Keeps main context clean |
-| Parallel exploration | Multiple searches simultaneously |
-| Risky exploration | Errors don't pollute main context |
-| Specialized analysis | Different "mindset" for different tasks |
+| 使用场景 | 子智能体的优势 |
+|---------|--------------|
+| 搜索大型代码库 | 保持主上下文干净 |
+| 并行探索 | 同时进行多个搜索 |
+| 风险性探索 | 错误不污染主上下文 |
+| 专项分析 | 针对不同任务有不同的"思维模式" |
 
-### Hub-and-Spoke Orchestration
+### 轮辐式编排
 
-The dominant multi-agent pattern in production is **hub-and-spoke**: one coordinator agent sits at the center, manages N worker sub-agents, and is the only entity that holds the full picture.
+生产中最主流的多智能体模式是**轮辐式**：一个协调者智能体居中，管理 N 个工作智能体，是唯一持有全局视图的实体。
 
 ```
                     ┌─────────────────────┐
-                    │    COORDINATOR      │
-                    │  (Hub / Orchestrator)│
+                    │      协调者         │
+                    │  （中心 / 编排者）  │
                     │                     │
-                    │  • Decomposes goal  │
-                    │  • Passes context   │
-                    │  • Aggregates results│
-                    │  • Resolves conflicts│
+                    │  • 分解目标         │
+                    │  • 传递上下文       │
+                    │  • 汇总结果         │
+                    │  • 解决冲突         │
                     └──┬──────┬──────┬───┘
                        │      │      │
             ┌──────────┘      │      └──────────┐
             │                 │                 │
      ┌──────▼──────┐  ┌───────▼─────┐  ┌───────▼─────┐
-     │  WORKER A   │  │  WORKER B   │  │  WORKER C   │
+     │   工作者 A  │  │   工作者 B  │  │   工作者 C  │
      │             │  │             │  │             │
-     │  Specific   │  │  Specific   │  │  Specific   │
-     │  task only  │  │  task only  │  │  task only  │
+     │  特定任务   │  │  特定任务   │  │  特定任务   │
      └─────────────┘  └─────────────┘  └─────────────┘
            │                 │                 │
            └────────────────►│◄────────────────┘
-                     (results flow back to coordinator only)
+                     （结果仅流向协调者）
 ```
 
-**The critical rule: context is never inherited automatically.** When the coordinator spawns Worker A to analyze file X, Worker B gets no knowledge of that analysis unless the coordinator explicitly passes it in the task description. Workers are isolated by design — they receive only the task string, nothing else.
+**关键规则：上下文从不自动继承。** 协调者派生工作者 A 分析文件 X 时，工作者 B 对该分析一无所知，除非协调者在任务描述中明确传递。工作者之间的隔离是设计使然——它们只接收任务字符串，不接收任何其他内容。
 
-This is the most common mistake in multi-agent design: assuming sub-agents share context. They don't.
+这是多智能体设计中最常见的错误：假设子智能体共享上下文。它们不共享。
 
-**Explicit context passing pattern:**
+**显式上下文传递模式：**
 
 ```python
-# Wrong — Worker B won't know about Worker A's findings
-task_a = Task("Analyze auth.py and find the session token logic")
-task_b = Task("Find all callers of the session token logic")  # doesn't know where it is
+# 错误——工作者 B 不知道工作者 A 的发现
+task_a = Task("分析 auth.py 并找到会话 token 逻辑")
+task_b = Task("找出会话 token 逻辑的所有调用者")  # 不知道在哪里
 
-# Correct — coordinator passes findings explicitly
-result_a = run_task("Analyze auth.py and return the exact function name(s) handling session tokens")
-task_b = Task(f"Find all callers of {result_a} across the codebase")  # explicit context
+# 正确——协调者显式传递发现
+result_a = run_task("分析 auth.py 并返回处理会话 token 的确切函数名")
+task_b = Task(f"在代码库中找出 {result_a} 的所有调用者")  # 显式上下文
 ```
 
-**Coordinator responsibilities:**
+**协调者的职责：**
 
-1. **Decompose**: Break the goal into independent subtasks with clear boundaries
-2. **Pass context explicitly**: Each worker task description must be self-contained
-3. **Aggregate**: Collect text results from all workers, combine into coherent output
-4. **Decide cross-cutting questions**: Only the coordinator can make decisions that span workers
+1. **分解**：将目标拆分为边界清晰的独立子任务
+2. **显式传递上下文**：每个工作者的任务描述必须自包含
+3. **汇总**：收集所有工作者的文本结果，合并为连贯输出
+4. **决策跨领域问题**：只有协调者能做出跨工作者的决策
 
-Workers should never need to communicate with each other. If they do, that's a sign the decomposition is wrong and the task belongs in the coordinator.
+工作者之间永远不应需要相互通信。如果需要，说明分解方案有误，该任务应属于协调者。
 
 ---
 
-## 5. Permission & Security Model
+## 5. 权限与安全模型
 
-**Confidence**: 100% (Tier 1 - Official)
-**Sources**:
+**置信度**：100%（Tier 1 - 官方）
+**来源**：
 - [code.claude.com/docs/en/hooks](https://code.claude.com/docs/en/hooks)
 - [code.claude.com/docs/en/sandboxing](https://code.claude.com/docs/en/sandboxing)
 
-Claude Code has a layered security model:
+Claude Code 采用分层安全模型：
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                    PERMISSION LAYERS                        │
+│                        权限层级                             │
 ├─────────────────────────────────────────────────────────────┤
 │                                                             │
-│  Layer 1: INTERACTIVE PROMPTS                               │
+│  第 1 层：交互式提示                                        │
 │  ┌────────────────────────────────────────────────────────┐ │
-│  │ Claude wants to run: rm -rf node_modules               │ │
-│  │ [Allow once] [Allow always] [Deny] [Edit command]      │ │
+│  │ Claude 想要运行：rm -rf node_modules                   │ │
+│  │ [本次允许] [始终允许] [拒绝] [编辑命令]               │ │
 │  └────────────────────────────────────────────────────────┘ │
 │                          │                                  │
 │                          ▼                                  │
-│  Layer 2: ALLOW/DENY RULES (settings.json)                  │
+│  第 2 层：允许/拒绝规则（settings.json）                    │
 │  ┌────────────────────────────────────────────────────────┐ │
 │  │ {                                                      │ │
 │  │   "permissions": {                                     │ │
@@ -734,126 +730,126 @@ Claude Code has a layered security model:
 │  └────────────────────────────────────────────────────────┘ │
 │                          │                                  │
 │                          ▼                                  │
-│  Layer 3: HOOKS (Pre/Post execution)                        │
+│  第 3 层：Hooks（执行前/后）                                │
 │  ┌────────────────────────────────────────────────────────┐ │
-│  │ PreToolUse: Validate before execution                  │ │
-│  │ PostToolUse: Audit after execution                     │ │
-│  │ PermissionRequest: Override permission prompts         │ │
+│  │ 工具前钩子（PreToolUse）：执行前验证                   │ │
+│  │ 工具后钩子（PostToolUse）：执行后审计                  │ │
+│  │ PermissionRequest：覆盖权限提示                        │ │
 │  └────────────────────────────────────────────────────────┘ │
 │                          │                                  │
 │                          ▼                                  │
-│  Layer 4: SANDBOX MODE (Optional isolation)                 │
+│  第 4 层：沙箱模式（可选隔离）                              │
 │  ┌────────────────────────────────────────────────────────┐ │
-│  │ Filesystem isolation + Network restrictions            │ │
+│  │ 文件系统隔离 + 网络限制                                │ │
 │  └────────────────────────────────────────────────────────┘ │
 │                                                             │
 └─────────────────────────────────────────────────────────────┘
 ```
 
-### Dangerous Pattern Detection
+### 危险模式检测
 
-**Confidence**: 80% (Tier 2 - Observed but not exhaustive)
+**置信度**：80%（Tier 2 - 有观察依据但不完整）
 
-Claude Code appears to flag certain patterns for extra scrutiny:
+Claude Code 似乎会对某些模式进行额外审查：
 
-| Pattern | Risk | Behavior |
-|---------|------|----------|
-| `rm -rf` | Destructive deletion | Always prompts |
-| `sudo` | Privilege escalation | Always prompts |
-| `curl \| sh` | Remote code execution | Always prompts |
-| `chmod 777` | Insecure permissions | Always prompts |
-| `git push --force` | History destruction | Always prompts |
-| `DROP TABLE` | Data destruction | Always prompts |
+| 模式 | 风险 | 行为 |
+|------|------|------|
+| `rm -rf` | 破坏性删除 | 始终提示 |
+| `sudo` | 权限提升 | 始终提示 |
+| `curl \| sh` | 远程代码执行 | 始终提示 |
+| `chmod 777` | 不安全权限 | 始终提示 |
+| `git push --force` | 历史破坏 | 始终提示 |
+| `DROP TABLE` | 数据破坏 | 始终提示 |
 
-This is not a complete blocklist — patterns are likely detected through model training rather than explicit rules.
+这不是完整的黑名单——模式检测很可能通过模型训练而非显式规则实现。
 
-### Native Sandbox (v2.1.0+)
+### 原生沙箱（v2.1.0+）
 
-**Confidence**: 100% (Tier 1 - Official)
-**Source**: [code.claude.com/docs/en/sandboxing](https://code.claude.com/docs/en/sandboxing)
+**置信度**：100%（Tier 1 - 官方）
+**来源**：[code.claude.com/docs/en/sandboxing](https://code.claude.com/docs/en/sandboxing)
 
-Claude Code includes built-in **native sandboxing** using OS-level primitives for process-level isolation:
+Claude Code 包含基于 OS 层原语的内置**原生沙箱**，实现进程级隔离：
 
 ```
 ┌──────────────────────────────────────────────────────┐
-│               Native Sandbox Architecture            │
+│               原生沙箱架构                           │
 ├──────────────────────────────────────────────────────┤
 │                                                      │
-│  Bash Command Request                                │
+│  Bash 命令请求                                       │
 │       │                                              │
 │       ▼                                              │
-│  Sandbox Wrapper (Seatbelt/bubblewrap)               │
+│  沙箱包装器（Seatbelt/bubblewrap）                   │
 │       │                                              │
-│       ├─ Filesystem: read all, write CWD only        │
-│       ├─ Network: SOCKS5 proxy + domain filtering    │
-│       ├─ Process: isolated environment               │
+│       ├─ 文件系统：全部可读，仅 CWD 可写             │
+│       ├─ 网络：SOCKS5 代理 + 域名过滤               │
+│       ├─ 进程：隔离环境                              │
 │       │                                              │
 │       ▼                                              │
-│  OS Kernel Enforcement                               │
+│  OS 内核强制执行                                     │
 │       │                                              │
-│       ├─ Allowed: operations within boundaries       │
-│       ├─ Blocked: violations at system call level    │
-│       └─ Notify: user receives alert on violation    │
+│       ├─ 允许：边界内的操作                          │
+│       ├─ 阻止：在系统调用层面拦截违规               │
+│       └─ 通知：违规时向用户发出警报                  │
 │                                                      │
 └──────────────────────────────────────────────────────┘
 ```
 
-**OS Primitives**:
+**OS 原语**：
 
-| Platform | Mechanism | Notes |
-|----------|-----------|-------|
-| **macOS** | Seatbelt (TrustedBSD MAC) | Built-in, kernel-level system call filtering |
-| **Linux/WSL2** | bubblewrap (namespaces + seccomp) | Requires: `sudo apt-get install bubblewrap socat` |
-| **WSL1** | ❌ Not supported | bubblewrap needs kernel features unavailable |
-| **Windows** | ⏳ Planned | Not yet available |
+| 平台 | 机制 | 备注 |
+|------|------|------|
+| **macOS** | Seatbelt（TrustedBSD MAC） | 内置，内核级系统调用过滤 |
+| **Linux/WSL2** | bubblewrap（命名空间 + seccomp） | 需要：`sudo apt-get install bubblewrap socat` |
+| **WSL1** | ❌ 不支持 | bubblewrap 需要不可用的内核特性 |
+| **Windows** | ⏳ 计划中 | 尚不可用 |
 
-**Isolation Model**:
+**隔离模型**：
 
-1. **Filesystem**:
-   - **Read**: Entire computer (except denied paths)
-   - **Write**: Current working directory only (configurable)
-   - **Blocked**: Modifications outside CWD, credentials directories (`~/.ssh`, `~/.aws`)
+1. **文件系统**：
+   - **读取**：整台电脑（拒绝路径除外）
+   - **写入**：仅当前工作目录（可配置）
+   - **阻止**：CWD 外的修改，凭证目录（`~/.ssh`、`~/.aws`）
 
-2. **Network**:
-   - **Proxy**: All connections routed through SOCKS5 proxy
-   - **Domain filtering**: Allowlist/denylist mode
-   - **Default blocked**: Private CIDRs, localhost ranges
+2. **网络**：
+   - **代理**：所有连接通过 SOCKS5 代理路由
+   - **域名过滤**：允许列表/拒绝列表模式
+   - **默认阻止**：私有 CIDR、localhost 范围
 
-3. **Process**:
-   - **Shared kernel**: Vulnerable to kernel exploits (unlike Docker microVM)
-   - **Child processes**: Inherit same sandbox restrictions
-   - **Escape hatch**: `dangerouslyDisableSandbox` parameter for incompatible tools
+3. **进程**：
+   - **共享内核**：易受内核漏洞攻击（不同于 Docker 微虚拟机）
+   - **子进程**：继承相同的沙箱限制
+   - **逃生出口**：`dangerouslyDisableSandbox` 参数，用于不兼容的工具
 
-**Sandbox Modes**:
+**沙箱模式**：
 
-- **Auto-allow mode**: Bash commands auto-approved if sandboxed (recommended for daily dev)
-- **Regular permissions mode**: All commands require explicit approval (high-security)
+- **自动允许模式**：沙箱化的 Bash 命令自动批准（推荐日常开发使用）
+- **常规权限模式**：所有命令需要明确批准（高安全性）
 
-**Security Trade-offs**:
+**安全权衡**：
 
-| Aspect | Native Sandbox | Docker Sandboxes (microVM) |
-|--------|---------------|---------------------------|
-| **Kernel isolation** | ❌ Shared kernel | ✅ Separate kernel per VM |
-| **Setup** | 0 deps (macOS), 2 pkgs (Linux) | Docker Desktop 4.58+ |
-| **Overhead** | Minimal (~1-3% CPU) | Moderate (~5-10% CPU) |
-| **Use case** | Daily dev, trusted code | Untrusted code, max security |
+| 方面 | 原生沙箱 | Docker 沙箱（微虚拟机） |
+|------|---------|----------------------|
+| **内核隔离** | ❌ 共享内核 | ✅ 每个虚拟机独立内核 |
+| **配置** | 0 依赖（macOS），2 个包（Linux） | Docker Desktop 4.58+ |
+| **开销** | 极低（~1-3% CPU） | 中等（~5-10% CPU） |
+| **适用场景** | 日常开发、受信任代码 | 不受信任代码、最高安全性 |
 
-**Security Limitations**:
+**安全限制**：
 
-⚠️ **Domain fronting**: CDNs (Cloudflare, Akamai) can bypass domain filtering
-⚠️ **Unix sockets**: Misconfigured `allowUnixSockets` grants privilege escalation
-⚠️ **Filesystem**: Overly broad write permissions enable attacks on `$PATH` directories
+⚠️ **域名前置**：CDN（Cloudflare、Akamai）可绕过域名过滤
+⚠️ **Unix 套接字**：错误配置的 `allowUnixSockets` 会带来权限提升
+⚠️ **文件系统**：过于宽泛的写权限会使 `$PATH` 目录面临攻击
 
-**When to use**:
+**使用时机**：
 
-- ✅ **Native Sandbox**: Daily development, trusted team, lightweight setup
-- ✅ **Docker Sandboxes**: Untrusted code, kernel exploit protection, Docker-in-Docker needed
+- ✅ **原生沙箱**：日常开发、受信任团队、轻量级配置
+- ✅ **Docker 沙箱**：不受信任代码、内核漏洞防护、需要 Docker-in-Docker
 
-**Deep dive**: See [Native Sandboxing Guide](../security/sandbox-native.md) for complete technical reference, configuration examples, and troubleshooting.
+**深度阅读**：完整技术参考、配置示例和故障排除，参见[原生沙箱指南](../security/sandbox-native.md)。
 
-### Hooks System
+### Hooks 系统
 
-Hooks allow programmatic control over Claude's actions:
+Hooks 允许通过编程方式控制 Claude 的操作：
 
 ```json
 {
@@ -880,16 +876,16 @@ Hooks allow programmatic control over Claude's actions:
 }
 ```
 
-**Hook capabilities:**
+**Hook 能力：**
 
-| Capability | Supported | How |
-|------------|-----------|-----|
-| Block execution | Yes | Exit code 2 |
-| Modify parameters | Yes | Return modified JSON |
-| Log actions | Yes | Write to file in hook |
-| Async processing | Yes | Set `async: true` in hook config (v2.1.0+) |
+| 能力 | 支持 | 方式 |
+|------|------|------|
+| 阻止执行 | 是 | 退出码 2 |
+| 修改参数 | 是 | 返回修改后的 JSON |
+| 记录操作 | 是 | 在 hook 中写入文件 |
+| 异步处理 | 是 | 在 hook 配置中设置 `async: true`（v2.1.0+） |
 
-**Hook JSON payload** (passed via stdin):
+**Hook JSON 载荷**（通过 stdin 传入）：
 
 ```json
 {
@@ -905,43 +901,43 @@ Hooks allow programmatic control over Claude's actions:
 }
 ```
 
-Common fields sent to all events: `session_id`, `transcript_path`, `cwd`, `permission_mode`, `hook_event_name`. Event-specific fields (e.g., `tool_name`/`tool_input` for PreToolUse) are added on top.
+所有事件均发送的公共字段：`session_id`、`transcript_path`、`cwd`、`permission_mode`、`hook_event_name`。特定事件的字段（如工具前钩子的 `tool_name`/`tool_input`）在此基础上追加。
 
-→ **Cross-reference**: See [Section 7 - Hooks](#7-hooks) in the main guide for complete examples.
+→ **交叉参考**：完整示例见主指南[第 7 节 - Hooks](#7-hooks)。
 
 ---
 
-## 6. MCP Integration
+## 6. MCP 集成
 
-**Confidence**: 100% (Tier 1 - Official)
-**Source**: [code.claude.com/docs/en/mcp](https://code.claude.com/docs/en/mcp)
+**置信度**：100%（Tier 1 - 官方）
+**来源**：[code.claude.com/docs/en/mcp](https://code.claude.com/docs/en/mcp)
 
-MCP (Model Context Protocol) servers extend Claude Code with additional tools.
+MCP（模型上下文协议）服务器通过附加工具扩展 Claude Code 的能力。
 
-### MCP Architecture Overview
+### MCP 架构概览
 
-> **💡 Visual Guide**: The following diagram illustrates how MCP creates a secure control layer between LLMs and real systems. The LLM layer has **no direct data access** - the MCP Server enforces security policies before tools can interact with databases, APIs, or files.
+> **💡 可视化指南**：下图展示 MCP 如何在 LLM 和真实系统之间创建安全控制层。LLM 层**无法直接访问数据**——MCP 服务器在工具与数据库、API 或文件交互之前执行安全策略。
 
-![MCP Architecture - 7-Layer Security Model](../images/mcp-architecture-diagram.svg)
+![MCP 架构 - 7 层安全模型](../images/mcp-architecture-diagram.svg)
 
-*Figure 1: MCP Architecture showing separation between thinking (LLM), control (MCP Server), and execution (Tools). Design inspired by [Dinesh Kumar's LinkedIn visualization](https://www.linkedin.com/posts/dinesh-kumar-6b0528b4_model-context-protocol-mcp-why-it-came-activity-7419969525795782656-VoFh), recreated under Apache-2.0 license.*
+*图 1：MCP 架构，展示思考层（LLM）、控制层（MCP 服务器）和执行层（工具）之间的分离。设计参考 [Dinesh Kumar 的 LinkedIn 可视化](https://www.linkedin.com/posts/dinesh-kumar-6b0528b4_model-context-protocol-mcp-why-it-came-activity-7419969525795782656-VoFh)，在 Apache-2.0 许可证下重新创建。*
 
-**Key security boundaries**:
-- **Yellow layer (LLM)**: Reasoning only - **No Data Access**
-- **Orange layer (MCP Server)**: Security control point (policies, validation, logs)
-- **Grey layer (Real Systems)**: Protected data - **Hidden From AI**
+**关键安全边界**：
+- **黄色层（LLM）**：仅推理——**无数据访问权限**
+- **橙色层（MCP 服务器）**：安全控制点（策略、验证、日志）
+- **灰色层（真实系统）**：受保护的数据——**对 AI 不可见**
 
-### How MCP Works (Technical Details)
+### MCP 工作原理（技术细节）
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                    MCP INTEGRATION                          │
+│                    MCP 集成                                 │
 ├─────────────────────────────────────────────────────────────┤
 │                                                             │
 │  ┌─────────────────────────────────────────────────────┐    │
 │  │                  CLAUDE CODE                        │    │
 │  │                                                     │    │
-│  │   Native Tools        MCP Tools                     │    │
+│  │   原生工具            MCP 工具                      │    │
 │  │   ┌─────────┐        ┌─────────────────────────┐    │    │
 │  │   │ Bash    │        │ mcp__serena__*          │    │    │
 │  │   │ Read    │        │ mcp__context7__*        │    │    │
@@ -955,59 +951,59 @@ MCP (Model Context Protocol) servers extend Claude Code with additional tools.
 │                                     │                       │
 │                                     ▼                       │
 │  ┌─────────────────────────────────────────────────────┐    │
-│  │                  MCP SERVER                         │    │
+│  │                  MCP 服务器                         │    │
 │  │                                                     │    │
-│  │   stdio/HTTP transport                              │    │
-│  │   Tool definitions (JSON Schema)                    │    │
-│  │   Tool implementations                              │    │
+│  │   stdio/HTTP 传输                                   │    │
+│  │   工具定义（JSON Schema）                           │    │
+│  │   工具实现                                          │    │
 │  │                                                     │    │
 │  └─────────────────────────────────────────────────────┘    │
 │                                                             │
 └─────────────────────────────────────────────────────────────┘
 ```
 
-### Key MCP Facts
+### MCP 关键事实
 
-| Aspect | Behavior |
-|--------|----------|
-| Protocol | JSON-RPC 2.0 over stdio or HTTP |
-| Tool naming | `mcp__<server>__<tool>` convention |
-| Context sharing | Only via tool parameters and return values |
-| Lifecycle | Server starts on first use, stays alive during session |
-| Permissions | Same system as native tools |
+| 方面 | 行为 |
+|------|------|
+| 协议 | JSON-RPC 2.0，通过 stdio 或 HTTP |
+| 工具命名 | `mcp__<服务器>__<工具>` 约定 |
+| 上下文共享 | 仅通过工具参数和返回值 |
+| 生命周期 | 首次使用时启动服务器，会话期间保持运行 |
+| 权限 | 与原生工具相同的系统 |
 
-### What MCP Cannot Do
+### MCP 不能做什么
 
-| Limitation | Explanation |
-|------------|-------------|
-| Access conversation history | Only sees tool params, not full context |
-| Maintain state across calls | Each call is independent (unless server implements caching) |
-| Modify Claude's system prompt | Tools only, no prompt injection |
-| Bypass permissions | Same security layer as native tools |
+| 限制 | 说明 |
+|------|------|
+| 访问对话历史 | 只能看到工具参数，不能看到完整上下文 |
+| 跨调用维护状态 | 每次调用都是独立的（除非服务器实现了缓存） |
+| 修改 Claude 的系统提示 | 只有工具，不能注入提示词 |
+| 绕过权限 | 与原生工具相同的安全层 |
 
-→ **Cross-reference**: See [Section 8.6 - MCP Security](#86-mcp-security) for security considerations.
+→ **交叉参考**：安全考量见[第 8.6 节 - MCP 安全](#86-mcp-security)。
 
-### MCP Extensions: Apps (SEP-1865)
+### MCP 扩展：Apps（SEP-1865）
 
-**Status**: Stable (January 26, 2026)
-**Spec**: [SEP-1865 on GitHub](https://github.com/modelcontextprotocol/ext-apps)
-**Co-authored by**: OpenAI, Anthropic, MCP-UI creators
+**状态**：稳定（2026 年 1 月 26 日）
+**规范**：[GitHub 上的 SEP-1865](https://github.com/modelcontextprotocol/ext-apps)
+**联合作者**：OpenAI、Anthropic、MCP-UI 创建者
 
-#### What Are MCP Apps?
+#### 什么是 MCP Apps？
 
-MCP Apps is the **first official extension** to the Model Context Protocol, enabling MCP servers to deliver **interactive user interfaces** alongside traditional tool responses.
+MCP Apps 是 MCP（模型上下文协议）的**第一个官方扩展**，允许 MCP 服务器在传统工具响应的同时提供**交互式用户界面**。
 
-**The problem solved**: Traditional text-based responses create friction for workflows requiring exploration. Each interaction (sort, filter, drill-down) demands a new prompt cycle. MCP Apps eliminates this "context gap" by rendering interactive UIs directly in the conversation.
+**解决的问题**：传统的纯文本响应在需要探索的工作流中产生摩擦。每次交互（排序、过滤、下钻）都需要一个新的提示周期。MCP Apps 通过直接在对话中渲染交互式 UI 消除了这一"上下文差距"。
 
-#### Technical Architecture
+#### 技术架构
 
-**Two core primitives**:
+**两个核心原语**：
 
-1. **Tools with UI metadata**:
+1. **带 UI 元数据的工具**：
    ```json
    {
      "name": "query_database",
-     "description": "Query customer database",
+     "description": "查询客户数据库",
      "_meta": {
        "ui": {
          "resourceUri": "ui://dashboard/customers"
@@ -1016,32 +1012,32 @@ MCP Apps is the **first official extension** to the Model Context Protocol, enab
    }
    ```
 
-2. **UI Resources** (`ui://` scheme):
-   - Server-side HTML/JavaScript bundles
-   - Rendered in sandboxed iframes by host
-   - Bidirectional JSON-RPC communication via `postMessage`
+2. **UI 资源**（`ui://` 协议）：
+   - 服务器端 HTML/JavaScript 包
+   - 在宿主的沙箱 iframe 中渲染
+   - 通过 `postMessage` 进行双向 JSON-RPC 通信
 
-**Communication flow**:
+**通信流程**：
 
 ```
 ┌─────────────────────────────────────────────────────────┐
-│                  MCP APPS ARCHITECTURE                  │
+│                  MCP APPS 架构                          │
 ├─────────────────────────────────────────────────────────┤
 │                                                         │
 │  ┌──────────────┐         ┌──────────────┐             │
-│  │  MCP Client  │◄───────►│  MCP Server  │             │
-│  │ (Claude/IDE) │ JSON-RPC│  (Your App)  │             │
+│  │  MCP 客户端  │◄───────►│  MCP 服务器  │             │
+│  │（Claude/IDE）│ JSON-RPC│  （你的应用）│             │
 │  └──────┬───────┘         └──────────────┘             │
 │         │                                               │
-│         │ Fetches ui:// resource                       │
+│         │ 获取 ui:// 资源                              │
 │         ▼                                               │
 │  ┌─────────────────────────────────────────┐            │
-│  │     Sandboxed Iframe (UI Render)        │            │
+│  │     沙箱 Iframe（UI 渲染）              │            │
 │  │  ┌───────────────────────────────────┐  │            │
-│  │  │  HTML/JS Bundle from Server       │  │            │
-│  │  │  - Interactive dashboard           │  │            │
-│  │  │  - Forms with validation           │  │            │
-│  │  │  - Real-time data visualization    │  │            │
+│  │  │  来自服务器的 HTML/JS 包           │  │            │
+│  │  │  - 交互式仪表盘                   │  │            │
+│  │  │  - 带验证的表单                   │  │            │
+│  │  │  - 实时数据可视化                 │  │            │
 │  │  └───────────────────────────────────┘  │            │
 │  │                                          │            │
 │  │  postMessage ◄─────► JSON-RPC           │            │
@@ -1050,249 +1046,249 @@ MCP Apps is the **first official extension** to the Model Context Protocol, enab
 └─────────────────────────────────────────────────────────┘
 ```
 
-#### Security Model
+#### 安全模型
 
-**Multi-layered protection**:
+**多层保护**：
 
-| Layer | Protection |
-|-------|------------|
-| **Iframe sandbox** | Restricted permissions (no direct system access) |
-| **Pre-declared templates** | Hosts review HTML/JS before rendering |
-| **Auditable messaging** | All UI-to-host communication via JSON-RPC logs |
-| **User consent** | Optional requirement for UI-initiated tool calls |
-| **Content blocking** | Hosts can reject suspicious resources pre-render |
+| 层级 | 保护措施 |
+|------|---------|
+| **Iframe 沙箱** | 受限权限（无直接系统访问） |
+| **预声明模板** | 宿主在渲染前审查 HTML/JS |
+| **可审计的消息传递** | 所有 UI 到宿主的通信均通过 JSON-RPC 日志 |
+| **用户同意** | UI 发起的工具调用可选要求用户确认 |
+| **内容拦截** | 宿主可在渲染前拒绝可疑资源 |
 
-→ **Cross-reference**: See [Section 8.6 - MCP Security](#86-mcp-security) for broader MCP security considerations.
+→ **交叉参考**：更广泛的 MCP 安全考量见[第 8.6 节 - MCP 安全](#86-mcp-security)。
 
-#### SDK: @modelcontextprotocol/ext-apps
+#### SDK：@modelcontextprotocol/ext-apps
 
-**Installation**:
+**安装**：
 ```bash
 npm install @modelcontextprotocol/ext-apps
 ```
 
-**Core API** (framework-agnostic):
+**核心 API**（框架无关）：
 
 ```typescript
 import { App } from '@modelcontextprotocol/ext-apps';
 
 const app = new App();
 
-// 1. Establish communication with host
+// 1. 与宿主建立通信
 await app.connect();
 
-// 2. Receive tool results from host
+// 2. 从宿主接收工具结果
 app.ontoolresult = (result) => {
-  // Update UI with tool execution results
+  // 用工具执行结果更新 UI
   updateDashboard(result.data);
 };
 
-// 3. Call server tools from UI
+// 3. 从 UI 调用服务器工具
 await app.callServerTool('fetch_analytics', {
   timeRange: '7d',
   metrics: ['users', 'revenue']
 });
 
-// 4. Update model context asynchronously
+// 4. 异步更新模型上下文
 await app.updateModelContext({
   selectedFilters: ['region:EU', 'status:active']
 });
 
-// Additional capabilities:
-app.logDebug('User action', { filter: 'applied' });
+// 其他能力：
+app.logDebug('用户操作', { filter: 'applied' });
 app.openBrowserLink('https://docs.example.com');
-app.sendFollowUpMessage('Applied filters: EU, Active');
+app.sendFollowUpMessage('已应用过滤器：EU、Active');
 ```
 
-**Standard communication**: All features operate over `postMessage` (no framework lock-in).
+**标准通信**：所有功能均通过 `postMessage` 运作（无框架锁定）。
 
-#### Platform Support
+#### 平台支持
 
-| Platform | MCP Apps Support | Notes |
-|----------|------------------|-------|
-| **Claude Desktop** | ✅ Available now | claude.ai/directory (Pro/Max/Team/Enterprise) |
-| **Claude Cowork** | 🔄 Coming soon | Agentic workflow integration planned |
-| **VS Code** | ✅ Insiders build | [Official blog post](https://code.visualstudio.com/blogs/2026/01/26/mcp-apps-support) |
-| **ChatGPT** | 🔄 Rolling out | Week of Jan 26, 2026 |
-| **Goose** | ✅ Available now | Open-source CLI with UI support |
-| **Claude Code CLI** | ❌ N/A | Terminal text-only (no iframe rendering) |
+| 平台 | MCP Apps 支持 | 备注 |
+|------|--------------|------|
+| **Claude Desktop** | ✅ 现已可用 | claude.ai/directory（Pro/Max/Team/Enterprise） |
+| **Claude Cowork** | 🔄 即将推出 | 计划集成 agentic 工作流 |
+| **VS Code** | ✅ Insiders 版本 | [官方博客文章](https://code.visualstudio.com/blogs/2026/01/26/mcp-apps-support) |
+| **ChatGPT** | 🔄 推出中 | 2026 年 1 月 26 日当周 |
+| **Goose** | ✅ 现已可用 | 支持 UI 的开源 CLI |
+| **Claude Code CLI** | ❌ 不适用 | 终端纯文本（无法渲染 iframe） |
 
-#### Relevance for Claude Code Users
+#### 对 Claude Code 用户的意义
 
-**Direct usage**: None (CLI is text-only, cannot render iframes)
+**直接使用**：无（CLI 仅支持文本，无法渲染 iframe）
 
-**Indirect benefits**:
+**间接收益**：
 
-1. **Ecosystem understanding**: MCP Apps represents the future of agentic workflows
-2. **MCP server development**: If building custom MCP servers, Apps is now a design option
-3. **Hybrid workflows**:
-   - Use Claude Desktop to explore data with Apps (dashboards, visualizations)
-   - Switch to Claude Code CLI for implementation (scripting, automation)
-4. **Context for configuration**: MCP servers may advertise UI capabilities in metadata
+1. **生态系统理解**：MCP Apps 代表 agentic 工作流的未来
+2. **MCP 服务器开发**：如果你在构建自定义 MCP 服务器，Apps 现在是一个设计选项
+3. **混合工作流**：
+   - 使用 Claude Desktop 配合 Apps 探索数据（仪表盘、可视化）
+   - 切换到 Claude Code CLI 进行实现（脚本、自动化）
+4. **配置参考**：MCP 服务器可能在元数据中声明 UI 能力
 
-#### Example Implementations
+#### 示例实现
 
-**Official example servers** (in [`ext-apps` repository](https://github.com/modelcontextprotocol/ext-apps)):
+**官方示例服务器**（在 [`ext-apps` 仓库](https://github.com/modelcontextprotocol/ext-apps)中）：
 
-- **threejs-server**: 3D visualization and manipulation
-- **map-server**: Interactive geographic data exploration
-- **pdf-server**: Document viewing with inline highlights
-- **system-monitor-server**: Real-time metrics dashboards
-- **sheet-music-server**: Music notation rendering
+- **threejs-server**：3D 可视化和操作
+- **map-server**：交互式地理数据探索
+- **pdf-server**：带内联高亮的文档查看
+- **system-monitor-server**：实时指标仪表盘
+- **sheet-music-server**：乐谱渲染
 
-**Production adoption** (January 2026):
+**生产采用**（2026 年 1 月）：
 
-| Tool | Provider | Capabilities |
-|------|----------|--------------|
-| Asana | Asana | Project timelines, task boards |
-| Slack | Salesforce | Message drafting with formatting preview |
-| Figma | Figma | Flowcharts, Gantt charts in FigJam |
-| Amplitude | Amplitude | Analytics charts with interactive filtering |
-| Box | Box | File search, document previews |
-| Canva | Canva | Presentation design with real-time customization |
-| Clay | Clay | Company research, contact discovery |
-| Hex | Hex | Data analysis with interactive queries |
-| monday.com | monday.com | Work management boards |
+| 工具 | 提供商 | 能力 |
+|------|--------|------|
+| Asana | Asana | 项目时间线、任务看板 |
+| Slack | Salesforce | 带格式预览的消息起草 |
+| Figma | Figma | FigJam 中的流程图、甘特图 |
+| Amplitude | Amplitude | 带交互过滤的分析图表 |
+| Box | Box | 文件搜索、文档预览 |
+| Canva | Canva | 带实时自定义的演示设计 |
+| Clay | Clay | 公司研究、联系人发现 |
+| Hex | Hex | 带交互查询的数据分析 |
+| monday.com | monday.com | 工作管理看板 |
 
-**Coming soon**: Salesforce (Agentforce 360)
+**即将推出**：Salesforce（Agentforce 360）
 
-#### Relationship to Prior Work
+#### 与先前工作的关系
 
-MCP Apps standardizes patterns pioneered by:
-- **MCP-UI**: Early UI extension for MCP (community project)
-- **OpenAI Apps SDK**: Parallel effort for interactive tools
+MCP Apps 将以下先驱项目的模式标准化：
+- **MCP-UI**：MCP 的早期 UI 扩展（社区项目）
+- **OpenAI Apps SDK**：用于交互式工具的并行工作
 
-Both frameworks continue to be supported. MCP Apps provides a **unified specification** (SEP-1865) co-authored by maintainers from both ecosystems plus Anthropic and OpenAI.
+两个框架继续获得支持。MCP Apps 提供了一个**统一规范**（SEP-1865），由两个生态系统的维护者加上 Anthropic 和 OpenAI 联合编写。
 
-**Migration path**: Straightforward for existing MCP-UI and Apps SDK implementations.
+**迁移路径**：对现有 MCP-UI 和 Apps SDK 实现而言非常直接。
 
-#### When to Use MCP Apps
+#### 何时使用 MCP Apps
 
-**Decision tree for MCP server developers**:
+**MCP 服务器开发者的决策树**：
 
 ```
-Building a custom MCP server?
-├─ Users need to SELECT from 50+ options? → MCP Apps (dropdown, multi-select UI)
-├─ Users need to VISUALIZE data patterns? → MCP Apps (charts, maps, graphs)
-├─ Users need MULTI-STEP workflows with conditional logic? → MCP Apps (wizard forms)
-├─ Users need REAL-TIME updates? → MCP Apps (live dashboards)
-└─ Simple data retrieval or actions only? → Traditional MCP tools (sufficient)
+正在构建自定义 MCP 服务器？
+├─ 用户需要从 50+ 选项中选择？→ MCP Apps（下拉菜单、多选 UI）
+├─ 用户需要可视化数据模式？→ MCP Apps（图表、地图、图形）
+├─ 用户需要带条件逻辑的多步骤工作流？→ MCP Apps（向导表单）
+├─ 用户需要实时更新？→ MCP Apps（实时仪表盘）
+└─ 仅需简单数据检索或操作？→ 传统 MCP 工具（足够了）
 ```
 
-**Trade-off**: UI complexity and implementation effort vs. user experience improvement.
+**权衡**：UI 复杂性和实现成本 vs. 用户体验提升。
 
-#### Resources
+#### 资源
 
-- **Specification**: [SEP-1865 on GitHub](https://github.com/modelcontextprotocol/ext-apps)
-- **SDK**: [`@modelcontextprotocol/ext-apps` (npm)](https://www.npmjs.com/package/@modelcontextprotocol/ext-apps)
-- **Example servers**: [modelcontextprotocol/ext-apps repository](https://github.com/modelcontextprotocol/ext-apps)
-- **Blog post (MCP)**: [MCP Apps announcement](https://blog.modelcontextprotocol.io/posts/2026-01-26-mcp-apps/)
-- **Blog post (Claude)**: [Interactive tools in Claude](https://claude.com/blog/interactive-tools-in-claude)
-- **VS Code**: [MCP Apps support announcement](https://code.visualstudio.com/blogs/2026/01/26/mcp-apps-support)
+- **规范**：[GitHub 上的 SEP-1865](https://github.com/modelcontextprotocol/ext-apps)
+- **SDK**：[`@modelcontextprotocol/ext-apps`（npm）](https://www.npmjs.com/package/@modelcontextprotocol/ext-apps)
+- **示例服务器**：[modelcontextprotocol/ext-apps 仓库](https://github.com/modelcontextprotocol/ext-apps)
+- **博客文章（MCP）**：[MCP Apps 公告](https://blog.modelcontextprotocol.io/posts/2026-01-26-mcp-apps/)
+- **博客文章（Claude）**：[Claude 中的交互式工具](https://claude.com/blog/interactive-tools-in-claude)
+- **VS Code**：[MCP Apps 支持公告](https://code.visualstudio.com/blogs/2026/01/26/mcp-apps-support)
 
 ---
 
-### MCP Tool Search (Lazy Loading)
+### MCP 工具搜索（懒加载）
 
-**Confidence**: 100% (Tier 1 - Official)
-**Source**: [anthropic.com/engineering/advanced-tool-use](https://www.anthropic.com/engineering/advanced-tool-use)
+**置信度**：100%（Tier 1 - 官方）
+**来源**：[anthropic.com/engineering/advanced-tool-use](https://www.anthropic.com/engineering/advanced-tool-use)
 
-Since v2.1.7 (January 2026), Claude Code uses **lazy loading** for MCP tool definitions instead of preloading all tools into context. This is powered by Anthropic's [Advanced Tool Use](https://www.anthropic.com/engineering/advanced-tool-use) API feature.
+自 v2.1.7（2026 年 1 月）起，Claude Code 使用**懒加载**加载 MCP 工具定义，而不是预加载所有工具到上下文中。这由 Anthropic 的[高级工具调用](https://www.anthropic.com/engineering/advanced-tool-use) API 特性驱动。
 
-**The problem solved:**
-- MCP tool definitions consume significant context (e.g., GitHub MCP alone: ~46K tokens for 93 tools)
-- Developer Scott Spence documented 66,000+ tokens consumed before typing a single prompt
-- This "context pollution" limited practical MCP adoption
+**解决的问题：**
+- MCP 工具定义消耗大量上下文（例如，GitHub MCP 单独就有 93 个工具，约 46K Token（词元））
+- 开发者 Scott Spence 记录了在输入第一个提示词之前就已消耗 66,000+ Token（词元）的情况
+- 这种"上下文污染"限制了 MCP 的实际采用
 
-**How Tool Search works:**
+**工具搜索的工作原理：**
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                   MCP TOOL SEARCH FLOW                       │
+│                   MCP 工具搜索流程                           │
 ├─────────────────────────────────────────────────────────────┤
 │                                                             │
-│  WITHOUT Tool Search (eager loading):                       │
+│  未使用工具搜索（预先加载）：                               │
 │  ┌──────────────────────────────────────────────────────┐   │
-│  │All 100+ tool definitions loaded upfront (~55K tokens)│   │
+│  │ 所有 100+ 工具定义预先加载（~55K Token（词元））      │   │
 │  └──────────────────────────────────────────────────────┘   │
 │                                                             │
-│  WITH Tool Search (lazy loading):                           │
+│  使用工具搜索（懒加载）：                                   │
 │  ┌──────────────────────────────────────────────────────┐   │
-│  │ Step 1: Only search tool loaded (~500 tokens)        │   │
-│  │ Step 2: Claude determines needed capability          │   │
-│  │ Step 3: Tool Search finds matching tools (regex/BM25)│   │
-│  │ Step 4: Only matched tools loaded (~600 tokens each) │   │
-│  │ Step 5: Tool invoked normally                        │   │
+│  │ 步骤 1：仅加载搜索工具（~500 Token（词元））          │   │
+│  │ 步骤 2：Claude 判断所需能力                          │   │
+│  │ 步骤 3：工具搜索找到匹配工具（正则/BM25）             │   │
+│  │ 步骤 4：仅加载匹配的工具（每个约 600 Token（词元））  │   │
+│  │ 步骤 5：正常调用工具                                 │   │
 │  └──────────────────────────────────────────────────────┘   │
 │                                                             │
-│  Result: 55K tokens → ~8.7K tokens (85% reduction)          │
+│  结果：55K Token（词元）→ ~8.7K Token（词元）（减少 85%）    │
 │                                                             │
 └─────────────────────────────────────────────────────────────┘
 ```
 
-**Measured improvements** (Anthropic benchmarks):
+**测量到的改善**（Anthropic 基准测试）：
 
-| Metric | Before | After | Improvement |
-|--------|--------|-------|-------------|
-| Token overhead (5-server setup) | ~55K | ~8.7K | **85% reduction** |
-| Opus 4 tool selection accuracy | 49% | 74% | +25 points |
-| Opus 4.5 tool selection accuracy | 79.5% | 88.1% | +8.6 points |
-| Opus 4.6 adaptive thinking | N/A | Auto-calibrated | Dynamic depth |
+| 指标 | 之前 | 之后 | 改善 |
+|------|------|------|------|
+| Token（词元）开销（5 服务器配置） | ~55K | ~8.7K | **减少 85%** |
+| Opus 4 工具选择准确率 | 49% | 74% | +25 个百分点 |
+| Opus 4.5 工具选择准确率 | 79.5% | 88.1% | +8.6 个百分点 |
+| Opus 4.6 自适应思考 | N/A | 自动校准 | 动态深度 |
 
-**Configuration** (v2.1.9+):
+**配置**（v2.1.9+）：
 
 ```bash
-# Environment variable
-ENABLE_TOOL_SEARCH=auto      # Default (10% context threshold)
-ENABLE_TOOL_SEARCH=auto:5    # Aggressive (5% threshold)
-ENABLE_TOOL_SEARCH=auto:20   # Conservative (20% threshold)
-ENABLE_TOOL_SEARCH=true      # Always enabled
-ENABLE_TOOL_SEARCH=false     # Disabled (eager loading)
+# 环境变量
+ENABLE_TOOL_SEARCH=auto      # 默认（10% 上下文阈值）
+ENABLE_TOOL_SEARCH=auto:5    # 激进（5% 阈值）
+ENABLE_TOOL_SEARCH=auto:20   # 保守（20% 阈值）
+ENABLE_TOOL_SEARCH=true      # 始终启用
+ENABLE_TOOL_SEARCH=false     # 禁用（预先加载）
 ```
 
-| Threshold | Recommended for |
-|-----------|-----------------|
-| `auto:20` | Lightweight setups (5-10 tools) |
-| `auto:10` | Balanced default (20-50 tools) |
-| `auto:5` | Power users (100+ tools) |
+| 阈值 | 推荐使用场景 |
+|------|------------|
+| `auto:20` | 轻量级配置（5-10 个工具） |
+| `auto:10` | 均衡默认（20-50 个工具） |
+| `auto:5` | 高级用户（100+ 个工具） |
 
-→ As Simon Willison noted: "Context pollution is why I rarely used MCP. Now that it's solved, there's no reason not to hook up dozens or even hundreds of MCPs to Claude Code." — [X/Twitter, January 14, 2026](https://twitter.com/simonw)
+→ 正如 Simon Willison 指出的："上下文污染是我很少使用 MCP（模型上下文协议）的原因。现在这个问题解决了，没有理由不把几十甚至几百个 MCP 接到 Claude Code 上。" — [X/Twitter，2026 年 1 月 14 日](https://twitter.com/simonw)
 
 ---
 
-## 7. Advanced Tool Use Patterns (API)
+## 7. 高级工具调用模式（API）
 
-**Confidence**: 90% (Tier 1 - Official Anthropic Engineering)
-**Source**: [Anthropic Engineering: Advanced Tool Use](https://www.anthropic.com/engineering/advanced-tool-use) | [Programmatic Tool Calling Docs](https://platform.claude.com/docs/en/agents-and-tools/tool-use/programmatic-tool-calling)
+**置信度**：90%（Tier 1 - 官方 Anthropic 工程）
+**来源**：[Anthropic 工程：高级工具调用](https://www.anthropic.com/engineering/advanced-tool-use) | [程序化工具调用文档](https://platform.claude.com/docs/en/agents-and-tools/tool-use/programmatic-tool-calling)
 
-Four API-level features released as generally available on February 18, 2026 (with Opus/Sonnet 4.6). These are relevant to developers building agents on the Anthropic API or Agent SDK — not available directly in the Claude Code CLI.
+四项 API 层面的特性于 2026 年 2 月 18 日正式发布（随 Opus/Sonnet 4.6 一起）。这些特性适用于在 Anthropic API 或 Agent SDK 上构建智能体的开发者——无法直接在 Claude Code CLI 中使用。
 
-| Feature | Problem Solved | Availability |
-|---------|---------------|--------------|
-| Programmatic Tool Calling (PTC) | Agent loops burn tokens on round trips | API + Foundry |
-| Dynamic Filtering | Web search bloats context with noise | API + Foundry |
-| Tool Search Tool | Too many tool definitions bloat context | API + Foundry |
-| Tool Use Examples | Schema alone can't express usage patterns | API + Foundry |
+| 特性 | 解决的问题 | 可用范围 |
+|------|----------|---------|
+| 程序化工具调用（PTC） | 智能体循环在往返中消耗 Token（词元） | API + Foundry |
+| 动态过滤 | 网页搜索用噪声膨胀上下文 | API + Foundry |
+| 工具搜索工具 | 过多工具定义膨胀上下文 | API + Foundry |
+| 工具调用示例 | 仅凭 Schema 无法表达使用模式 | API + Foundry |
 
-**Strategic layering** — address your biggest bottleneck first:
-- Context bloated by tool definitions → Tool Search Tool
-- Large intermediate results → Programmatic Tool Calling
-- Web research returning noise → Dynamic Filtering
-- Parameter errors despite correct schema → Tool Use Examples
+**战略分层** — 先解决你最大的瓶颈：
+- 上下文因工具定义膨胀 → 工具搜索工具
+- 中间结果过大 → 程序化工具调用
+- 网页研究返回噪声 → 动态过滤
+- 尽管 Schema 正确仍有参数错误 → 工具调用示例
 
-### Programmatic Tool Calling (PTC)
+### 程序化工具调用（PTC）
 
-**The paradigm shift**: instead of calling tools one at a time with a full model round trip each, Claude writes Python code that orchestrates all tool calls internally. Only the final `stdout` enters the context window.
+**范式转变**：不再每次工具调用都进行完整的模型往返，而是 Claude 编写 Python 代码在内部编排所有工具调用。只有最终的 `stdout` 进入上下文窗口。
 
 ```
-Traditional: prompt → Claude → tool 1 → response 1 → Claude → tool 2 → response 2 → Claude → answer
-             (3 tools = 3 inference passes, 3× intermediate results in context)
+传统方式：提示词 → Claude → 工具1 → 响应1 → Claude → 工具2 → 响应2 → Claude → 答案
+          （3 个工具 = 3 次推理，上下文中有 3 倍的中间结果）
 
-PTC:         prompt → Claude → writes Python → code calls tool 1, 2, 3 → stdout → Claude → answer
-             (3 tools = 1 inference pass, only final output in context)
+PTC：      提示词 → Claude → 编写 Python → 代码调用工具1、2、3 → stdout → Claude → 答案
+          （3 个工具 = 1 次推理，上下文中只有最终输出）
 ```
 
-**Configuration** — mark tools callable from the code execution sandbox with `allowed_callers`:
+**配置** — 用 `allowed_callers` 标记可从代码执行沙箱调用的工具：
 
 ```json
 {
@@ -1300,7 +1296,7 @@ PTC:         prompt → Claude → writes Python → code calls tool 1, 2, 3 →
     { "type": "code_execution_20250825", "name": "code_execution" },
     {
       "name": "query_database",
-      "description": "Execute SQL. Returns rows as JSON: id (str), name (str), revenue (float).",
+      "description": "执行 SQL。以 JSON 格式返回行：id（str）、name（str）、revenue（float）。",
       "input_schema": {
         "type": "object",
         "properties": { "sql": { "type": "string" } },
@@ -1312,27 +1308,27 @@ PTC:         prompt → Claude → writes Python → code calls tool 1, 2, 3 →
 }
 ```
 
-| `allowed_callers` value | Behavior |
-|-------------------------|----------|
-| omitted / `["direct"]` | Traditional calling only |
-| `["code_execution_20250825"]` | Callable from Python sandbox only |
-| `["direct", "code_execution_20250825"]` | Both modes — not recommended (confuses Claude) |
+| `allowed_callers` 值 | 行为 |
+|---------------------|------|
+| 省略 / `["direct"]` | 仅传统调用 |
+| `["code_execution_20250825"]` | 仅从 Python 沙箱调用 |
+| `["direct", "code_execution_20250825"]` | 两种模式——不推荐（会让 Claude 困惑） |
 
-**Patterns** (all run in 1 inference pass):
-- Batch processing: loop over N items, aggregate, print summary
-- Early termination: break as soon as success criteria are met
-- Conditional tool selection: pick lightweight vs heavy tool based on intermediate result
-- Data filtering: reduce what Claude sees (`errors = [l for l in logs if "ERROR" in l]`)
+**模式**（均在 1 次推理中完成）：
+- 批处理：遍历 N 个项目，汇总，打印摘要
+- 提前终止：一旦满足成功条件即中断
+- 条件工具选择：根据中间结果选择轻量或重量工具
+- 数据过滤：减少 Claude 看到的内容（`errors = [l for l in logs if "ERROR" in l]`）
 
-**Token efficiency**: tool results from programmatic calls never enter Claude's context — only final `stdout` does. 10 programmatic tool calls ≈ 1/10th the context tokens of 10 direct calls. The ~37% overall token reduction claim is community-reported (Shayan Tabe's analysis) and not officially confirmed by Anthropic.
+**Token（词元）效率**：程序化调用的工具结果从不进入 Claude 的上下文——只有最终 `stdout` 进入。10 次程序化工具调用 ≈ 10 次直接调用 Token（词元）消耗的 1/10。约 37% 的整体 Token（词元）减少是社区报告数据（Shayan Tabe 的分析），未经 Anthropic 官方确认。
 
-**Constraints**: API and Foundry only (not Bedrock/Vertex). No MCP tools, no web search/fetch, no `strict: true` tools. Container lifetime ~4.5 minutes. Not covered by Zero Data Retention.
+**限制**：仅限 API 和 Foundry（不支持 Bedrock/Vertex）。不支持 MCP 工具、网页搜索/抓取、`strict: true` 工具。容器生命周期约 4.5 分钟。不在零数据保留范围内。
 
-### Dynamic Filtering for Web Search/Fetch
+### 网页搜索/抓取的动态过滤
 
-Web search and fetch tools dump full HTML into context — navigation, ads, boilerplate included. Dynamic Filtering lets Claude write Python to pre-process and filter results before they enter its context window.
+网页搜索和抓取工具会将完整 HTML 倒入上下文——包括导航、广告、模板。动态过滤允许 Claude 编写 Python 预处理并过滤结果，然后再进入其上下文窗口。
 
-**Configuration** — use updated tool type versions with a beta header:
+**配置** — 使用更新版本的工具类型并添加 beta 头：
 
 ```json
 {
@@ -1343,338 +1339,338 @@ Web search and fetch tools dump full HTML into context — navigation, ads, boil
 }
 ```
 
-Header required: `anthropic-beta: code-execution-web-tools-2026-02-09`. Filtering is enabled by default when using these tool type versions with Sonnet 4.6 or Opus 4.6.
+需要的请求头：`anthropic-beta: code-execution-web-tools-2026-02-09`。使用这些工具类型版本配合 Sonnet 4.6 或 Opus 4.6 时，默认启用过滤。
 
-**Official benchmark results** (Anthropic, BrowseComp dataset):
+**官方基准测试结果**（Anthropic，BrowseComp 数据集）：
 
-| Model | Without Filtering | With Filtering | Improvement |
-|-------|-------------------|----------------|-------------|
+| 模型 | 未过滤 | 过滤后 | 改善 |
+|------|--------|--------|------|
 | Sonnet 4.6 | 33.3% | 46.6% | +13.3 pp |
 | Opus 4.6 | 45.3% | 61.6% | +16.3 pp |
 
-Average input token reduction: ~24%. Best suited for multi-step research, citation verification, and extracting specific data points from large pages.
+平均输入 Token（词元）减少约 24%。最适合多步骤研究、引用验证和从大型页面提取特定数据点。
 
-### Tool Use Examples
+### 工具调用示例
 
-JSON schemas define structure but can't express when to include optional parameters, which combinations make sense, or format conventions. Add `input_examples` to tool definitions to show concrete usage patterns:
+JSON Schema 定义了结构，但无法表达何时应包含可选参数、哪些组合有意义或格式约定。向工具定义添加 `input_examples` 以展示具体使用模式：
 
 ```json
 {
   "name": "create_ticket",
   "input_schema": { ... },
   "input_examples": [
-    { "title": "Login page 500 error", "priority": "critical", "assignee": "oncall-team", "labels": ["bug", "auth"] },
-    { "title": "Add dark mode", "priority": "low", "labels": ["feature-request"] },
-    { "title": "Update API docs for v2" }
+    { "title": "登录页面 500 错误", "priority": "critical", "assignee": "oncall-team", "labels": ["bug", "auth"] },
+    { "title": "添加暗色模式", "priority": "low", "labels": ["feature-request"] },
+    { "title": "更新 v2 的 API 文档" }
   ]
 }
 ```
 
-Accuracy on complex parameter handling: 72% → 90% in Anthropic's benchmarks. Use 1-5 realistic examples per tool, covering minimal, partial, and full specifications.
+在 Anthropic 基准测试中，复杂参数处理的准确率从 72% 提升至 90%。每个工具使用 1-5 个真实示例，涵盖最小化、部分化和完整规格。
 
-### Claude Code Relevance
+### 与 Claude Code 的相关性
 
-| Feature | Claude Code CLI | Action for CLI users |
-|---------|----------------|---------------------|
-| Tool Search (MCP lazy loading) | Built-in since v2.1.7 as MCPSearch auto mode | Tune `ENABLE_TOOL_SEARCH=auto:N` — documented in §6 above |
-| Tool Use Examples | Not configurable from CLI | Relevant for custom MCP server authors — add `input_examples` to tool schemas |
-| Programmatic Tool Calling | Not available in CLI | Relevant for Agent SDK developers building custom agents |
-| Dynamic Filtering | Not available in CLI | Relevant for Agent SDK users doing web research pipelines |
+| 特性 | Claude Code CLI | CLI 用户的操作 |
+|------|----------------|--------------|
+| 工具搜索（MCP 懒加载） | 自 v2.1.7 起内置为 MCPSearch 自动模式 | 调整 `ENABLE_TOOL_SEARCH=auto:N`——已记录在上方第 6 节 |
+| 工具调用示例 | 无法从 CLI 配置 | 与自定义 MCP 服务器作者相关——在工具 Schema 中添加 `input_examples` |
+| 程序化工具调用 | CLI 中不可用 | 与构建自定义智能体的 Agent SDK 开发者相关 |
+| 动态过滤 | CLI 中不可用 | 与进行网页研究流水线的 Agent SDK 用户相关 |
 
 ---
 
-## 8. The Edit Tool: How It Actually Works
+## 8. 编辑工具：实际工作原理
 
-**Confidence**: 90% (Tier 2 - Verified through behavior)
-**Sources**:
-- Observed behavior
-- [github.com/cline/cline/issues/2909](https://github.com/cline/cline/issues/2909) (similar implementation)
+**置信度**：90%（Tier 2 - 通过行为验证）
+**来源**：
+- 观察到的行为
+- [github.com/cline/cline/issues/2909](https://github.com/cline/cline/issues/2909)（类似实现）
 
-The Edit tool is more sophisticated than it appears.
+编辑工具比表面看起来更复杂。
 
-### Edit Algorithm
+### 编辑算法
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                     EDIT TOOL FLOW                          │
+│                     编辑工具流程                            │
 ├─────────────────────────────────────────────────────────────┤
 │                                                             │
-│  Input: old_string, new_string, file_path                   │
+│  输入：old_string、new_string、file_path                    │
 │                                                             │
 │         ┌──────────────────────────────────────┐            │
-│         │ Step 1: EXACT MATCH                  │            │
-│         │ Search for literal old_string        │            │
+│         │ 步骤 1：精确匹配                     │            │
+│         │ 按字面搜索 old_string                │            │
 │         └────────────────┬─────────────────────┘            │
 │                          │                                  │
-│              Found?  ────┴────  Not found?                  │
+│              找到？  ────┴────  未找到？                    │
 │                │                     │                      │
 │                ▼                     ▼                      │
 │         ┌──────────┐         ┌──────────────────┐           │
-│         │ REPLACE  │         │ Step 2: FUZZY    │           │
-│         │  (done)  │         │ MATCH            │           │
+│         │  替换    │         │ 步骤 2：模糊      │           │
+│         │ （完成） │         │ 匹配              │           │
 │         └──────────┘         └────────┬─────────┘           │
 │                                       │                     │
-│                           Found?  ────┴────  Not found?     │
+│                           找到？  ────┴────  未找到？       │
 │                             │                     │         │
 │                             ▼                     ▼         │
 │                      ┌──────────┐         ┌──────────────┐  │
-│                      │ REPLACE  │         │    ERROR     │  │
-│                      │ + WARN   │         │  (mismatch)  │  │
+│                      │  替换    │         │    错误      │  │
+│                      │ + 警告   │         │  （不匹配）  │  │
 │                      └──────────┘         └──────────────┘  │
 │                                                             │
 └─────────────────────────────────────────────────────────────┘
 ```
 
-### Fuzzy Matching Details
+### 模糊匹配详情
 
-When exact match fails, the Edit tool attempts:
+精确匹配失败时，编辑工具会尝试：
 
-1. **Whitespace normalization**: Ignore trailing spaces, normalize indentation
-2. **Line ending normalization**: Handle CRLF vs LF differences
-3. **Context expansion**: Use surrounding lines to locate the right spot
+1. **空白规范化**：忽略尾随空格，规范化缩进
+2. **行尾规范化**：处理 CRLF 与 LF 的差异
+3. **上下文扩展**：使用周围行定位正确位置
 
-If fuzzy matching also fails, the tool returns an error asking Claude to verify the old_string.
+如果模糊匹配也失败，工具返回错误，要求 Claude 验证 old_string。
 
-### Edit Validation
+### 编辑验证
 
-Before applying changes, the Edit tool:
+应用更改之前，编辑工具会检查：
 
-| Check | Purpose |
-|-------|---------|
-| File exists | Prevent creating files via Edit |
-| old_string found | Ensure we're editing the right place |
-| Single match | old_string must be unique (or use `replace_all`) |
-| New content differs | Prevent no-op edits |
+| 检查 | 目的 |
+|------|------|
+| 文件存在 | 防止通过编辑工具创建文件 |
+| 找到 old_string | 确保正在编辑正确的位置 |
+| 唯一匹配 | old_string 必须唯一（或使用 `replace_all`） |
+| 内容有变化 | 防止无效编辑 |
 
-### When Edit Fails
+### 编辑失败时
 
-| Error | Cause | Claude's Response |
-|-------|-------|-------------------|
-| "old_string not found" | Content changed since last read | Re-reads file, tries again |
-| "Multiple matches" | old_string isn't unique | Uses more context lines |
-| "File not found" | Wrong path | Searches for correct path |
-
----
-
-## 9. Session Persistence
-
-**Confidence**: 100% (Tier 1 - Official)
-**Source**: [code.claude.com/docs](https://code.claude.com/docs/en/setup)
-
-Sessions can be resumed across terminal sessions.
-
-### Resume Mechanisms
-
-| Command | Behavior |
-|---------|----------|
-| `claude --continue` / `claude -c` | Resume most recent session |
-| `claude --resume <id>` / `claude -r <id>` | Resume specific session by ID |
-
-### What Gets Persisted
-
-| Persisted | Not Persisted |
-|-----------|---------------|
-| Conversation history | Live tool state |
-| Tool call results | Pending operations |
-| Session ID | File locks |
-| Working directory context | Environment variables |
-
-### Storage Format
-
-**Confidence**: 50% (Tier 3 - Inferred)
-
-Sessions appear to be stored as JSON/JSONL files in `~/.claude/` but:
-
-- Format is not publicly documented
-- Not intended as a stable API
-- May change between versions
-
-**Do not rely on session file format** for external tooling.
+| 错误 | 原因 | Claude 的响应 |
+|------|------|--------------|
+| "old_string not found" | 内容在上次读取后已更改 | 重新读取文件，再次尝试 |
+| "Multiple matches" | old_string 不唯一 | 使用更多上下文行 |
+| "File not found" | 路径错误 | 搜索正确路径 |
 
 ---
 
-## 10. Philosophy: Less Scaffolding, More Model
+## 9. 会话持久化
 
-**Confidence**: 100% (Tier 1 - Official)
-**Source**: Daniela Amodei (Anthropic Co-founder & President) - Public statements
+**置信度**：100%（Tier 1 - 官方）
+**来源**：[code.claude.com/docs](https://code.claude.com/docs/en/setup)
 
-The core philosophy behind Claude Code:
+会话可跨终端会话恢复。
 
-> "Do more with less. Smart architecture choices, better training efficiency, and focused problem-solving can compete with raw scale."
+### 恢复机制
 
-### What This Means in Practice
+| 命令 | 行为 |
+|------|------|
+| `claude --continue` / `claude -c` | 恢复最近的会话 |
+| `claude --resume <id>` / `claude -r <id>` | 通过 ID 恢复特定会话 |
 
-| Traditional Approach | Claude Code Approach |
-|---------------------|---------------------|
-| Intent classifier → Router → Specialist | Single model decides everything |
-| RAG with embeddings | Grep + Glob (regex search) |
-| DAG task orchestration | Simple while loop |
-| Tool-specific planners | Model-driven tool selection |
-| Complex state machines | Conversation as state |
-| Prompt engineering frameworks | Trust the model |
+### 什么被持久化
 
-### Why It Works
+| 持久化 | 不持久化 |
+|--------|---------|
+| 对话历史 | 实时工具状态 |
+| 工具调用结果 | 待处理操作 |
+| 会话 ID | 文件锁 |
+| 工作目录上下文 | 环境变量 |
 
-1. **Model capability**: Claude 4+ is capable enough to handle routing decisions
-2. **Reduced latency**: Fewer components = faster response
-3. **Simpler debugging**: When something fails, there's one place to look
-4. **Better generalization**: No hand-coded rules to break on edge cases
+### 存储格式
 
-### The Trade-offs
+**置信度**：50%（Tier 3 - 推断）
 
-| Advantage | Disadvantage |
-|-----------|--------------|
-| Simplicity | Less fine-grained control |
-| Flexibility | Harder to enforce strict behaviors |
-| Fewer bugs | Model errors affect everything |
-| Fast iteration | Requires good model quality |
+会话似乎以 JSON/JSONL 文件格式存储在 `~/.claude/` 中，但：
 
-### Community Validation
+- 格式未公开记录
+- 不打算作为稳定 API
+- 版本之间可能更改
 
-The "native capabilities first" approach is increasingly validated by external practitioners. Embedded engineering teams (including former Cursor power users) converge on Agent Skills standard over external orchestration frameworks, demonstrating the viability of trusting Claude's native reasoning over adding scaffolding layers.
-
-**Example**: [Gur Sannikov](https://www.linkedin.com/posts/gursannikov_claudecode-embeddedengineering-aiagents-activity-7423851983331328001-DrFb) (embedded engineering) adopted ADR-driven workflows using only native Claude Code capabilities (hooks, skills, Task Tool) without external frameworks — validating the architectural philosophy documented in this guide.
-
-This convergence suggests that the "less scaffolding, more model" approach scales beyond initial expectations, even for complex engineering domains like embedded systems development.
+**不要依赖会话文件格式**进行外部工具开发。
 
 ---
 
-## 11. Claude Code vs Alternatives
+## 10. 设计哲学：少框架，重模型
 
-**Confidence**: 80% (Tier 2 - Based on March 2026 fact-checked data)
-**Sources**: Official documentation, Perplexity research March 2026, vendor changelogs
+**置信度**：100%（Tier 1 - 官方）
+**来源**：Daniela Amodei（Anthropic 联合创始人兼总裁）- 公开声明
 
-| Dimension | Claude Code | GitHub Copilot | Cursor | Amazon Q Developer |
-|-----------|-------------|----------------|--------|-------------------|
-| **Architecture** | while(tool) loop | IDE agent + cloud coding agent | Event-driven + cloud | AWS-integrated agents |
-| **Execution** | Local terminal | Local (agent mode) + cloud VMs | Local + cloud | Cloud/local hybrid |
-| **Model** | Claude (single provider) | GPT, Claude, Codex (selectable) | Multiple (adaptive) | Amazon Titan + others |
-| **Context** | ~200K tokens | Full codebase (agent mode) | Codebase-aware (Composer) | Varies (AWS-scoped) |
-| **Transparency** | High (visible reasoning) | Medium | Medium | Low |
-| **Customization** | CLAUDE.md + hooks + MCP | AGENTS.md, MCP (GA), custom agents | MCP Apps, .cursorrules | MCP (native), AWS integration |
-| **MCP Support** | Native | Yes (GA, auto-approve) | Yes (MCP Apps v2.6) | Yes (native) |
-| **Pricing** | Pro $20 / Max $100-200 | Free / Pro $10 / Pro+ $39 / Biz $19/seat | Free / Pro $20 / Biz $40/seat | Free / Pro $19/seat / Enterprise |
+Claude Code 背后的核心哲学：
 
-### When to Choose Claude Code
+> "用更少做更多。聪明的架构选择、更好的训练效率和专注的问题解决，可以与原始规模竞争。"
 
-| Scenario | Claude Code | Alternative |
-|----------|-------------|-------------|
-| Deep codebase exploration | Excellent | Good |
-| Terminal-native workflow | Excellent | Limited |
-| Custom automation (hooks) | Excellent | Limited |
-| Team standardization | Good (CLAUDE.md) | Varies |
-| IDE integration | Limited (VS Code ext) | Cursor/Copilot better |
-| Enterprise compliance | Via Anthropic enterprise | Varies |
+### 实践中意味着什么
 
----
+| 传统方式 | Claude Code 方式 |
+|---------|----------------|
+| 意图分类器 → 路由器 → 专家 | 单一模型决定一切 |
+| 带嵌入的 RAG（检索增强生成） | Grep + 文件匹配（正则搜索） |
+| DAG 任务编排 | 简单 while 循环 |
+| 工具专用规划器 | 模型驱动的工具选择 |
+| 复杂状态机 | 对话即状态 |
+| 提示词工程框架 | 信任模型 |
 
-## 12. Sources & References
+### 为何有效
 
-### Tier 1 - Official Anthropic
+1. **模型能力**：Claude 4+ 足够强大，可以处理路由决策
+2. **降低延迟**：组件越少，响应越快
+3. **调试更简单**：出问题时只有一处需要排查
+4. **更好的泛化**：没有边缘情况会破坏的硬编码规则
 
-| Source | URL | Topics |
-|--------|-----|--------|
-| Engineering Blog | anthropic.com/engineering/claude-code-best-practices | Master loop, philosophy |
-| Setup Docs | code.claude.com/docs/en/setup | Tools, commands |
-| Context Windows | platform.claude.com/docs/en/build-with-claude/context-windows | Token limits |
-| Hooks Reference | code.claude.com/docs/en/hooks | Hook system |
-| Hooks Guide | code.claude.com/docs/en/hooks-guide | Hook examples |
-| MCP Docs | code.claude.com/docs/en/mcp | MCP integration |
-| Sandboxing | code.claude.com/docs/en/sandboxing | Security model |
-| llms.txt (index) | code.claude.com/docs/llms.txt | LLM-optimized doc index, ~65 pages |
-| llms-full.txt | code.claude.com/docs/llms-full.txt | Full documentation (~98 KB text) |
+### 权衡
 
-### Tier 2 - Verified Analysis
+| 优势 | 劣势 |
+|------|------|
+| 简单性 | 细粒度控制较少 |
+| 灵活性 | 难以强制执行严格行为 |
+| 错误更少 | 模型错误影响全局 |
+| 快速迭代 | 需要良好的模型质量 |
 
-| Source | URL | Topics |
-|--------|-----|--------|
-| PromptLayer Analysis | blog.promptlayer.com/claude-code-behind-the-scenes-of-the-master-agent-loop/ | Internal architecture |
-| Steve Kinney Course | stevekinney.com/courses/ai-development/claude-code-* | Permissions, sessions |
+### 社区验证
 
-### Tier 3 - Community Resources
+"原生能力优先"的方法正越来越多地被外部从业者验证。嵌入式工程团队（包括以前的 Cursor 重度用户）在外部编排框架之上选择了 Agent Skills（技能模块）标准，证明了信任 Claude 原生推理而非叠加框架层的可行性。
 
-| Source | Topics |
-|--------|--------|
-| GitHub Issues (anthropics/claude-code) | Edge cases, bugs, feature discussions |
-| Reddit r/ClaudeAI | User experiences, workarounds |
-| YouTube tutorials | Visual walkthroughs |
+**示例**：[Gur Sannikov](https://www.linkedin.com/posts/gursannikov_claudecode-embeddedengineering-aiagents-activity-7423851983331328001-DrFb)（嵌入式工程）采用了仅使用 Claude Code 原生能力（Hooks（钩子）、Skills（技能模块）、任务工具）的 ADR 驱动工作流，不依赖外部框架——验证了本指南中记录的架构哲学。
+
+这一趋同表明，"少框架，重模型"的方法超出了最初的预期，即使在嵌入式系统开发这样的复杂工程领域也能扩展。
 
 ---
 
-## 13. Appendix: What We Don't Know
+## 11. Claude Code 与竞品对比
 
-Transparency about gaps in our understanding:
+**置信度**：80%（Tier 2 - 基于 2026 年 3 月经过事实核查的数据）
+**来源**：官方文档、Perplexity 研究（2026 年 3 月）、各厂商变更日志
 
-### Unknown or Unconfirmed
+| 维度 | Claude Code | GitHub Copilot | Cursor | Amazon Q Developer |
+|------|-------------|----------------|--------|-------------------|
+| **架构** | while(tool) 循环 | IDE 智能体 + 云编码智能体 | 事件驱动 + 云 | AWS 集成智能体 |
+| **执行** | 本地终端 | 本地（智能体模式）+ 云虚拟机 | 本地 + 云 | 云/本地混合 |
+| **模型** | Claude（单一提供商） | GPT、Claude、Codex（可选） | 多模型（自适应） | Amazon Titan + 其他 |
+| **上下文** | ~200K Token（词元） | 全代码库（智能体模式） | 代码库感知（Composer） | 可变（AWS 范围） |
+| **透明度** | 高（可见推理过程） | 中 | 中 | 低 |
+| **定制化** | CLAUDE.md + Hooks + MCP | AGENTS.md、MCP（GA）、自定义智能体 | MCP Apps、.cursorrules | MCP（原生）、AWS 集成 |
+| **MCP 支持** | 原生 | 是（GA，自动批准） | 是（MCP Apps v2.6） | 是（原生） |
+| **定价** | Pro $20 / Max $100-200 | Free / Pro $10 / Pro+ $39 / Biz $19/人 | Free / Pro $20 / Biz $40/人 | Free / Pro $19/人 / Enterprise |
 
-| Topic | What We Don't Know | Confidence in Current Understanding |
-|-------|-------------------|-------------------------------------|
-| **Exact compaction threshold** | Is it 75%? 85%? 92%? Varies by model? | 40% |
-| **System prompt contents** | Full text not public, varies by model version | 30% |
-| **Token counting method** | Exact tokenizer, overhead for tool schemas | 50% |
-| **Model fallback** | Does Claude Code fallback if a model fails? | 20% |
-| **Internal caching** | Is there result caching between sessions? | 20% |
-| **Rate limiting logic** | How rate limits are applied per-tool | 40% |
+### 何时选择 Claude Code
 
-### Explicitly Undocumented
-
-These are intentionally not documented by Anthropic:
-
-- Session file format (internal implementation detail)
-- System prompt variations between models
-- Internal component names/architecture
-- Token usage breakdown per component
-- Exact permission evaluation order
-
-### How to Stay Updated
-
-1. **Official changelog**: Watch anthropic.com/changelog
-2. **GitHub releases**: github.com/anthropics/claude-code/releases
-3. **Community Discord**: Various Claude-focused servers
-4. **This guide**: Updated periodically based on verified information
+| 场景 | Claude Code | 替代方案 |
+|------|-------------|---------|
+| 深度代码库探索 | 出色 | 良好 |
+| 终端原生工作流 | 出色 | 有限 |
+| 自定义自动化（Hooks） | 出色 | 有限 |
+| 团队标准化 | 良好（CLAUDE.md） | 各异 |
+| IDE 集成 | 有限（VS Code 扩展） | Cursor/Copilot 更好 |
+| 企业合规 | 通过 Anthropic 企业 | 各异 |
 
 ---
 
-## Contributing
+## 12. 来源与参考
 
-Found an error? Have verified new information? Contributions welcome:
+### Tier 1 - Anthropic 官方
 
-1. **For official facts**: Cite the Anthropic source
-2. **For observations**: Describe how you verified the behavior
-3. **For corrections**: Explain what's wrong and why
+| 来源 | URL | 主题 |
+|------|-----|------|
+| 工程博客 | anthropic.com/engineering/claude-code-best-practices | 主循环、设计哲学 |
+| 配置文档 | code.claude.com/docs/en/setup | 工具、命令 |
+| 上下文窗口 | platform.claude.com/docs/en/build-with-claude/context-windows | Token（词元）限制 |
+| Hooks 参考 | code.claude.com/docs/en/hooks | Hook 系统 |
+| Hooks 指南 | code.claude.com/docs/en/hooks-guide | Hook 示例 |
+| MCP 文档 | code.claude.com/docs/en/mcp | MCP 集成 |
+| 沙箱 | code.claude.com/docs/en/sandboxing | 安全模型 |
+| llms.txt（索引） | code.claude.com/docs/llms.txt | LLM 优化文档索引，约 65 页 |
+| llms-full.txt | code.claude.com/docs/llms-full.txt | 完整文档（约 98 KB 文本） |
+
+### Tier 2 - 经验证的分析
+
+| 来源 | URL | 主题 |
+|------|-----|------|
+| PromptLayer 分析 | blog.promptlayer.com/claude-code-behind-the-scenes-of-the-master-agent-loop/ | 内部架构 |
+| Steve Kinney 课程 | stevekinney.com/courses/ai-development/claude-code-* | 权限、会话 |
+
+### Tier 3 - 社区资源
+
+| 来源 | 主题 |
+|------|------|
+| GitHub Issues（anthropics/claude-code） | 边缘案例、bug、功能讨论 |
+| Reddit r/ClaudeAI | 用户体验、变通方案 |
+| YouTube 教程 | 可视化演示 |
 
 ---
 
-**Last updated**: February 2026
-**Claude Code version**: v2.1.34
-**Document version**: 1.1.0
+## 13. 附录：尚不明确的内容
+
+关于我们理解中的空白，保持透明：
+
+### 未知或未确认
+
+| 主题 | 未知内容 | 当前理解的置信度 |
+|------|---------|----------------|
+| **精确的压缩阈值** | 是 75%？85%？92%？因模型而异？ | 40% |
+| **系统提示内容** | 完整文本未公开，因模型版本而异 | 30% |
+| **Token（词元）计算方式** | 确切的分词器、工具 Schema 的开销 | 50% |
+| **模型降级** | Claude Code 在模型失败时是否降级？ | 20% |
+| **内部缓存** | 会话之间是否有结果缓存？ | 20% |
+| **速率限制逻辑** | 每个工具的速率限制应用方式 | 40% |
+
+### 明确未文档化
+
+这些内容是 Anthropic 有意不记录的：
+
+- 会话文件格式（内部实现细节）
+- 模型之间的系统提示变化
+- 内部组件名称/架构
+- 每个组件的 Token（词元）使用量分解
+- 确切的权限评估顺序
+
+### 如何保持更新
+
+1. **官方变更日志**：关注 anthropic.com/changelog
+2. **GitHub 发布**：github.com/anthropics/claude-code/releases
+3. **社区 Discord**：各种以 Claude 为中心的服务器
+4. **本指南**：根据经验证的信息定期更新
 
 ---
 
-## Anthropic API Patterns for Architects
+## 贡献
 
-Three API-level features that architects must understand for production systems: the Message Batches API for cost-optimized bulk processing, `tool_choice` for guaranteed structured output, and strict-mode JSON schema enforcement.
+发现错误？有经过验证的新信息？欢迎贡献：
+
+1. **官方事实**：引用 Anthropic 来源
+2. **观察结果**：描述你如何验证该行为
+3. **纠错**：解释什么是错误的以及原因
+
+---
+
+**最后更新**：2026 年 2 月
+**Claude Code 版本**：v2.1.34
+**文档版本**：1.1.0
+
+---
+
+## 面向架构师的 Anthropic API 模式
+
+架构师必须了解的三项 API 层面特性：用于成本优化批量处理的 Message Batches API、用于保证结构化输出的 `tool_choice`，以及严格模式 JSON Schema 强制执行。
 
 ---
 
 ### Message Batches API
 
-The Batches API submits up to 100 messages in a single HTTP request and processes them asynchronously within a 24-hour window. The cost is 50% of the synchronous rate — same quality, half the price, at the cost of latency.
+Batches API 在单个 HTTP 请求中提交最多 100 条消息，并在 24 小时窗口内异步处理。费用是同步速率的 50%——质量相同，价格减半，代价是延迟。
 
-**When to use it:**
+**使用时机：**
 
-| Use case | Sync API | Streaming | Batch API |
-|---|---|---|---|
-| Interactive chat | yes | yes | no |
-| Real-time analysis | yes | yes | no |
-| Bulk document processing | no | no | yes (50% cheaper) |
-| Multi-turn tool loops | yes | yes | no (not supported) |
-| Nightly classification pipeline | no | no | yes |
-| Large-scale data extraction | no | no | yes |
+| 使用场景 | 同步 API | 流式 API | Batch API |
+|---------|---------|---------|---------|
+| 交互式聊天 | 是 | 是 | 否 |
+| 实时分析 | 是 | 是 | 否 |
+| 批量文档处理 | 否 | 否 | 是（便宜 50%） |
+| 多轮工具循环 | 是 | 是 | 否（不支持） |
+| 夜间分类流水线 | 否 | 否 | 是 |
+| 大规模数据提取 | 否 | 否 | 是 |
 
-The Batches API does not support multi-turn conversations or `tool_use` continuation across turns. Each request in a batch is a single stateless call.
+Batches API 不支持多轮对话或跨轮次的 `tool_use` 延续。批次中的每个请求都是单次无状态调用。
 
-**Submit, poll, retrieve:**
+**提交、轮询、获取：**
 
 ```python
 import anthropic
@@ -1690,7 +1686,7 @@ batch = client.messages.batches.create(
                 "model": "claude-opus-4-5",
                 "max_tokens": 1024,
                 "messages": [
-                    {"role": "user", "content": f"Classify this document: {doc}"}
+                    {"role": "user", "content": f"对此文档进行分类：{doc}"}
                 ]
             }
         }
@@ -1698,12 +1694,12 @@ batch = client.messages.batches.create(
     ]
 )
 
-# Poll until done (processing_status: "in_progress" | "ended")
+# 轮询直到完成（processing_status："in_progress" | "ended"）
 while batch.processing_status == "in_progress":
     time.sleep(60)
     batch = client.messages.batches.retrieve(batch.id)
 
-# Stream results — each entry has a custom_id and a result
+# 流式获取结果——每个条目有 custom_id 和结果
 for result in client.messages.batches.results(batch.id):
     match result.type:
         case "succeeded":
@@ -1715,38 +1711,38 @@ for result in client.messages.batches.results(batch.id):
             requeue(result.custom_id)
 ```
 
-Results stay available for 29 days after the batch ends, then are deleted automatically.
+结果在批次结束后保留 29 天，之后自动删除。
 
-**Error handling at scale:**
+**大规模错误处理：**
 
-Per-request errors do not fail the entire batch. A batch with 100 requests where 3 fail still returns 97 successful results. The pattern for resilient pipelines:
+单个请求的错误不会使整个批次失败。一个有 100 个请求、其中 3 个失败的批次仍会返回 97 个成功结果。弹性流水线的模式：
 
-1. Process all `succeeded` results immediately.
-2. Collect `errored` custom_ids for retry with exponential backoff.
-3. Treat `expired` as a soft failure — the request never ran, so requeue it.
+1. 立即处理所有 `succeeded` 结果。
+2. 收集 `errored` 的 custom_id，用指数退避重试。
+3. 将 `expired` 视为软性失败——请求从未运行，因此将其重新排队。
 
-**Retry economics:**
+**重试经济学：**
 
-Retrying individual failed items synchronously costs 2x the batch rate. If your error rate is below 5%, retrying synchronously is still net-cheaper than splitting batches further. Above 10% error rate, investigate the prompt before retrying at all.
+同步重试单个失败项的成本是批次费率的 2 倍。如果错误率低于 5%，同步重试仍然整体更划算。错误率超过 10% 时，在重试之前先检查提示词。
 
 ---
 
-### tool_choice: Controlling When Tools Fire
+### tool_choice：控制工具触发时机
 
-`tool_choice` governs whether and which tools the model can call. Four modes:
+`tool_choice` 控制模型是否以及调用哪个工具。四种模式：
 
-| Value | Behavior |
+| 值 | 行为 |
 |---|---|
-| `{"type": "auto"}` | Model decides; may or may not call tools (default) |
-| `{"type": "any"}` | Model must call at least one tool from the provided list |
-| `{"type": "tool", "name": "X"}` | Model must call tool `X` specifically |
-| `{"type": "none"}` | No tool calls allowed; model responds in prose |
+| `{"type": "auto"}` | 模型自行决定；可能调用也可能不调用工具（默认） |
+| `{"type": "any"}` | 模型必须至少从提供的列表中调用一个工具 |
+| `{"type": "tool", "name": "X"}` | 模型必须专门调用工具 `X` |
+| `{"type": "none"}` | 不允许工具调用；模型以文字形式响应 |
 
-The `any` and specific-tool modes change `stop_reason` from `"end_turn"` to `"tool_use"`. This is reliable enough to use as a guard: if `stop_reason != "tool_use"`, the model disobeyed the constraint and you can retry.
+`any` 和特定工具模式将 `stop_reason` 从 `"end_turn"` 更改为 `"tool_use"`。这足够可靠，可以用作守卫：如果 `stop_reason != "tool_use"`，则模型违反了约束，你可以重试。
 
-**Forced structured output via tool:**
+**通过工具强制结构化输出：**
 
-Define the output schema as a tool's `input_schema`, then force its use. The model cannot respond with prose — it must populate your schema.
+将输出 Schema 定义为工具的 `input_schema`，然后强制使用它。模型不能以文字形式响应——它必须填充你的 Schema。
 
 ```python
 response = client.messages.create(
@@ -1754,14 +1750,14 @@ response = client.messages.create(
     max_tokens=1024,
     tools=[{
         "name": "extract_invoice",
-        "description": "Extract structured fields from an invoice document",
+        "description": "从发票文档中提取结构化字段",
         "input_schema": {
             "type": "object",
             "properties": {
                 "vendor_name": {"type": ["string", "null"]},
                 "invoice_date": {
                     "type": ["string", "null"],
-                    "description": "ISO 8601 date"
+                    "description": "ISO 8601 日期"
                 },
                 "total_amount": {"type": ["number", "null"]},
                 "line_items": {
@@ -1780,22 +1776,22 @@ response = client.messages.create(
         }
     }],
     tool_choice={"type": "tool", "name": "extract_invoice"},
-    messages=[{"role": "user", "content": f"Extract fields from:\n\n{invoice_text}"}]
+    messages=[{"role": "user", "content": f"从以下内容提取字段：\n\n{invoice_text}"}]
 )
 
-# result is always tool_use, never prose
+# 结果始终是 tool_use，从不是文字形式
 fields = response.content[0].input
 ```
 
-This pattern works for any extraction, classification, or analysis task where you need machine-readable output. It does not require the beta header.
+这种模式适用于任何需要机器可读输出的提取、分类或分析任务。不需要 beta 请求头。
 
 ---
 
-### Structured Outputs: strict Mode
+### 结构化输出：strict 模式
 
-The `output-schema-2025-02-19` beta enables constrained decoding. The model generates tokens that, by construction, cannot violate the JSON schema. It never produces invalid JSON, never omits required fields, never uses the wrong type.
+`output-schema-2025-02-19` beta 版启用受约束解码。模型生成的 Token（词元）在构造上不可能违反 JSON Schema。它绝不会产生无效 JSON、绝不会省略必填字段、绝不会使用错误的类型。
 
-**Activating strict mode:**
+**激活 strict 模式：**
 
 ```python
 client = anthropic.Anthropic()
@@ -1806,7 +1802,7 @@ response = client.beta.messages.create(
     betas=["output-schema-2025-02-19"],
     tools=[{
         "name": "classify_document",
-        "description": "Classify a document into a category",
+        "description": "将文档分类到一个类别",
         "input_schema": {
             "type": "object",
             "strict": True,
@@ -1817,7 +1813,7 @@ response = client.beta.messages.create(
                 },
                 "category_detail": {
                     "type": ["string", "null"],
-                    "description": "Free-text clarification required when category is 'other'"
+                    "description": "当类别为 'other' 时必填的自由文本说明"
                 },
                 "confidence": {"type": "number"},
                 "summary": {"type": "string"}
@@ -1830,31 +1826,31 @@ response = client.beta.messages.create(
 )
 ```
 
-**What `strict: true` guarantees:**
-- Syntactically valid JSON
-- All `required` fields are present
-- Field types exactly match the schema
-- No additional properties beyond those declared
+**`strict: true` 保证的内容：**
+- 语法上合法的 JSON
+- 所有 `required` 字段均存在
+- 字段类型与 Schema 完全匹配
+- 没有超出声明范围的额外属性
 
-**What `strict: true` does not guarantee:**
-- Semantic accuracy (the `confidence` field may be 0.99 for a wrong classification)
-- Truthful values (a `vendor_name` field will be populated, but may be wrong if the document is ambiguous)
+**`strict: true` 不保证的内容：**
+- 语义准确性（`confidence` 字段对于错误分类可能是 0.99）
+- 真实值（`vendor_name` 字段会被填充，但如果文档含糊，可能是错的）
 
-For semantic accuracy, pair strict mode with a validation retry loop.
+对于语义准确性，可将 strict 模式与验证重试循环配合使用。
 
-**Nullable fields prevent hallucination of defaults:**
+**可空字段防止默认值幻觉：**
 
-Without nullable, the model must fill every required field and will invent a value rather than leave it empty. Nullable fields give the model an explicit out:
+没有可空设置时，模型必须填充每个必填字段，并会编造一个值而不是留空。可空字段给了模型一个明确的选项：
 
 ```json
 "vendor_name": {"type": ["string", "null"]}
 ```
 
-The model returns `null` when the field cannot be found, rather than guessing.
+当无法找到该字段时，模型返回 `null`，而不是猜测。
 
-**Extensible enums with companion fields:**
+**带伴随字段的可扩展枚举：**
 
-Closed enums break when inputs don't fit any category. The solution: add `"other"` as the last enum value and a companion detail field:
+封闭枚举在输入不符合任何类别时会中断。解决方案：将 `"other"` 添加为最后一个枚举值，并添加一个伴随详情字段：
 
 ```json
 {
@@ -1864,26 +1860,26 @@ Closed enums break when inputs don't fit any category. The solution: add `"other
     },
     "document_type_detail": {
         "type": ["string", "null"],
-        "description": "Populate when document_type is 'other'; describe the actual document type"
+        "description": "当 document_type 为 'other' 时填充；描述实际的文档类型"
     }
 }
 ```
 
-This preserves the type-safety of the enum for the 95% case while capturing the 5% gracefully.
+这为 95% 的情况保留了枚举的类型安全，同时优雅地捕获了 5% 的例外情况。
 
-**`detected_pattern` for false-positive analysis:**
+**`detected_pattern` 用于误报分析：**
 
-In classification pipelines, a `detected_pattern` field surfaces the evidence the model used. This turns opaque classifications into debuggable decisions:
+在分类流水线中，`detected_pattern` 字段展示了模型使用的证据。这将不透明的分类转变为可调试的决策：
 
 ```json
 {
     "is_complaint": {"type": "boolean"},
     "detected_pattern": {
         "type": ["string", "null"],
-        "description": "Quote the specific phrase or pattern that triggered the classification"
+        "description": "引用触发分类的具体短语或模式"
     },
     "confidence": {"type": "number"}
 }
 ```
 
-When `is_complaint: true` with `detected_pattern: "your service is terrible"`, a human reviewer can validate the classification in seconds. When `detected_pattern: null` and `confidence: 0.6`, that is a signal to escalate for manual review rather than auto-process.
+当 `is_complaint: true` 且 `detected_pattern: "your service is terrible"` 时，人工审核员可以在几秒内验证分类。当 `detected_pattern: null` 且 `confidence: 0.6` 时，这是一个信号，应升级为人工审核而非自动处理。

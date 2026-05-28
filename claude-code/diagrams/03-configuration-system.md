@@ -1,30 +1,30 @@
 > 📚 **AI Spark Wiki** · Claude Code 知识库
 
 ---
-title: "Claude Code — Configuration System Diagrams"
-description: "Config precedence, skills vs commands vs agents, agent lifecycle, hooks pipeline"
-tags: [configuration, hooks, agents, skills, commands]
+title: "Claude Code — 配置系统图表"
+description: "配置优先级、Skills 与命令与智能体、智能体生命周期、Hooks 流水线"
+tags: [配置, Hooks, 智能体, Skills, 命令]
 ---
 
-# Configuration System
+# 配置系统
 
-How Claude Code loads settings, resolves conflicts, and orchestrates extensibility.
+Claude Code 如何加载设置、解决冲突并编排可扩展性。
 
 ---
 
-### Configuration Precedence (5 Levels)
+### 配置优先级（5 层）
 
-Claude Code resolves settings through a strict priority hierarchy. Higher layers override lower ones. Knowing this prevents "why isn't my config working?" bugs.
+Claude Code 通过严格的优先级层次解析设置。高优先级层覆盖低优先级层。了解这一机制可以避免"为什么我的配置不生效？"的疑惑。
 
 ```mermaid
 flowchart TD
-    A["1️⃣ CLI Flags<br/>--model, --dangerously-skip-permissions<br/>--max-turns, --system-prompt"] --> B["2️⃣ Environment Variables<br/>ANTHROPIC_API_KEY<br/>CLAUDE_MODEL, CLAUDE_CONFIG"]
-    B --> C["3️⃣ Project Config<br/>.claude/settings.json<br/>.claude/settings.local.json"]
-    C --> D["4️⃣ Global Config<br/>~/.claude/settings.json<br/>~/.claude/CLAUDE.md"]
-    D --> E["5️⃣ Built-in Defaults<br/>Hardcoded in Claude Code binary"]
+    A["1️⃣ CLI 参数<br/>--model、--dangerously-skip-permissions<br/>--max-turns、--system-prompt"] --> B["2️⃣ 环境变量<br/>ANTHROPIC_API_KEY<br/>CLAUDE_MODEL、CLAUDE_CONFIG"]
+    B --> C["3️⃣ 项目配置<br/>.claude/settings.json<br/>.claude/settings.local.json"]
+    C --> D["4️⃣ 全局配置<br/>~/.claude/settings.json<br/>~/.claude/CLAUDE.md"]
+    D --> E["5️⃣ 内置默认值<br/>Claude Code 二进制文件中硬编码"]
 
-    A1["Highest priority<br/>Overrides everything<br/>Use: automation, CI/CD"] --> A
-    E1["Lowest priority<br/>Fallback values<br/>Use: baseline behavior"] --> E
+    A1["最高优先级<br/>覆盖一切<br/>用途：自动化、CI/CD"] --> A
+    E1["最低优先级<br/>兜底值<br/>用途：基础行为"] --> E
 
     style A fill:#E87E2F,color:#fff
     style B fill:#6DB3F2,color:#fff
@@ -34,64 +34,64 @@ flowchart TD
     style A1 fill:#B8B8B8,color:#333
     style E1 fill:#B8B8B8,color:#333
 
-    click A href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#34-precedence-rules" "CLI Flags — highest priority"
-    click B href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#33-settings--permissions" "Environment Variables"
-    click C href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#33-settings--permissions" "Project Config"
-    click D href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#31-memory-files-claudemd" "Global Config"
-    click E href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#34-precedence-rules" "Built-in Defaults"
-    click A1 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#34-precedence-rules" "Highest priority"
-    click E1 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#34-precedence-rules" "Lowest priority"
+    click A href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#34-precedence-rules" "CLI 参数 — 最高优先级"
+    click B href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#33-settings--permissions" "环境变量"
+    click C href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#33-settings--permissions" "项目配置"
+    click D href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#31-memory-files-claudemd" "全局配置"
+    click E href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#34-precedence-rules" "内置默认值"
+    click A1 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#34-precedence-rules" "最高优先级"
+    click E1 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#34-precedence-rules" "最低优先级"
 ```
 
 <details>
-<summary>ASCII version</summary>
+<summary>ASCII 版本</summary>
 
 ```
-PRIORITY (highest to lowest)
+优先级（从高到低）
 ═══════════════════════════
-1. CLI Flags            ← --model, --system-prompt
-2. Environment Vars     ← ANTHROPIC_API_KEY
-3. Project .claude/     ← settings.json, settings.local.json
-4. Global ~/.claude/    ← settings.json, CLAUDE.md
-5. Built-in defaults    ← hardcoded fallbacks
+1. CLI 参数          ← --model、--system-prompt
+2. 环境变量          ← ANTHROPIC_API_KEY
+3. 项目 .claude/     ← settings.json、settings.local.json
+4. 全局 ~/.claude/   ← settings.json、CLAUDE.md
+5. 内置默认值         ← 硬编码的兜底值
 ```
 
 </details>
 
-> **Source**: [Configuration System](../ultimate-guide.md#configuration) — Line ~3760
+> **来源**：[配置系统](../ultimate-guide.md#configuration) — 第 ~3760 行
 
 ---
 
-### Skills vs. Commands vs. Agents — When to Use Each
+### Skills（技能模块）vs 命令 vs 智能体 — 何时使用各方
 
-Three extensibility mechanisms with different purposes and tradeoffs. Choosing the wrong abstraction leads to over-engineering or under-powered automation.
+三种可扩展性机制，各有不同的用途和权衡。选错抽象方式会导致过度工程化或自动化能力不足。
 
 ```mermaid
 flowchart LR
-    subgraph SKILLS["📦 Skills (.claude/skills/)"]
-        S1[Bundled capability<br/>with resources]
-        S2[Invoked via /skillname]
-        S3[Portable across projects]
-        S4["Use for: reusable<br/>cross-project capabilities"]
+    subgraph SKILLS["📦 Skills（技能模块）(.claude/skills/)"]
+        S1[捆绑能力<br/>含资源]
+        S2[通过 /技能名 调用]
+        S3[跨项目可复用]
+        S4["用途：可复用的<br/>跨项目能力"]
     end
 
-    subgraph COMMANDS["⚡ Commands (.claude/commands/)"]
-        C1[Simple template<br/>or script]
-        C2[Project slash command]
-        C3[Project-specific only]
-        C4["Use for: project<br/>automation, shortcuts"]
+    subgraph COMMANDS["⚡ 命令 (.claude/commands/)"]
+        C1[简单模板<br/>或脚本]
+        C2[项目斜杠命令]
+        C3[仅限本项目]
+        C4["用途：项目<br/>自动化、快捷操作"]
     end
 
-    subgraph AGENTS["🤖 Agents (.claude/agents/)"]
-        A1[Full autonomous agent]
-        A2[Own tool set & CLAUDE.md]
-        A3[Spawned via Task tool]
-        A4["Use for: complex<br/>delegated tasks"]
+    subgraph AGENTS["🤖 智能体 (.claude/agents/)"]
+        A1[完整自主智能体]
+        A2[拥有独立工具集和 CLAUDE.md]
+        A3[通过任务工具派生]
+        A4["用途：复杂的<br/>委托任务"]
     end
 
-    Q{What are<br/>you building?} --> |Reusable feature| SKILLS
-    Q --> |Project shortcut| COMMANDS
-    Q --> |Complex sub-task| AGENTS
+    Q{你在构建<br/>什么？} --> |可复用功能| SKILLS
+    Q --> |项目快捷操作| COMMANDS
+    Q --> |复杂子任务| AGENTS
 
     style S1 fill:#6DB3F2,color:#fff
     style S4 fill:#7BC47F,color:#333
@@ -101,115 +101,115 @@ flowchart LR
     style A4 fill:#7BC47F,color:#333
     style Q fill:#E87E2F,color:#fff
 
-    click S1 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#51-understanding-skills" "Skills: Bundled capability"
-    click S2 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#51-understanding-skills" "Skills: Invoked via /skillname"
-    click S3 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#51-understanding-skills" "Skills: Portable across projects"
-    click S4 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#51-understanding-skills" "Skills: Reusable capabilities"
-    click C1 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#62-creating-custom-commands" "Commands: Simple template"
-    click C2 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#62-creating-custom-commands" "Commands: Project slash command"
-    click C3 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#62-creating-custom-commands" "Commands: Project-specific"
-    click C4 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#62-creating-custom-commands" "Commands: Project automation"
-    click A1 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#41-what-are-agents" "Agents: Full autonomous"
-    click A2 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#41-what-are-agents" "Agents: Own tool set"
-    click A3 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#41-what-are-agents" "Agents: Spawned via Task tool"
-    click A4 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#41-what-are-agents" "Agents: Complex delegated tasks"
-    click Q href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#41-what-are-agents" "What are you building?"
+    click S1 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#51-understanding-skills" "Skills：捆绑能力"
+    click S2 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#51-understanding-skills" "Skills：通过 /技能名 调用"
+    click S3 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#51-understanding-skills" "Skills：跨项目可复用"
+    click S4 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#51-understanding-skills" "Skills：可复用能力"
+    click C1 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#62-creating-custom-commands" "命令：简单模板"
+    click C2 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#62-creating-custom-commands" "命令：项目斜杠命令"
+    click C3 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#62-creating-custom-commands" "命令：仅限本项目"
+    click C4 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#62-creating-custom-commands" "命令：项目自动化"
+    click A1 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#41-what-are-agents" "智能体：完整自主"
+    click A2 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#41-what-are-agents" "智能体：独立工具集"
+    click A3 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#41-what-are-agents" "智能体：通过任务工具派生"
+    click A4 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#41-what-are-agents" "智能体：复杂委托任务"
+    click Q href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#41-what-are-agents" "你在构建什么？"
 ```
 
 <details>
-<summary>ASCII version</summary>
+<summary>ASCII 版本</summary>
 
 ```
-                    Skills              Commands           Agents
-Location:      .claude/skills/     .claude/commands/  .claude/agents/
-Trigger:       /skillname          /commandname       Task tool
-Scope:         Cross-project       This project       Any context
-Complexity:    Medium (bundled)    Low (template)     High (autonomous)
-Use when:      Reusable caps       Quick shortcuts    Complex tasks
+                Skills（技能模块）       命令               智能体
+位置：      .claude/skills/     .claude/commands/  .claude/agents/
+触发方式：  /技能名             /命令名            任务工具
+作用域：    跨项目              本项目             任意场景
+复杂度：    中（捆绑）          低（模板）         高（自主）
+使用场景：  可复用能力          快速快捷操作       复杂任务
 ```
 
 </details>
 
-> **Source**: [Extensibility System](../ultimate-guide.md#extensibility) — Line ~4495, ~5025, ~3900
+> **来源**：[可扩展性系统](../ultimate-guide.md#extensibility) — 第 ~4495、~5025、~3900 行
 
 ---
 
-### Agent Lifecycle & Scope Isolation
+### 智能体生命周期与作用域隔离
 
-Sub-agents run in complete isolation from the parent. They receive a copy of context but share no state. Understanding this prevents "why can't my sub-agent see X?" confusion.
+子智能体与父级完全隔离运行。它们接收上下文的副本，但不共享任何状态。理解这一点可以避免"为什么子智能体看不到 X？"的困惑。
 
 ```mermaid
 sequenceDiagram
-    participant P as Parent Claude
-    participant T as Task Tool
-    participant S as Sub-Agent
-    participant FS as File System
+    participant P as 父级 Claude
+    participant T as 任务工具
+    participant S as 子智能体
+    participant FS as 文件系统
 
     P->>T: Task(prompt, tools_allowed)
-    T->>S: Spawn new Claude instance
-    Note over S: Gets: prompt + tool grants<br/>Does NOT get: parent conversation
+    T->>S: 派生新的 Claude 实例
+    Note over S: 获得：提示词 + 工具授权<br/>不获得：父级对话历史
 
-    S->>FS: Read files (if granted)
-    S->>FS: Edit files (if granted)
-    S->>S: Independent reasoning
+    S->>FS: 读取文件（如已授权）
+    S->>FS: 编辑文件（如已授权）
+    S->>S: 独立推理
 
-    Note over S,FS: Fully isolated execution
-    Note over S: No access to parent state
+    Note over S,FS: 完全隔离执行
+    Note over S: 无法访问父级状态
 
-    S->>T: Return: text result only
-    T->>P: Result string
-    P->>P: Continues with result
+    S->>T: 返回：仅文本结果
+    T->>P: 结果字符串
+    P->>P: 继续处理结果
 
-    Note over P,T: Parent sees only final text<br/>No side-effects leaked back
+    Note over P,T: 父级只看到最终文本<br/>没有副作用回传
 ```
 
 <details>
-<summary>ASCII version</summary>
+<summary>ASCII 版本</summary>
 
 ```
-Parent ──Task(prompt, tools)──► Sub-Agent
+父级 ──Task(prompt, tools)──► 子智能体
                                     │
-                               [isolated exec]
-                               - read files
-                               - edit files
-                               - bash (if allowed)
+                               [隔离执行]
+                               - 读取文件
+                               - 编辑文件
+                               - bash（如已允许）
                                     │
-Parent ◄───── text result ──────────┘
-(no state sharing, no side effects back)
+父级 ◄───── 文本结果 ───────────────┘
+（不共享状态，没有副作用回传）
 ```
 
 </details>
 
-> **Source**: [Sub-Agents](../ultimate-guide.md#sub-agents) — Line ~3900
+> **来源**：[子智能体](../ultimate-guide.md#sub-agents) — 第 ~3900 行
 
 ---
 
-### Hooks Event Pipeline
+### Hooks（钩子）事件流水线
 
-Hooks let you run custom code at key points in Claude Code's lifecycle — for security scanning, logging, enforcement, or notifications. The execution order matters.
+Hooks（钩子）让你可以在 Claude Code 生命周期的关键节点运行自定义代码——用于安全扫描、日志记录、强制执行或通知。执行顺序非常重要。
 
 ```mermaid
 flowchart TD
-    INIT([Session starts]) -.->|v2.1.69+| INST{InstructionsLoaded Hook}
+    INIT([会话开始]) -.->|v2.1.69+| INST{InstructionsLoaded 钩子}
     INST -.-> A
 
-    A([User sends message]) --> UPS{UserPromptSubmit Hook}
-    UPS -->|Exit 0: proceed| B{PreToolUse Hook}
-    UPS -->|Exit 2: feedback| A
-    B -->|Exit 0: allow| C[Tool executes]
-    B -->|Exit 1: block| D([Tool blocked<br/>Claude stops])
-    C --> E{PostToolUse Hook}
-    E --> F[Next tool or response]
-    F --> G{More tool calls?}
-    G -->|Yes| B
-    G -->|No| H([Session ends])
-    H --> I{Stop / SessionEnd Hook}
-    I --> J([Complete])
+    A([用户发送消息]) --> UPS{UserPromptSubmit 钩子}
+    UPS -->|退出码 0：继续| B{PreToolUse 钩子}
+    UPS -->|退出码 2：反馈| A
+    B -->|退出码 0：允许| C[工具执行]
+    B -->|退出码 1：阻止| D([工具已阻止<br/>Claude 停止])
+    C --> E{PostToolUse 钩子}
+    E --> F[下一个工具或响应]
+    F --> G{还有工具调用？}
+    G -->|是| B
+    G -->|否| H([会话结束])
+    H --> I{Stop / SessionEnd 钩子}
+    I --> J([完成])
 
-    K{PreCompact Hook} -.->|Before /compact| L[/compact runs]
-    L --> M{PostCompact Hook}
+    K{PreCompact 钩子} -.->|/compact 前| L[/compact 执行]
+    L --> M{PostCompact 钩子}
 
-    NOTE["Hook types:<br/>bash (exit 0/1/2)<br/>http (POST JSON → URL, v2.1.63+)"] -.-> B
+    NOTE["钩子类型：<br/>bash（退出码 0/1/2）<br/>http（POST JSON → URL，v2.1.63+）"] -.-> B
 
     style INST fill:#6DB3F2,color:#fff
     style UPS fill:#6DB3F2,color:#fff
@@ -223,54 +223,54 @@ flowchart TD
     style J fill:#7BC47F,color:#333
     style NOTE fill:#F5E6D3,color:#333
 
-    click INIT href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#71-the-event-system" "Session starts"
-    click INST href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#71-the-event-system" "InstructionsLoaded Hook — v2.1.69+"
-    click A href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#71-the-event-system" "User sends message"
-    click UPS href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#71-the-event-system" "UserPromptSubmit Hook"
-    click B href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#71-the-event-system" "PreToolUse Hook"
-    click C href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/core/architecture.md#2-the-tool-arsenal" "Tool executes"
-    click D href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#71-the-event-system" "Tool blocked"
-    click E href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#71-the-event-system" "PostToolUse Hook"
-    click F href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#71-the-event-system" "Next tool or response"
-    click G href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#71-the-event-system" "More tool calls?"
-    click H href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#71-the-event-system" "Session ends"
-    click I href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#71-the-event-system" "Stop / SessionEnd Hook"
-    click J href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#72-creating-hooks" "Complete"
-    click K href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#71-the-event-system" "PreCompact Hook"
-    click L href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#71-the-event-system" "/compact runs"
-    click M href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#71-the-event-system" "PostCompact Hook"
+    click INIT href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#71-the-event-system" "会话开始"
+    click INST href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#71-the-event-system" "InstructionsLoaded 钩子 — v2.1.69+"
+    click A href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#71-the-event-system" "用户发送消息"
+    click UPS href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#71-the-event-system" "UserPromptSubmit 钩子"
+    click B href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#71-the-event-system" "PreToolUse 钩子"
+    click C href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/core/architecture.md#2-the-tool-arsenal" "工具执行"
+    click D href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#71-the-event-system" "工具已阻止"
+    click E href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#71-the-event-system" "PostToolUse 钩子"
+    click F href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#71-the-event-system" "下一个工具或响应"
+    click G href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#71-the-event-system" "还有工具调用？"
+    click H href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#71-the-event-system" "会话结束"
+    click I href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#71-the-event-system" "Stop / SessionEnd 钩子"
+    click J href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#72-creating-hooks" "完成"
+    click K href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#71-the-event-system" "PreCompact 钩子"
+    click L href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#71-the-event-system" "/compact 执行"
+    click M href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#71-the-event-system" "PostCompact 钩子"
 ```
 
 <details>
-<summary>ASCII version</summary>
+<summary>ASCII 版本</summary>
 
 ```
-Session starts
-     │ (InstructionsLoaded Hook — v2.1.69+)
-User message
+会话开始
+     │ （InstructionsLoaded 钩子 — v2.1.69+）
+用户消息
      │
- UserPromptSubmit ──exit 2──► feedback to Claude (loop)
-     │ exit 0
- PreToolUse ──exit 1──► BLOCKED
-     │ exit 0
+ UserPromptSubmit ──退出码 2──► 反馈给 Claude（循环）
+     │ 退出码 0
+ PreToolUse ──退出码 1──► 已阻止
+     │ 退出码 0
      ▼
-Tool executes
+工具执行
      │
 PostToolUse
      │
-More tools? ──yes──► PreToolUse (loop)
-     │ no
-Session ends
+还有工具？──是──► PreToolUse（循环）
+     │ 否
+会话结束
      │
-  Stop / SessionEnd Hook
+  Stop / SessionEnd 钩子
      │
- Complete
+ 完成
 
-Separately: PreCompact ──► /compact ──► PostCompact
+另外：PreCompact ──► /compact ──► PostCompact
 
-Hook types: bash (exit 0/1/2) | http POST JSON (v2.1.63+)
+钩子类型：bash（退出码 0/1/2）| http POST JSON（v2.1.63+）
 ```
 
 </details>
 
-> **Source**: [Hooks System](../ultimate-guide.md#hooks) — Line ~5350 | UserPromptSubmit + HTTP hooks: v2.1.63+ | InstructionsLoaded: v2.1.69+
+> **来源**：[Hooks 系统](../ultimate-guide.md#hooks) — 第 ~5350 行 | UserPromptSubmit + HTTP 钩子：v2.1.63+ | InstructionsLoaded：v2.1.69+

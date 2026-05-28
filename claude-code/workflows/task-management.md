@@ -1,111 +1,111 @@
 > 📚 **AI Spark Wiki** · Claude Code 知识库
 
 ---
-title: "Task Management Workflow"
-description: "Multi-session task coordination using Tasks API and TodoWrite for complex projects"
+title: "任务管理工作流"
+description: "使用 Tasks API 和 TodoWrite 进行多会话任务协调，适用于复杂项目"
 tags: [workflow, guide, agents]
 ---
 
-# Task Management Workflow
+# 任务管理工作流
 
-**Version**: Claude Code v2.1.16+
-**Prerequisites**: Understanding of multi-session workflows, basic CLI proficiency
-**Time**: 15-30 min to learn, applies to all complex projects
+**版本**：Claude Code v2.1.16+
+**前提条件**：理解多会话工作流，具备基本 CLI 熟练度
+**时间**：15-30 分钟学习，适用于所有复杂项目
 
-## Overview
+## 概述
 
-Task management in Claude Code evolved significantly in v2.1.16 with the introduction of the **Tasks API**, complementing the original **TodoWrite** tool. This workflow teaches you when to use each system and how to leverage multi-session task coordination for complex projects.
+Claude Code 的任务管理功能在 v2.1.16 版本中通过引入 **Tasks API** 得到了显著改进，对原有的 **TodoWrite** 工具进行了补充。本工作流将教你何时使用各个系统，以及如何利用多会话任务协调来处理复杂项目。
 
-**When to use this workflow:**
-- Projects spanning multiple coding sessions
-- Multi-agent coordination scenarios
-- Complex task hierarchies with dependencies
-- Need to resume work after context compaction or session interruption
+**适用此工作流的情况：**
+- 跨越多个编码会话的项目
+- 多智能体协调场景
+- 具有依赖关系的复杂任务层次
+- 需要在上下文压缩或会话中断后恢复工作
 
-**When NOT to use:**
-- Single-session, straightforward implementations
-- Quick fixes or exploratory coding
-- Tasks completable in <10 minutes
+**不适用此工作流的情况：**
+- 单会话、直接的实现
+- 快速修复或探索性编码
+- 可在 10 分钟内完成的任务
 
 ---
 
-## System Comparison Quick Reference
+## 系统对比快速参考
 
-| Feature | TodoWrite (Legacy) | Tasks API (v2.1.16+) |
-|---------|-------------------|---------------------|
-| **Persistence** | Session memory only | Disk storage (`~/.claude/tasks/`) |
-| **Multi-session** | ❌ Lost on session end | ✅ Survives across sessions |
-| **Dependencies** | ❌ Manual ordering | ✅ Task blocking (A blocks B) |
-| **Coordination** | Single agent | ✅ Multi-agent with broadcast |
-| **Status tracking** | pending/in_progress/completed | pending/in_progress/completed |
-| **When to use** | Simple single-session todos | Complex multi-session projects |
+| 功能 | TodoWrite（旧版） | Tasks API（v2.1.16+） |
+|------|-----------------|---------------------|
+| **持久化** | 仅会话记忆 | 磁盘存储（`~/.claude/tasks/`） |
+| **多会话** | ❌ 会话结束后丢失 | ✅ 跨会话保存 |
+| **依赖关系** | ❌ 手动排序 | ✅ 任务阻塞（A 阻塞 B） |
+| **协调** | 单智能体 | ✅ 多智能体广播 |
+| **状态追踪** | pending/in_progress/completed | pending/in_progress/completed |
+| **适用场景** | 简单的单会话待办事项 | 复杂的多会话项目 |
 
-**Migration flag** (v2.1.19+):
+**迁移标志**（v2.1.19+）：
 ```bash
-# Use old system (TodoWrite)
+# 使用旧系统（TodoWrite）
 CLAUDE_CODE_ENABLE_TASKS=false claude
 
-# Use new system (Tasks API) - default since v2.1.19
+# 使用新系统（Tasks API）—— v2.1.19 起默认启用
 claude
 ```
 
 ---
 
-## Workflow Phase 1: Task Planning
+## 工作流阶段 1：任务规划
 
-**Goal**: Decompose complex work into trackable, executable units
+**目标**：将复杂工作分解为可追踪、可执行的单元
 
-### Step 1: Analyze Scope
+### 第 1 步：分析范围
 
-Before creating tasks, understand what you're building:
+在创建任务之前，了解你要构建的内容：
 
 ```bash
-# Discovery pattern
+# 发现模式
 claude
-> "Analyze this codebase for implementing JWT authentication:
-  - Glob for existing auth patterns
-  - Grep for security-related code
-  - Identify integration points"
+> "分析此代码库以实现 JWT 认证：
+  - 使用 Glob 查找现有的认证模式
+  - 使用 Grep 搜索安全相关代码
+  - 识别集成点"
 ```
 
-### Step 2: Design Task Hierarchy
+### 第 2 步：设计任务层次
 
-Break work into logical phases with dependencies:
+将工作分解为带有依赖关系的逻辑阶段：
 
-**Example: Authentication System**
+**示例：认证系统**
 ```
-Authentication System (parent)
-├── 1. Login endpoint (no dependencies)
-├── 2. Token refresh (depends on #1)
-├── 3. Logout endpoint (depends on #1)
-└── 4. Integration tests (depends on #1, #2, #3)
+认证系统（父任务）
+├── 1. 登录端点（无依赖）
+├── 2. 令牌刷新（依赖 #1）
+├── 3. 退出端点（依赖 #1）
+└── 4. 集成测试（依赖 #1、#2、#3）
 ```
 
-### Step 3: Create Task Structure
+### 第 3 步：创建任务结构
 
-Use `TaskCreate` to materialize your plan:
+使用 `TaskCreate` 将计划具体化：
 
 ```bash
-# Session 1: Planning phase
+# 会话 1：规划阶段
 export CLAUDE_CODE_TASK_LIST_ID="auth-system-v2"
 claude
 
-# Inside Claude session:
-> "Create a task hierarchy for JWT authentication:
+# 在 Claude 会话中：
+> "为 JWT 认证创建任务层次：
 
-  Parent task: 'Implement JWT authentication system'
-  - Description: Add JWT-based auth with refresh tokens and secure storage
+  父任务：'实现 JWT 认证系统'
+  - 描述：添加带有刷新令牌和安全存储的 JWT 认证
 
-  Child tasks:
-  1. 'Create login endpoint' (no dependencies)
-  2. 'Implement token refresh logic' (depends on task 1)
-  3. 'Create logout endpoint' (depends on task 1)
-  4. 'Write integration tests' (depends on tasks 1, 2, 3)
+  子任务：
+  1. '创建登录端点'（无依赖）
+  2. '实现令牌刷新逻辑'（依赖任务 1）
+  3. '创建退出端点'（依赖任务 1）
+  4. '编写集成测试'（依赖任务 1、2、3）
 
-  Use TaskCreate with proper metadata."
+  使用 TaskCreate 并附带适当的元数据。"
 ```
 
-**Expected output from Claude:**
+**Claude 的预期输出：**
 ```json
 {
   "tasks": [
@@ -129,49 +129,49 @@ claude
       "dependencies": ["task-login"],
       "metadata": {"priority": "high", "estimated_duration": "1h"}
     }
-    // ... other tasks
+    // ... 其他任务
   ]
 }
 ```
 
 ---
 
-## Workflow Phase 2: Task Execution
+## 工作流阶段 2：任务执行
 
-**Goal**: Execute tasks systematically with progress tracking
+**目标**：系统地执行任务并追踪进度
 
-### Execution Pattern
+### 执行模式
 
 ```
-TaskList → TaskGet (next pending) → Execute → TaskUpdate → Validate → Repeat
+TaskList → TaskGet（下一个待处理）→ 执行 → TaskUpdate → 验证 → 重复
 ```
 
-### Step 1: Discover Next Task
+### 第 1 步：发现下一个任务
 
 ```bash
-# Session 2: Start implementation
+# 会话 2：开始实现
 export CLAUDE_CODE_TASK_LIST_ID="auth-system-v2"
 claude
 
-> "TaskList to show all pending tasks"
+> "TaskList 显示所有待处理任务"
 ```
 
-**Output:**
+**输出：**
 ```
-Tasks for 'auth-system-v2':
-✅ task-login: Create login endpoint [completed]
-⏳ task-refresh: Implement token refresh logic [pending, blocked by: none]
-⏳ task-logout: Create logout endpoint [pending, blocked by: none]
-⏳ task-tests: Write integration tests [pending, blocked by: task-refresh, task-logout]
+'auth-system-v2' 的任务：
+✅ task-login：创建登录端点 [已完成]
+⏳ task-refresh：实现令牌刷新逻辑 [待处理，无阻塞]
+⏳ task-logout：创建退出端点 [待处理，无阻塞]
+⏳ task-tests：编写集成测试 [待处理，被 task-refresh、task-logout 阻塞]
 ```
 
-### Step 2: Get Task Details
+### 第 2 步：获取任务详情
 
 ```bash
-> "TaskGet task-refresh to see full requirements"
+> "TaskGet task-refresh 查看完整需求"
 ```
 
-**Output:**
+**输出：**
 ```json
 {
   "id": "task-refresh",
@@ -187,165 +187,165 @@ Tasks for 'auth-system-v2':
 }
 ```
 
-### Step 3: Execute & Update
+### 第 3 步：执行并更新
 
 ```bash
-> "Mark task-refresh as in_progress, then implement the token refresh endpoint according to requirements"
+> "将 task-refresh 标记为进行中，然后按需求实现令牌刷新端点"
 
-# Claude executes: TaskUpdate task-refresh status=in_progress
-# Claude implements the feature...
-# Upon completion:
+# Claude 执行：TaskUpdate task-refresh status=in_progress
+# Claude 实现该功能...
+# 完成后：
 
-> "Mark task-refresh as completed"
-# Claude executes: TaskUpdate task-refresh status=completed
+> "将 task-refresh 标记为已完成"
+# Claude 执行：TaskUpdate task-refresh status=completed
 ```
 
-### Step 4: Validate
+### 第 4 步：验证
 
 ```bash
-> "Run tests for token refresh functionality"
+> "运行令牌刷新功能的测试"
 
-# If tests pass:
-# ✅ Task remains completed
+# 测试通过：
+# ✅ 任务保持已完成状态
 
-# If tests fail:
-> "TaskUpdate task-refresh status=in_progress, add error details to metadata and fix issues"
+# 测试失败：
+> "TaskUpdate task-refresh status=in_progress，将错误详情添加到元数据并修复问题"
 ```
 
 ---
 
-## Workflow Phase 3: Session Management
+## 工作流阶段 3：会话管理
 
-**Goal**: Seamlessly resume work across sessions and context boundaries
+**目标**：跨会话和上下文边界无缝恢复工作
 
-### Persistence Mechanism
+### 持久化机制
 
-**Storage location**: `~/.claude/tasks/<task-list-id>/`
+**存储位置**：`~/.claude/tasks/<task-list-id>/`
 
-Tasks survive:
-- Session termination
-- Context compaction (`/compact`)
-- System restarts
-- Multiple days of interruption
+任务在以下情况后仍会保留：
+- 会话终止
+- 上下文压缩（`/compact`）
+- 系统重启
+- 多天的中断
 
-#### ⚠️ Field Visibility Limitations
+#### ⚠️ 字段可见性限制
 
-**TaskList returns only**: `id`, `subject`, `status`, `owner`, `blockedBy`
+**TaskList 仅返回**：`id`、`subject`、`status`、`owner`、`blockedBy`
 
-**Missing in TaskList output**:
-- `description` (requires TaskGet per task)
-- `metadata` (custom fields like priority, estimates)
-- `activeForm` (progress spinner text)
+**TaskList 输出中缺失**：
+- `description`（需要逐个使用 TaskGet）
+- `metadata`（自定义字段如优先级、估时）
+- `activeForm`（进度显示文字）
 
-**Workflow adjustment**:
+**工作流调整**：
 
 ```bash
-# DON'T: Assume you can scan all descriptions
-TaskList  # Shows subjects only
+# 不要：假设可以扫描所有描述
+TaskList  # 仅显示主题
 
-# DO: Fetch selectively
-TaskList                    # Get overview (which tasks exist, statuses)
-TaskGet(task-auth-login)    # Get full details for specific task
-TaskGet(task-auth-tests)    # Get details for next task
+# 应该：有选择地获取
+TaskList                    # 获取概览（存在哪些任务、状态）
+TaskGet(task-auth-login)    # 获取特定任务的完整详情
+TaskGet(task-auth-tests)    # 获取下一个任务的详情
 ```
 
-**When this matters**:
-- Complex projects with detailed task descriptions (>50 words per task)
-- Multi-agent coordination requiring shared context visibility
-- Need to quickly scan all task notes to decide resumption point
+**这一点何时重要**：
+- 每个任务描述较长的复杂项目（>50 字/任务）
+- 需要共享上下文可见性的多智能体协调
+- 需要快速扫描所有任务备注以决定恢复点
 
-**Cost awareness**:
-- TaskList = 1 API call
-- Fetching descriptions for N tasks = 1 + N calls
-- For 20 tasks, that's 20x overhead if you need all descriptions
+**成本意识**：
+- TaskList = 1 次 API 调用
+- 获取 N 个任务的描述 = 1 + N 次调用
+- 对于 20 个任务，若需要所有描述，开销是 20 倍
 
-**Mitigation**:
-- Use `subject` field for critical info (visible in TaskList)
-- Keep `description` concise (50-100 words max)
-- Store detailed plans in markdown files (`docs/plan-*.md`)
+**缓解措施**：
+- 在 `subject` 字段中放关键信息（TaskList 中可见）
+- 保持 `description` 简洁（最多 50-100 字）
+- 将详细计划存储在 markdown 文件中（`docs/plan-*.md`）
 
-### Resume Pattern
+### 恢复模式
 
 ```bash
-# Days later, different terminal session
+# 数天后，在不同的终端会话中
 export CLAUDE_CODE_TASK_LIST_ID="auth-system-v2"
 claude
 
-> "TaskList to show current state"
+> "TaskList 显示当前状态"
 
-# Output shows exactly where you left off:
-# ✅ task-login [completed]
-# ✅ task-refresh [completed]
-# ⏳ task-logout [pending]
-# ⏳ task-tests [pending, blocked by: task-logout]
+# 输出精确显示你上次停在哪里：
+# ✅ task-login [已完成]
+# ✅ task-refresh [已完成]
+# ⏳ task-logout [待处理]
+# ⏳ task-tests [待处理，被 task-logout 阻塞]
 
-> "Continue with next pending task that isn't blocked"
+> "继续下一个未被阻塞的待处理任务"
 ```
 
-### Multi-Terminal Coordination
+### 多终端协调
 
-**Use case**: Run multiple Claude instances working on the same project
+**用例**：运行多个 Claude 实例处理同一项目
 
 ```bash
-# Terminal 1: Frontend work
+# 终端 1：前端工作
 export CLAUDE_CODE_TASK_LIST_ID="auth-system-v2"
 claude
-> "Work on task-logout endpoint"
+> "处理 task-logout 端点"
 
-# Terminal 2: Test writing (simultaneous)
+# 终端 2：编写测试（同时进行）
 export CLAUDE_CODE_TASK_LIST_ID="auth-system-v2"
 claude
-> "TaskList - check what's completed so I can write tests"
+> "TaskList - 检查已完成的内容，这样我可以编写测试"
 
-# Both terminals see real-time state updates
+# 两个终端都能看到实时状态更新
 ```
 
-**⚠️ Warning**: Use repository-specific task list IDs to avoid cross-project contamination:
+**⚠️ 警告**：使用仓库特定的任务列表 ID，避免跨项目污染：
 ```bash
-# ❌ BAD: Generic ID used across multiple repos
+# ❌ 差：跨多个仓库使用通用 ID
 export CLAUDE_CODE_TASK_LIST_ID="my-project"
 
-# ✅ GOOD: Repo-specific with context
+# ✅ 好：带上下文的仓库特定 ID
 export CLAUDE_CODE_TASK_LIST_ID="mycompany-api-auth-refactor"
 ```
 
 ---
 
-## Integration: TDD + Task Management
+## 集成：TDD（测试驱动开发）+ 任务管理
 
-Combine Test-Driven Development with task tracking for systematic test coverage.
+将测试驱动开发与任务追踪结合，实现系统性的测试覆盖。
 
-### Pattern: Test-First Task Execution
+### 模式：测试优先任务执行
 
 ```bash
 export CLAUDE_CODE_TASK_LIST_ID="tdd-feature-x"
 claude
 
-# Create tasks with test-first approach
-> "Create task hierarchy for feature X:
+# 用测试优先方法创建任务
+> "为功能 X 创建任务层次：
 
-  For each feature component:
-  1. Task: 'Write failing tests for [component]'
-  2. Task: 'Implement [component] to pass tests' (depends on #1)
-  3. Task: 'Refactor [component]' (depends on #2)
+  对每个功能组件：
+  1. 任务：'为[组件]编写失败测试'
+  2. 任务：'实现[组件]使测试通过'（依赖 #1）
+  3. 任务：'重构[组件]'（依赖 #2）
 
-  Use TDD red-green-refactor cycle per task."
+  每个任务使用 TDD（测试驱动开发）红绿重构循环。"
 ```
 
-### Example: Login Feature with TDD
+### 示例：带 TDD 的登录功能
 
 ```bash
-# Phase 1: Red (failing tests)
+# 阶段 1：红（失败测试）
 TaskCreate: {
   title: "Write failing tests for login endpoint",
   description: "Test cases: valid credentials, invalid password, user not found, rate limiting",
   status: "pending"
 }
 
-# Execute test writing
-> "Implement task-login-tests, ensure all tests fail initially"
+# 执行测试编写
+> "实现 task-login-tests，确保所有测试初始时失败"
 
-# Phase 2: Green (minimal implementation)
+# 阶段 2：绿（最简实现）
 TaskCreate: {
   title: "Implement login endpoint (minimal)",
   description: "Make tests pass with simplest possible implementation",
@@ -353,7 +353,7 @@ TaskCreate: {
   status: "pending"
 }
 
-# Phase 3: Refactor
+# 阶段 3：重构
 TaskCreate: {
   title: "Refactor login endpoint",
   description: "Optimize, remove duplication, improve readability",
@@ -362,52 +362,52 @@ TaskCreate: {
 }
 ```
 
-**Full workflow reference**: See [TDD with Claude](tdd-with-claude.md#task-management-integration)
+**完整工作流参考**：参见 [TDD with Claude](tdd-with-claude.md#task-management-integration)
 
 ---
 
-## Integration: Plan-Driven + Task Management
+## 集成：计划驱动 + 任务管理
 
-Convert strategic plans into executable task hierarchies.
+将战略计划转化为可执行的任务层次。
 
-### Pattern: Plan-to-Tasks Transformation
+### 模式：计划到任务的转换
 
 ```bash
-# Step 1: Enter plan mode
+# 第 1 步：进入计划模式
 claude
-> [Press Shift+Tab to enter Plan Mode]
+> [按 Shift+Tab 进入计划模式]
 
-# Step 2: Create architectural plan
-> "Design architecture for microservices migration:
-  - Identify service boundaries
-  - Plan data migration strategy
-  - Design API contracts"
+# 第 2 步：创建架构计划
+> "设计微服务迁移的架构：
+  - 识别服务边界
+  - 规划数据迁移策略
+  - 设计 API 契约"
 
-# Step 3: Exit plan mode with task creation
-> "Convert this plan into a task hierarchy using TaskCreate"
+# 第 3 步：退出计划模式并创建任务
+> "用 TaskCreate 将此计划转化为任务层次"
 ```
 
-### Example: Microservices Migration
+### 示例：微服务迁移
 
-**Plan output:**
+**计划输出：**
 ```
-Phase 1: Analysis (Week 1)
-- Map monolith dependencies
-- Identify bounded contexts
-- Design service boundaries
+阶段 1：分析（第 1 周）
+- 映射单体依赖
+- 识别有界上下文
+- 设计服务边界
 
-Phase 2: Infrastructure (Week 2)
-- Set up service templates
-- Configure API gateway
-- Establish monitoring
+阶段 2：基础设施（第 2 周）
+- 设置服务模板
+- 配置 API 网关
+- 建立监控
 
-Phase 3: Migration (Week 3-6)
-- Extract user service
-- Extract order service
-- Migrate database schemas
+阶段 3：迁移（第 3-6 周）
+- 提取用户服务
+- 提取订单服务
+- 迁移数据库 Schema
 ```
 
-**Tasks transformation:**
+**任务转换：**
 ```bash
 TaskCreate: {
   title: "Microservices migration",
@@ -429,123 +429,123 @@ TaskCreate: {
         {title: "Establish monitoring"}
       ]
     }
-    // ... Phase 3
+    // ... 阶段 3
   ]
 }
 ```
 
-**Full workflow reference**: See [Plan-Driven Development](plan-driven.md#task-hierarchy-design)
+**完整工作流参考**：参见 [计划驱动开发](plan-driven.md#task-hierarchy-design)
 
 ---
 
-## TodoWrite Migration Guide
+## TodoWrite 迁移指南
 
-### When to Migrate
+### 何时迁移
 
-**Stay with TodoWrite if:**
-- ✅ All work completes in a single session
-- ✅ No multi-agent coordination needed
-- ✅ Simple linear task lists (no dependencies)
-- ✅ Using Claude Code < v2.1.16
+**继续使用 TodoWrite 如果：**
+- ✅ 所有工作在单次会话中完成
+- ✅ 无需多智能体协调
+- ✅ 简单线性任务列表（无依赖关系）
+- ✅ 使用 Claude Code < v2.1.16
 
-**Migrate to Tasks API if:**
-- ✅ Work spans multiple sessions
-- ✅ Need task persistence across days/weeks
-- ✅ Complex dependency graphs
-- ✅ Multi-terminal collaboration
-- ✅ Want to resume after context compaction
+**迁移到 Tasks API 如果：**
+- ✅ 工作跨越多个会话
+- ✅ 需要任务跨天/跨周持久化
+- ✅ 复杂的依赖图
+- ✅ 多终端协作
+- ✅ 希望在上下文压缩后恢复
 
-### Migration Steps
+### 迁移步骤
 
-#### Step 1: Identify TodoWrite Usage
+#### 第 1 步：识别 TodoWrite 用法
 
 ```bash
-# Find existing TodoWrite usage in your CLAUDE.md or workflows
+# 在你的 CLAUDE.md 或工作流中查找现有的 TodoWrite 用法
 grep -r "TodoWrite" .claude/
 ```
 
-#### Step 2: Convert TodoWrite Lists to Tasks
+#### 第 2 步：将 TodoWrite 列表转换为任务
 
-**Before (TodoWrite):**
+**之前（TodoWrite）：**
 ```markdown
-- [ ] Implement user authentication
-- [ ] Add password hashing
-- [ ] Create session management
-- [ ] Write tests
+- [ ] 实现用户认证
+- [ ] 添加密码哈希
+- [ ] 创建会话管理
+- [ ] 编写测试
 ```
 
-**After (Tasks API):**
+**之后（Tasks API）：**
 ```bash
 export CLAUDE_CODE_TASK_LIST_ID="user-auth-2026"
 claude
 
-> "Create tasks:
-  1. 'Implement user authentication' (parent)
-     - Child: 'Add password hashing'
-     - Child: 'Create session management' (depends on hashing)
-     - Child: 'Write tests' (depends on auth, hashing, sessions)"
+> "创建任务：
+  1. '实现用户认证'（父任务）
+     - 子任务：'添加密码哈希'
+     - 子任务：'创建会话管理'（依赖哈希）
+     - 子任务：'编写测试'（依赖认证、哈希、会话）"
 ```
 
-#### Step 3: Update CLAUDE.md Instructions
+#### 第 3 步：更新 CLAUDE.md 指令
 
-**Before:**
+**之前：**
 ```markdown
-For complex tasks:
-- Use TodoWrite to create task list
-- Execute tasks sequentially
+对于复杂任务：
+- 使用 TodoWrite 创建任务列表
+- 顺序执行任务
 ```
 
-**After:**
+**之后：**
 ```markdown
-For complex tasks:
-- Set CLAUDE_CODE_TASK_LIST_ID=<project-name>
-- Use TaskCreate for hierarchical planning
-- Execute with TaskUpdate status tracking
-- Resume with TaskList in new sessions
+对于复杂任务：
+- 设置 CLAUDE_CODE_TASK_LIST_ID=<项目名称>
+- 使用 TaskCreate 进行层次化规划
+- 用 TaskUpdate 状态追踪执行
+- 新会话中用 TaskList 恢复
 ```
 
-#### Step 4: Test Migration
+#### 第 4 步：测试迁移
 
 ```bash
-# Create test task list
+# 创建测试任务列表
 export CLAUDE_CODE_TASK_LIST_ID="migration-test"
 claude
 
-> "Create 3 test tasks with dependencies, mark one completed, then exit"
+> "创建 3 个带依赖关系的测试任务，标记一个为已完成，然后退出"
 
-# Relaunch in new session
+# 在新会话中重新启动
 export CLAUDE_CODE_TASK_LIST_ID="migration-test"
 claude
 
-> "TaskList - verify tasks persisted correctly"
+> "TaskList - 验证任务已正确持久化"
 
-# Expected: See all 3 tasks with correct states
+# 预期：看到所有 3 个任务及其正确状态
 ```
 
 ---
 
-## Patterns & Anti-Patterns
+## 模式与反模式
 
-### ✅ Good Patterns
+### ✅ 好的模式
 
-#### 1. Hierarchical Task Decomposition
+#### 1. 层次化任务分解
 
 ```bash
-Project (parent)
-└── Feature A (child of project)
-    ├── Component A1 (child of Feature A)
-    │   ├── Implementation (leaf task)
-    │   └── Tests (leaf task, depends on Implementation)
-    └── Component A2
+项目（父任务）
+└── 功能 A（项目的子任务）
+    ├── 组件 A1（功能 A 的子任务）
+    │   ├── 实现（叶任务）
+    │   └── 测试（叶任务，依赖实现）
+    └── 组件 A2
         └── ...
 ```
 
-**Why it works**: Mirrors natural project structure, makes dependencies explicit
+**为何有效**：与自然项目结构一致，使依赖关系明确
 
-#### 2. Dependency-First Ordering
+#### 2. 依赖优先排序
 
 ```bash
-# Always define dependencies when creating tasks
+# 创建任务时始终定义依赖关系
 TaskCreate: {
   title: "Deploy to production",
   dependencies: ["run-tests", "code-review", "backup-database"],
@@ -553,26 +553,26 @@ TaskCreate: {
 }
 ```
 
-**Why it works**: Prevents premature execution, enforces quality gates
+**为何有效**：防止过早执行，强制执行质量门控
 
-#### 3. Granular Status Updates
+#### 3. 细粒度状态更新
 
 ```bash
-# Bad: Large task marked completed without intermediate updates
+# 差：大任务完成时没有中间更新
 TaskCreate: {title: "Build entire auth system"}
-# ... hours later ...
+# ... 数小时后 ...
 TaskUpdate: {id: "auth-system", status: "completed"}
 
-# Good: Frequent status updates as work progresses
+# 好：随工作推进频繁更新状态
 TaskUpdate: {id: "auth-system", status: "in_progress", progress: "25%"}
 TaskUpdate: {id: "auth-system", status: "in_progress", progress: "50%"}
 TaskUpdate: {id: "auth-system", status: "in_progress", progress: "75%"}
 TaskUpdate: {id: "auth-system", status: "completed"}
 ```
 
-**Why it works**: Provides visibility, enables context-aware resumption
+**为何有效**：提供可见性，支持上下文感知的恢复
 
-#### 4. Metadata-Rich Tasks
+#### 4. 富元数据任务
 
 ```bash
 TaskCreate: {
@@ -589,20 +589,20 @@ TaskCreate: {
 }
 ```
 
-**Why it works**: Context-rich resumption, easier delegation, better documentation
+**为何有效**：上下文丰富的恢复、更易委托、更好的文档
 
-### ❌ Anti-Patterns
+### ❌ 反模式
 
-#### 1. Monolithic Tasks (>10 steps)
+#### 1. 单体任务（>10 步）
 
 ```bash
-# ❌ BAD: Task too large, hard to track progress
+# ❌ 差：任务过大，难以追踪进度
 TaskCreate: {
   title: "Implement entire payment system",
   description: "Stripe integration, webhooks, refunds, disputes, reporting, admin UI, ..."
 }
 
-# ✅ GOOD: Break into phases
+# ✅ 好：按阶段拆分
 TaskCreate: {
   title: "Payment system - Phase 1: Core integration",
   children: [
@@ -613,33 +613,33 @@ TaskCreate: {
 }
 ```
 
-#### 2. Missing Dependencies
+#### 2. 缺少依赖关系
 
 ```bash
-# ❌ BAD: Tasks can execute in wrong order
-TaskCreate: {title: "Deploy to production"} # No dependencies
-TaskCreate: {title: "Write tests"} # No dependencies
+# ❌ 差：任务可能以错误顺序执行
+TaskCreate: {title: "Deploy to production"} # 无依赖
+TaskCreate: {title: "Write tests"} # 无依赖
 
-# ✅ GOOD: Explicit ordering
+# ✅ 好：明确排序
 TaskCreate: {
   title: "Deploy to production",
   dependencies: ["write-tests", "run-tests", "code-review"]
 }
 ```
 
-#### 3. Orphan Tasks Without Context
+#### 3. 缺乏上下文的孤立任务
 
 ```bash
-# ❌ BAD: Future you won't remember what this means
+# ❌ 差：未来的你不会记得这是什么意思
 TaskCreate: {
   title: "Fix the bug",
   description: "That one from yesterday"
 }
 
-# ✅ GOOD: Self-contained context
+# ✅ 好：自包含的上下文
 TaskCreate: {
   title: "Fix login timeout on Safari",
-  description: "Users on Safari 17.2+ experience session timeout after 5min. Expected: 30min timeout. Root cause: cookie SameSite=Strict not supported.",
+  description: "Safari 17.2+ 上的用户 5 分钟后遇到会话超时。预期：30 分钟超时。根因：cookie SameSite=Strict 不支持。",
   metadata: {
     browser: "Safari 17.2+",
     error_message: "Session expired",
@@ -649,48 +649,48 @@ TaskCreate: {
 }
 ```
 
-#### 4. Status Mismatch
+#### 4. 状态不匹配
 
 ```bash
-# ❌ BAD: Task marked completed but tests fail
+# ❌ 差：任务标记为已完成但测试失败
 TaskUpdate: {id: "login-feature", status: "completed"}
-# Tests run later: 3 failures
+# 测试稍后运行：3 个失败
 
-# ✅ GOOD: Validation before completion
-> "Run tests for login feature"
-# If tests pass:
+# ✅ 好：完成前先验证
+> "运行登录功能的测试"
+# 测试通过：
 TaskUpdate: {id: "login-feature", status: "completed", metadata: {test_results: "pass"}}
-# If tests fail:
+# 测试失败：
 TaskUpdate: {id: "login-feature", status: "in_progress", metadata: {test_results: "3 failures", error_log: "..."}}
 ```
 
 ---
 
-## Troubleshooting
+## 故障排查
 
-### Q: Tasks don't persist across sessions
+### 问：跨会话任务不持久
 
-**Symptom**: `TaskList` shows empty after restarting Claude
+**症状**：重启 Claude 后 `TaskList` 显示为空
 
-**Solution**:
+**解决方案**：
 ```bash
-# Ensure CLAUDE_CODE_TASK_LIST_ID is set before launching
+# 确保启动前设置了 CLAUDE_CODE_TASK_LIST_ID
 export CLAUDE_CODE_TASK_LIST_ID="your-project-name"
 claude
 
-# Verify storage directory exists
+# 验证存储目录存在
 ls ~/.claude/tasks/your-project-name/
 ```
 
-### Q: Multiple projects sharing task lists
+### 问：多项目共享任务列表
 
-**Symptom**: Seeing tasks from Project A when working on Project B
+**症状**：处理项目 B 时看到项目 A 的任务
 
-**Cause**: Using same task list ID across different repositories
+**原因**：跨不同仓库使用了相同的任务列表 ID
 
-**Solution**:
+**解决方案**：
 ```bash
-# Use repo-specific IDs with context
+# 使用带上下文的仓库特定 ID
 cd ~/projects/api
 export CLAUDE_CODE_TASK_LIST_ID="api-v2-migration"
 claude
@@ -700,53 +700,53 @@ export CLAUDE_CODE_TASK_LIST_ID="frontend-redesign"
 claude
 ```
 
-### Q: TodoWrite still used instead of Tasks API
+### 问：仍在使用 TodoWrite 而非 Tasks API
 
-**Symptom**: Tasks not persisting even with task list ID set
+**症状**：即使设置了任务列表 ID，任务仍不持久
 
-**Cause**: `CLAUDE_CODE_ENABLE_TASKS=false` set in environment
+**原因**：环境中设置了 `CLAUDE_CODE_ENABLE_TASKS=false`
 
-**Solution**:
+**解决方案**：
 ```bash
-# Check environment
+# 检查环境
 env | grep CLAUDE_CODE_ENABLE_TASKS
 
-# Unset if present
+# 若存在则取消设置
 unset CLAUDE_CODE_ENABLE_TASKS
 
-# Or explicitly enable (v2.1.19+ defaults to enabled)
+# 或明确启用（v2.1.19+ 默认启用）
 export CLAUDE_CODE_ENABLE_TASKS=true
 ```
 
-### Q: Task dependencies not enforced
+### 问：任务依赖关系未被强制执行
 
-**Symptom**: Claude executes blocked tasks before dependencies complete
+**症状**：Claude 在依赖任务完成前执行被阻塞的任务
 
-**Cause**: Dependencies not properly defined in TaskCreate
+**原因**：TaskCreate 中依赖关系定义不正确
 
-**Solution**:
+**解决方案**：
 ```bash
-# Ensure dependencies use correct task IDs
+# 确保依赖关系使用正确的任务 ID
 TaskCreate: {
   title: "Task B",
-  dependencies: ["task-a-id"], # ✅ Use actual task ID
-  # NOT dependencies: ["Task A"] # ❌ Task title won't work
+  dependencies: ["task-a-id"], # ✅ 使用实际的任务 ID
+  # 不是 dependencies: ["Task A"] # ❌ 任务标题无效
 }
 
-# Verify dependencies:
+# 验证依赖关系：
 TaskGet task-b-id
-# Should show: "blockedBy": ["task-a-id"]
+# 应显示："blockedBy": ["task-a-id"]
 ```
 
 ---
 
-## Advanced: Custom Task Metadata
+## 高级：自定义任务元数据
 
-Extend tasks with domain-specific metadata for enhanced workflows.
+用特定领域的元数据扩展任务以增强工作流。
 
-### Metadata Conventions
+### 元数据约定
 
-**Performance optimization tasks:**
+**性能优化任务：**
 ```json
 {
   "metadata": {
@@ -759,7 +759,7 @@ Extend tasks with domain-specific metadata for enhanced workflows.
 }
 ```
 
-**Security tasks:**
+**安全任务：**
 ```json
 {
   "metadata": {
@@ -772,103 +772,103 @@ Extend tasks with domain-specific metadata for enhanced workflows.
 }
 ```
 
-**Bug fix tasks:**
+**Bug 修复任务：**
 ```json
 {
   "metadata": {
     "type": "bugfix",
     "issue_url": "https://github.com/org/repo/issues/456",
     "reported_by": "user@example.com",
-    "reproduction_steps": "1. Login 2. Navigate to dashboard 3. Click export",
+    "reproduction_steps": "1. 登录 2. 导航到仪表板 3. 点击导出",
     "error_message": "TypeError: Cannot read property 'map' of undefined"
   }
 }
 ```
 
-### Querying by Metadata
+### 按元数据查询
 
 ```bash
-# Filter tasks by type (requires scripting, not built-in)
+# 按类型过滤任务（需要脚本，非内置功能）
 TaskList | jq '.tasks[] | select(.metadata.type == "security")'
 
-# Find high-priority pending tasks
+# 查找高优先级待处理任务
 TaskList | jq '.tasks[] | select(.metadata.priority == "high" and .status == "pending")'
 ```
 
 ---
 
-## Session Lifecycle Protocol
+## 会话生命周期协议
 
-Every agent session follows the same ten-step sequence, from boot to commit. Defining these steps explicitly, rather than leaving them implicit, is what makes sessions reliably resumable after an interruption. Anthropic's own engineering team observed this directly: in a game editor experiment, a bare Claude run failed partway through, while the same workload wrapped in a structured session harness completed successfully (source: [Anthropic Engineering Blog](https://www.anthropic.com/engineering/harness-design-long-running-apps)).
+每个智能体会话遵循相同的十步顺序，从启动到提交。明确定义这些步骤，而不是让其隐含，正是使会话在中断后可靠恢复的关键。Anthropic 自己的工程团队直接观察到了这一点：在一个游戏编辑器实验中，裸跑 Claude 在中途失败，而相同的工作量在结构化会话框架的包裹下成功完成（来源：[Anthropic 工程博客](https://www.anthropic.com/engineering/harness-design-long-running-apps)）。
 
-| Step | Action | Artifact |
-|------|--------|----------|
-| START | Read project instructions | `AGENTS.md` or `CLAUDE.md` |
-| INIT | Run environment bootstrap | `init.sh` / `npm install && npm run check` |
-| READ | Load previous session state | `progress.md` |
-| SELECT | Pick one feature, set status active | `feature_list.json` |
-| EXECUTE | Implement only that feature | Source files |
-| VERIFY | Run three-layer verification (lint, tests, e2e) | Exit codes |
-| WRAP UP | Record completion and evidence | `progress.md`, `feature_list.json` |
-| CLEANUP | Remove temp files, verify repo restarts cleanly | Repo state |
-| COMMIT | Mark session boundary in git | Git history |
-| HANDOFF | Write or update handoff note | `claudedocs/handoffs/` |
+| 步骤 | 操作 | 制品 |
+|------|------|------|
+| 启动 | 读取项目指令 | `AGENTS.md` 或 `CLAUDE.md` |
+| 初始化 | 运行环境引导 | `init.sh` / `npm install && npm run check` |
+| 读取 | 加载上一次会话状态 | `progress.md` |
+| 选择 | 选择一个功能，将状态设为活跃 | `feature_list.json` |
+| 执行 | 只实现该功能 | 源代码文件 |
+| 验证 | 运行三层验证（lint、测试、e2e） | 退出码 |
+| 收尾 | 记录完成情况和证据 | `progress.md`、`feature_list.json` |
+| 清理 | 删除临时文件，验证仓库可干净重启 | 仓库状态 |
+| 提交 | 在 Git 中标记会话边界 | Git 历史 |
+| 交接 | 编写或更新交接说明 | `claudedocs/handoffs/` |
 
-### The continuity artifact: `progress.md`
+### 连续性制品：`progress.md`
 
-`progress.md` is the file that lets the READ step happen in seconds rather than minutes. It lives in the project root, stays under 50 lines, and is written for the next agent session, not for a human reviewer. That distinction matters. A handoff document (WRAP UP and HANDOFF steps) is verbose by design: it tells a human what happened, why decisions were made, and what to watch for. `progress.md` does something narrower. It records the active feature ID, the last commit hash, any current blockers, and the single next action the agent should take. No prose, no narrative.
+`progress.md` 是让读取步骤在数秒而非数分钟内完成的文件。它存放在项目根目录，保持在 50 行以内，为下一个智能体会话而写，而不是为人工审查者写。这一区别很重要。交接文档（收尾和交接步骤）天然是详细的：它告诉人类发生了什么、为何做出这些决定、需要注意什么。`progress.md` 做的事情更窄。它记录活跃的功能 ID、最后的提交哈希、当前的阻碍因素，以及智能体应该采取的下一个单一行动。不要散文，不要叙事。
 
 ```markdown
-# Session Progress
+# 会话进度
 
 last_updated: 2026-05-04
 active_feature: feat-002
 last_commit: a3f92c1
 session_count: 3
 
-## Status
-- feat-001: passing (verified 2026-05-01)
-- feat-002: active (in progress)
-- feat-003: not_started
+## 状态
+- feat-001: 通过（已验证 2026-05-01）
+- feat-002: 活跃（进行中）
+- feat-003: 未开始
 
-## Next action
-Finish chunking implementation, then run: npm test -- --grep 'chunking'
+## 下一步行动
+完成分块实现，然后运行：npm test -- --grep 'chunking'
 
-## Blockers
-None
+## 阻碍
+无
 ```
 
-The next session reads this at the READ step, picks up `active_feature: feat-002`, checks the last commit hash to orient itself in git history, and moves directly to the next action. No cold-start briefing required.
+下一次会话在读取步骤时读取这个文件，找到 `active_feature: feat-002`，检查最后的提交哈希以在 Git 历史中定位自己，然后直接进行下一步行动。无需冷启动简报。
 
-### How this composes with the handoff triad
+### 与交接三合一的组合方式
 
-The handoff triad pattern (create, resume, update) documented earlier in this workflow and `progress.md` serve different audiences reading the same session boundary. `progress.md` gives the agent a machine-readable starting point. The handoff document gives the human reviewer a narrative account of what changed and why. Neither replaces the other, and the two are updated at the same step (WRAP UP), which keeps them synchronized without extra overhead.
+本工作流前面文档记录的交接三合一模式（创建、恢复、更新）和 `progress.md` 为读取同一会话边界的不同受众服务。`progress.md` 给智能体一个机器可读的起点。交接文档给人工审查者一个关于变更内容和原因的叙述性说明。两者互不替代，并在同一步骤（收尾）中更新，使它们在不增加额外开销的情况下保持同步。
 
-### The COMMIT step as a session boundary
+### 提交步骤作为会话边界
 
-A commit at the COMMIT step is not just a VCS operation. It is an assertion that the repository is in a restartable state. The rule is the same as in the handoff triad: only commit when the feature is complete and verified. A half-implemented feature left in a broken state means the next session starts with a broken environment, and the INIT step's `npm run check` will fail immediately, surfacing the problem before any new work begins. That failure is informative, but it is better to prevent it by holding the commit until the VERIFY step passes cleanly.
+提交步骤中的提交不仅仅是一个版本控制操作。它是对仓库处于可重启状态的断言。规则与交接三合一中相同：只有当功能完整且经过验证时才提交。一个处于损坏状态的半实现功能意味着下一次会话以损坏的环境开始，而初始化步骤的 `npm run check` 将立即失败，在任何新工作开始前就暴露出问题。这个失败是有信息价值的，但通过等待验证步骤干净通过后才提交来预防它更好。
 
-For the failure mode that occurs when the VERIFY step is skipped, see The Verification Gap in [tdd-with-claude.md](tdd-with-claude.md#the-verification-gap).
-
----
-
-## Related Workflows
-
-- **[TDD with Claude](tdd-with-claude.md)** - Test-first development with task tracking
-- **[Plan-Driven Development](plan-driven.md)** - Strategic planning to task hierarchies
-- **[Iterative Refinement](iterative-refinement.md)** - Incremental improvements with tasks
-- **[Exploration Workflow](exploration-workflow.md)** - Discovery phase before task creation
+关于跳过验证步骤时发生的失败模式，参见 [tdd-with-claude.md](tdd-with-claude.md#the-verification-gap) 中的"验证缺口"。
 
 ---
 
-## Reference
+## 相关工作流
 
-**Tool documentation**: See [Ultimate Guide Section 5.X](#task-management-system)
+- **[TDD with Claude](tdd-with-claude.md)** - 带任务追踪的测试优先开发
+- **[计划驱动开发](plan-driven.md)** - 从战略规划到任务层次
+- **[迭代精化](iterative-refinement.md)** - 带任务的渐进式改进
+- **[探索工作流](exploration-workflow.md)** - 任务创建前的发现阶段
 
-**Sources:**
-- Official: [Claude Code CHANGELOG v2.1.16](https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md)
-- Official: [System Prompts - TaskCreate](https://github.com/Piebald-AI/claude-code-system-prompts)
-- Community: [paddo.dev - From Beads to Tasks](https://paddo.dev/blog/from-beads-to-tasks/)
-- Community: [llbbl.blog - Two Changes in Claude Code](https://llbbl.blog/2026/01/25/two-changes-in-claude-code.html)
+---
 
-**Version tracking**: This workflow documents Claude Code v2.1.16+ (released 2026-01-22). Verify latest changes in [claude-code-releases.yaml](../../machine-readable/claude-code-releases.yaml).
+## 参考
+
+**工具文档**：参见 [终极指南第 5.X 节](#task-management-system)
+
+**来源：**
+- 官方：[Claude Code CHANGELOG v2.1.16](https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md)
+- 官方：[系统提示词 - TaskCreate](https://github.com/Piebald-AI/claude-code-system-prompts)
+- 社区：[paddo.dev - From Beads to Tasks](https://paddo.dev/blog/from-beads-to-tasks/)
+- 社区：[llbbl.blog - Two Changes in Claude Code](https://llbbl.blog/2026/01/25/two-changes-in-claude-code.html)
+
+**版本追踪**：本工作流记录 Claude Code v2.1.16+（发布于 2026-01-22）。最新变更请在 [claude-code-releases.yaml](../../machine-readable/claude-code-releases.yaml) 中查看。

@@ -1,252 +1,252 @@
 > 📚 **AI Spark Wiki** · Claude Code 知识库
 
-# Module 03: Memory & Config
+# 模块 03：记忆与配置
 
-**Time**: 1 hour | **Complexity**: ⭐⭐ Intermediate
+**用时**：1 小时 | **难度**：⭐⭐ 进阶
 
-## Goal
+## 目标
 
-Configure Claude Code to remember your preferences and project-specific rules. Build your first CLAUDE.md file.
-
----
-
-## What You'll Learn
-
-- How Claude Code's memory hierarchy works
-- Creating and structuring CLAUDE.md files
-- Settings and their precedence
-- Custom instructions and agent definitions
-- Project vs global configuration
+配置 Claude Code，让它记住你的偏好和项目专属规则。创建你的第一个 CLAUDE.md 文件。
 
 ---
 
-## The Memory Hierarchy
+## 你将学到
 
-Claude Code remembers preferences at three levels:
+- Claude Code 记忆层级的工作原理
+- 创建和组织 CLAUDE.md 文件
+- 设置及其优先级
+- 自定义指令与智能体定义
+- 项目级 vs 全局级配置
+
+---
+
+## 记忆层级
+
+Claude Code 在三个层级记住你的偏好：
 
 ```
 ┌──────────────────────────────────────────┐
-│ 1. GLOBAL (~/.claude/CLAUDE.md)          │
-│    Applies to ALL your projects          │
-│    Example: Your coding style, timezone  │
+│ 1. 全局（~/.claude/CLAUDE.md）           │
+│    适用于你的所有项目                    │
+│    示例：你的编码风格、时区              │
 └──────────────────────────────────────────┘
                     ▲
-                    │ (overridden by)
+                    │（被以下层级覆盖）
                     │
 ┌──────────────────────────────────────────┐
-│ 2. PROJECT (/your-project/CLAUDE.md)    │
-│    Applies to THIS project only          │
-│    Example: Team standards, tech stack   │
+│ 2. 项目（/your-project/CLAUDE.md）      │
+│    仅适用于当前项目                      │
+│    示例：团队规范、技术栈               │
 └──────────────────────────────────────────┘
                     ▲
-                    │ (overridden by)
+                    │（被以下层级覆盖）
                     │
 ┌──────────────────────────────────────────┐
-│ 3. PERSONAL (/your-project/.claude/)    │
-│    Local settings, not committed to git  │
-│    Example: API keys, personal prefs     │
+│ 3. 个人（/your-project/.claude/）       │
+│    本地设置，不提交到 Git               │
+│    示例：API Key、个人偏好              │
 └──────────────────────────────────────────┘
 ```
 
-### Rule
-Settings at level 3 override level 2, which overrides level 1.
+### 规则
+第 3 层设置覆盖第 2 层，第 2 层覆盖第 1 层。
 
 ---
 
-## Creating Your First CLAUDE.md
+## 创建你的第一个 CLAUDE.md
 
-CLAUDE.md is a simple markdown file that tells Claude Code your rules.
+CLAUDE.md 是一个简单的 Markdown 文件，用于告知 Claude Code 你的规则。
 
-### Basic Structure
+### 基本结构
 
 ```markdown
-# My Project
+# 我的项目
 
-## Purpose
-Brief description of what this project does.
+## 用途
+简短描述该项目的功能。
 
-## Tech Stack
+## 技术栈
 - TypeScript
 - React 18
 - Next.js
 - PostgreSQL
 
-## Coding Standards
-- Use functional components only
-- All exports must be typed
-- Max 300 lines per file
-- Use meaningful variable names (no `x`, `temp`)
+## 编码规范
+- 只使用函数式组件
+- 所有导出必须有类型标注
+- 每个文件最多 300 行
+- 使用有意义的变量名（不用 `x`、`temp`）
 
-## Behavioral Rules
-Always review diffs before accepting.
-Use /plan for any breaking changes.
+## 行为规则
+接受前必须审阅差异对比（diff）。
+任何破坏性变更使用 /plan。
 
-## Git Workflow
-- All work on feature branches
-- PRs require 1 approval
-- Commits must be squashed
+## Git 工作流
+- 所有工作在功能分支上进行
+- PR 需要 1 人审批
+- 提交必须被压缩（squash）
 
-## Current Status
-What you're currently working on.
+## 当前状态
+记录你当前正在做的事情。
 ```
 
-### Minimal Example (Start Here)
+### 最简示例（从这里开始）
 
-Create `/your-project/CLAUDE.md`:
+创建 `/your-project/CLAUDE.md`：
 
 ```markdown
-# My Project
+# 我的项目
 
-## Quick Context
-- Frontend: React with TypeScript
-- Backend: Node.js with Express
-- Database: PostgreSQL
-- Package manager: pnpm
+## 快速上下文
+- 前端：React + TypeScript
+- 后端：Node.js + Express
+- 数据库：PostgreSQL
+- 包管理器：pnpm
 
-## Coding Rules
-- Functional programming preferred
-- All functions must have type signatures
-- Tests are required for features
-- No console.log in production code
+## 编码规则
+- 优先函数式编程
+- 所有函数必须有类型签名
+- 功能必须有测试
+- 生产代码中不得有 console.log
 
-## My Preferences
-- Use /plan for architectural changes
-- Be verbose in comments, not code
-- Ask before making cross-file refactors
+## 我的偏好
+- 架构变更使用 /plan
+- 注释详尽，代码简洁
+- 跨文件重构前先询问
 ```
 
-Claude will automatically read this file at session start and follow your rules.
+Claude 会在会话启动时自动读取此文件并遵守你的规则。
 
 ---
 
-## What Can Go in CLAUDE.md?
+## CLAUDE.md 中可以放什么？
 
-You can configure almost anything. Common sections:
+你几乎可以配置任何内容。常见章节如下：
 
-### 1. Project Overview
+### 1. 项目概述
 ```markdown
-## Purpose
-This is our payment processing backend.
-It handles credit card validation and transaction logging.
+## 用途
+这是我们的支付处理后端。
+负责信用卡验证和交易日志记录。
 
-## Important
-- Handles PCI-DSS compliance critical code
-- Must never log card numbers
-- All changes need security review
+## 重要
+- 涉及 PCI-DSS 合规关键代码
+- 绝不记录卡号
+- 所有变更需要安全审查
 ```
 
-### 2. Tech Stack
+### 2. 技术栈
 ```markdown
-## Stack
-- Language: Python 3.10+
-- Framework: Django 4.0
-- Database: PostgreSQL 13
-- Cache: Redis
-- Task queue: Celery
+## 技术栈
+- 语言：Python 3.10+
+- 框架：Django 4.0
+- 数据库：PostgreSQL 13
+- 缓存：Redis
+- 任务队列：Celery
 ```
 
-### 3. Coding Standards
+### 3. 编码规范
 ```markdown
-## Code Style
-- Follow PEP 8
-- Type hints on all functions
-- Docstrings in Google format
-- No wildcard imports
-- Max line length: 100 chars
+## 代码风格
+- 遵循 PEP 8
+- 所有函数加类型提示
+- 使用 Google 格式文档字符串
+- 禁止通配符导入
+- 最大行长度：100 字符
 
-## Testing
-- Minimum 80% coverage
-- Unit + integration tests
-- Use pytest
+## 测试
+- 最低覆盖率 80%
+- 单元测试 + 集成测试
+- 使用 pytest
 ```
 
-### 4. Rules
+### 4. 规则
 ```markdown
-## Rules
-- All PRs require review
-- No direct pushes to main
-- Database migrations need approval
-- Security changes flagged automatically
-- /plan mode for refactors >100 lines
+## 规则
+- 所有 PR 需要审阅
+- 禁止直接推送到 main
+- 数据库迁移需要审批
+- 安全变更自动标记
+- 超过 100 行的重构使用 /plan 模式
 ```
 
-### 5. Current Work
+### 5. 当前工作
 ```markdown
-## Current Task
-Building the checkout flow.
-Working on: src/checkout/payment-form.tsx
-Dependencies: stripe-js library, payment API
+## 当前任务
+正在构建结账流程。
+工作中：src/checkout/payment-form.tsx
+依赖：stripe-js 库、支付 API
 ```
 
 ---
 
-## Global CLAUDE.md
+## 全局 CLAUDE.md
 
-For settings that apply to **all your projects**, create `~/.claude/CLAUDE.md`:
+对于适用于**所有项目**的设置，创建 `~/.claude/CLAUDE.md`：
 
 ```markdown
-# My Global Preferences
+# 我的全局偏好
 
-## Communication Style
-- Be direct and factual
-- Show working in steps
-- Suggest alternatives when unclear
+## 沟通风格
+- 直接、简洁
+- 分步展示思路
+- 不确定时给出备选方案
 
-## Tools I Use
-- TypeScript for all JS projects
-- Python for data/scripts
-- Docker for deployment
-- Git for all version control
+## 我使用的工具
+- TypeScript 用于所有 JS 项目
+- Python 用于数据/脚本
+- Docker 用于部署
+- Git 用于所有版本控制
 
-## My Timezone
+## 我的时区
 America/New_York
 
-## Work Hours
-Mon-Fri 9am-5pm (UTC-5)
+## 工作时间
+周一至周五 9am-5pm（UTC-5）
 ```
 
-Claude will load this at startup and combine it with your project CLAUDE.md.
+Claude 在启动时加载此文件，并与你的项目 CLAUDE.md 合并使用。
 
 ---
 
-## Project-Specific vs Global
+## 项目级 vs 全局级
 
-### Use Global for:
-- Your general coding style (naming conventions, approach)
-- Tools you always use
-- Communication preferences
-- General principles
+### 全局级适合放：
+- 你的通用编码风格（命名规范、方法论）
+- 你常用的工具
+- 沟通偏好
+- 通用原则
 
-### Use Project for:
-- Team standards (if different from your global)
-- Project-specific tech stack
-- Business rules (PCI compliance, etc)
-- Current work context
+### 项目级适合放：
+- 团队规范（如与全局不同）
+- 项目特定技术栈
+- 业务规则（PCI 合规等）
+- 当前工作上下文
 
-### Example
+### 示例
 
-**Global** (~/.claude/CLAUDE.md):
+**全局**（~/.claude/CLAUDE.md）：
 ```markdown
-## My Style
-Functional programming, clear variable names, typed functions
+## 我的风格
+函数式编程、清晰的变量名、带类型的函数
 ```
 
-**Project** (my-payment-app/CLAUDE.md):
+**项目**（my-payment-app/CLAUDE.md）：
 ```markdown
-## Special Rules
-Security critical—use /plan for all changes.
-Must handle PCI compliance.
+## 特殊规则
+安全关键——所有变更使用 /plan。
+必须满足 PCI 合规要求。
 ```
 
-Claude combines both: your style + project rules.
+Claude 会合并两者：你的风格 + 项目规则。
 
 ---
 
-## Exercise: Create Your CLAUDE.md
+## 练习：创建你的 CLAUDE.md
 
-### Step 1: Choose a Project
+### 第一步：选择一个项目
 
-Use an existing project or create a test directory:
+使用现有项目或创建测试目录：
 
 ```bash
 mkdir test-claude-config
@@ -254,77 +254,77 @@ cd test-claude-config
 git init
 ```
 
-### Step 2: Create CLAUDE.md
+### 第二步：创建 CLAUDE.md
 
 ```bash
 cat > CLAUDE.md << 'EOF'
-# My Test Project
+# 我的测试项目
 
-## Tech Stack
-- Language: [your main language]
-- Framework: [what you use]
-- Database: [if applicable]
+## 技术栈
+- 语言：[你的主语言]
+- 框架：[你使用的框架]
+- 数据库：[如适用]
 
-## Coding Standards
-- [Rule 1]
-- [Rule 2]
+## 编码规范
+- [规则 1]
+- [规则 2]
 
-## My Preferences
-- [Preference 1]
-- [Preference 2]
+## 我的偏好
+- [偏好 1]
+- [偏好 2]
 EOF
 ```
 
-### Step 3: Start Claude
+### 第三步：启动 Claude
 
 ```bash
 claude
 ```
 
-Claude will show that it loaded CLAUDE.md at startup.
+Claude 会在启动时显示已加载 CLAUDE.md。
 
-### Step 4: Test It
+### 第四步：测试
 
-Ask Claude to do something. It should follow your rules.
+让 Claude 做一些事情。它应该遵守你的规则。
 
 ```
 Add a function called greet that returns "Hello, World!"
 ```
 
-Claude should:
-1. Mention your tech stack
-2. Follow your coding standards
-3. Respect your preferences
+Claude 应该：
+1. 提及你的技术栈
+2. 遵循你的编码规范
+3. 尊重你的偏好
 
 ---
 
-## .claude/ Directory
+## .claude/ 目录
 
-For local settings (not committed), use `.claude/`:
+对于本地设置（不提交），使用 `.claude/`：
 
 ```
 my-project/
-├── CLAUDE.md           (committed - team rules)
+├── CLAUDE.md           （已提交——团队规则）
 ├── .claude/
-│   ├── settings.json   (not committed - personal settings)
-│   ├── agents/         (custom agents)
-│   ├── skills/         (custom skills)
-│   └── hooks/          (automation scripts)
+│   ├── settings.json   （未提交——个人设置）
+│   ├── agents/         （自定义智能体）
+│   ├── skills/         （自定义 Skills）
+│   └── hooks/          （自动化脚本）
 ```
 
-Add to `.gitignore`:
+添加到 `.gitignore`：
 ```
 .claude/
 .claude/settings.json
 ```
 
-Exception: You can commit `.claude/agents/` if they're team-wide.
+例外：如果 `.claude/agents/` 是团队共用的，可以提交。
 
 ---
 
-## Settings.json (Optional)
+## settings.json（可选）
 
-For fine-grained control, create `.claude/settings.json`:
+要进行精细控制，创建 `.claude/settings.json`：
 
 ```json
 {
@@ -337,105 +337,105 @@ For fine-grained control, create `.claude/settings.json`:
 }
 ```
 
-Common settings:
-- **model**: Which Claude model to use
-- **context_threshold**: When to warn about context (0.7 = 70%)
-- **auto_compact**: Automatically compact when threshold reached
-- **require_diff_review**: Force review of all changes (safe default)
+常用设置：
+- **model**：使用哪个 Claude 模型
+- **context_threshold**：何时提示上下文警告（0.7 = 70%）
+- **auto_compact**：达到阈值时自动压缩
+- **require_diff_review**：强制审阅所有变更（安全默认值）
 
 ---
 
-## Agents & Skills (Preview)
+## 智能体与 Skills（预览）
 
-In CLAUDE.md, you can reference custom agents:
+在 CLAUDE.md 中，你可以引用自定义智能体：
 
 ```markdown
-## Available Agents
-- /code-reviewer: Reviews code for quality
-- /security-auditor: Scans for vulnerabilities
-- /test-writer: Generates test cases
+## 可用智能体
+- /code-reviewer：审查代码质量
+- /security-auditor：扫描安全漏洞
+- /test-writer：生成测试用例
 
-Use with: /agent code-reviewer
+使用方式：/agent code-reviewer
 ```
 
-These are defined in `.claude/agents/` (covered in Module 04).
+这些定义在 `.claude/agents/` 中（模块 04 会详细介绍）。
 
 ---
 
-## Best Practices
+## 最佳实践
 
-### DO
+### 应该做
 
-✅ Keep CLAUDE.md updated as your project evolves
+✅ 随项目演进持续更新 CLAUDE.md
 
-✅ Version control your project CLAUDE.md (helps teammates)
+✅ 将项目 CLAUDE.md 纳入版本控制（帮助团队成员）
 
-✅ Be specific about requirements (not vague)
+✅ 具体描述要求（避免模糊）
 
-✅ Include "Current Status" section so Claude has context
+✅ 添加"当前状态"章节，让 Claude 获取上下文
 
-✅ Document important business rules
+✅ 记录重要业务规则
 
-### DON'T
+### 不应该做
 
-❌ Store passwords or secrets in CLAUDE.md (use .env or secrets manager)
+❌ 在 CLAUDE.md 中存储密码或密钥（使用 .env 或 Secret Manager）
 
-❌ Make it too long (>500 lines is overwhelming)
+❌ 写得太长（超过 500 行会让人不堪重负）
 
-❌ Use conflicting rules between global and project
+❌ 全局和项目之间的规则相互冲突
 
-❌ Assume Claude will remember previous sessions' preferences
-
----
-
-## Validation: You're Ready If...
-
-✓ You've created a CLAUDE.md file in a project
-
-✓ You can explain the three-level hierarchy (global, project, personal)
-
-✓ You understand what should go in committed CLAUDE.md vs .claude/
-
-✓ You've started Claude and seen it load your CLAUDE.md
-
-✓ Claude followed at least one rule from your CLAUDE.md
+❌ 假设 Claude 会记住上一次会话的偏好
 
 ---
 
-## What's Next?
+## 验证：以下都满足说明你已准备好
 
-**Module 04: Agents & Specialization** covers:
-- Creating specialized agents for specific tasks
-- Restricting agent capabilities
-- Orchestrating multiple agents
-- Team workflows with agents
+✓ 已在项目中创建 CLAUDE.md 文件
 
-This teaches you how to create focused AI personas instead of using one general Claude.
+✓ 能解释三级记忆层级（全局、项目、个人）
 
----
+✓ 理解哪些内容应放在已提交的 CLAUDE.md 中，哪些应放在 .claude/
 
-**Completed Module 03?** → Ready for Module 04: Agents & Specialization
+✓ 已启动 Claude 并看到它加载了你的 CLAUDE.md
+
+✓ Claude 遵守了你 CLAUDE.md 中的至少一条规则
 
 ---
 
-## Going Further: Cross-Session and Team Memory
+## 下一步
 
-The sections above cover the foundational CLAUDE.md patterns. When you're ready to go deeper, the ecosystem has more:
+**模块 04：智能体与专业化**涵盖：
+- 为特定任务创建专业化智能体
+- 限制智能体能力
+- 编排多个智能体
+- 基于智能体的团队工作流
 
-**Auto Memory and Auto Dream (native, v2.1.59+)**
+这将教你如何创建专注型 AI 角色，而不是只用一个通用的 Claude。
 
-Claude Code can write its own MEMORY.md between sessions (Auto Memory) and consolidate it in the background (Auto Dream). Both work out-of-the-box with `/memory` to manage stored entries. See [Memory Systems: Auto Memory](../core/memory-systems.md#22-auto-memory-v21594) and [Auto Dream](../core/memory-systems.md#23-auto-dream-background-consolidation).
+---
 
-**Cross-session tools for individual developers**
+**完成模块 03？** → 进入模块 04：智能体与专业化
 
-- **claude-mem** (26.5K stars) — automatic session compression via hooks, no manual calls needed. Install: `/plugin marketplace add thedotmack/claude-mem`
-- **agentmemory** (16K stars) — BM25 + vector + graph hybrid retrieval, 12 auto-wired hooks, 95.2% R@5 on LongMemEval-S
-- **ICM** (Rust binary) — episodic decay + permanent knowledge graph, `brew install icm`, 14 IDE clients
+---
 
-**Team sharing**
+## 进阶阅读：跨会话与团队记忆
 
-- The Trinity pattern: CLAUDE.md + `.mcp.json` + `/skills` all committed to the repo — zero infra, zero cost
-- **Mem0 Cloud MCP** — shared memory pool via `npx mcp-add --url https://mcp.mem0.ai/mcp`, free tier
-- **doobidoo** — semantic search across 13+ IDEs, local SQLite or Cloudflare D1 backend
+上述内容涵盖了 CLAUDE.md 的基础模式。准备好深入时，生态系统提供了更多能力：
 
-Full coverage of all tools, architecture patterns, risks, and a decision flowchart: [Memory Systems guide](../core/memory-systems.md).
+**自动记忆与自动整理（原生功能，v2.1.59+）**
+
+Claude Code 可以在会话间自动写入 MEMORY.md（自动记忆），并在后台整合记忆（自动整理）。两者开箱即用，可用 `/memory` 管理已存储的条目。详见[记忆系统：自动记忆](../core/memory-systems.md#22-auto-memory-v21594)和[自动整理](../core/memory-systems.md#23-auto-dream-background-consolidation)。
+
+**个人开发者的跨会话工具**
+
+- **claude-mem**（26.5K 星）——通过 Hooks 自动压缩会话，无需手动调用。安装：`/plugin marketplace add thedotmack/claude-mem`
+- **agentmemory**（16K 星）——BM25 + 向量 + 图混合检索，12 个自动挂载的 Hooks，在 LongMemEval-S 上 R@5 达 95.2%
+- **ICM**（Rust 二进制）——情节衰减 + 永久知识图谱，`brew install icm`，支持 14 个 IDE 客户端
+
+**团队共享**
+
+- Trinity 模式：CLAUDE.md + `.mcp.json` + `/skills` 全部提交到仓库——零基础设施、零成本
+- **Mem0 Cloud MCP** ——通过 `npx mcp-add --url https://mcp.mem0.ai/mcp` 接入共享记忆池，有免费套餐
+- **doobidoo** ——跨 13+ IDE 的语义搜索，本地 SQLite 或 Cloudflare D1 后端
+
+所有工具、架构模式、风险分析及决策流程图的完整介绍：[记忆系统指南](../core/memory-systems.md)。

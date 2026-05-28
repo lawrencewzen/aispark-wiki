@@ -1,47 +1,47 @@
 > 📚 **AI Spark Wiki** · Claude Code 知识库
 
 ---
-title: "Production Reliability Patterns"
-description: "Escalation design, circuit breakers, structured error propagation, graceful degradation, human handoff, and source conflict resolution for Claude-powered systems"
+title: "生产可靠性模式"
+description: "Claude 驱动系统的升级设计、熔断器、结构化错误传播、优雅降级、人工交接以及来源冲突解决方案"
 tags: [workflow, reliability, production, escalation, circuit-breaker, error-handling]
 ---
 
-# Production Reliability Patterns
+# 生产可靠性模式
 
-> **Confidence**: Tier 2. Patterns derived from production deployments. Core design principles are stable; specific thresholds and field names will vary by system.
+> **可信度**：Tier 2。模式来源于生产部署实践。核心设计原则是稳定的；具体阈值和字段名称因系统而异。
 
-Claude-powered systems fail in ways that differ from traditional software. The model may produce syntactically valid output that is semantically wrong, may refuse to continue when it cannot make progress, or may produce partial results when source data is incomplete. This guide covers the reliability patterns that address these failure modes in production.
-
----
-
-## Table of Contents
-
-1. [Escalation Design](#escalation-design)
-2. [Circuit Breaker Pattern](#circuit-breaker-pattern)
-3. [Structured Error Propagation](#structured-error-propagation)
-4. [Partial Results and Coverage Annotations](#partial-results-and-coverage-annotations)
-5. [Structured Human Handoff](#structured-human-handoff)
-6. [Source Conflict Resolution](#source-conflict-resolution)
-7. [Anti-Patterns](#anti-patterns)
-8. [See Also](#see-also)
+Claude 驱动的系统的故障方式与传统软件不同。模型可能产生语法正确但语义错误的输出，可能在无法继续推进时拒绝继续，或者在源数据不完整时产生部分结果。本指南涵盖在生产环境中应对这些故障模式的可靠性模式。
 
 ---
 
-## Escalation Design
+## 目录
 
-The single most common reliability mistake is using LLM confidence scores as the primary escalation signal. Confidence scores are not calibrated probabilities: a model can output a high confidence value while being factually wrong. Production escalation should be driven by programmatic signals, not by numeric confidence values.
+1. [升级设计](#升级设计)
+2. [熔断器模式](#熔断器模式)
+3. [结构化错误传播](#结构化错误传播)
+4. [部分结果与覆盖率注释](#部分结果与覆盖率注释)
+5. [结构化人工交接](#结构化人工交接)
+6. [来源冲突解决](#来源冲突解决)
+7. [反模式](#反模式)
+8. [参见](#参见)
 
-### The Three Canonical Escalation Triggers
+---
 
-In a well-designed system, escalation occurs when exactly one of three conditions is met.
+## 升级设计
 
-**1. Explicit user request:** The customer explicitly asks for a human. This is non-negotiable and takes priority over every other signal, including frustration detection. "I want to speak to a human" is a different signal from an angry tone, and it requires immediate handoff regardless of what the AI could have done next.
+最常见的可靠性错误是将 LLM 置信度分数作为主要的升级信号。置信度分数不是经过校准的概率：模型可能在输出高置信度值的同时，在事实上是错误的。生产环境的升级应由程序化信号驱动，而非数字置信度值。
 
-**2. Policy gap:** The request falls outside the system's defined scope and cannot be handled by any available tool or knowledge. This is not a model failure; it is a scope boundary. The correct response is a structured escalation with context, not an apology loop.
+### 三种标准升级触发条件
 
-**3. Inability to make progress:** After a defined number of attempts or tool calls, the system has not produced a valid result. This is measured programmatically: retry budget exhausted, circuit breaker open, or validation loop failed.
+在一个设计良好的系统中，当且仅当以下三种条件之一满足时，才会触发升级。
 
-### Programmatic Escalation Signals
+**1. 用户明确请求：** 客户明确要求转接人工。这是不可商量的，优先于所有其他信号，包括情绪检测。"我要和真人说话"与愤怒的语气是不同的信号，无论 AI 接下来可以做什么，都需要立即交接。
+
+**2. 策略空缺：** 请求超出了系统的既定范围，无法通过任何可用工具或知识处理。这不是模型故障；这是范围边界。正确的响应是带上下文的结构化升级，而不是道歉循环。
+
+**3. 无法推进：** 经过规定次数的尝试或工具调用后，系统仍未产生有效结果。这通过程序化方式衡量：重试预算耗尽、熔断器打开或验证循环失败。
+
+### 程序化升级信号
 
 ```python
 from enum import Enum
@@ -67,7 +67,7 @@ def evaluate_escalation(
     max_attempts: int = 3
 ) -> EscalationSignal:
 
-    # Priority 1: explicit user request, check first, unconditionally
+    # 优先级 1：用户明确请求，无条件优先检查
     if contains_explicit_escalation_request(user_message):
         return EscalationSignal(
             should_escalate=True,
@@ -75,7 +75,7 @@ def evaluate_escalation(
             context={"trigger": "user_stated_intent"}
         )
 
-    # Priority 2: policy gap
+    # 优先级 2：策略空缺
     if policy_coverage in ("gap", "out_of_scope"):
         return EscalationSignal(
             should_escalate=True,
@@ -83,7 +83,7 @@ def evaluate_escalation(
             context={"coverage": policy_coverage}
         )
 
-    # Priority 3: inability to progress
+    # 优先级 3：无法推进
     if attempt_count >= max_attempts:
         return EscalationSignal(
             should_escalate=True,
@@ -103,15 +103,15 @@ def contains_explicit_escalation_request(message: str) -> bool:
     return any(phrase in message_lower for phrase in explicit_phrases)
 ```
 
-### Frustration vs Explicit Escalation
+### 情绪不满 vs 明确升级请求
 
-These are two completely different signals that require opposite responses. Frustration (angry tone, repeated questions, "this is useless") is a signal to acknowledge empathetically and try a different approach. An explicit escalation request ("I want to talk to a person") is a signal to hand off immediately.
+这是两种截然不同的信号，需要完全相反的响应。情绪不满（愤怒语气、重复提问、"这没用"）是一个信号，需要以同理心回应并尝试不同的方式。明确的升级请求（"我要和真人说话"）是一个信号，需要立即交接。
 
-Conflating them is a common mistake with real consequences: routing frustrated users to humans when they just wanted a better answer, or continuing to try harder when the user has already decided they want a human agent.
+混淆两者是一个常见错误，会产生真实后果：将只是想要更好答案的沮丧用户路由给人工，或者在用户已经决定要人工客服时还在继续努力。
 
 ```python
 def classify_user_signal(message: str) -> dict:
-    # These patterns can coexist: check both independently
+    # 这两类模式可以共存：分别独立检查
     frustration_markers = [
         "this is ridiculous", "not helpful", "keep asking",
         "not answering", "useless", "terrible", "waste"
@@ -128,18 +128,18 @@ def classify_user_signal(message: str) -> dict:
         "wants_escalation": any(m in message_lower for m in escalation_markers)
     }
 
-# Usage:
+# 用法：
 signals = classify_user_signal(user_message)
 
 if signals["wants_escalation"]:
-    initiate_human_handoff(context)   # immediate, unconditional
+    initiate_human_handoff(context)   # 立即、无条件
 elif signals["frustrated"]:
-    adjust_response_approach()        # more empathetic, different angle
+    adjust_response_approach()        # 更有同理心，换个角度
 ```
 
-### Rule-Based Routing from Structured Output
+### 从结构化输出进行基于规则的路由
 
-Where possible, derive escalation decisions from structured output fields rather than from model-level confidence. If the model produces a structured result with `policy_gap: true` or `requires_human_review: true`, those fields are deterministic routing signals, with no confidence score interpretation needed.
+在可能的情况下，从结构化输出字段而非模型级置信度派生升级决策。如果模型产生了带有 `policy_gap: true` 或 `requires_human_review: true` 字段的结构化结果，这些字段就是确定性的路由信号，无需解释任何置信度分数。
 
 ```python
 @dataclass
@@ -160,18 +160,18 @@ def route_from_structured_output(decision: AgentDecision) -> str:
 
 ---
 
-## Circuit Breaker Pattern
+## 熔断器模式
 
-A circuit breaker prevents a failing dependency (API, tool, external service) from creating cascading failures. Without it, every agent call that touches a failing service will hang until timeout, consuming resources and degrading the entire pipeline.
+熔断器防止故障依赖项（API、工具、外部服务）造成级联故障。没有它，每次触碰故障服务的智能体调用都会挂起直到超时，消耗资源并降低整个管道的性能。
 
 ```python
 import time
 from enum import Enum
 
 class CircuitState(Enum):
-    CLOSED = "closed"        # normal operation
-    OPEN = "open"            # failing, reject calls immediately
-    HALF_OPEN = "half_open"  # testing recovery
+    CLOSED = "closed"        # 正常运行
+    OPEN = "open"            # 故障中，立即拒绝调用
+    HALF_OPEN = "half_open"  # 测试是否恢复
 
 class CircuitBreaker:
     def __init__(
@@ -235,9 +235,9 @@ class CircuitOpenError(Exception):
     pass
 ```
 
-### Per-Document Isolation in Batch Pipelines
+### 批量管道中的文档级隔离
 
-In batch processing pipelines, each document should have its own error boundary. One document's failure should not abort the remaining batch.
+在批量处理管道中，每个文档应有其自己的错误边界。一个文档的失败不应中止剩余批次。
 
 ```python
 def process_document_batch(documents: list[str], processor) -> list[dict]:
@@ -249,7 +249,7 @@ def process_document_batch(documents: list[str], processor) -> list[dict]:
             result = circuit_breaker.call(processor, document)
             results.append({"doc_id": doc_id, "status": "success", "result": result})
         except CircuitOpenError as e:
-            # Circuit open: skip remaining docs and surface the condition upstream
+            # 熔断器打开：跳过剩余文档并向上游报告该状态
             results.append({"doc_id": doc_id, "status": "circuit_open", "error": str(e)})
             for remaining_id in range(doc_id + 1, len(documents)):
                 results.append({
@@ -264,13 +264,13 @@ def process_document_batch(documents: list[str], processor) -> list[dict]:
     return results
 ```
 
-The circuit breaker closes at the batch level, not the document level. When it opens, you want to know that the underlying service is unavailable, not that three individual documents happened to fail in sequence.
+熔断器在批次级别关闭，而非文档级别。当它打开时，你希望知道的是底层服务不可用，而不是三个单独的文档碰巧依次失败了。
 
 ---
 
-## Structured Error Propagation
+## 结构化错误传播
 
-In multi-agent systems, errors passed as generic exception strings lose the context needed for recovery. Structured errors carry the information the upstream orchestrator needs to decide whether to retry, reroute, or escalate.
+在多智能体系统中，作为通用异常字符串传递的错误会丢失恢复所需的上下文。结构化错误携带了上游编排器决定是否重试、重新路由或升级所需的信息。
 
 ```python
 from dataclasses import dataclass
@@ -279,10 +279,10 @@ from dataclasses import dataclass
 class StructuredAgentError:
     error_category: str           # "tool_failure" | "validation_error" | "policy_gap" | "timeout"
     is_retryable: bool
-    failure_type: str             # specific subtype within the category
-    attempted_query: str | None   # what was tried (useful for debugging)
-    partial_results: dict | None  # any usable output produced before the failure
-    alternative_approach: str | None  # suggestion for the orchestrator
+    failure_type: str             # 该类别内的具体子类型
+    attempted_query: str | None   # 尝试了什么（用于调试）
+    partial_results: dict | None  # 失败前产生的任何可用输出
+    alternative_approach: str | None  # 给编排器的建议
     error_message: str
     attempt_count: int = 1
 
@@ -298,7 +298,7 @@ class StructuredAgentError:
             "attempt_count": self.attempt_count
         }
 
-# Usage in a sub-agent:
+# 在子智能体中的用法：
 def search_database(query: str) -> dict:
     try:
         return db.search(query)
@@ -323,7 +323,7 @@ def search_database(query: str) -> dict:
             error_message=f"No results found for query: {query}"
         )
 
-# Orchestrator handling:
+# 编排器处理：
 def orchestrate_with_recovery(agent_fn, query: str, max_retries: int = 2) -> dict:
     for attempt in range(max_retries + 1):
         try:
@@ -336,18 +336,18 @@ def orchestrate_with_recovery(agent_fn, query: str, max_retries: int = 2) -> dic
                     "partial_results": e.partial_results,
                     "requires_escalation": not e.is_retryable
                 }
-            # Retryable: apply the suggested alternative approach if present
+            # 可重试：如果有建议的替代方案，应用它
             if e.alternative_approach:
                 query = refine_query(query, e.alternative_approach)
 ```
 
-The key field is `is_retryable`. An orchestrator that cannot tell whether to retry or escalate will default to retrying everything, which wastes budget on non-retryable errors and misses the window on transient ones.
+关键字段是 `is_retryable`。无法判断是重试还是升级的编排器会默认对所有错误进行重试，这会在不可重试的错误上浪费预算，并错过瞬态错误的处理窗口。
 
 ---
 
-## Partial Results and Coverage Annotations
+## 部分结果与覆盖率注释
 
-When a pipeline cannot fully complete a task, returning partial results with explicit coverage annotations is more useful than returning nothing. The consumer can then decide whether the partial result is actionable without needing to understand the internals of what failed.
+当管道无法完全完成任务时，返回带有明确覆盖率注释的部分结果，比什么都不返回更有用。消费者可以判断部分结果是否可操作，而无需了解失败内部原理。
 
 ```python
 from dataclasses import dataclass
@@ -380,25 +380,25 @@ def annotate_coverage(section_results: dict) -> dict:
     }
 ```
 
-Surface coverage annotations in the response so downstream consumers can act on them without parsing internal state:
+在响应中展示覆盖率注释，让下游消费者无需解析内部状态就能采取行动：
 
 ```
-CONTRACT ANALYSIS SUMMARY
+合同分析摘要
 
-Section 1 (Payment Terms): well-supported (full analysis available)
-Section 2 (Liability Clauses): partially-supported (analysis based on partial text; recommend manual review)
-Section 3 (Termination Rights): gap (source text was unreadable; human review required)
+第 1 节（付款条款）：有充分依据（完整分析可用）
+第 2 节（责任条款）：部分依据（分析基于部分文本；建议人工审查）
+第 3 节（终止权利）：缺口（来源文本不可读；需人工审查）
 
-Overall coverage: 67% (2 of 3 sections fully analyzed)
+总体覆盖率：67%（3 节中的 2 节已完整分析）
 ```
 
-This pattern applies anywhere a pipeline may produce incomplete output: document extraction, multi-source research, batch translation, or regulatory compliance checks where some clauses lack supporting data.
+此模式适用于管道可能产生不完整输出的任何地方：文档提取、多来源研究、批量翻译，或某些条款缺少支持数据的合规检查。
 
 ---
 
-## Structured Human Handoff
+## 结构化人工交接
 
-When escalation occurs, the human agent receives a structured payload rather than raw conversation history. The goal is that the human can begin working within 30 seconds, without reading back through an entire conversation log.
+当升级发生时，人工客服接收的是结构化数据包，而非原始对话历史。目标是人工客服能在 30 秒内开始处理，而无需回读整个对话日志。
 
 ```python
 from dataclasses import dataclass
@@ -408,13 +408,13 @@ from datetime import datetime
 class HandoffPayload:
     customer_id: str
     session_id: str
-    escalation_reason: str        # from EscalationReason enum
-    original_request: str         # verbatim first user message
-    conversation_summary: str     # 3-5 sentence summary of what happened
-    root_cause: str               # why the AI could not resolve this
-    actions_taken: list[str]      # what was tried
-    recommended_next_action: str  # specific suggestion for the human agent
-    partial_results: dict | None  # any useful output produced
+    escalation_reason: str        # 来自 EscalationReason 枚举
+    original_request: str         # 用户第一条消息的原文
+    conversation_summary: str     # 3-5 句话的摘要
+    root_cause: str               # AI 为何无法解决
+    actions_taken: list[str]      # 尝试了什么
+    recommended_next_action: str  # 对人工客服的具体建议
+    partial_results: dict | None  # 产生的任何有用输出
     urgency: str                  # "high" | "medium" | "low"
     created_at: str               # ISO 8601
 
@@ -438,51 +438,49 @@ def build_handoff(
     )
 ```
 
-### Handoff Display Format
+### 交接展示格式
 
-What the human agent actually sees should read as a structured brief, not a data dump:
+人工客服实际看到的内容应读起来像结构化简报，而不是数据转储：
 
 ```
-ESCALATION BRIEF: Session a1b2c3d4
-Reason: Customer requested human agent
-Urgency: HIGH
+升级简报：会话 a1b2c3d4
+原因：客户请求人工客服
+紧迫程度：高
 
-ORIGINAL REQUEST
-"I need to cancel my subscription and get a refund for last month's charge"
+原始请求
+"我需要取消订阅，并退还上个月的费用"
 
-WHAT HAPPENED
-The customer asked to cancel their subscription and requested a refund for the
-charge processed on May 18. The AI confirmed account details and found the charge
-($49.00) but hit a policy gap: refund approval for charges older than 7 days
-requires manual authorization. Two escalation attempts were made; the customer
-then explicitly requested a human agent.
+发生了什么
+客户请求取消订阅，并申请退还 5 月 18 日收取的费用。AI 确认了账户信息，
+找到了该费用（$49.00），但遇到了策略空缺：超过 7 天的费用退款需要人工授权。
+发起了两次升级尝试；客户随后明确请求人工客服。
 
-ACTIONS TAKEN
-- Account verified (customer_id: 88821)
-- Charge located: $49.00 on 2026-05-18
-- Subscription status: active
+已采取的行动
+- 账户已验证（customer_id: 88821）
+- 已找到费用：$49.00（2026-05-18）
+- 订阅状态：活跃
 
-RECOMMENDED NEXT ACTION
-Authorize refund for $49.00 (charge is 6 days old, within 7-day window) and
-process cancellation. No additional verification needed.
+建议的下一步行动
+授权退款 $49.00（该费用已过 6 天，在 7 天窗口期内），并处理取消。
+无需额外验证。
 ```
 
-The `recommended_next_action` field is the most valuable part. A human agent who receives a specific recommendation resolves the case faster and is less likely to ask the customer to repeat information.
+`recommended_next_action`（建议的下一步行动）字段是最有价值的部分。收到具体建议的人工客服能更快解决问题，也更不可能要求客户重复提供信息。
 
 ---
 
-## Source Conflict Resolution
+## 来源冲突解决
 
-When multiple sources disagree, the resolution strategy depends on why they disagree. Temporal differences (one source is newer than another) call for a different approach than factual conflicts (sources about the same time period disagree on the facts).
+当多个来源不一致时，解决策略取决于不一致的原因。时间差异（一个来源比另一个更新）与事实冲突（关于同一时间段的来源在事实上不一致）需要不同的处理方式。
 
 ```python
 @dataclass
 class Source:
     source_id: str
     content: str
-    publication_date: str | None  # ISO 8601, mandatory for temporal disambiguation
+    publication_date: str | None  # ISO 8601，时间消歧的必填项
     source_type: str              # "official" | "news" | "user_generated" | "internal"
-    authority_score: float        # 0.0-1.0, domain-specific
+    authority_score: float        # 0.0-1.0，领域特定
 
 def resolve_conflict(sources: list[Source], field: str) -> dict:
     values = [s for s in sources if get_field_value(s, field) is not None]
@@ -490,7 +488,7 @@ def resolve_conflict(sources: list[Source], field: str) -> dict:
     if len(values) <= 1:
         return {"resolved": values[0] if values else None, "conflict": False}
 
-    # Check for temporal difference first
+    # 首先检查时间差异
     dated = [s for s in values if s.publication_date is not None]
     if len(dated) == len(values):
         sorted_by_date = sorted(dated, key=lambda s: s.publication_date, reverse=True)
@@ -499,14 +497,14 @@ def resolve_conflict(sources: list[Source], field: str) -> dict:
 
         if (second_newest is not None and
                 get_field_value(newest, field) == get_field_value(second_newest, field)):
-            # Two most recent sources agree: likely a correct update
+            # 最近的两个来源一致：可能是正确的更新
             return {
                 "resolved": newest,
                 "conflict": False,
                 "resolution_method": "temporal_precedence"
             }
 
-    # Genuine factual conflict: do not resolve automatically
+    # 真正的事实冲突：不要自动解决
     return {
         "resolved": None,
         "conflict": True,
@@ -516,45 +514,45 @@ def resolve_conflict(sources: list[Source], field: str) -> dict:
     }
 ```
 
-Always include `publication_date` in source metadata. Without it, temporal disambiguation is impossible and what looks like a factual conflict may simply be an outdated source that hasn't been retired.
+始终在来源元数据中包含 `publication_date`。没有它，时间消歧就不可能完成，看起来像事实冲突的情况可能只是一个尚未停用的过时来源。
 
-### Surfacing Conflicts in Output
+### 在输出中展示冲突
 
-When a genuine conflict cannot be resolved automatically, surface it explicitly rather than silently picking one source:
+当真正的冲突无法自动解决时，明确展示它，而不是静默地选择一个来源：
 
 ```
-FIELD: regulatory_status
+字段：regulatory_status
 
-SOURCE A (internal-policy-doc, 2026-01-15): "Approved for EU markets"
-SOURCE B (legal-review-2026, 2026-03-22): "Pending re-approval: EU regulatory update in progress"
+来源 A（internal-policy-doc，2026-01-15）："已获 EU 市场批准"
+来源 B（legal-review-2026，2026-03-22）："待重新批准：EU 监管更新进行中"
 
-CONFLICT TYPE: factual (same field, same jurisdiction, different values)
-RESOLUTION: Cannot auto-resolve. Human review required before using this field.
+冲突类型：事实性（相同字段、相同司法管辖区、不同值）
+解决方式：无法自动解决。使用此字段前需人工审查。
 ```
 
-This is better than returning a single answer without attribution. A consumer who sees a confident answer without knowing it was contested cannot make an informed decision about whether to act on it.
+这比不注明来源直接返回单一答案要好。看到没有来源归因的自信答案的消费者，无法做出是否根据该答案采取行动的知情决策。
 
 ---
 
-## Anti-Patterns
+## 反模式
 
-**Using confidence scores as routing logic.** Confidence scores from LLMs are not calibrated probabilities. Use programmatic signals instead: retry count, circuit state, structured output fields.
+**将置信度分数用作路由逻辑。** LLM 的置信度分数不是经过校准的概率。改为使用程序化信号：重试次数、熔断器状态、结构化输出字段。
 
-**Conflating frustration with escalation intent.** Frustrated users often want a better answer, not a human. Users who say "I want a human" always want a human. Treat them as distinct signals with distinct responses.
+**将情绪不满与升级意图混淆。** 沮丧的用户通常想要更好的答案，而不是人工。说"我要和真人说话"的用户始终想要人工。将它们视为具有不同响应的不同信号。
 
-**Passing unstructured exceptions between agents.** A string like `"DatabaseError: connection refused"` tells the orchestrator nothing about whether to retry or escalate. Use structured error types with `is_retryable`, `error_category`, and `alternative_approach`.
+**在智能体之间传递非结构化异常。** 像 `"DatabaseError: connection refused"` 这样的字符串对编排器来说无法告知是重试还是升级。使用带有 `is_retryable`、`error_category` 和 `alternative_approach` 的结构化错误类型。
 
-**Returning nothing when partial results exist.** A partial result with a clear coverage annotation is almost always more useful than an empty response with an error message. The consumer can decide what to do with "67% coverage"; they cannot decide anything from "analysis failed".
+**当存在部分结果时返回空响应。** 带有明确覆盖率注释的部分结果几乎总是比带有错误消息的空响应更有用。消费者可以对"67% 覆盖率"做出决策；他们无法对"分析失败"做出任何决策。
 
-**Skipping `publication_date` in source metadata.** Without dates, temporal conflicts look like factual conflicts. Every source ingested into a pipeline should carry a date, even an approximate one.
+**在来源元数据中跳过 `publication_date`。** 没有日期，时间冲突看起来就像事实冲突。每个被摄入管道的来源都应该携带日期，即使是近似日期。
 
-**Building handoffs as conversation dumps.** Pasting the last 20 turns of conversation into a ticket is not a handoff; it is work-transfer. A structured handoff payload with `recommended_next_action` is what separates a good escalation system from a slow one.
+**将交接构建为对话转储。** 将最后 20 轮对话粘贴到工单中不是交接；这是工作转移。带有 `recommended_next_action` 的结构化交接数据包，是区分好的升级系统与慢速系统的关键所在。
 
 ---
 
-## See Also
+## 参见
 
-- [Agent Teams](agent-teams.md): orchestrator/subagent architecture and tool routing
-- [Event-Driven Agents](event-driven-agents.md): trigger-based automation and retry loops
-- [Task Management](task-management.md): persistent state for multi-step agent workflows
-- [Plan-Driven Workflow](plan-driven.md): planning phase before execution to reduce mid-task failures
+- [智能体团队](agent-teams.md)：编排器/子智能体架构和工具路由
+- [事件驱动智能体](event-driven-agents.md)：基于触发器的自动化和重试循环
+- [任务管理](task-management.md)：多步骤智能体工作流的持久状态
+- [计划驱动工作流](plan-driven.md)：执行前的计划阶段，减少任务中途失败

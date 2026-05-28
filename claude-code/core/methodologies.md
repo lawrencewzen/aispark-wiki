@@ -1,610 +1,610 @@
 > 📚 **AI Spark Wiki** · Claude Code 知识库
 
 ---
-title: "Development Methodologies Reference"
-description: "Quick reference for 15 structured AI-assisted development methodologies including TDD, SDD, and BDD"
+title: "开发方法论参考"
+description: "15 种结构化 AI 辅助开发方法论的快速参考，涵盖 TDD（测试驱动开发）、SDD（规范驱动开发）和 BDD（行为驱动开发）"
 tags: [reference, tdd, design-patterns, workflows]
 ---
 
-# Development Methodologies Reference
+# 开发方法论参考
 
-> **Confidence**: Tier 2 — Validated by multiple production reports and official documentation.
+> **置信度**：Tier 2 — 经多份生产报告和官方文档验证。
 >
-> **Last updated**: February 2026
+> **最后更新**：2026 年 2 月
 
-This is a quick reference for 15 structured development methodologies that have emerged for AI-assisted development in 2025-2026. For hands-on practical workflows, see [workflows/](../workflows/).
-
----
-
-## Table of Contents
-
-1. [Decision Tree](#decision-tree-what-do-you-need)
-2. [The 15 Methodologies](#the-15-methodologies)
-3. [SDD Tools Reference](#sdd-tools-reference)
-4. [Writing Effective Specs](#writing-effective-specs)
-5. [Combination Patterns](#combination-patterns)
-6. [Sources](#sources)
+本文是 2025-2026 年间涌现的 15 种结构化 AI 辅助开发方法论的快速参考。实践性工作流，参见 [workflows/](../workflows/)。
 
 ---
 
-## Decision Tree: What Do You Need?
+## 目录
+
+1. [决策树](#决策树你需要什么)
+2. [15 种方法论](#15-种方法论)
+3. [SDD（规范驱动开发）工具参考](#sdd规范驱动开发工具参考)
+4. [编写有效规范](#编写有效规范)
+5. [组合模式](#组合模式)
+6. [来源](#来源)
+
+---
+
+## 决策树：你需要什么？
 
 ```
-┌─ "I want quality code" ────────────→ workflows/tdd-with-claude.md
+┌─ "我想要高质量代码" ──────────────→ workflows/tdd-with-claude.md
 │
-├─ "I want to spec before code" ─────→ workflows/spec-first.md
+├─ "我想先写规范再写代码" ─────────→ workflows/spec-first.md
 │
-├─ "I need to plan architecture" ────→ workflows/plan-driven.md
+├─ "我需要规划架构" ───────────────→ workflows/plan-driven.md
 │
-├─ "I'm iterating on something" ─────→ workflows/iterative-refinement.md
+├─ "我在迭代某个功能" ─────────────→ workflows/iterative-refinement.md
 │
-└─ "I need methodology theory" ──────→ Continue reading below
+└─ "我需要了解方法论理论" ──────────→ 继续阅读
 ```
 
 ---
 
-## Methodology Map
+## 方法论地图
 
-Where each methodology sits on two axes: **Spec-First vs Code-First** (Y) and **Lean/Solo vs Enterprise/Governed** (X).
+各方法论在两个维度上的定位：**规范优先 vs 代码优先**（纵轴）和**精益/个人 vs 企业/治理**（横轴）。
 
 ```
-                      SPEC / PLANNING FIRST
+                      规范/规划优先
                                 ▲
-  ── lean · spec ──             │             ── governed · spec ──
+  ── 精益·规范 ──              │             ── 治理·规范 ──
                                 │
-  [Doc-Driven]  [SDD]           │    [BDD]  [ATDD]   [Req-Driven]
-  [GSD]  [Plan-First]           │ [CDD] [ADR-Driven]  [DDD]  [BMAD]
+  [文档驱动]  [SDD（规范驱动开发）]  │  [BDD（行为驱动开发）]  [ATDD]   [需求驱动]
+  [GSD]  [计划优先]            │ [CDD] [ADR驱动]  [DDD]  [BMAD]
                                 │
-  LEAN ─────────────────────────┼────────────────────────────────► ENTERPRISE
+  精益 ──────────────────────────┼──────────────────────────────► 企业
                                 │
-  ── lean · code ──             │             ── governed · code ──
+  ── 精益·代码 ──              │             ── 治理·代码 ──
                                 │
-  [Context Eng.]   [TDD]        │       [Multi-Agent]
-  [Prompt Eng.]  [Iterative]    │       [Eval-Driven]       [FDD]
+  [上下文工程]   [TDD（测试驱动开发）]   │       [多智能体]
+  [提示词工程]  [迭代]          │       [评估驱动]       [FDD]
   [Ralph Loop]                  │           [JiTTesting]
                                 │
-                         CODE / EMERGENT
+                         代码/涌现优先
 ```
 
-**How to read it:**
+**如何理解：**
 
-- **Top-left** — Spec-first lean: `SDD`, `Doc-Driven`, `Plan-First`. Natural entry point for solo devs and small teams moving away from "code first".
-- **Top-right** — Spec-first governed: `BMAD`, `Req-Driven`, `ATDD`, `DDD`. Real governance, but costly to set up. ROI is driven by project complexity and requirement stability, not headcount alone.
-- **Bottom-left** — Code-first lean: the natural Claude Code terrain. `TDD` + `Ralph Loop` + `Iterative` = core solo workflow.
-- **Bottom-right** — Code-first at scale: `Multi-Agent`, `Eval-Driven`, `JiTTesting` (Meta, 100M+ LoC). Emerging patterns for high-volume teams.
-- **On the axis** — `Plan-First`, `CDD`, `ADR-Driven`, `GSD`: hybrid approaches that adapt to any context.
-
----
-
-## The 15 Methodologies
-
-Organized in a 6-tier pyramid from strategic orchestration down to optimization techniques.
-
-### Tier 1: Strategic Orchestration
-
-| Name | What | Best For | Claude Fit |
-|------|------|----------|------------|
-| **BMAD** | Multi-agent governance with constitution as guardrail | High-complexity projects with stable requirements, compliance or governance needs | ⭐⭐ Niche but powerful |
-| **GSD** | Meta-prompting 6-phase workflow with fresh contexts per task | Solo devs, Claude Code CLI | ⭐⭐ Similar to patterns in guide |
-
-**BMAD (Breakthrough Method for Agile AI-Driven Development)** inverts the traditional paradigm: documentation becomes the source of truth, not code. Uses specialized agents (Analyst, PM, Architect, Developer, QA) orchestrated with strict governance. *Note: BMAD's role-based agent naming reflects their methodology; see §9.17 Agent Anti-Patterns for scope-focused alternatives.*
-
-- **Key concept**: Constitution.md as strategic guardrail
-- **When to use**: Complex enterprise projects needing governance
-- **When to avoid**: MVPs, rapid prototyping, evolving requirements — BMAD is brittle when specs change mid-project
-
-**GSD (Get Shit Done)** addresses context rot through systematic 6-phase workflow (Initialize → Discuss → Plan → Execute → Verify → Complete) with fresh 200k-token contexts per task. Core concepts (multi-agent orchestration, fresh context management) overlap significantly with existing patterns like Ralph Loop, Gas Town, and BMAD. See [resource evaluation](../../docs/resource-evaluations/gsd-evaluation.md) for detailed comparison.
-
-> **Emerging**: [Ralph Inferno](https://github.com/sandstream/ralph-inferno) implements autonomous multi-persona workflows (Analyst→PM→UX→Architect→Business) with VM-based execution and self-correcting E2E loops. Experimental but interesting for "vibe coding at scale".
+- **左上** — 规范优先精益型：`SDD（规范驱动开发）`、`文档驱动`、`计划优先`。适合独立开发者和小团队摆脱"代码优先"的自然起点。
+- **右上** — 规范优先治理型：`BMAD`、`需求驱动`、`ATDD`、`DDD`。有真正的治理，但设置成本高。投资回报率由项目复杂度和需求稳定性驱动，而非单纯看人数。
+- **左下** — 代码优先精益型：Claude Code 的自然地盘。`TDD（测试驱动开发）` + `Ralph Loop` + `迭代` = 核心独立开发工作流。
+- **右下** — 规模化代码优先型：`多智能体`、`评估驱动`、`JiTTesting`（Meta，超 1 亿行代码）。高产量团队的新兴模式。
+- **轴线上** — `计划优先`、`CDD`、`ADR 驱动`、`GSD`：可适应任何场景的混合方法。
 
 ---
 
-### Foundational Discipline: Plan-First Workflow
+## 15 种方法论
 
-> **"Once the plan is good, the code is good."**
-> — Boris Cherny, creator of Claude Code
+按 6 层金字塔组织，从战略编排到优化技术。
 
-**Not just a feature (`/plan` command) — a systematic discipline.**
+### 第 1 层：战略编排
 
-> **Context Engineering**: Thoughtworks designates this broader approach "Context Engineering" in their Technology Radar (Nov 2025)[^thoughtworks2025] — the systematic design of information provided to LLMs during inference. Three core techniques: context setup (minimal system prompts, few-shot examples), context management for long-horizon tasks (summarization, external memories, sub-agent architectures), and dynamic information retrieval (JIT context loading). Related patterns in Claude Code: AGENTS.md, MCP Context7, Plan Mode.
+| 名称 | 简介 | 最适合 | Claude 适配度 |
+|------|------|--------|--------------|
+| **BMAD** | 以宪法为护栏的多智能体治理 | 需求稳定、合规或治理要求高的复杂项目 | ⭐⭐ 小众但强大 |
+| **GSD** | 元提示词六阶段工作流，每个任务独立上下文 | 独立开发者、Claude Code CLI | ⭐⭐ 与指南中的模式类似 |
 
-[^thoughtworks2025]: Thoughtworks Technology Radar Vol 33, Nov 2025. [PDF](https://www.thoughtworks.com/content/dam/thoughtworks/documents/radar/2025/11/tr_technology_radar_vol_33_en.pdf). See also: [Macro trends blog post](https://www.thoughtworks.com/insights/blog/technology-strategy/macro-trends-tech-industry-november-2025).
+**BMAD（突破性敏捷 AI 驱动开发方法）** 颠覆了传统范式：文档而非代码成为事实来源。使用专业智能体（分析师、PM、架构师、开发者、QA）在严格治理下编排。*注：BMAD 基于角色的智能体命名反映其方法论；以范围为中心的替代方案参见 §9.17 智能体反模式。*
 
-**The Mental Model**:
+- **核心概念**：Constitution.md 作为战略护栏
+- **使用场景**：需要治理的复杂企业项目
+- **避免场景**：MVP、快速原型、需求变动频繁——BMAD 在规范中途变更时比较脆弱
 
-Planning isn't optional for complex tasks. It's the difference between:
-- ❌ 8 iterations of "try → fix → retry → fix again"
-- ✅ 1 iteration of "plan → validate → execute cleanly"
+**GSD（把事情做完）** 通过系统性的六阶段工作流（初始化→讨论→规划→执行→验证→完成）解决上下文退化问题，每个任务使用独立的 200k Token（词元）上下文。核心概念（多智能体编排、新鲜上下文管理）与 Ralph Loop、Gas Town 和 BMAD 等现有模式有大量重叠。详细比较参见[资源评估](../../docs/resource-evaluations/gsd-evaluation.md)。
 
-**When to plan first**:
+> **新兴模式**：[Ralph Inferno](https://github.com/sandstream/ralph-inferno) 实现了带虚拟机执行和自我纠正端到端循环的自主多角色工作流（分析师→PM→UX→架构师→业务）。实验性但对"大规模氛围编码"很有趣。
 
-| Task Complexity | Plan First? | Why |
-|----------------|-------------|-----|
-| >3 files modified | ✅ Yes | Cross-file dependencies need architecture |
-| >50 lines changed | ✅ Yes | Enough complexity for mistakes |
-| Architectural changes | ✅ Yes | Impact analysis required |
-| Unfamiliar codebase | ✅ Yes | Need exploration before action |
-| Typo/obvious fix | ❌ No | Planning overhead > task time |
-| Single-line change | ❌ No | Just do it |
+---
 
-**How plan-first works**:
+### 基础纪律：计划优先工作流
 
-1. **Exploration phase** (Plan Mode via `Shift+Tab`):
-   - Claude reads files, explores architecture
-   - No edits allowed → forces thinking before action
-   - Proposes approach with trade-offs
+> **"计划一旦到位，代码自然到位。"**
+> — Boris Cherny，Claude Code 创始人
 
-2. **Validation phase** (you review):
-   - Plan exposes assumptions and gaps
-   - Easier to correct direction now vs after 100 lines written
-   - Plan becomes contract for execution
+**这不仅仅是一个功能（`/plan` 命令）——而是一种系统性纪律。**
 
-3. **Execution phase** (toggle back to Normal Mode with `Shift+Tab`):
-   - Plan → code becomes mechanical translation
-   - Fewer surprises, cleaner implementation
-   - Faster overall despite "slower" start
+> **上下文工程**：Thoughtworks 在其技术雷达（2025 年 11 月）[^thoughtworks2025] 中将这种更广泛的方法称为"上下文工程"——对推理期间提供给 LLM 的信息进行系统性设计。三种核心技术：上下文设置（最小系统提示、少样本示例）、长期任务的上下文管理（摘要、外部记忆、子智能体架构）和动态信息检索（即时检索上下文加载）。Claude Code 中的相关模式：AGENTS.md、MCP Context7、计划模式。
 
-**Boris Cherny workflow**:
+[^thoughtworks2025]: Thoughtworks Technology Radar 第 33 卷，2025 年 11 月。[PDF](https://www.thoughtworks.com/content/dam/thoughtworks/documents/radar/2025/11/tr_technology_radar_vol_33_en.pdf)。另见：[宏观趋势博客文章](https://www.thoughtworks.com/insights/blog/technology-strategy/macro-trends-tech-industry-november-2025)。
 
-> "I run many sessions, start in plan mode, then switch into execution once the plan looks right. The signature upgrade is verification—giving Claude a way to test and confirm its own output."
+**思维模型**：
 
-**Benefits over "just start coding"**:
+规划对于复杂任务来说不是可选的，而是区分以下两种情况的关键：
+- ❌ 8 次迭代的"尝试→修复→重试→再修复"
+- ✅ 1 次迭代的"规划→验证→干净执行"
 
-- **Fewer correction iterations**: Plan catches issues before they become code
-- **Better architecture**: Forced to think about structure first
-- **Clearer communication**: Plan is shared understanding with team/Claude
-- **Reduced cost**: One clean iteration < multiple messy iterations (even if plan phase costs tokens)
+**何时优先规划：**
 
-**Integration with CLAUDE.md**:
+| 任务复杂度 | 先规划？ | 原因 |
+|-----------|---------|------|
+| 修改超过 3 个文件 | ✅ 是 | 跨文件依赖需要架构 |
+| 修改超过 50 行 | ✅ 是 | 足够复杂，容易出错 |
+| 架构变更 | ✅ 是 | 需要影响分析 |
+| 不熟悉的代码库 | ✅ 是 | 行动前需要探索 |
+| 拼写错误/明显修复 | ❌ 否 | 规划开销 > 任务时间 |
+| 单行更改 | ❌ 否 | 直接做 |
 
-Document your team's plan-first triggers:
+**计划优先的工作流程：**
+
+1. **探索阶段**（通过 `Shift+Tab` 进入计划模式）：
+   - Claude 读取文件，探索架构
+   - 不允许编辑 → 强制先思考再行动
+   - 提出带权衡分析的方案
+
+2. **验证阶段**（你来审查）：
+   - 计划暴露假设和盲点
+   - 现在纠正方向比写了 100 行后更容易
+   - 计划成为执行的契约
+
+3. **执行阶段**（用 `Shift+Tab` 切回普通模式）：
+   - 计划→代码变成机械性转化
+   - 减少意外，实现更干净
+   - 尽管开始"更慢"，但整体更快
+
+**Boris Cherny 的工作流：**
+
+> "我运行很多会话，从计划模式开始，计划看起来合适后再切换到执行。标志性的升级是验证——给 Claude 一种测试和确认自己输出的方式。"
+
+**相比"直接开始写"的优势：**
+
+- **更少的纠错迭代**：计划在问题成为代码前就发现它们
+- **更好的架构**：被迫首先考虑结构
+- **更清晰的沟通**：计划是与团队/Claude 的共同理解
+- **降低成本**：一次干净的迭代 < 多次混乱的迭代（即使计划阶段消耗 Token（词元））
+
+**与 CLAUDE.md 集成：**
+
+记录你的团队的计划优先触发条件：
 ```markdown
-## Planning Policy
-- ALWAYS plan first: API changes, database migrations, new features
-- OPTIONAL planning: Bug fixes <10 lines, test additions
-- NEVER skip: Changes affecting >2 modules
+## 规划策略
+- 必须先规划：API 变更、数据库迁移、新功能
+- 可选规划：10 行以内的 bug 修复、添加测试
+- 绝不跳过：影响超过 2 个模块的变更
 ```
 
-**See also**: [Plan Mode documentation](#23-plan-mode) for `/plan` command usage.
+**另请参阅**：`/plan` 命令用法，参见[计划模式文档](#23-plan-mode)。
 
-> **Advanced pattern**: For an iterative annotation-based approach to plan-driven development, see [Custom Markdown Plans (Boris Tane Pattern)](../workflows/plan-driven.md#advanced-custom-markdown-plans-boris-tane-pattern).
-
----
-
-### Tier 2: Specification & Architecture
-
-| Name | What | Best For | Claude Fit |
-|------|------|----------|------------|
-| **SDD** | Specs before code | APIs, contracts | ⭐⭐⭐ Core pattern |
-| **Doc-Driven** | Docs = source of truth | Cross-team alignment | ⭐⭐⭐ CLAUDE.md native |
-| **Req-Driven** | Rich artifact context (20+ artifacts) | Complex requirements | ⭐⭐ Heavy setup |
-| **DDD** | Domain language first | Business logic | ⭐⭐ Design-time |
-
-**SDD (Spec-Driven Development)** — Specifications BEFORE code. One well-structured iteration equals 8 unstructured ones. CLAUDE.md IS your spec file.
-
-**Doc-Driven Development** — Living documentation versioned in git becomes the single source of truth. Changes to specs trigger implementation.
-
-**Requirements-Driven Development** — Uses CLAUDE.md as comprehensive implementation guide with 20+ structured artifacts.
-
-**DDD (Domain-Driven Design)** — Aligns software with business language through:
-- Ubiquitous Language: Shared vocabulary in code
-- Bounded Contexts: Isolated domain boundaries
-- Domain Distillation: Core vs Support vs Generic domains
+> **高级模式**：迭代式注解方法的计划驱动开发，参见[自定义 Markdown 计划（Boris Tane 模式）](../workflows/plan-driven.md#advanced-custom-markdown-plans-boris-tane-pattern)。
 
 ---
 
-### Tier 3: Behavior & Acceptance
+### 第 2 层：规范与架构
 
-| Name | What | Best For | Claude Fit |
-|------|------|----------|------------|
-| **BDD** | Given-When-Then scenarios | Stakeholder collaboration | ⭐⭐⭐ Tests & specs |
-| **ATDD** | Acceptance criteria first | Compliance, regulated | ⭐⭐ Process-heavy |
-| **CDD** | API contracts as interface | Microservices | ⭐⭐⭐ OpenAPI native |
+| 名称 | 简介 | 最适合 | Claude 适配度 |
+|------|------|--------|--------------|
+| **SDD（规范驱动开发）** | 先写规范再写代码 | API、契约 | ⭐⭐⭐ 核心模式 |
+| **文档驱动** | 文档即事实来源 | 跨团队对齐 | ⭐⭐⭐ CLAUDE.md 原生 |
+| **需求驱动** | 丰富的工件上下文（20+ 工件） | 复杂需求 | ⭐⭐ 设置成本高 |
+| **DDD** | 领域语言优先 | 业务逻辑 | ⭐⭐ 设计时使用 |
 
-**BDD (Behavior-Driven Development)** — Beyond testing: a collaboration process.
-1. Discovery: Involve devs and business experts
-2. Formulation: Write Given-When-Then examples
-3. Automation: Convert to executable tests (Gherkin/Cucumber)
+**SDD（规范驱动开发）** — 先写规范，再写代码。一次结构良好的迭代等于 8 次非结构化迭代。CLAUDE.md 就是你的规范文件。
+
+**文档驱动开发** — 版本化在 git 中的活文档成为唯一事实来源。规范的变更触发实现。
+
+**需求驱动开发** — 将 CLAUDE.md 作为包含 20+ 结构化工件的综合实现指南。
+
+**DDD（领域驱动设计）** — 通过以下方式将软件与业务语言对齐：
+- 通用语言：代码中的共享词汇
+- 限界上下文：隔离的领域边界
+- 领域提炼：核心 vs 支撑 vs 通用领域
+
+---
+
+### 第 3 层：行为与验收
+
+| 名称 | 简介 | 最适合 | Claude 适配度 |
+|------|------|--------|--------------|
+| **BDD（行为驱动开发）** | Given-When-Then 场景 | 利益相关者协作 | ⭐⭐⭐ 测试与规范 |
+| **ATDD** | 验收标准优先 | 合规、受监管场景 | ⭐⭐ 流程较重 |
+| **CDD** | API 契约作为接口 | 微服务 | ⭐⭐⭐ OpenAPI 原生 |
+
+**BDD（行为驱动开发）** — 超越测试：一种协作过程。
+1. 发现：让开发者和业务专家共同参与
+2. 制定：编写 Given-When-Then 示例
+3. 自动化：转换为可执行测试（Gherkin/Cucumber）
 
 ```gherkin
-Feature: Order Management
-  Scenario: Cannot buy without stock
-    Given product with 0 stock
-    When customer attempts purchase
-    Then system refuses with error message
+Feature: 订单管理
+  Scenario: 无库存无法购买
+    Given 库存为 0 的产品
+    When 客户尝试购买
+    Then 系统拒绝并显示错误消息
 ```
 
-**ATDD (Acceptance Test-Driven Development)** — Acceptance criteria defined BEFORE coding, collaboratively ("Three Amigos": Business, Dev, Test).
+**ATDD（验收测试驱动开发）** — 验收标准在编码**前**定义，通过协作完成（"三剑客"：业务、开发、测试）。
 
-In agentic development, ATDD is particularly effective because agents need unambiguous success conditions. The flow maps cleanly to agent tasks:
+在 agentic 开发中，ATDD 特别有效，因为智能体需要明确的成功条件。流程可以清晰地映射到智能体任务：
 
-1. **Define acceptance criteria** in Gherkin (human-readable, machine-executable)
-2. **Agent writes failing tests** based on scenarios (not implementation)
-3. **Agent implements** until tests pass
+1. **定义验收标准**，采用 Gherkin 格式（人类可读、机器可执行）
+2. **智能体编写失败的测试**，基于场景（而非实现）
+3. **智能体实现**，直到测试通过
 
 ```gherkin
-Feature: Password Reset
-  Scenario: User resets via email
-    Given a registered user with email "user@example.com"
-    When they request a password reset
-    Then they receive a reset email within 60 seconds
-    And the reset link expires after 24 hours
+Feature: 密码重置
+  Scenario: 用户通过邮件重置密码
+    Given 注册用户，邮箱为 "user@example.com"
+    When 他们请求密码重置
+    Then 他们在 60 秒内收到重置邮件
+    And 重置链接在 24 小时后过期
 ```
 
-This Gherkin scenario is the contract between intent and implementation. The agent cannot misinterpret scope because done is defined before a line of code is written.
+这个 Gherkin 场景是意图和实现之间的契约。智能体无法误解范围，因为"完成"在写下第一行代码之前就已定义。
 
-> **Applied to agents**: Pass the Gherkin file to Claude Code before implementing. "Write failing tests for this feature file, then implement until they pass." The scenario writer role (human or agent) forces explicit scope before execution starts.
+> **应用于智能体**：在实现之前将 Gherkin 文件传给 Claude Code。"为这个功能文件编写失败的测试，然后实现直到通过。" 场景编写角色（人类或智能体）在执行开始前强制明确范围。
 
-**CDD (Contract-Driven Development)** — API contracts (OpenAPI specs) as executable interface between teams. Patterns: Contract as Test, Contract as Stub.
+**CDD（契约驱动开发）** — API 契约（OpenAPI 规范）作为团队间的可执行接口。模式：契约即测试、契约即存根。
 
-**JiTTesting (Just-in-Time Testing)** — Tests generated on-the-fly at PR submission, designed to fail, then discarded after merge. No maintenance cost, no test suite growth.
+**JiTTesting（即时测试）** — 在 PR 提交时动态生成测试，被设计为会失败的，合并后丢弃。没有维护成本，测试套件不会增长。
 
-TDD/BDD/ATDD all assume the developer controls the pace of code authoring. Agentic development breaks that assumption: an agent can generate 200 lines per hour, faster than any human test-writing workflow can keep up with. JiTTests are the industrial response to that mismatch.
+TDD（测试驱动开发）/BDD（行为驱动开发）/ATDD 都假设开发者控制代码编写节奏。Agentic 开发打破了这个假设：智能体每小时可以生成 200 行代码，比任何人工测试编写工作流都要快。JiTTests 是对这种不匹配的工业化响应。
 
-The mechanism: at PR time, an LLM infers the intent of the diff, generates code mutants (deliberately broken variants), writes tests that catch those mutants, runs ensemble rule-based and LLM assessors to filter false positives, and surfaces only real regressions to the engineer. The tests never land in the codebase.
+机制：在 PR 时，LLM 推断 diff 的意图，生成代码变体（故意破坏的变体），编写能捕获这些变体的测试，运行规则和 LLM 评估器的集成来过滤误报，只将真实回归浮现给工程师。测试从不落入代码库。
 
-Meta deployed this at scale (100M+ LoC): 4x improvement in catching regressions over traditional hardening tests, 70% reduction in human review load, 4 serious production failures prevented from 41 candidates reviewed.
+Meta 在规模上部署了这一方案（超过 1 亿行代码）：在传统硬化测试上捕获回归提升 4 倍，人工审查负担减少 70%，从 41 个候选中防止了 4 次严重生产故障。
 
-No open-source implementation exists yet. You can approximate this today: before merging any agent-generated PR, prompt Claude with "generate tests that would catch regressions introduced by this diff specifically — I'll run them locally and discard them after the PR closes." The ephemeral framing focuses test generation on what actually changed rather than general coverage.
+目前尚无开源实现。今天你可以这样近似：在合并任何智能体生成的 PR 之前，提示 Claude："生成专门捕获此 diff 引入回归的测试——我会在本地运行它们，PR 关闭后丢弃。" 临时性的框架让测试生成专注于实际变更，而不是一般覆盖率。
 
-> **Reference**: [Just-in-Time Catching Test Generation at Meta](https://arxiv.org/abs/2601.22832) — Harman, 2026.
+> **参考**：[Meta 的即时捕获测试生成](https://arxiv.org/abs/2601.22832) — Harman，2026。
 
 ---
 
-### Tier 4: Feature Delivery
+### 第 4 层：功能交付
 
-| Name | What | Best For | Claude Fit |
-|------|------|----------|------------|
-| **FDD** | Feature-by-feature delivery | Feature teams with parallel delivery | ⭐⭐ Structure |
-| **Context Eng.** | Context as first-class design | Long sessions | ⭐⭐⭐ Fundamental |
+| 名称 | 简介 | 最适合 | Claude 适配度 |
+|------|------|--------|--------------|
+| **FDD** | 逐功能交付 | 并行交付的功能团队 | ⭐⭐ 结构 |
+| **上下文工程** | 上下文作为一等设计要素 | 长会话 | ⭐⭐⭐ 基础性 |
 
-**FDD (Feature-Driven Development)** — Five processes:
-1. Develop Overall Model
-2. Build Features List
-3. Plan by Feature
-4. Design by Feature
-5. Build by Feature
+**FDD（功能驱动开发）** — 五个流程：
+1. 开发总体模型
+2. 构建功能列表
+3. 按功能规划
+4. 按功能设计
+5. 按功能构建
 
-Strict iteration: 2 weeks max per feature.
+严格迭代：每个功能最多 2 周。
 
-**Context Engineering** — Treat context as design element:
-- Progressive Disclosure: Let agent discover incrementally
-- Memory Management: Conversation vs persistent memory
-- Dynamic Refresh: Rewrite TODO list before response
+**上下文工程** — 将上下文视为设计元素：
+- 渐进式披露：让智能体增量发现
+- 记忆管理：对话记忆 vs 持久记忆
+- 动态刷新：响应前重写待办列表
 
 ---
 
-### Tier 5: Implementation
+### 第 5 层：实现
 
-| Name | What | Best For | Claude Fit |
-|------|------|----------|------------|
-| **TDD** | Red-Green-Refactor | Quality code | ⭐⭐⭐ Core workflow |
-| **Eval-Driven** | Evals for LLM outputs | AI products | ⭐⭐⭐ Agents |
-| **Multi-Agent** | Orchestrate sub-agents | Complex tasks | ⭐⭐⭐ Task tool |
+| 名称 | 简介 | 最适合 | Claude 适配度 |
+|------|------|--------|--------------|
+| **TDD（测试驱动开发）** | 红-绿-重构 | 高质量代码 | ⭐⭐⭐ 核心工作流 |
+| **评估驱动** | 针对 LLM 输出的评估 | AI 产品 | ⭐⭐⭐ 智能体 |
+| **多智能体** | 编排子智能体 | 复杂任务 | ⭐⭐⭐ 任务工具 |
 
-**TDD (Test-Driven Development)** — The classic cycle:
-1. **Red**: Write failing test
-2. **Green**: Minimal code to pass
-3. **Refactor**: Clean up, tests stay green
+**TDD（测试驱动开发）** — 经典循环：
+1. **红**：编写失败的测试
+2. **绿**：最小代码使测试通过
+3. **重构**：清理代码，测试保持绿色
 
-With Claude: Be explicit. "Write FAILING tests that don't exist yet."
+使用 Claude：要明确。"编写**尚不存在**的**失败**测试。"
 
-> **Verification Loops** — A formalized pattern for autonomous iteration (broader than TDD):
+> **验证循环** — 自主迭代的正式模式（比 TDD（测试驱动开发）更广泛）：
 >
-> **Core principle**: Give Claude a mechanism to verify its own output.
+> **核心原则**：给 Claude 一种验证自己输出的机制。
 >
 > ```
-> Code generated → Verification tool → Feedback loop → Improvement
+> 代码生成 → 验证工具 → 反馈循环 → 改进
 > ```
 >
-> **Why it works** (Boris Cherny): *"An agent that can 'see' what it has done produces better results."*
+> **为何有效**（Boris Cherny）：*"能够'看见'自己所做的事的智能体会产生更好的结果。"*
 >
-> **Verification mechanisms by domain**:
+> **按领域划分的验证机制：**
 >
-> | Domain | Verification Tool | What Claude "Sees" |
-> |--------|-------------------|-------------------|
-> | **Frontend** | Browser preview (live reload) | Visual rendering, layout, interactions |
-> | **Backend** | Tests (unit/integration) | Pass/fail status, error messages |
-> | **Types** | TypeScript compiler | Type errors, incompatibilities |
-> | **Style** | Linters (ESLint, Prettier) | Style violations, formatting issues |
-> | **Performance** | Profilers, benchmarks | Execution time, memory usage |
-> | **Accessibility** | axe-core, screen readers | WCAG violations, navigation issues |
-> | **Security** | Static analyzers (Semgrep) | Vulnerability patterns |
-> | **UX** | User testing, recordings | Usability problems, confusion points |
+> | 领域 | 验证工具 | Claude"看到"的内容 |
+> |------|---------|------------------|
+> | **前端** | 浏览器预览（热更新） | 视觉渲染、布局、交互 |
+> | **后端** | 测试（单元/集成） | 通过/失败状态、错误消息 |
+> | **类型** | TypeScript 编译器 | 类型错误、不兼容 |
+> | **风格** | Linter（ESLint、Prettier） | 风格违规、格式问题 |
+> | **性能** | 分析器、基准测试 | 执行时间、内存使用 |
+> | **无障碍** | axe-core、屏幕阅读器 | WCAG 违规、导航问题 |
+> | **安全** | 静态分析器（Semgrep） | 漏洞模式 |
+> | **UX** | 用户测试、录制 | 可用性问题、困惑点 |
 >
-> **TDD as canonical example**:
-> 1. Claude writes tests for the feature
-> 2. Claude iterates code until tests pass
-> 3. Continue until explicit completion criteria met
+> **TDD（测试驱动开发）作为典型示例：**
+> 1. Claude 为功能编写测试
+> 2. Claude 迭代代码直到测试通过
+> 3. 持续直到满足明确的完成标准
 >
-> **Official guidance**: *"Tell Claude to keep going until all tests pass. It will usually take a few iterations."* — [Anthropic Best Practices](https://www.anthropic.com/engineering/claude-code-best-practices)
+> **官方指导**：*"告诉 Claude 持续直到所有测试通过。通常需要几次迭代。"* — [Anthropic 最佳实践](https://www.anthropic.com/engineering/claude-code-best-practices)
 >
-> **Implementation patterns**:
-> - **Hooks**: PostToolUse hook runs verification after each edit
-> - **Browser extension**: Claude in Chrome sees rendered output
-> - **Test watchers**: Jest/Vitest watch mode provides instant feedback
-> - **CI/CD gates**: GitHub Actions runs full validation suite
-> - **Multi-Claude verification**: One Claude codes, another reviews
+> **实现模式：**
+> - **Hooks**：工具后钩子（PostToolUse hook）在每次编辑后运行验证
+> - **浏览器扩展**：Claude in Chrome 可看到渲染输出
+> - **测试监视器**：Jest/Vitest 监视模式提供即时反馈
+> - **CI/CD 门控**：GitHub Actions 运行完整验证套件
+> - **多 Claude 验证**：一个 Claude 编码，另一个审查
 >
-> **Anti-pattern**: Blind iteration without feedback. Without verification mechanism, Claude can't converge toward correct solution—it guesses.
+> **反模式**：没有反馈的盲目迭代。没有验证机制，Claude 无法收敛到正确的解——它只是在猜测。
 
-For the implementation-side failure mode this prevents, see [The Verification Gap](../workflows/tdd-with-claude.md#the-verification-gap) in the TDD workflow.
+这一方法防止的实现侧故障模式，参见[验证缺口](../workflows/tdd-with-claude.md#the-verification-gap)。
 
-**Eval-Driven Development** — TDD for LLMs. Test agent behaviors via evals:
-- Code-based: `output == golden_answer`
-- LLM-based: Another Claude evaluates
-- Human grading: Reference, slow
+**评估驱动开发** — LLM 的 TDD（测试驱动开发）。通过评估测试智能体行为：
+- 基于代码：`output == golden_answer`
+- 基于 LLM：另一个 Claude 进行评估
+- 人工评分：参考标准，速度慢
 
-> **Eval Harness** — The infrastructure that runs evaluations end-to-end: providing instructions and tools, running tasks concurrently, recording steps, grading outputs, and aggregating results.
+> **评估框架** — 端到端运行评估的基础设施：提供指令和工具、并发运行任务、记录步骤、评分输出、汇总结果。
 >
-> See Anthropic's comprehensive guide: [Demystifying Evals for AI Agents](https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents)
+> 参见 Anthropic 的综合指南：[揭秘 AI 智能体的评估](https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents)
 
-**Multi-Agent Orchestration** — From single assistant to orchestrated team:
+**多智能体编排** — 从单一助手到编排团队：
 ```
-Meta-Agent (Orchestrator)
-├── Analyst (requirements)
-├── Architect (design)
-├── Developer (code)
-└── Reviewer (validation)
-```
-
-### ADR-Driven Development
-
-**Pattern**: Write plain English ADRs → Feed to implement-adr skill → Execute natively
-
-Architecture Decision Records (ADRs) combined with Claude Code skills create a workflow where architectural decisions drive implementation directly.
-
-**Workflow Steps**:
-1. **Document decision** in ADR format (context, decision, consequences)
-2. **Create implementation skill** (generic or `implement-adr` specialized)
-3. **Feed ADR as prompt** to skill with clear acceptance criteria
-4. **Claude executes** based on architectural guidance in ADR
-
-**Example ADR Template**:
-```
-# ADR-001: Database Migration Strategy
-
-## Context
-Legacy MySQL schema needs migration to PostgreSQL for better JSON support.
-
-## Decision
-Use incremental dual-write pattern with feature flags.
-
-## Consequences
-- Positive: Zero-downtime migration
-- Negative: Temporary code complexity during transition
+元智能体（编排者）
+├── 分析师（需求）
+├── 架构师（设计）
+├── 开发者（代码）
+└── 审查者（验证）
 ```
 
-**Implementation Workflow**:
+### ADR 驱动开发
+
+**模式**：用简单英文编写 ADR → 传入实现 ADR 技能 → 原生执行
+
+架构决策记录（ADR）与 Claude Code Skills（技能模块）结合，创建了一种架构决策直接驱动实现的工作流。
+
+**工作流步骤**：
+1. **记录决策**，使用 ADR 格式（上下文、决策、后果）
+2. **创建实现技能**（通用或 `implement-adr` 专用）
+3. **将 ADR 作为提示词**，传给带明确验收标准的技能
+4. **Claude 执行**，基于 ADR 中的架构指导
+
+**ADR 模板示例**：
+```
+# ADR-001：数据库迁移策略
+
+## 上下文
+遗留 MySQL Schema 需要迁移到 PostgreSQL 以获得更好的 JSON 支持。
+
+## 决策
+使用带功能标志的增量双写模式。
+
+## 后果
+- 积极：零停机迁移
+- 消极：过渡期间临时增加代码复杂度
+```
+
+**实现工作流**：
 ```bash
-# 1. Write ADR (plain English)
+# 1. 编写 ADR（简单语言）
 vim docs/adr/001-database-migration.md
 
-# 2. Feed to implementation skill
+# 2. 传入实现技能
 /implement-adr docs/adr/001-database-migration.md
 
-# 3. Claude executes based on ADR guidance
-# → Creates migration scripts
-# → Updates ORM configuration
-# → Adds feature flags
-# → Implements dual-write logic
+# 3. Claude 基于 ADR 指导执行
+# → 创建迁移脚本
+# → 更新 ORM 配置
+# → 添加功能标志
+# → 实现双写逻辑
 ```
 
-**Benefits**:
-- ✅ **Documentation-driven**: Architecture and code stay synchronized
-- ✅ **Native execution**: No external frameworks needed
-- ✅ **Traceable decisions**: Clear audit trail from decision to implementation
-- ✅ **Team alignment**: ADRs communicate intent to both humans and AI
+**优势**：
+- ✅ **文档驱动**：架构和代码保持同步
+- ✅ **原生执行**：无需外部框架
+- ✅ **可追溯的决策**：从决策到实现有清晰的审计链
+- ✅ **团队对齐**：ADR 向人类和 AI 传达意图
 
-**Source**: [Gur Sannikov embedded engineering workflow](https://www.linkedin.com/posts/gursannikov_claudecode-embeddedengineering-aiagents-activity-7423851983331328001-DrFb)
-
----
-
-### Tier 6: Optimization
-
-| Name | What | Best For | Claude Fit |
-|------|------|----------|------------|
-| **Iterative Loops** | Autonomous refinement | Optimization | ⭐⭐⭐ Core |
-| **Fresh Context** | Reset per task, state in files | Long autonomous sessions | ⭐⭐⭐ Power users |
-| **Prompt Engineering** | Technique foundation | Everything | ⭐⭐⭐ Prerequisite |
-
-**Iterative Refinement Loops** — Autonomous convergence:
-1. Execute prompt
-2. Observe result
-3. If result ≠ "DONE" → refine and repeat
-
-**Prompt Engineering** — Foundations for ALL Claude usage:
-- Zero-Shot Chain of Thought: "Think step by step"
-- Few-Shot Learning: 2-3 examples of expected pattern
-- Structured Prompts: XML tags for organization
-- Position Matters: For long docs, place question at end
-
-**Fresh Context Pattern (Ralph Loop)** — Solves context rot by spawning fresh agent instances per task. State persists in git + progress files, not chat history. Ideal for long autonomous sessions (migrations, overnight runs). See [Ultimate Guide - Fresh Context Pattern](#fresh-context-pattern-ralph-loop) for implementation.
+**来源**：[Gur Sannikov 嵌入式工程工作流](https://www.linkedin.com/posts/gursannikov_claudecode-embeddedengineering-aiagents-activity-7423851983331328001-DrFb)
 
 ---
 
-## SDD Tools Reference
+### 第 6 层：优化
 
-Three tools have emerged to formalize Spec-Driven Development:
+| 名称 | 简介 | 最适合 | Claude 适配度 |
+|------|------|--------|--------------|
+| **迭代循环** | 自主精炼 | 优化 | ⭐⭐⭐ 核心 |
+| **新鲜上下文** | 每个任务重置，状态存文件 | 长期自主会话 | ⭐⭐⭐ 高级用户 |
+| **提示词工程** | 技术基础 | 所有场景 | ⭐⭐⭐ 前提条件 |
 
-| Tool | Use Case | Official Docs | Claude Integration |
-|------|----------|---------------|-------------------|
-| **Spec Kit** | Greenfield, governance | [github.blog/spec-kit](https://github.blog/ai-and-ml/generative-ai/spec-driven-development-with-ai-get-started-with-a-new-open-source-toolkit/) | `/speckit.constitution`, `/speckit.specify`, `/speckit.plan` |
-| **OpenSpec** | Brownfield, changes | [github.com/Fission-AI/OpenSpec](https://github.com/Fission-AI/OpenSpec) | `/openspec:proposal`, `/openspec:apply`, `/openspec:archive` |
-| **Specmatic** | API contract testing | [specmatic.io](https://specmatic.io) | MCP agent available |
-| **Spec-to-Code Factory** | Greenfield, enforcement outillé | [github.com/SylvainChabaud/spec-to-code-factory](https://github.com/SylvainChabaud/spec-to-code-factory) | Implémentation référence multi-agents (BREAK→MODEL→ACT→DEBRIEF) |
+**迭代精炼循环** — 自主收敛：
+1. 执行提示词
+2. 观察结果
+3. 如果结果 ≠ "完成" → 精炼并重复
 
-### Spec Kit (Greenfield)
+**提示词工程** — 所有 Claude 使用的基础：
+- 零样本思维链：「逐步思考」
+- 少样本学习：2-3 个期望模式示例
+- 结构化提示词：用 XML 标签组织
+- 位置很重要：对于长文档，将问题放在末尾
 
-5-phase workflow:
-1. Constitution: `/speckit.constitution` → guardrails
-2. Specify: `/speckit.specify` → requirements
-3. Plan: `/speckit.plan` → architecture
-4. Tasks: `/speckit.tasks` → decomposition
-5. Implement: `/speckit.implement` → code
+**新鲜上下文模式（Ralph Loop）** — 通过为每个任务派生新鲜智能体实例来解决上下文退化问题。状态在 git + 进度文件中持久化，而非聊天历史。适合长时自主会话（迁移、隔夜运行）。实现参见[终极指南 - 新鲜上下文模式](#fresh-context-pattern-ralph-loop)。
 
-### OpenSpec (Brownfield)
+---
 
-Two-folder architecture:
+## SDD（规范驱动开发）工具参考
+
+三种工具已经出现，用于正式化规范驱动开发：
+
+| 工具 | 使用场景 | 官方文档 | Claude 集成 |
+|------|---------|---------|------------|
+| **Spec Kit** | 绿地项目、治理 | [github.blog/spec-kit](https://github.blog/ai-and-ml/generative-ai/spec-driven-development-with-ai-get-started-with-a-new-open-source-toolkit/) | `/speckit.constitution`, `/speckit.specify`, `/speckit.plan` |
+| **OpenSpec** | 棕地项目、变更 | [github.com/Fission-AI/OpenSpec](https://github.com/Fission-AI/OpenSpec) | `/openspec:proposal`, `/openspec:apply`, `/openspec:archive` |
+| **Specmatic** | API 契约测试 | [specmatic.io](https://specmatic.io) | 提供 MCP 智能体 |
+| **Spec-to-Code Factory** | 绿地、工具化强制执行 | [github.com/SylvainChabaud/spec-to-code-factory](https://github.com/SylvainChabaud/spec-to-code-factory) | 多智能体参考实现（BREAK→MODEL→ACT→DEBRIEF） |
+
+### Spec Kit（绿地项目）
+
+5 阶段工作流：
+1. 宪法：`/speckit.constitution` → 护栏
+2. 规范：`/speckit.specify` → 需求
+3. 计划：`/speckit.plan` → 架构
+4. 任务：`/speckit.tasks` → 分解
+5. 实现：`/speckit.implement` → 代码
+
+### OpenSpec（棕地项目）
+
+双文件夹架构：
 ```
 openspec/
-├── specs/      ← Current truth (stable)
-└── changes/    ← Proposals (temporary)
+├── specs/      ← 当前事实（稳定）
+└── changes/    ← 提案（临时）
 ```
 
-Workflow: Proposal → Review → Apply → Archive
+工作流：提案 → 审查 → 应用 → 归档
 
-### Specmatic (API Contracts)
+### Specmatic（API 契约）
 
-- **Contract as Test**: Auto-generates 1000s of tests from OpenAPI spec
-- **Contract as Stub**: Mock server for parallel development
-- **Backward Compatibility**: Detects breaking changes
+- **契约即测试**：从 OpenAPI 规范自动生成数千个测试
+- **契约即存根**：用于并行开发的模拟服务器
+- **向后兼容性**：检测破坏性变更
 
 ---
 
-## Writing Effective Specs
+## 编写有效规范
 
-> Based on analysis of 2,500+ agent configuration files.
-> Source: [Addy Osmani](https://addyosmani.com/blog/good-spec/)
+> 基于对 2500+ 智能体配置文件的分析。
+> 来源：[Addy Osmani](https://addyosmani.com/blog/good-spec/)
 
-### The Six Essential Components
+### 六个核心组成部分
 
-| Component | What to Include | Example |
-|-----------|-----------------|---------|
-| **Commands** | Executable with flags | `npm test -- --coverage` |
-| **Testing** | Framework, coverage, locations | `vitest, 80%, tests/` |
-| **Project structure** | Explicit directories | `src/`, `lib/`, `tests/` |
-| **Code style** | One example > paragraphs | Show a real function |
-| **Git workflow** | Branch, commit, PR format | `feat/name`, conventional commits |
-| **Boundaries** | Permission tiers | See below |
+| 组成部分 | 包含内容 | 示例 |
+|---------|---------|------|
+| **命令** | 带标志的可执行命令 | `npm test -- --coverage` |
+| **测试** | 框架、覆盖率、位置 | `vitest, 80%, tests/` |
+| **项目结构** | 明确的目录 | `src/`, `lib/`, `tests/` |
+| **代码风格** | 一个示例胜过多段描述 | 展示一个真实函数 |
+| **Git 工作流** | 分支、提交、PR 格式 | `feat/name`、约定式提交 |
+| **边界** | 权限层级 | 见下方 |
 
-### Permission Tiers
+### 权限层级
 
-| Tier | Symbol | Use For |
-|------|--------|---------|
-| Always do | ✅ | Safe actions, no approval (lint, format) |
-| Ask first | ⚠️ | High-impact changes (delete, publish) |
-| Never do | 🚫 | Hard stops (commit secrets, force push main) |
+| 层级 | 符号 | 用途 |
+|------|------|------|
+| 始终执行 | ✅ | 安全操作，无需批准（lint、格式化） |
+| 先询问 | ⚠️ | 高影响变更（删除、发布） |
+| 绝不执行 | 🚫 | 硬性禁止（提交密钥、强制推送 main） |
 
-### Curse of Instructions
+### 指令的诅咒
 
-> ⚠️ Research shows **more instructions = worse adherence** to each one.
+> ⚠️ 研究表明**指令越多 = 每条指令的遵从度越差**。
 >
-> Solution: Feed only relevant spec sections per task, not the entire document.
+> 解决方案：每个任务只传入相关的规范章节，不要传整个文档。
 
-### Monolithic vs Modular Specs
+### 单体 vs 模块化规范
 
-| Project Size | Approach |
-|--------------|----------|
-| Small (<10 files) | Single spec file |
-| Medium (10-50 files) | Sectioned spec, feed per task |
-| Large (50+ files) | Sub-agent routing by domain |
-
----
-
-## Combination Patterns
-
-Recommended stacks by situation:
-
-| Situation | Recommended Stack | Notes |
-|-----------|-------------------|-------|
-| Solo MVP | SDD + TDD | Minimal overhead, quality focus |
-| Team 5-10, greenfield | Spec Kit + TDD + BDD | Governance + quality + collaboration |
-| Microservices | CDD + Specmatic | Contract-first, parallel dev |
-| Existing SaaS (100+ features) | OpenSpec + BDD | Change tracking, no spec drift |
-| High-complexity / compliance | BMAD + Spec Kit + Specmatic | Full governance + contracts |
-| LLM-native product | Eval-Driven + Multi-Agent | Self-improving systems |
+| 项目规模 | 方法 |
+|---------|------|
+| 小型（<10 个文件） | 单一规范文件 |
+| 中型（10-50 个文件） | 分章节规范，按任务传入 |
+| 大型（50+ 个文件） | 按领域的子智能体路由 |
 
 ---
 
-## Quick Reference Table
+## 组合模式
 
-| Methodology | Level | Primary Focus | Best Context | Learning Curve |
-|-------------|-------|---------------|--------------|----------------|
-| BMAD | Orchestration | Governance | High complexity, stable requirements | High |
-| SDD | Specification | Contracts | Any | Medium |
-| Doc-Driven | Specification | Alignment | Any | Low |
-| Req-Driven | Specification | Context | Complex requirements, many artifacts | Medium |
-| DDD | Specification | Domain | Complex business domain | Very High |
-| BDD | Behavior | Collaboration | Multi-role stakeholder involvement | Medium |
-| ATDD | Behavior | Compliance | Regulated, explicit acceptance criteria | Medium |
-| CDD | Behavior | APIs | Service boundaries, parallel teams | Medium |
-| FDD | Delivery | Features | Feature teams, parallel delivery | Medium |
-| Context Eng. | Delivery | AI sessions | Any | Low |
-| TDD | Implementation | Quality | Any | Low |
-| Eval-Driven | Implementation | AI outputs | Any | Medium |
-| Multi-Agent | Implementation | Complexity | Any | Medium |
-| Iterative | Optimization | Refinement | Any | Low |
-| Prompt Eng. | Optimization | Foundation | Any | Very Low |
+按场景推荐的组合方案：
+
+| 场景 | 推荐组合 | 备注 |
+|------|---------|------|
+| 独立 MVP | SDD（规范驱动开发）+ TDD（测试驱动开发） | 最小开销，质量导向 |
+| 5-10 人团队，绿地 | Spec Kit + TDD（测试驱动开发）+ BDD（行为驱动开发） | 治理 + 质量 + 协作 |
+| 微服务 | CDD + Specmatic | 契约优先，并行开发 |
+| 现有 SaaS（100+ 功能） | OpenSpec + BDD（行为驱动开发） | 变更跟踪，无规范漂移 |
+| 高复杂度/合规 | BMAD + Spec Kit + Specmatic | 完整治理 + 契约 |
+| LLM 原生产品 | 评估驱动 + 多智能体 | 自我改进系统 |
 
 ---
 
-## Sources
+## 快速参考表
 
-### Official Documentation (Tier 1)
+| 方法论 | 层级 | 主要焦点 | 最佳场景 | 学习曲线 |
+|--------|------|---------|---------|---------|
+| BMAD | 编排 | 治理 | 高复杂度、需求稳定 | 高 |
+| SDD（规范驱动开发） | 规范 | 契约 | 任何场景 | 中 |
+| 文档驱动 | 规范 | 对齐 | 任何场景 | 低 |
+| 需求驱动 | 规范 | 上下文 | 复杂需求、多工件 | 中 |
+| DDD | 规范 | 领域 | 复杂业务领域 | 极高 |
+| BDD（行为驱动开发） | 行为 | 协作 | 多角色利益相关者参与 | 中 |
+| ATDD | 行为 | 合规 | 受监管、明确验收标准 | 中 |
+| CDD | 行为 | API | 服务边界、并行团队 | 中 |
+| FDD | 交付 | 功能 | 功能团队、并行交付 | 中 |
+| 上下文工程 | 交付 | AI 会话 | 任何场景 | 低 |
+| TDD（测试驱动开发） | 实现 | 质量 | 任何场景 | 低 |
+| 评估驱动 | 实现 | AI 输出 | 任何场景 | 中 |
+| 多智能体 | 实现 | 复杂度 | 任何场景 | 中 |
+| 迭代 | 优化 | 精炼 | 任何场景 | 低 |
+| 提示词工程 | 优化 | 基础 | 任何场景 | 极低 |
 
-- Anthropic: [Claude Code Best Practices](https://www.anthropic.com/engineering/claude-code-best-practices)
-- Anthropic: [Effective Context Engineering for AI Agents](https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents)
-- Anthropic: [Demystifying Evals for AI Agents](https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents)
-- GitHub: [Spec-Driven Development Toolkit](https://github.blog/ai-and-ml/generative-ai/spec-driven-development-with-ai-get-started-with-a-new-open-source-toolkit/)
-- Microsoft: [Spec-Driven Development with Spec Kit](https://developer.microsoft.com/blog/spec-driven-development-spec-kit)
+---
 
-### Methodology References (Tier 2)
+## 来源
 
-**SDD & Spec-First**
-- Addy Osmani: [How to Write Good Specs for AI Agents](https://addyosmani.com/blog/good-spec/)
-- Addy Osmani: [My AI Coding Workflow in 2026](https://addyosmani.com/blog/ai-coding-workflow/) — End-to-end workflow: spec-first, context packing, TDD, git checkpoints
-- Martin Fowler: [SDD Tools Analysis](https://martinfowler.com/articles/exploring-gen-ai/sdd-3-tools.html)
-- InfoQ: [Spec-Driven Development](https://www.infoq.com/articles/spec-driven-development/)
-- Kinde: [Beyond TDD - Why SDD is the Next Step](https://kinde.com/learn/ai-for-software-engineering/best-practice/beyond-tdd-why-spec-driven-development-is-the-next-step/)
-- Tessl.io: [Spec-Driven Dev with Claude Code](https://tessl.io/blog/spec-driven-dev-with-claude-code/)
+### 官方文档（Tier 1）
+
+- Anthropic：[Claude Code 最佳实践](https://www.anthropic.com/engineering/claude-code-best-practices)
+- Anthropic：[AI 智能体的有效上下文工程](https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents)
+- Anthropic：[揭秘 AI 智能体的评估](https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents)
+- GitHub：[规范驱动开发工具包](https://github.blog/ai-and-ml/generative-ai/spec-driven-development-with-ai-get-started-with-a-new-open-source-toolkit/)
+- Microsoft：[使用 Spec Kit 的规范驱动开发](https://developer.microsoft.com/blog/spec-driven-development-spec-kit)
+
+### 方法论参考（Tier 2）
+
+**SDD（规范驱动开发）与规范优先**
+- Addy Osmani：[如何为 AI 智能体编写好的规范](https://addyosmani.com/blog/good-spec/)
+- Addy Osmani：[我的 2026 年 AI 编码工作流](https://addyosmani.com/blog/ai-coding-workflow/) — 端到端工作流：规范优先、上下文打包、TDD（测试驱动开发）、git 检查点
+- Martin Fowler：[SDD（规范驱动开发）工具分析](https://martinfowler.com/articles/exploring-gen-ai/sdd-3-tools.html)
+- InfoQ：[规范驱动开发](https://www.infoq.com/articles/spec-driven-development/)
+- Kinde：[超越 TDD（测试驱动开发）- 为何 SDD（规范驱动开发）是下一步](https://kinde.com/learn/ai-for-software-engineering/best-practice/beyond-tdd-why-spec-driven-development-is-the-next-step/)
+- Tessl.io：[使用 Claude Code 的规范驱动开发](https://tessl.io/blog/spec-driven-dev-with-claude-code/)
 
 **BMAD**
-- GMO Recruit: [The BMAD Method](https://recruit.group.gmo/engineer/jisedai/blog/the-bmad-method-a-framework-for-spec-oriented-ai-driven-development/)
-- Benny Cheung: [BMAD - Reclaiming Control in AI Dev](https://bennycheung.github.io/bmad-reclaiming-control-in-ai-dev)
-- GitHub: [BMAD-AT-CLAUDE](https://github.com/24601/BMAD-AT-CLAUDE)
+- GMO Recruit：[BMAD 方法](https://recruit.group.gmo/engineer/jisedai/blog/the-bmad-method-a-framework-for-spec-oriented-ai-driven-development/)
+- Benny Cheung：[BMAD - 重掌 AI 开发控制权](https://bennycheung.github.io/bmad-reclaiming-control-in-ai-dev)
+- GitHub：[BMAD-AT-CLAUDE](https://github.com/24601/BMAD-AT-CLAUDE)
 
-**TDD with AI**
-- Steve Kinney: [TDD with Claude](https://stevekinney.com/courses/ai-development/test-driven-development-with-claude)
-- Nathan Fox: [Taming GenAI Agents](https://www.nathanfox.net/p/taming-genai-agents-like-claude-code)
-- Alex Op: [Custom TDD Workflow Claude Code](https://alexop.dev/posts/custom-tdd-workflow-claude-code-vue/)
+**AI 辅助 TDD（测试驱动开发）**
+- Steve Kinney：[使用 Claude 进行 TDD（测试驱动开发）](https://stevekinney.com/courses/ai-development/test-driven-development-with-claude)
+- Nathan Fox：[驯服 GenAI 智能体](https://www.nathanfox.net/p/taming-genai-agents-like-claude-code)
+- Alex Op：[自定义 TDD（测试驱动开发）工作流 Claude Code](https://alexop.dev/posts/custom-tdd-workflow-claude-code-vue/)
 
-**BDD & DDD**
-- Alex Soyes: [BDD Behavior-Driven Development](https://alexsoyes.com/bdd-behavior-driven-development/)
-- Alex Soyes: [DDD Domain-Driven Design](https://alexsoyes.com/ddd-domain-driven-design/)
-- Inflectra: [Behavior-Driven Development](https://www.inflectra.com/Ideas/Topic/Behavior-Driven-Development.aspx)
+**BDD（行为驱动开发）与 DDD**
+- Alex Soyes：[BDD（行为驱动开发）行为驱动开发](https://alexsoyes.com/bdd-behavior-driven-development/)
+- Alex Soyes：[DDD 领域驱动设计](https://alexsoyes.com/ddd-domain-driven-design/)
+- Inflectra：[行为驱动开发](https://www.inflectra.com/Ideas/Topic/Behavior-Driven-Development.aspx)
 
-**Context Engineering**
-- Intuition Labs: [What is Context Engineering](https://intuitionlabs.ai/articles/what-is-context-engineering)
-- Manus.im: [Context Engineering for AI Agents](https://manus.im/blog/Context-Engineering-for-AI-Agents-Lessons-from-Building-Manus)
+**上下文工程**
+- Intuition Labs：[什么是上下文工程](https://intuitionlabs.ai/articles/what-is-context-engineering)
+- Manus.im：[AI 智能体的上下文工程](https://manus.im/blog/Context-Engineering-for-AI-Agents-Lessons-from-Building-Manus)
 
-**Eval-Driven & Multi-Agent**
-- Fireworks AI: [Eval-Driven Development with Claude Code](https://fireworks.ai/blog/eval-driven-development-with-claude-code)
-- Brandon Casci: [Transform into a Dev Team using Claude Code Agents](https://www.brandoncasci.com/2025/09/21/how-to-transform-yourself-into-a-dev-team-using-claude-codes-ai-agents.html)
-- The Unwind AI: [Claude Code's Multi-Agent Orchestration](https://www.theunwindai.com/p/claude-code-s-hidden-multi-agent-orchestration-now-open-source)
+**评估驱动与多智能体**
+- Fireworks AI：[使用 Claude Code 的评估驱动开发](https://fireworks.ai/blog/eval-driven-development-with-claude-code)
+- Brandon Casci：[使用 Claude Code 智能体将自己转变为开发团队](https://www.brandoncasci.com/2025/09/21/how-to-transform-yourself-into-a-dev-team-using-claude-codes-ai-agents.html)
+- The Unwind AI：[Claude Code 隐藏的多智能体编排](https://www.theunwindai.com/p/claude-code-s-hidden-multi-agent-orchestration-now-open-source)
 
-### Tools Documentation (Tier 1)
+### 工具文档（Tier 1）
 
-- OpenSpec: [github.com/Fission-AI/OpenSpec](https://github.com/Fission-AI/OpenSpec)
-- Spec Kit: [github.com/github/spec-kit](https://github.com/github/spec-kit)
-- Specmatic: [specmatic.io](https://specmatic.io)
-- Specmatic Article: [Spec-Driven Development with GitHub Spec Kit and Specmatic MCP](https://specmatic.io/article/spec-driven-development-api-design-first-with-github-spec-kit-and-specmatic-mcp/)
+- OpenSpec：[github.com/Fission-AI/OpenSpec](https://github.com/Fission-AI/OpenSpec)
+- Spec Kit：[github.com/github/spec-kit](https://github.com/github/spec-kit)
+- Specmatic：[specmatic.io](https://specmatic.io)
+- Specmatic 文章：[使用 GitHub Spec Kit 和 Specmatic MCP 的规范驱动开发](https://specmatic.io/article/spec-driven-development-api-design-first-with-github-spec-kit-and-specmatic-mcp/)
 
-### Additional References
+### 其他参考
 
-- Talent500: [Claude Code TDD Guide](https://talent500.com/blog/claude-code-test-driven-development-guide/)
-- Testlio: [Acceptance Test-Driven Development](https://testlio.com/blog/what-is-acceptance-test-driven-development/)
-- Monday.com: [Feature-Driven Development](https://monday.com/blog/rnd/feature-driven-development-fdd/)
-- Paddo.dev: [Ralph Wiggum Autonomous Loops](https://paddo.dev/blog/ralph-wiggum-autonomous-loops/)
-- Walturn: [Prompt Engineering for Claude](https://www.walturn.com/insights/mastering-prompt-engineering-for-claude)
-- AWS: [Prompt Engineering with Claude on Bedrock](https://aws.amazon.com/blogs/machine-learning/prompt-engineering-techniques-and-best-practices-learn-by-doing-with-anthropics-claude-3-on-amazon-bedrock/)
+- Talent500：[Claude Code TDD（测试驱动开发）指南](https://talent500.com/blog/claude-code-test-driven-development-guide/)
+- Testlio：[验收测试驱动开发](https://testlio.com/blog/what-is-acceptance-test-driven-development/)
+- Monday.com：[功能驱动开发](https://monday.com/blog/rnd/feature-driven-development-fdd/)
+- Paddo.dev：[Ralph Wiggum 自主循环](https://paddo.dev/blog/ralph-wiggum-autonomous-loops/)
+- Walturn：[Claude 的提示词工程](https://www.walturn.com/insights/mastering-prompt-engineering-for-claude)
+- AWS：[在 Bedrock 上使用 Claude 的提示词工程](https://aws.amazon.com/blogs/machine-learning/prompt-engineering-techniques-and-best-practices-learn-by-doing-with-anthropics-claude-3-on-amazon-bedrock/)
 
 ---
 
-## See Also
+## 另请参阅
 
-- [workflows/tdd-with-claude.md](../workflows/tdd-with-claude.md) — Practical TDD guide
-- [workflows/spec-first.md](../workflows/spec-first.md) — Spec-first development
-- [workflows/plan-driven.md](../workflows/plan-driven.md) — Using /plan mode
-- [workflows/iterative-refinement.md](../workflows/iterative-refinement.md) — Refinement loops
-- [ultimate-guide.md#912](../ultimate-guide.md) — Section 9.12 summary
+- [workflows/tdd-with-claude.md](../workflows/tdd-with-claude.md) — 实践 TDD（测试驱动开发）指南
+- [workflows/spec-first.md](../workflows/spec-first.md) — 规范优先开发
+- [workflows/plan-driven.md](../workflows/plan-driven.md) — 使用 /plan 模式
+- [workflows/iterative-refinement.md](../workflows/iterative-refinement.md) — 精炼循环
+- [ultimate-guide.md#912](../ultimate-guide.md) — 第 9.12 节摘要

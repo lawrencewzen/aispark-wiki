@@ -1,38 +1,38 @@
 > 📚 **AI Spark Wiki** · Claude Code 知识库
 
 ---
-title: "Claude Code — Cost & Optimization Diagrams"
-description: "Model selection, cost optimization, subscription tiers, token reduction strategies"
-tags: [cost, optimization, models, tokens, subscription]
+title: "Claude Code — 成本与优化图表"
+description: "模型选择、成本优化、订阅套餐、Token 减少策略"
+tags: [成本, 优化, 模型, Token, 订阅]
 ---
 
-# Cost & Optimization
+# 成本与优化
 
-How to get maximum value from Claude Code while controlling token consumption and costs.
+如何在控制 Token 消耗和成本的同时，从 Claude Code 中获取最大价值。
 
 ---
 
-### Model Selection Decision Flow
+### 模型选择决策流程
 
-Not all tasks need the most powerful model. Using the right model for the right task cuts costs by 5-10x without sacrificing quality.
+并非所有任务都需要最强大的模型。为正确的任务选择正确的模型，可以在不牺牲质量的前提下将成本降低 5-10 倍。
 
-> **This diagram assumes an unconstrained budget (Max/API).** On tighter plans (Pro, Teams Standard), apply the budget modifier below.
+> **此图表假设预算不受限制（Max/API）。** 对于预算较紧的套餐（Pro、Teams Standard），请应用下面的预算修正器。
 
 ```mermaid
 flowchart TD
-    A([Task to complete]) --> B{Task complexity?}
+    A([待完成的任务]) --> B{任务复杂度？}
 
-    B -->|Simple| C["Simple tasks:<br/>typo fixes, renames,<br/>formatting, translations"]
-    C --> D([Haiku 4.5<br/>💰 Cheapest, fastest<br/>~5x cheaper than Sonnet])
+    B -->|简单| C["简单任务：<br/>拼写修正、重命名、<br/>格式化、翻译"]
+    C --> D([Haiku 4.5<br/>💰 最便宜、最快<br/>~比 Sonnet 便宜 5 倍])
 
-    B -->|Standard| E["Standard tasks:<br/>feature implementation,<br/>bug fixes, refactoring"]
-    E --> F([Sonnet 4.5/4.6<br/>💰💰 Balanced<br/>Best price/quality ratio])
+    B -->|标准| E["标准任务：<br/>功能实现、<br/>Bug 修复、重构"]
+    E --> F([Sonnet 4.5/4.6<br/>💰💰 均衡<br/>最佳性价比])
 
-    B -->|Complex| G{Needs deep<br/>reasoning?}
-    G -->|Yes| H["Complex tasks:<br/>architecture decisions,<br/>security review,<br/>multi-file analysis"]
-    H --> I([Opus 4.7 — Maximum capability xhigh<br/>Opus 4.6 — Deep analysis<br/>💰💰💰 Most capable<br/>~5x more than Sonnet])
+    B -->|复杂| G{需要深度<br/>推理？}
+    G -->|是| H["复杂任务：<br/>架构决策、<br/>安全审查、<br/>多文件分析"]
+    H --> I([Opus 4.7 — 最强能力 xhigh<br/>Opus 4.6 — 深度分析<br/>💰💰💰 最强大<br/>~比 Sonnet 贵 5 倍])
 
-    G -->|No: just large| J["Large but clear tasks:<br/>big refactors,<br/>doc generation"]
+    G -->|否：只是任务量大| J["大而清晰的任务：<br/>大型重构、<br/>文档生成"]
     J --> F
 
     style A fill:#F5E6D3,color:#333
@@ -46,81 +46,81 @@ flowchart TD
     style H fill:#B8B8B8,color:#333
     style J fill:#B8B8B8,color:#333
 
-    click A href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#25-model-selection--thinking-guide" "Task to complete"
-    click B href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#25-model-selection--thinking-guide" "Task complexity?"
-    click C href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#25-model-selection--thinking-guide" "Simple tasks"
+    click A href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#25-model-selection--thinking-guide" "待完成的任务"
+    click B href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#25-model-selection--thinking-guide" "任务复杂度？"
+    click C href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#25-model-selection--thinking-guide" "简单任务"
     click D href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#25-model-selection--thinking-guide" "Haiku 4.5"
-    click E href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#25-model-selection--thinking-guide" "Standard tasks"
+    click E href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#25-model-selection--thinking-guide" "标准任务"
     click F href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#25-model-selection--thinking-guide" "Sonnet 4.5/4.6"
-    click G href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#25-model-selection--thinking-guide" "Needs deep reasoning?"
-    click H href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#25-model-selection--thinking-guide" "Complex tasks"
+    click G href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#25-model-selection--thinking-guide" "需要深度推理？"
+    click H href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#25-model-selection--thinking-guide" "复杂任务"
     click I href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#25-model-selection--thinking-guide" "Opus 4.7 / Opus 4.6 / Sonnet + --think-hard"
-    click J href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#25-model-selection--thinking-guide" "Large but clear tasks"
+    click J href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#25-model-selection--thinking-guide" "大而清晰的任务"
 ```
 
-> **Pricing**: Relative costs shown — check current rates at [anthropic.com/pricing](https://www.anthropic.com/pricing).
+> **定价**：显示的是相对费用——请在 [anthropic.com/pricing](https://www.anthropic.com/pricing) 查看当前价格。
 
-**Budget modifier** — On constrained plans, downgrade one tier per phase:
+**预算修正器** — 对于预算受限的套餐，每个阶段降低一档：
 
-| Plan | Planning phase | Implementation phase |
-|------|---------------|---------------------|
-| **Max / API unconstrained (xhigh)** | Opus 4.7 | Sonnet |
-| **Max / API unconstrained** | Opus 4.6 | Sonnet |
-| **Pro / Teams Standard** | Sonnet | Haiku (mechanical tasks) |
-| **API tight budget** | Sonnet | Haiku |
+| 套餐 | 规划阶段 | 实现阶段 |
+|------|---------|---------|
+| **Max / API 不受限（xhigh）** | Opus 4.7 | Sonnet |
+| **Max / API 不受限** | Opus 4.6 | Sonnet |
+| **Pro / Teams Standard** | Sonnet | Haiku（机械性任务） |
+| **API 紧张预算** | Sonnet | Haiku |
 
-> *Community pattern (Teams Standard $25/mo): Sonnet for Plan → Haiku for Implementation. Same quality output on mechanical tasks at a fraction of the cost.*
+> *社区模式（Teams Standard $25/月）：Sonnet 用于规划 → Haiku 用于实现。机械性任务以极低成本获得相同质量输出。*
 
 <details>
-<summary>ASCII version</summary>
+<summary>ASCII 版本</summary>
 
 ```
-Task complexity?
-├─ Simple (typos, format, rename) → Haiku 4.5       ($  — ~5x cheaper than Sonnet)
-├─ Standard (features, bugs)      → Sonnet 4.5/4.6  ($$ — best price/quality ratio)
-└─ Complex (architecture, sec.)
-   ├─ Needs deep reasoning?        → Opus 4.7 (xhigh) / Opus 4.6  ($$$ — ~5x more than Sonnet)
-   └─ Just large/clear?            → Sonnet 4.6                    ($$ — handles it)
+任务复杂度？
+├─ 简单（拼写、格式、重命名） → Haiku 4.5       ($  — ~比 Sonnet 便宜 5 倍)
+├─ 标准（功能、Bug）          → Sonnet 4.5/4.6  ($$ — 最佳性价比)
+└─ 复杂（架构、安全）
+   ├─ 需要深度推理？           → Opus 4.7 (xhigh) / Opus 4.6  ($$$ — ~比 Sonnet 贵 5 倍)
+   └─ 只是量大/清晰？          → Sonnet 4.6                    ($$ — 胜任)
 
-Budget modifier (downgrade one tier on constrained plans):
-  Max/API (xhigh)  → Opus 4.7 plan, Sonnet impl
-  Max/API          → Opus 4.6 plan, Sonnet impl
-  Pro/Teams        → Sonnet plan, Haiku impl (mechanical tasks)
+预算修正器（预算受限套餐降一档）：
+  Max/API (xhigh)  → Opus 4.7 规划，Sonnet 实现
+  Max/API          → Opus 4.6 规划，Sonnet 实现
+  Pro/Teams        → Sonnet 规划，Haiku 实现（机械性任务）
 ```
 
 </details>
 
-> **Source**: [Model Selection](../ultimate-guide.md#model-selection) — Line ~2634
+> **来源**：[模型选择](../ultimate-guide.md#model-selection) — 第 ~2634 行
 
 ---
 
-### Cost Optimization Decision Tree
+### 成本优化决策树
 
-High token costs are usually fixable. This systematic tree identifies the root cause and points to the right fix for each waste pattern.
+Token 成本高通常是可以修复的。这个系统化的决策树找出根本原因，并为每种浪费模式指出正确的解决方法。
 
 ```mermaid
 flowchart TD
-    A([High token costs?]) --> B{Context<br/>too large?}
-    B -->|Yes| C(Use /compact<br/>or start fresh session)
-    C --> Z([Saves 40-60%<br/>per session])
+    A([Token 成本过高？]) --> B{上下文<br/>太大？}
+    B -->|是| C(使用 /compact<br/>或开启新会话)
+    C --> Z([节省 40-60%<br/>每次会话])
 
-    B -->|No| D{Verbose<br/>responses?}
-    D -->|Yes| E(Add CLAUDE.md instruction:<br/>'Be concise, avoid explanations')
-    E --> Z2([Saves 20-30%])
+    B -->|否| D{响应<br/>过于冗长？}
+    D -->|是| E(在 CLAUDE.md 中添加指令：<br/>「简洁，避免解释」)
+    E --> Z2([节省 20-30%])
 
-    D -->|No| F{Re-explaining<br/>context repeatedly?}
-    F -->|Yes| G(Move repeated context<br/>to CLAUDE.md)
-    G --> Z3([Saves 15-25%])
+    D -->|否| F{反复解释<br/>相同的上下文？}
+    F -->|是| G(将重复上下文<br/>移入 CLAUDE.md)
+    G --> Z3([节省 15-25%])
 
-    F -->|No| H{Using wrong<br/>model for task?}
-    H -->|Yes| I(Use Haiku for simple tasks<br/>See model selection tree)
-    I --> Z4([Saves 50-90%<br/>on simple tasks])
+    F -->|否| H{为任务使用了<br/>错误的模型？}
+    H -->|是| I(简单任务使用 Haiku<br/>参见模型选择决策树)
+    I --> Z4([简单任务节省 50-90%])
 
-    H -->|No| J{MCP server<br/>noisy output?}
-    J -->|Yes| K(Review MCP verbosity<br/>Filter tool output)
-    K --> Z5([Saves 10-20%])
+    H -->|否| J{MCP 服务器<br/>输出噪音过大？}
+    J -->|是| K(审查 MCP 详细程度<br/>过滤工具输出)
+    K --> Z5([节省 10-20%])
 
-    J -->|No| L([Baseline cost<br/>acceptable])
+    J -->|否| L([基础成本<br/>在可接受范围])
 
     style A fill:#F5E6D3,color:#333
     style B fill:#E87E2F,color:#fff
@@ -135,79 +135,79 @@ flowchart TD
     style Z5 fill:#7BC47F,color:#333
     style L fill:#B8B8B8,color:#333
 
-    click A href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#913-cost-optimization-strategies" "High token costs?"
-    click B href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#913-cost-optimization-strategies" "Context too large?"
-    click C href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#913-cost-optimization-strategies" "Use /compact or start fresh"
-    click D href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#913-cost-optimization-strategies" "Verbose responses?"
-    click E href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#913-cost-optimization-strategies" "Add CLAUDE.md instruction"
-    click F href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#913-cost-optimization-strategies" "Re-explaining context?"
-    click G href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#913-cost-optimization-strategies" "Move context to CLAUDE.md"
-    click H href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#913-cost-optimization-strategies" "Wrong model?"
-    click I href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#25-model-selection--thinking-guide" "Use Haiku for simple tasks"
-    click J href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#913-cost-optimization-strategies" "Noisy MCP output?"
-    click K href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#913-cost-optimization-strategies" "Review MCP verbosity"
-    click L href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#913-cost-optimization-strategies" "Baseline cost acceptable"
-    click Z href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#913-cost-optimization-strategies" "Saves 40-60%"
-    click Z2 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#913-cost-optimization-strategies" "Saves 20-30%"
-    click Z3 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#913-cost-optimization-strategies" "Saves 15-25%"
-    click Z4 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#913-cost-optimization-strategies" "Saves 50-90%"
-    click Z5 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#913-cost-optimization-strategies" "Saves 10-20%"
+    click A href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#913-cost-optimization-strategies" "Token 成本过高？"
+    click B href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#913-cost-optimization-strategies" "上下文太大？"
+    click C href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#913-cost-optimization-strategies" "使用 /compact 或开启新会话"
+    click D href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#913-cost-optimization-strategies" "响应过于冗长？"
+    click E href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#913-cost-optimization-strategies" "添加 CLAUDE.md 指令"
+    click F href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#913-cost-optimization-strategies" "反复解释上下文？"
+    click G href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#913-cost-optimization-strategies" "将上下文移入 CLAUDE.md"
+    click H href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#913-cost-optimization-strategies" "使用了错误的模型？"
+    click I href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#25-model-selection--thinking-guide" "简单任务使用 Haiku"
+    click J href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#913-cost-optimization-strategies" "MCP 输出噪音过大？"
+    click K href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#913-cost-optimization-strategies" "审查 MCP 详细程度"
+    click L href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#913-cost-optimization-strategies" "基础成本在可接受范围"
+    click Z href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#913-cost-optimization-strategies" "节省 40-60%"
+    click Z2 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#913-cost-optimization-strategies" "节省 20-30%"
+    click Z3 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#913-cost-optimization-strategies" "节省 15-25%"
+    click Z4 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#913-cost-optimization-strategies" "节省 50-90%"
+    click Z5 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#913-cost-optimization-strategies" "节省 10-20%"
 ```
 
 <details>
-<summary>ASCII version</summary>
+<summary>ASCII 版本</summary>
 
 ```
-High costs?
-├─ Context too large?      → /compact or new session    (40-60% saving)
-├─ Verbose responses?      → CLAUDE.md: be concise      (20-30% saving)
-├─ Repeating context?      → Move to CLAUDE.md          (15-25% saving)
-├─ Wrong model?            → Use Haiku for simple tasks (50-90% saving)
-├─ Noisy MCP output?       → Filter tool output         (10-20% saving)
-└─ None of the above?      → Baseline cost, acceptable
+成本过高？
+├─ 上下文太大？      → /compact 或新会话          （节省 40-60%）
+├─ 响应过于冗长？    → CLAUDE.md：简洁             （节省 20-30%）
+├─ 反复解释上下文？  → 移入 CLAUDE.md              （节省 15-25%）
+├─ 使用了错误模型？  → 简单任务使用 Haiku          （节省 50-90%）
+├─ MCP 输出噪音大？  → 过滤工具输出               （节省 10-20%）
+└─ 以上都不是？      → 基础成本，在可接受范围
 ```
 
 </details>
 
-> **Effort slider** — `/effort xlow/low/default/high/xhigh` (v2.1.111) lets you tune thinking depth per task. Lower effort = fewer tokens consumed on thinking. Combine with model selection for fine-grained cost control.
+> **思考力度调节器** — `/effort xlow/low/default/high/xhigh`（v2.1.111）让你可以按任务调节思考深度。思考力度越低 = 消耗的 Token 越少。与模型选择结合使用，可进行精细的成本控制。
 
-> **Source**: [Cost Optimization](../ultimate-guide.md#cost-optimization) — Line ~8878
+> **来源**：[成本优化](../ultimate-guide.md#cost-optimization) — 第 ~8878 行
 
 ---
 
-### Subscription Tiers — What Each Unlocks
+### 订阅套餐 — 各套餐解锁内容
 
-Different tiers unlock different Claude Code capabilities. Knowing the limits helps you plan usage and justify upgrades.
+不同套餐解锁不同的 Claude Code 能力。了解限制有助于你规划使用并为升级提供依据。
 
 ```mermaid
 flowchart LR
-    subgraph FREE["Free Tier"]
-        F1[Claude.ai web only]
-        F2[Limited messages/day]
-        F3[❌ No Claude Code CLI]
-        F4[❌ No parallel sessions]
+    subgraph FREE["免费版"]
+        F1[仅限 Claude.ai 网页端]
+        F2[每日消息数有限]
+        F3[❌ 无 Claude Code CLI]
+        F4[❌ 无并行会话]
     end
 
-    subgraph PRO["Pro ($20/mo)"]
+    subgraph PRO["Pro（$20/月）"]
         P1[Claude Code CLI ✓]
-        P2[Limited usage<br/>~1x baseline]
-        P3[Personal projects]
-        P4[❌ No parallel sessions<br/>out of the box]
+        P2[有限用量<br/>~1 倍基础用量]
+        P3[个人项目]
+        P4[❌ 默认无并行会话]
     end
 
-    subgraph MAX["Max ($100-200/mo)"]
+    subgraph MAX["Max（$100-200/月）"]
         M1[Claude Code CLI ✓]
-        M2[5x-20x more usage]
-        M3[Parallel sessions ✓]
-        M4[Priority access ✓]
+        M2[5-20 倍更多用量]
+        M3[并行会话 ✓]
+        M4[优先访问 ✓]
     end
 
-    subgraph TEAM["Team / Enterprise"]
-        T1[Per-seat pricing]
-        T2[Admin controls ✓]
-        T3[Usage analytics ✓]
-        T4[SSO + compliance ✓]
-        T5[Audit logs ✓]
+    subgraph TEAM["团队 / 企业版"]
+        T1[按席位定价]
+        T2[管理员控制 ✓]
+        T3[用量分析 ✓]
+        T4[SSO + 合规 ✓]
+        T5[审计日志 ✓]
     end
 
     style F3 fill:#E85D5D,color:#fff
@@ -224,82 +224,82 @@ flowchart LR
     style T4 fill:#6DB3F2,color:#fff
     style T5 fill:#6DB3F2,color:#fff
 
-    click F1 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#25-model-selection--thinking-guide" "Free: Claude.ai web only"
-    click F2 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#25-model-selection--thinking-guide" "Free: Limited messages"
-    click F3 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#25-model-selection--thinking-guide" "Free: No CLI"
-    click F4 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#25-model-selection--thinking-guide" "Free: No parallel sessions"
-    click P1 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#25-model-selection--thinking-guide" "Pro: Claude Code CLI"
-    click P2 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#25-model-selection--thinking-guide" "Pro: Limited usage"
-    click P3 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#25-model-selection--thinking-guide" "Pro: Personal projects"
-    click P4 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#25-model-selection--thinking-guide" "Pro: No parallel sessions"
-    click M1 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#25-model-selection--thinking-guide" "Max: Claude Code CLI"
-    click M2 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#25-model-selection--thinking-guide" "Max: 5x-20x usage"
-    click M3 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#25-model-selection--thinking-guide" "Max: Parallel sessions"
-    click M4 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#25-model-selection--thinking-guide" "Max: Priority access"
-    click T1 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#25-model-selection--thinking-guide" "Team: Per-seat pricing"
-    click T2 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#25-model-selection--thinking-guide" "Team: Admin controls"
-    click T3 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#25-model-selection--thinking-guide" "Team: Usage analytics"
-    click T4 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#25-model-selection--thinking-guide" "Team: SSO + compliance"
-    click T5 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#25-model-selection--thinking-guide" "Team: Audit logs"
+    click F1 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#25-model-selection--thinking-guide" "免费：仅限 Claude.ai 网页端"
+    click F2 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#25-model-selection--thinking-guide" "免费：消息数有限"
+    click F3 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#25-model-selection--thinking-guide" "免费：无 CLI"
+    click F4 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#25-model-selection--thinking-guide" "免费：无并行会话"
+    click P1 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#25-model-selection--thinking-guide" "Pro：Claude Code CLI"
+    click P2 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#25-model-selection--thinking-guide" "Pro：有限用量"
+    click P3 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#25-model-selection--thinking-guide" "Pro：个人项目"
+    click P4 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#25-model-selection--thinking-guide" "Pro：无并行会话"
+    click M1 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#25-model-selection--thinking-guide" "Max：Claude Code CLI"
+    click M2 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#25-model-selection--thinking-guide" "Max：5-20 倍用量"
+    click M3 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#25-model-selection--thinking-guide" "Max：并行会话"
+    click M4 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#25-model-selection--thinking-guide" "Max：优先访问"
+    click T1 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#25-model-selection--thinking-guide" "团队：按席位定价"
+    click T2 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#25-model-selection--thinking-guide" "团队：管理员控制"
+    click T3 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#25-model-selection--thinking-guide" "团队：用量分析"
+    click T4 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#25-model-selection--thinking-guide" "团队：SSO + 合规"
+    click T5 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#25-model-selection--thinking-guide" "团队：审计日志"
 ```
 
 <details>
-<summary>ASCII version</summary>
+<summary>ASCII 版本</summary>
 
 ```
-FREE         PRO ($20)        MAX ($100-200)   TEAM/Enterprise
-────         ─────────        ──────────────   ───────────────
-Web only     CLI ✓            CLI ✓            Per-seat
-Limited msgs Limited usage    5-20x usage      Admin controls
-No CLI       Personal use     Parallel ✓       Analytics
-             No parallel      Priority ✓       SSO + compliance
+免费         Pro ($20)          Max ($100-200)     团队/企业
+────         ─────────          ──────────────     ───────────────
+仅网页端     CLI ✓              CLI ✓              按席位定价
+消息数有限   有限用量           5-20 倍用量        管理员控制
+无 CLI       个人使用           并行 ✓             用量分析
+             无并行             优先 ✓             SSO + 合规
 ```
 
 </details>
 
-> **Source**: [Subscription Tiers](../ultimate-guide.md#subscription-tiers) — Line ~1933
+> **来源**：[订阅套餐](../ultimate-guide.md#subscription-tiers) — 第 ~1933 行
 
 ---
 
-### Token Reduction Strategies Pipeline
+### Token 减少策略流水线
 
-Multiple strategies stack for cumulative token savings. Apply them in order from highest impact to lowest effort.
+多种策略叠加可累计节省 Token。按从高影响到低成本的顺序依次应用。
 
 ```mermaid
 flowchart LR
-    BASE([Baseline:<br/>100% tokens]) --> RTK
+    BASE([基准：<br/>100% Token]) --> RTK
 
-    subgraph RTK["Strategy 1: RTK Proxy"]
-        R1[Raw CLI output<br/>→ filtered output]
-        R2["git status, cargo test,<br/>pnpm list → compressed"]
-        R3[Saves 60-90%<br/>on CLI commands]
+    subgraph RTK["策略 1：RTK 代理"]
+        R1[原始 CLI 输出<br/>→ 过滤输出]
+        R2["git status、cargo test、<br/>pnpm list → 压缩"]
+        R3[CLI 命令节省 60-90%]
     end
 
     RTK --> COMP
 
-    subgraph COMP["Strategy 2: /compact"]
-        C1[Long conversation<br/>→ summarized]
-        C2[Keep decisions,<br/>drop verbose reasoning]
-        C3[Saves 40-60%<br/>at checkpoint]
+    subgraph COMP["策略 2：/compact"]
+        C1[长对话<br/>→ 摘要]
+        C2[保留决策，<br/>丢弃冗余推理]
+        C3[检查点节省 40-60%]
     end
 
     COMP --> CLAUDE_MD
 
-    subgraph CLAUDE_MD["Strategy 3: CLAUDE.md"]
-        CM1[Repeated context<br/>→ persistent instructions]
-        CM2[No re-explaining<br/>project conventions]
-        CM3[Saves 15-25%<br/>per session]
+    subgraph CLAUDE_MD["策略 3：CLAUDE.md"]
+        CM1[重复上下文<br/>→ 持久指令]
+        CM2[无需重复解释<br/>项目规范]
+        CM3[每次会话节省 15-25%]
     end
 
     CLAUDE_MD --> MODEL
 
-    subgraph MODEL["Strategy 4: Model Selection"]
-        MO1[Haiku for simple tasks<br/>instead of Sonnet]
-        MO2[Same quality output<br/>at fraction of cost]
-        MO3[Saves 50-90%<br/>on simple tasks]
+    subgraph MODEL["策略 4：模型选择"]
+        MO1[简单任务使用 Haiku<br/>而非 Sonnet]
+        MO2[相同质量输出<br/>成本极低]
+        MO3[简单任务节省 50-90%]
     end
 
-    MODEL --> RESULT([Optimized:<br/>10-20% of baseline<br/>for typical usage])
+    MODEL --> RESULT([优化后：<br/>典型用法约 10-20%<br/>基准用量])
 
     style BASE fill:#E85D5D,color:#fff
     style R3 fill:#7BC47F,color:#333
@@ -308,41 +308,41 @@ flowchart LR
     style MO3 fill:#7BC47F,color:#333
     style RESULT fill:#7BC47F,color:#333
 
-    click BASE href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#913-cost-optimization-strategies" "Baseline: 100% tokens"
-    click R1 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#913-cost-optimization-strategies" "Raw CLI output filtered"
-    click R2 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#913-cost-optimization-strategies" "RTK commands"
-    click R3 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#913-cost-optimization-strategies" "Saves 60-90% on CLI"
-    click C1 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#913-cost-optimization-strategies" "Long conversation summarized"
-    click C2 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#913-cost-optimization-strategies" "Keep decisions"
-    click C3 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#913-cost-optimization-strategies" "Saves 40-60% at checkpoint"
-    click CM1 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#31-memory-files-claudemd" "Repeated context persistent"
-    click CM2 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#31-memory-files-claudemd" "No re-explaining conventions"
-    click CM3 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#913-cost-optimization-strategies" "Saves 15-25% per session"
-    click MO1 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#25-model-selection--thinking-guide" "Haiku for simple tasks"
-    click MO2 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#25-model-selection--thinking-guide" "Same quality at lower cost"
-    click MO3 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#25-model-selection--thinking-guide" "Saves 50-90% on simple"
-    click RESULT href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#913-cost-optimization-strategies" "Optimized: 10-20% of baseline"
+    click BASE href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#913-cost-optimization-strategies" "基准：100% Token"
+    click R1 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#913-cost-optimization-strategies" "原始 CLI 输出过滤"
+    click R2 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#913-cost-optimization-strategies" "RTK 命令"
+    click R3 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#913-cost-optimization-strategies" "CLI 节省 60-90%"
+    click C1 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#913-cost-optimization-strategies" "长对话摘要"
+    click C2 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#913-cost-optimization-strategies" "保留决策"
+    click C3 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#913-cost-optimization-strategies" "检查点节省 40-60%"
+    click CM1 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#31-memory-files-claudemd" "重复上下文持久化"
+    click CM2 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#31-memory-files-claudemd" "无需重复解释规范"
+    click CM3 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#913-cost-optimization-strategies" "每次会话节省 15-25%"
+    click MO1 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#25-model-selection--thinking-guide" "简单任务使用 Haiku"
+    click MO2 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#25-model-selection--thinking-guide" "相同质量，低成本"
+    click MO3 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#25-model-selection--thinking-guide" "简单任务节省 50-90%"
+    click RESULT href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#913-cost-optimization-strategies" "优化后：约 10-20% 基准用量"
 ```
 
 <details>
-<summary>ASCII version</summary>
+<summary>ASCII 版本</summary>
 
 ```
-100% baseline
+100% 基准
     │
-RTK proxy (CLI output compression)  → -60-90% on CLI ops
+RTK 代理（CLI 输出压缩）         → CLI 操作节省 60-90%
     │
-/compact (conversation summarization) → -40-60% at checkpoint
+/compact（对话摘要）              → 检查点节省 40-60%
     │
-CLAUDE.md (avoid repeated context)    → -15-25% per session
+CLAUDE.md（避免重复上下文）       → 每次会话节省 15-25%
     │
-Model selection (Haiku for simple)    → -50-90% on simple tasks
+模型选择（简单任务用 Haiku）      → 简单任务节省 50-90%
     │
-~10-20% of baseline for typical usage
+典型用法约 10-20% 基准用量
 ```
 
 </details>
 
-> **Track usage** — Use `/usage` to monitor token consumption and costs (replaces `/cost` as of v2.1.118; `/cost` remains a valid alias).
+> **跟踪用量** — 使用 `/usage` 监控 Token 消耗和成本（自 v2.1.118 起替代 `/cost`；`/cost` 仍作为别名有效）。
 
-> **Source**: [Token Optimization](../ultimate-guide.md#token-optimization) — Line ~13355
+> **来源**：[Token 优化](../ultimate-guide.md#token-optimization) — 第 ~13355 行

@@ -1,31 +1,31 @@
 > 📚 **AI Spark Wiki** · Claude Code 知识库
 
 ---
-title: "Sandbox Isolation for Coding Agents"
-description: "Running Claude Code safely in isolated environments with Docker, native sandbox, and cloud solutions"
+title: "编码智能体的沙箱隔离"
+description: "在 Docker、原生沙箱和云方案的隔离环境中安全运行 Claude Code"
 tags: [security, sandbox, devops, guide]
 ---
 
-# Sandbox Isolation for Coding Agents
+# 编码智能体的沙箱隔离
 
-> **Confidence**: Tier 2 — Official Docker docs + verified vendor documentation
-> **Reading time**: ~10 minutes
-> **Scope**: Running Claude Code safely in isolated environments
+> **置信度**：第二级——官方 Docker 文档 + 已验证的供应商文档
+> **阅读时间**：约 10 分钟
+> **范围**：在隔离环境中安全运行 Claude Code
 
 ---
 
-## TL;DR
+## 速览
 
-| Solution | Isolation | Local/Cloud | Best For |
+| 方案 | 隔离级别 | 本地/云端 | 最适合 |
 |----------|-----------|-------------|----------|
-| **Docker Sandboxes** | microVM (hypervisor) | Local | Max security, Docker-in-Docker needed |
-| **Native CC sandbox** | Process (Seatbelt/bubblewrap) | Local | Lightweight daily dev, trusted code |
-| **Fly.io Sprites** | Firecracker microVM | Cloud | API-driven agent workflows |
-| **E2B** | Firecracker microVM | Cloud | Multi-framework AI apps |
-| **Vercel Sandboxes** | Firecracker microVM | Cloud | Next.js / Vercel ecosystem |
-| **Cloudflare Sandbox SDK** | Container | Cloud | Workers-based serverless |
+| **Docker 沙箱** | microVM（虚拟机监控程序） | 本地 | 最高安全性，需要 Docker-in-Docker |
+| **Claude Code 原生沙箱** | 进程（Seatbelt/bubblewrap） | 本地 | 轻量级日常开发，受信任代码 |
+| **Fly.io Sprites** | Firecracker microVM | 云端 | API 驱动的智能体工作流 |
+| **E2B** | Firecracker microVM | 云端 | 多框架 AI 应用 |
+| **Vercel 沙箱** | Firecracker microVM | 云端 | Next.js / Vercel 生态系统 |
+| **Cloudflare Sandbox SDK** | 容器 | 云端 | 基于 Workers 的无服务器架构 |
 
-Quick start:
+快速开始：
 
 ```bash
 docker sandbox run claude ~/my-project
@@ -33,106 +33,106 @@ docker sandbox run claude ~/my-project
 
 ---
 
-## 1. The Problem: Safe Autonomy
+## 1. 问题：安全自主性
 
-Claude Code's permission system protects you from unintended actions. But it creates a tension:
+Claude Code 的权限系统可以保护您免受意外操作的影响，但它产生了一个矛盾：
 
-- **`--dangerously-skip-permissions`** removes all guardrails — Claude can `rm -rf`, `git push --force`, or `DROP TABLE` without asking. On a bare host, this is dangerous.
-- **Permission fatigue** — approving every file edit and shell command slows down autonomous workflows. For large refactors or CI pipelines, interactive approval is impractical.
-- **The gap**: How do you run Claude Code autonomously AND safely?
+- **`--dangerously-skip-permissions`** 移除所有护栏——Claude 可以不经询问执行 `rm -rf`、`git push --force` 或 `DROP TABLE`。在裸机上，这很危险。
+- **权限疲劳**——批准每个文件编辑和 shell 命令会拖慢自主工作流。对于大型重构或 CI 流水线，交互式审批是不切实际的。
+- **差距**：如何在自主且安全的情况下运行 Claude Code？
 
-**Answer**: Isolate the execution environment. Let the agent run free inside a sandbox where the blast radius is contained. The sandbox is the security boundary, not the permission system.
+**答案**：隔离执行环境。让智能体在沙箱内自由运行，在那里影响范围是受控的。沙箱是安全边界，而非权限系统。
 
 ---
 
-## 2. Isolation Approaches
+## 2. 隔离方式
 
 ```mermaid
 flowchart TD
-    A[Need autonomous Claude Code] --> B{Where?}
-    B -->|Local development| C{Docker Desktop available?}
-    B -->|CI/CD pipeline| D[Cloud sandbox]
-    B -->|Serverless / API| E[Cloudflare Sandbox SDK]
-    B -->|Minimal setup| F[Native CC sandbox mode]
+    A[需要自主 Claude Code] --> B{在哪里？}
+    B -->|本地开发| C{是否有 Docker Desktop？}
+    B -->|CI/CD 流水线| D[云端沙箱]
+    B -->|无服务器/API| E[Cloudflare Sandbox SDK]
+    B -->|最简配置| F[Claude Code 原生沙箱模式]
 
-    C -->|Yes| G[Docker Sandboxes<br/>microVM isolation]
-    C -->|No| F
+    C -->|是| G[Docker 沙箱<br/>microVM 隔离]
+    C -->|否| F
 
-    D --> H{Preference?}
-    H -->|Persistent VMs| I[Fly.io Sprites]
-    H -->|Open-source| J[E2B]
-    H -->|Vercel ecosystem| K[Vercel Sandboxes]
+    D --> H{偏好？}
+    H -->|持久虚拟机| I[Fly.io Sprites]
+    H -->|开源| J[E2B]
+    H -->|Vercel 生态| K[Vercel 沙箱]
 ```
 
 ---
 
-## 3. Docker Sandboxes
+## 3. Docker 沙箱
 
-> **Source**: [docs.docker.com/ai/sandboxes/](https://docs.docker.com/ai/sandboxes/)
-> **Requires**: Docker Desktop 4.58+ (macOS or Windows)
+> **来源**：[docs.docker.com/ai/sandboxes/](https://docs.docker.com/ai/sandboxes/)
+> **要求**：Docker Desktop 4.58+（macOS 或 Windows）
 
-Docker Sandboxes run AI coding agents in microVM-based isolation on your local machine. Each sandbox gets its own private Docker daemon and filesystem. Sandboxes do NOT appear in `docker ps` — they are VMs, not containers.
+Docker 沙箱在您本地机器上以基于 microVM 的隔离运行 AI 编码智能体。每个沙箱有自己独立的 Docker 守护进程和文件系统。沙箱**不会**出现在 `docker ps` 中——它们是虚拟机，不是容器。
 
-### Quick Start
+### 快速开始
 
 ```bash
-# Create and run a sandbox with your project
+# 创建并运行带有您项目的沙箱
 docker sandbox run claude ~/my-project
 
-# Run with autonomous mode (safe inside sandbox)
+# 以自主模式运行（在沙箱内安全）
 docker sandbox run claude ~/my-project -- --dangerously-skip-permissions
 
-# Pass a prompt directly
-docker sandbox run claude ~/my-project -- "Refactor auth module to use JWT"
+# 直接传入提示词
+docker sandbox run claude ~/my-project -- "将 auth 模块重构为使用 JWT"
 
-# Continue a previous session
+# 继续之前的会话
 docker sandbox run my-sandbox -- --continue
 ```
 
-### Architecture
+### 架构
 
 ```
 ┌──────────────────────────────────────────────────────────┐
-│                     HOST MACHINE                          │
+│                       主机                               │
 │                                                          │
 │  ┌────────────────────────────────────────────────────┐  │
-│  │              DOCKER SANDBOX (microVM)               │  │
+│  │             Docker 沙箱（microVM）                  │  │
 │  │                                                    │  │
 │  │  ┌──────────────┐  ┌───────────────────────────┐  │  │
-│  │  │ Claude Code   │  │ Private Docker daemon     │  │  │
-│  │  │ (--dsp mode)  │  │ (isolated from host)      │  │  │
+│  │  │  Claude Code  │  │  独立 Docker 守护进程      │  │  │
+│  │  │  (--dsp 模式) │  │  （与主机隔离）             │  │  │
 │  │  └──────────────┘  └───────────────────────────┘  │  │
 │  │                                                    │  │
 │  │  ┌──────────────────────────────────────────────┐  │  │
-│  │  │ Workspace: ~/my-project (synced with host)   │  │  │
-│  │  │ Same absolute path as host                   │  │  │
+│  │  │  工作区：~/my-project（与主机同步）            │  │  │
+│  │  │  与主机相同的绝对路径                          │  │  │
 │  │  └──────────────────────────────────────────────┘  │  │
 │  │                                                    │  │
-│  │  Base: Ubuntu, Node.js, Python 3, Go, Git,        │  │
-│  │        Docker CLI, GitHub CLI, ripgrep, jq         │  │
-│  │  User: non-root 'agent' with sudo                 │  │
+│  │  基础环境：Ubuntu、Node.js、Python 3、Go、Git、    │  │
+│  │            Docker CLI、GitHub CLI、ripgrep、jq     │  │
+│  │  用户：拥有 sudo 权限的非 root 'agent'             │  │
 │  └────────────────────────────────────────────────────┘  │
 │                                                          │
-│  Host Docker daemon: NOT accessible from sandbox          │
-│  Host filesystem: NOT accessible (except workspace)       │
+│  主机 Docker 守护进程：沙箱内不可访问                    │
+│  主机文件系统：不可访问（工作区除外）                    │
 └──────────────────────────────────────────────────────────┘
 ```
 
-Key properties:
-- **Workspace sync**: Host directory mounts at the same absolute path inside the sandbox
-- **Full isolation**: Agent cannot access host Docker daemon, host containers, or files outside workspace
-- **Private Docker**: Each sandbox has its own Docker daemon for building/running containers
-- **Claude runs with `--dangerously-skip-permissions`**: Intentional — the sandbox is the security boundary
+关键特性：
+- **工作区同步**：主机目录在沙箱内以相同绝对路径挂载
+- **完全隔离**：智能体无法访问主机 Docker 守护进程、主机容器或工作区外的文件
+- **独立 Docker**：每个沙箱拥有自己的 Docker 守护进程用于构建/运行容器
+- **Claude 以 `--dangerously-skip-permissions` 运行**：这是有意为之——沙箱是安全边界
 
-### Network Policies
+### 网络策略
 
-Control what the sandbox can access on the network.
+控制沙箱可以访问的网络资源。
 
 ```bash
-# View network activity
+# 查看网络活动
 docker sandbox network log my-sandbox
 
-# Set up denylist mode (block all, allow specific)
+# 设置拒绝列表模式（阻断所有，允许特定）
 docker sandbox network proxy my-sandbox \
   --policy deny \
   --allow-host api.anthropic.com \
@@ -140,178 +140,178 @@ docker sandbox network proxy my-sandbox \
   --allow-host "*.pypi.org" \
   --allow-host github.com
 
-# Set up allowlist mode (allow all, block specific)
+# 设置允许列表模式（允许所有，阻断特定）
 docker sandbox network proxy my-sandbox \
   --policy allow \
   --block-host "*.malicious-domain.com" \
   --block-cidr "192.168.0.0/16"
 ```
 
-| Mode | Default behavior | Use case |
+| 模式 | 默认行为 | 使用场景 |
 |------|-----------------|----------|
-| **Allowlist** (default) | Permits most traffic, blocks specific destinations | General development |
-| **Denylist** | Blocks all traffic, allows only specified destinations | High-security environments |
+| **允许列表**（默认） | 允许大多数流量，阻断特定目标 | 一般开发 |
+| **拒绝列表** | 阻断所有流量，仅允许指定目标 | 高安全性环境 |
 
-**Default blocked ranges**: Private CIDRs (`10.0.0.0/8`, `127.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16`, `169.254.0.0/16`) and IPv6 equivalents.
+**默认阻断范围**：私有 CIDR（`10.0.0.0/8`、`127.0.0.0/8`、`172.16.0.0/12`、`192.168.0.0/16`、`169.254.0.0/16`）及其 IPv6 等效地址。
 
-**Pattern matching**: Exact (`example.com`), port-specific (`example.com:443`), wildcards (`*.example.com` matches subdomains only). Most specific pattern wins.
+**模式匹配**：精确（`example.com`）、指定端口（`example.com:443`）、通配符（`*.example.com` 仅匹配子域名）。最具体的模式优先。
 
-**Security caveat**: Domain filtering does not inspect traffic content. Broad allowances (e.g., `github.com`) permit access to user-generated content. HTTPS inspection is not performed in bypass mode.
+**安全注意事项**：域名过滤不会检查流量内容。宽泛的允许（如 `github.com`）会允许访问用户生成内容。旁路模式下不进行 HTTPS 检查。
 
-**Config storage**: Per-sandbox at `~/.docker/sandboxes/vm/[name]/proxy-config.json`. Policies persist across restarts.
+**配置存储**：每个沙箱存储于 `~/.docker/sandboxes/vm/[name]/proxy-config.json`。策略在重启后持久保存。
 
-### Custom Templates
+### 自定义模板
 
-For teams needing reproducible environments with specific tooling:
+对于需要特定工具的可复现环境的团队：
 
 ```dockerfile
 FROM docker/sandbox-templates:claude-code
 
 USER root
 
-# Install project-specific dependencies
+# 安装项目特定依赖
 RUN apt-get update && apt-get install -y \
     postgresql-client \
     redis-tools
 
-# Install global npm packages
+# 安装全局 npm 包
 RUN npm install -g pnpm turbo
 
 USER agent
 ```
 
-Build and use:
+构建和使用：
 
 ```bash
-# Build the template
+# 构建模板
 docker build -t my-team-sandbox:v1 .
 
-# Create sandbox with custom template
+# 使用自定义模板创建沙箱
 docker sandbox create my-sandbox \
   --template my-team-sandbox:v1 \
   --load-local-template ~/my-project
 ```
 
-Use custom templates when: team environments, specific tool versions, repeated setups, complex configurations. For simple one-off work, use the defaults and let the agent install what it needs.
+适合使用自定义模板的场景：团队环境、特定工具版本、重复配置、复杂配置。简单的一次性工作请使用默认设置，让智能体安装所需内容。
 
-### Commands Reference
+### 命令参考
 
-| Command | Description |
+| 命令 | 说明 |
 |---------|-------------|
-| `docker sandbox run <agent> <path>` | Create and start a sandbox |
-| `docker sandbox create <name>` | Create without starting |
-| `docker sandbox ls` | List all sandboxes |
-| `docker sandbox run <name> -- "prompt"` | Pass a prompt |
-| `docker sandbox run <name> -- --continue` | Continue previous session |
-| `docker sandbox run <name> -- --dsp` | Short for --dangerously-skip-permissions |
-| `docker sandbox network proxy <name>` | Configure network policies |
-| `docker sandbox network log <name>` | View network activity |
+| `docker sandbox run <agent> <path>` | 创建并启动沙箱 |
+| `docker sandbox create <name>` | 创建不启动 |
+| `docker sandbox ls` | 列出所有沙箱 |
+| `docker sandbox run <name> -- "提示词"` | 传入提示词 |
+| `docker sandbox run <name> -- --continue` | 继续上次会话 |
+| `docker sandbox run <name> -- --dsp` | --dangerously-skip-permissions 的简写 |
+| `docker sandbox network proxy <name>` | 配置网络策略 |
+| `docker sandbox network log <name>` | 查看网络活动 |
 
-### Authentication
+### 认证
 
-**Option 1: API key (recommended for headless)**
+**方式 1：API 密钥（推荐用于无头模式）**
 
-Set `ANTHROPIC_API_KEY` in `~/.bashrc` or `~/.zshrc`. The sandbox daemon reads from these files, not the current shell session. Restart the daemon after changes. Persists across sandbox recreation.
+在 `~/.bashrc` 或 `~/.zshrc` 中设置 `ANTHROPIC_API_KEY`。沙箱守护进程从这些文件读取，而非当前 shell 会话。更改后重启守护进程，沙箱重建后仍持久保存。
 
-**Option 2: Interactive login (per-session)**
+**方式 2：交互式登录（每次会话）**
 
-Triggered automatically if no credentials found. Use `/login` inside Claude Code to trigger manually. Authentication does NOT persist when the sandbox is destroyed.
+未找到凭证时自动触发。在 Claude Code 中使用 `/login` 手动触发。沙箱销毁时认证**不会**持久保存。
 
-### Supported Agents
+### 支持的智能体
 
-| Agent | Provider | Status |
+| 智能体 | 提供商 | 状态 |
 |-------|----------|--------|
-| Claude Code | Anthropic | Full support |
-| Codex CLI | OpenAI | Supported |
-| Gemini CLI | Google | Supported |
-| cagent | Docker | Supported |
-| Kiro | AWS | Supported |
+| Claude Code | Anthropic | 完全支持 |
+| Codex CLI | OpenAI | 支持 |
+| Gemini CLI | Google | 支持 |
+| cagent | Docker | 支持 |
+| Kiro | AWS | 支持 |
 
-### Limitations
+### 限制
 
-- **macOS and Windows only** for microVM mode. Linux uses legacy container-based sandboxes (Docker Desktop 4.57+).
-- **Docker Desktop required** — not available with standalone Docker Engine. Community alternatives like [dclaude](https://github.com/jedi4ever/dclaude) (Patrick Debois) wrap Claude Code in standard Docker containers for Docker Engine-only environments, but use container isolation (not microVM) and mount the host Docker socket — weaker security boundary.
-- **MCP Gateway not yet supported** inside sandboxes.
-- **No GPU passthrough** — not suitable for ML training workloads.
-- **Workspace sync is one-way**: changes inside the sandbox propagate to the host, but concurrent host edits may conflict.
+- **仅支持 macOS 和 Windows** 的 microVM 模式。Linux 使用基于容器的旧版沙箱（Docker Desktop 4.57+）。
+- **需要 Docker Desktop**——标准 Docker Engine 不支持。社区替代方案如 [dclaude](https://github.com/jedi4ever/dclaude)（Patrick Debois）将 Claude Code 包装在标准 Docker 容器中，适用于仅有 Docker Engine 的环境，但使用容器隔离（非 microVM），且挂载主机 Docker socket——安全边界较弱。
+- **沙箱内尚不支持 MCP Gateway**。
+- **无 GPU 直通**——不适用于 ML 训练工作负载。
+- **工作区同步是单向的**：沙箱内的变更会传播到主机，但同时在主机上编辑可能产生冲突。
 
 ---
 
-## 4. Native Claude Code Sandbox
+## 4. Claude Code 原生沙箱
 
-> **Source**: [code.claude.com/docs/en/sandboxing](https://code.claude.com/docs/en/sandboxing)
-> **Requires**: macOS (built-in) or Linux/WSL2 (bubblewrap + socat)
-> **Feature**: Claude Code v2.1.0+
+> **来源**：[code.claude.com/docs/en/sandboxing](https://code.claude.com/docs/en/sandboxing)
+> **要求**：macOS（内置）或 Linux/WSL2（bubblewrap + socat）
+> **功能**：Claude Code v2.1.0+
 
-Claude Code includes built-in **native sandboxing** using OS-level primitives for process-level isolation. No Docker required.
+Claude Code 内置**原生沙箱**，使用操作系统级原语进行进程级隔离。无需 Docker。
 
-### Architecture
+### 架构
 
 ```
 ┌──────────────────────────────────────────────────────┐
-│                    HOST MACHINE                      │
+│                       主机                           │
 │                                                      │
-│  Claude Code (main process)                          │
+│  Claude Code（主进程）                               │
 │       │                                              │
-│       ├─ spawn bash command                          │
-│       │                                              │
-│       ▼                                              │
-│  Sandbox wrapper (Seatbelt/bubblewrap)               │
-│       │                                              │
-│       ├─ Filesystem: read all, write CWD only        │
-│       ├─ Network: SOCKS5 proxy, domain filtering     │
-│       ├─ Process: isolated environment               │
+│       ├─ 派生 bash 命令                              │
 │       │                                              │
 │       ▼                                              │
-│  Command executes with restrictions                  │
+│  沙箱包装器（Seatbelt/bubblewrap）                   │
 │       │                                              │
-│       └─ Violations blocked at OS level              │
+│       ├─ 文件系统：读取全部，仅写入当前工作目录       │
+│       ├─ 网络：SOCKS5 代理、域名过滤                 │
+│       ├─ 进程：隔离环境                              │
+│       │                                              │
+│       ▼                                              │
+│  命令在限制下执行                                    │
+│       │                                              │
+│       └─ 违规在操作系统级别被阻断                    │
 │                                                      │
 └──────────────────────────────────────────────────────┘
 ```
 
-**Key differences from Docker Sandboxes**:
+**与 Docker 沙箱的关键区别**：
 
-| Aspect | Native Sandbox | Docker Sandboxes |
+| 方面 | 原生沙箱 | Docker 沙箱 |
 |--------|---------------|------------------|
-| **Isolation level** | Process (Seatbelt/bubblewrap) | microVM (hypervisor) |
-| **Kernel** | Shared with host | Separate kernel per sandbox |
-| **Setup** | 0 dependencies (macOS), 2 packages (Linux) | Docker Desktop 4.58+ |
-| **Overhead** | Minimal (~1-3% CPU) | Moderate (~5-10% CPU, +200MB RAM) |
-| **Docker-in-Docker** | ❌ Not supported | ✅ Private Docker daemon |
-| **Use case** | Daily dev, trusted code | Untrusted code, max isolation |
+| **隔离级别** | 进程（Seatbelt/bubblewrap） | microVM（虚拟机监控程序） |
+| **内核** | 与主机共享 | 每个沙箱独立内核 |
+| **配置** | 0 依赖（macOS），2 个包（Linux） | Docker Desktop 4.58+ |
+| **开销** | 极小（约 1-3% CPU） | 中等（约 5-10% CPU，+200MB 内存） |
+| **Docker-in-Docker** | ❌ 不支持 | ✅ 独立 Docker 守护进程 |
+| **使用场景** | 日常开发、受信任代码 | 不受信任代码、最高隔离性 |
 
-### OS Primitives
+### 操作系统原语
 
-**macOS**: Uses Seatbelt (TrustedBSD Mandatory Access Control)
-- Built-in, works out of the box
-- Kernel-level system call filtering
+**macOS**：使用 Seatbelt（TrustedBSD 强制访问控制）
+- 内置，开箱即用
+- 内核级系统调用过滤
 
-**Linux/WSL2**: Uses bubblewrap (Linux namespaces + seccomp)
-- Requires installation: `sudo apt-get install bubblewrap socat`
-- Creates isolated namespace per command
+**Linux/WSL2**：使用 bubblewrap（Linux 命名空间 + seccomp）
+- 需要安装：`sudo apt-get install bubblewrap socat`
+- 为每个命令创建隔离命名空间
 
-**WSL1**: ❌ Not supported (bubblewrap needs kernel features unavailable)
+**WSL1**：❌ 不支持（bubblewrap 需要 WSL1 转换层中不可用的内核功能）
 
-**Windows native**: ⏳ Planned (not yet available)
+**Windows 原生**：⏳ 计划中（尚未可用）
 
-### Quick Start
+### 快速开始
 
 ```bash
-# Enable sandboxing (interactive menu)
+# 启用沙箱（交互菜单）
 /sandbox
 
-# Linux/WSL2 only: install prerequisites first
+# 仅 Linux/WSL2：先安装依赖
 sudo apt-get install bubblewrap socat  # Ubuntu/Debian
 sudo dnf install bubblewrap socat      # Fedora
 ```
 
-**Two modes**:
+**两种模式**：
 
-1. **Auto-allow mode**: Bash commands auto-approved if sandboxed (recommended for daily dev)
-2. **Regular permissions mode**: All commands require approval (for high-security)
+1. **自动允许模式**：Bash 命令在沙箱内自动批准（推荐用于日常开发）
+2. **常规权限模式**：所有命令需要审批（用于高安全性场景）
 
-### Configuration Example
+### 配置示例
 
 ```json
 {
@@ -335,195 +335,195 @@ sudo dnf install bubblewrap socat      # Fedora
 }
 ```
 
-### When to Use Native vs Docker
+### 何时使用原生沙箱 vs Docker 沙箱
 
-**Use Native Sandbox when**:
-- ✅ Daily development with trusted team
-- ✅ Lightweight setup (no Docker Desktop)
-- ✅ Minimal overhead priority
-- ✅ Code is mostly trusted
-- ✅ Don't need Docker-in-Docker
+**使用原生沙箱的场景**：
+- ✅ 受信任团队的日常开发
+- ✅ 轻量级配置（无 Docker Desktop）
+- ✅ 优先考虑低开销
+- ✅ 代码基本可信
+- ✅ 不需要 Docker-in-Docker
 
-**Use Docker Sandboxes when**:
-- ✅ Running untrusted code
-- ✅ Maximum security isolation (kernel exploits protection)
-- ✅ Need private Docker daemon inside sandbox
-- ✅ Testing AI-generated scripts
-- ✅ Production CI/CD with sensitive workloads
+**使用 Docker 沙箱的场景**：
+- ✅ 运行不受信任的代码
+- ✅ 最高安全隔离（防内核漏洞利用）
+- ✅ 需要沙箱内的独立 Docker 守护进程
+- ✅ 测试 AI 生成的脚本
+- ✅ 处理敏感工作负载的生产 CI/CD
 
-**Decision tree**:
+**决策树**：
 
 ```
-Daily development?
-├─ Trusted code + team → Native Sandbox (lightweight)
-└─ Untrusted scripts → Docker Sandboxes (max isolation)
+日常开发？
+├─ 受信任代码 + 团队 → 原生沙箱（轻量）
+└─ 不受信任脚本 → Docker 沙箱（最高隔离性）
 
-Need Docker inside?
-├─ Yes → Docker Sandboxes (only option)
-└─ No → Either works, prefer Native for simplicity
+需要 Docker-in-Docker？
+├─ 是 → Docker 沙箱（唯一选择）
+└─ 否 → 两者均可，简单起见选原生沙箱
 
-Maximum security?
-├─ Yes (kernel exploit protection) → Docker Sandboxes
-└─ Standard (process isolation OK) → Native Sandbox
+最高安全性？
+├─ 是（防内核漏洞利用）→ Docker 沙箱
+└─ 标准（进程隔离足够）→ 原生沙箱
 ```
 
-### Security Limitations
+### 安全局限性
 
-**⚠️ Native Sandbox limitations** (see [guide/sandbox-native.md](./sandbox-native.md) for details):
+**⚠️ 原生沙箱局限性**（详情参见 [guide/sandbox-native.md](./sandbox-native.md)）：
 
-1. **Shared kernel**: Vulnerable to kernel exploits (Docker microVM protects against this)
-2. **Domain fronting**: CDN-based bypass possible (Cloudflare, Akamai)
-3. **Unix sockets**: Can grant unexpected privileges if misconfigured
-4. **Filesystem**: Overly broad write permissions enable privilege escalation
+1. **共享内核**：易受内核漏洞利用（Docker microVM 可防护）
+2. **域名前置**：基于 CDN 的绕过可行（Cloudflare、Akamai）
+3. **Unix 套接字**：配置不当可能授予意外权限
+4. **文件系统**：过于宽泛的写权限可能导致权限提升
 
-**For untrusted code**, Docker Sandboxes provide stronger isolation.
+**对于不受信任的代码**，Docker 沙箱提供更强的隔离性。
 
-### Open-Source Runtime
+### 开源运行时
 
-The sandbox implementation is available as an open-source npm package:
+沙箱实现作为开源 npm 包提供：
 
 ```bash
-# Use sandbox runtime directly
-npx @anthropic-ai/sandbox-runtime <command-to-sandbox>
+# 直接使用沙箱运行时
+npx @anthropic-ai/sandbox-runtime <要沙箱化的命令>
 
-# Example: sandbox an MCP server
+# 示例：沙箱化一个 MCP 服务器
 npx @anthropic-ai/sandbox-runtime node mcp-server.js
 ```
 
-**Repository**: [github.com/anthropic-experimental/sandbox-runtime](https://github.com/anthropic-experimental/sandbox-runtime)
+**仓库**：[github.com/anthropic-experimental/sandbox-runtime](https://github.com/anthropic-experimental/sandbox-runtime)
 
-### Deep Dive
+### 深入了解
 
-For complete technical details, configuration examples, troubleshooting, and security analysis:
+完整技术细节、配置示例、故障排除和安全分析：
 
-→ **[Native Sandboxing Guide](./sandbox-native.md)**
+→ **[原生沙箱指南](./sandbox-native.md)**
 
-Covers: OS primitives, network proxy architecture, sandbox modes, escape hatch, security limitations, best practices.
+涵盖：操作系统原语、网络代理架构、沙箱模式、逃生舱、安全局限性、最佳实践。
 
 ---
 
-## 5. Cloud Sandboxes Landscape
+## 5. 云端沙箱概览
 
 ### Fly.io Sprites
 
-> **Source**: [sprites.dev](https://sprites.dev)
+> **来源**：[sprites.dev](https://sprites.dev)
 
-Hardware-isolated execution environments built on Firecracker microVMs, by Fly.io.
+基于 Firecracker microVM 构建的硬件隔离执行环境，由 Fly.io 提供。
 
-- **Isolation**: Firecracker microVMs with full hardware isolation
-- **Persistence**: Fully mutable ext4 filesystem, automatic 100GB partition
-- **Checkpoint/restore**: Live checkpoints in ~300ms (copy-on-write), restore under 1 second
-- **HTTP access**: Individual URLs per Sprite, auto-activation on requests (cold-start under 1s)
-- **Network**: Layer 3 egress policies, public/private toggles
-- **Resources**: Up to 8 CPUs, 16GB RAM per Sprite
-- **API**: CLI (`sprite` command), REST API, JavaScript and Go client libraries
-- **Pricing**: Pay-per-use ($0.07/CPU-hour, $0.04/GB-hour). $30 trial credits.
+- **隔离性**：Firecracker microVM，完全硬件隔离
+- **持久性**：完全可变的 ext4 文件系统，自动 100GB 分区
+- **检查点/恢复**：约 300ms 实时检查点（写时复制），1 秒内恢复
+- **HTTP 访问**：每个 Sprite 独立 URL，按请求自动激活（冷启动 < 1 秒）
+- **网络**：第 3 层出口策略，公有/私有切换
+- **资源**：每个 Sprite 最多 8 个 CPU、16GB 内存
+- **API**：CLI（`sprite` 命令）、REST API、JavaScript 和 Go 客户端库
+- **定价**：按使用量付费（CPU 0.07 美元/小时，内存 0.04 美元/GB/小时）。30 美元试用积分。
 
 ### Cloudflare Sandbox SDK
 
-> **Source**: [developers.cloudflare.com/sandbox/](https://developers.cloudflare.com/sandbox/)
+> **来源**：[developers.cloudflare.com/sandbox/](https://developers.cloudflare.com/sandbox/)
 
-Secure code execution in isolated containers, built on Cloudflare's Workers platform.
+基于 Cloudflare Workers 平台构建的安全代码执行隔离容器。
 
-- **Isolation**: Containers (not microVMs) on Cloudflare's serverless runtime
-- **Languages**: Python, JavaScript/TypeScript, shell commands
-- **Persistence**: R2 bucket mounting as local filesystem paths
-- **API**: TypeScript SDK (`getSandbox()`, `exec()`, `runCode()`, file ops, WebSocket)
-- **Integration**: Claude generates code, Sandbox executes it, results return as text/visualizations
-- **Pricing**: Workers Paid plan required. Based on Containers platform pricing.
-- **Tutorial**: [developers.cloudflare.com/sandbox/tutorials/claude-code/](https://developers.cloudflare.com/sandbox/tutorials/claude-code/)
+- **隔离性**：Cloudflare 无服务器运行时上的容器（非 microVM）
+- **语言**：Python、JavaScript/TypeScript、shell 命令
+- **持久性**：R2 存储桶作为本地文件系统路径挂载
+- **API**：TypeScript SDK（`getSandbox()`、`exec()`、`runCode()`、文件操作、WebSocket）
+- **集成**：Claude 生成代码，沙箱执行，结果以文本/可视化形式返回
+- **定价**：需要 Workers 付费计划，基于容器平台定价。
+- **教程**：[developers.cloudflare.com/sandbox/tutorials/claude-code/](https://developers.cloudflare.com/sandbox/tutorials/claude-code/)
 
-### Vercel Sandboxes
+### Vercel 沙箱
 
-> **Source**: [vercel.com/docs/vercel-sandbox/](https://vercel.com/docs/vercel-sandbox/)
+> **来源**：[vercel.com/docs/vercel-sandbox/](https://vercel.com/docs/vercel-sandbox/)
 
-Ephemeral Linux microVMs for AI agents and code generation, GA since 2026-01-30.
+用于 AI 智能体和代码生成的临时 Linux microVM，2026-01-30 正式发布（GA）。
 
-- **Isolation**: Firecracker microVMs, isolated from env vars, DBs, and cloud resources
-- **Performance**: Sub-second initialization, automatic termination on task completion
-- **Timeouts**: Default 5 min, Hobby up to 45 min, Pro/Enterprise up to 5 hours
-- **SDK**: `Sandbox`, `Command`, `Snapshot` classes. Filesystem snapshots for faster repeated runs.
-- **Auth**: Vercel OIDC tokens (recommended) or access tokens for external CI/CD
-- **Integration**: Works with Claude's Agent SDK for autonomous agent tasks
+- **隔离性**：Firecracker microVM，与环境变量、数据库和云资源隔离
+- **性能**：亚秒级初始化，任务完成后自动终止
+- **超时**：默认 5 分钟，Hobby 最长 45 分钟，Pro/Enterprise 最长 5 小时
+- **SDK**：`Sandbox`、`Command`、`Snapshot` 类。文件系统快照可加速重复运行。
+- **认证**：Vercel OIDC 令牌（推荐）或外部 CI/CD 的访问令牌
+- **集成**：与 Claude Agent SDK 配合，用于自主智能体任务
 
 ### E2B
 
-> **Source**: [e2b.dev](https://e2b.dev)
+> **来源**：[e2b.dev](https://e2b.dev)
 
-Open-source sandbox platform for AI agents and LLM applications.
+用于 AI 智能体和大语言模型应用的开源沙箱平台。
 
-- **Isolation**: Firecracker microVMs (same technology as AWS Lambda)
-- **Performance**: ~150ms cold boot, under 25ms standby resume
-- **Custom images**: Up to 10GB, boot in under 2 seconds (Blueprints)
-- **Snapshots**: Capture and restore full VM state
-- **Languages**: Python, JavaScript, Ruby, C++, anything on Linux. LLM-agnostic.
-- **Integrations**: LangChain, LangGraph, LlamaIndex, Vercel/Next.js, Ollama
-- **Deployment**: Cloud-hosted, BYOC (AWS/GCP/Azure), self-hosted on-premises/VPC
-- **Pricing**: Free tier ($100 credits, 1h max), Pro from $150/month (24h max)
+- **隔离性**：Firecracker microVM（与 AWS Lambda 相同的技术）
+- **性能**：约 150ms 冷启动，25ms 以内备用恢复
+- **自定义镜像**：最大 10GB，2 秒内启动（Blueprints）
+- **快照**：捕获和恢复完整虚拟机状态
+- **语言**：Python、JavaScript、Ruby、C++，Linux 上任何语言。与大语言模型无关。
+- **集成**：LangChain、LangGraph、LlamaIndex、Vercel/Next.js、Ollama
+- **部署**：云托管、BYOC（AWS/GCP/Azure）、本地/VPC 自托管
+- **定价**：免费层（100 美元积分，最长 1 小时），Pro 起价 150 美元/月（最长 24 小时）
 
-### Native Claude Code Sandbox Mode
+### Claude Code 原生沙箱模式
 
-> **Source**: [code.claude.com/docs/en/sandboxing](https://code.claude.com/docs/en/sandboxing)
+> **来源**：[code.claude.com/docs/en/sandboxing](https://code.claude.com/docs/en/sandboxing)
 
-Claude Code's built-in process-level sandboxing (Layer 4 in the [architecture](../core/architecture.md)).
+Claude Code 内置的进程级沙箱（[架构](../core/architecture.md)中的第 4 层）。
 
-- **No external dependencies**: Works out of the box
-- **Process isolation**: Restricts what commands Claude can execute
-- **Configurable**: Through `allowedTools` in settings
-- **Limitations**: Not full VM isolation — shares host kernel and filesystem
+- **无外部依赖**：开箱即用
+- **进程隔离**：限制 Claude 可以执行的命令
+- **可配置**：通过 settings 中的 `allowedTools` 配置
+- **局限性**：非完整虚拟机隔离——与主机共享内核和文件系统
 
-Use this when: Docker is unavailable, lightweight isolation is sufficient, or you want defense-in-depth alongside a sandbox.
+适用场景：Docker 不可用、轻量级隔离足够，或希望配合沙箱实现纵深防御。
 
 ---
 
-## 6. Comparison Matrix
+## 6. 对比矩阵
 
-| Criterion | Docker Sandboxes | Native CC | Fly.io Sprites | Cloudflare SDK | E2B | Vercel Sandboxes |
+| 标准 | Docker 沙箱 | 原生 Claude Code | Fly.io Sprites | Cloudflare SDK | E2B | Vercel 沙箱 |
 |-----------|-----------------|-----------|----------------|----------------|-----|-----------------|
-| **Isolation level** | microVM (hypervisor) | Process (Seatbelt/bubblewrap) | Firecracker microVM | Container | Firecracker microVM | Firecracker microVM |
-| **Kernel isolation** | ✅ Separate kernel | ❌ Shared kernel | ✅ Separate kernel | Partial | ✅ Separate kernel | ✅ Separate kernel |
-| **Runs locally** | Yes | Yes | No (cloud) | No (cloud) | No (cloud) | No (cloud) |
-| **Setup** | Docker Desktop 4.58+ | 0 deps (macOS), 2 pkgs (Linux) | API key | Workers Paid | API key | SDK |
-| **Docker-in-Docker** | ✅ Private daemon | ❌ Not supported | Yes | No | Yes | Yes |
-| **Network control** | Allow/Deny lists | Allow/Deny lists (SOCKS5) | L3 egress policies | Not detailed | Not detailed | Not detailed |
-| **Platform** | macOS, Windows (WSL2) | macOS, Linux, WSL2 | Any (API) | Any (Workers) | Any (API/SDK) | Any (SDK) |
-| **Overhead** | Moderate (~5-10% CPU) | Minimal (~1-3% CPU) | Cloud | Cloud | Cloud | Cloud |
-| **Free tier** | Docker Desktop | Free | $30 credits | Workers Paid | $100 credits | Yes (limited) |
-| **Best for** | Max security, Docker needed | Daily dev, trusted code | API-driven agents | Serverless | Multi-framework | Next.js/Vercel |
+| **隔离级别** | microVM（虚拟机监控程序） | 进程（Seatbelt/bubblewrap） | Firecracker microVM | 容器 | Firecracker microVM | Firecracker microVM |
+| **内核隔离** | ✅ 独立内核 | ❌ 共享内核 | ✅ 独立内核 | 部分 | ✅ 独立内核 | ✅ 独立内核 |
+| **本地运行** | 是 | 是 | 否（云端） | 否（云端） | 否（云端） | 否（云端） |
+| **配置** | Docker Desktop 4.58+ | 0 依赖（macOS），2 个包（Linux） | API 密钥 | Workers 付费 | API 密钥 | SDK |
+| **Docker-in-Docker** | ✅ 独立守护进程 | ❌ 不支持 | 支持 | 不支持 | 支持 | 支持 |
+| **网络控制** | 允许/拒绝列表 | 允许/拒绝列表（SOCKS5） | 第 3 层出口策略 | 未详细说明 | 未详细说明 | 未详细说明 |
+| **平台** | macOS、Windows（WSL2） | macOS、Linux、WSL2 | 任意（API） | 任意（Workers） | 任意（API/SDK） | 任意（SDK） |
+| **开销** | 中等（约 5-10% CPU） | 极小（约 1-3% CPU） | 云端 | 云端 | 云端 | 云端 |
+| **免费层** | Docker Desktop | 免费 | 30 美元积分 | Workers 付费 | 100 美元积分 | 是（有限） |
+| **最适合** | 最高安全性，需要 Docker | 日常开发，受信任代码 | API 驱动智能体 | 无服务器架构 | 多框架 | Next.js/Vercel |
 
 ---
 
-## 7. Safe Autonomy Workflows
+## 7. 安全自主工作流
 
-### Pattern: Docker Sandbox + --dangerously-skip-permissions
+### 模式：Docker 沙箱 + --dangerously-skip-permissions
 
-The recommended pattern for local autonomous development:
+推荐的本地自主开发模式：
 
 ```bash
-# 1. Create a sandbox with your project
+# 1. 为您的项目创建沙箱
 docker sandbox create my-feature ~/my-project
 
-# 2. Configure network (optional, recommended for security)
+# 2. 配置网络（可选，推荐用于安全）
 docker sandbox network proxy my-feature \
   --policy deny \
   --allow-host api.anthropic.com \
   --allow-host "*.npmjs.org" \
   --allow-host github.com
 
-# 3. Run Claude autonomously (safe inside sandbox)
+# 3. 自主运行 Claude（在沙箱内安全）
 docker sandbox run my-feature -- --dangerously-skip-permissions \
-  "Refactor the auth module to use JWT. Run all tests before finishing."
+  "重构 auth 模块以使用 JWT。完成前运行所有测试。"
 
-# 4. Review changes on host (workspace syncs automatically)
+# 4. 在主机上审查变更（工作区自动同步）
 cd ~/my-project && git diff
 
-# 5. If satisfied, commit. If not, discard or re-run.
-git add -A && git commit -m "feat: JWT auth (sandbox-generated)"
+# 5. 如果满意则提交，否则丢弃或重新运行
+git add -A && git commit -m "feat: JWT 认证（沙箱生成）"
 ```
 
-### Pattern: CI/CD Pipeline with Sandbox
+### 模式：使用沙箱的 CI/CD 流水线
 
-Sketch for GitHub Actions:
+GitHub Actions 示例草图：
 
 ```yaml
 jobs:
@@ -532,35 +532,35 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Run Claude in E2B sandbox
+      - name: 在 E2B 沙箱中运行 Claude
         uses: e2b-dev/e2b-github-action@v1
         with:
           api-key: ${{ secrets.E2B_API_KEY }}
           command: |
             claude --dangerously-skip-permissions \
-              -p "Run the full test suite and fix any failures"
+              -p "运行完整测试套件并修复任何失败"
 ```
 
-For CI/CD, cloud sandboxes (E2B, Vercel, Sprites) are typically better than Docker Sandboxes since they don't require Docker Desktop.
+对于 CI/CD，云端沙箱（E2B、Vercel、Sprites）通常比 Docker 沙箱更好，因为它们不需要 Docker Desktop。
 
 ---
 
-## 8. Anti-Patterns
+## 8. 反模式
 
-| Anti-pattern | Why it's dangerous | Do instead |
+| 反模式 | 危险原因 | 应该怎么做 |
 |-------------|-------------------|------------|
-| `--dangerously-skip-permissions` without sandbox | Agent has unrestricted access to host filesystem, network, and Docker | Use a sandbox as the security boundary |
-| Assuming containers = VMs | Containers share the host kernel. A container escape exposes the host. | Use microVM-based solutions (Docker Sandboxes, E2B, Sprites) for strong isolation |
-| Mounting entire filesystem into sandbox | Defeats the purpose of isolation. Agent can access credentials, SSH keys, etc. | Mount only the project workspace directory |
-| Allowlisting `*` in network policies | Agent can exfiltrate data to any endpoint | Use denylist mode with explicit allowances |
-| Skipping `git diff` review after sandbox run | Autonomous agent may have made unintended changes | Always review diffs before committing sandbox-generated code |
-| Using sandbox as excuse to skip code review | Isolation protects the host, not code quality | Sandbox + code review are complementary, not alternatives |
+| 无沙箱使用 `--dangerously-skip-permissions` | 智能体对主机文件系统、网络和 Docker 有不受限制的访问 | 使用沙箱作为安全边界 |
+| 假设容器 = 虚拟机 | 容器共享主机内核，容器逃逸会暴露主机 | 对强隔离使用基于 microVM 的方案（Docker 沙箱、E2B、Sprites） |
+| 将整个文件系统挂载到沙箱 | 破坏隔离目的，智能体可访问凭证、SSH 密钥等 | 仅挂载项目工作区目录 |
+| 在网络策略中允许 `*` | 智能体可以向任何端点外泄数据 | 使用拒绝列表模式并明确指定允许项 |
+| 沙箱运行后跳过 `git diff` 审查 | 自主智能体可能做出意外变更 | 提交沙箱生成的代码前始终审查差异 |
+| 以沙箱为借口跳过代码审查 | 隔离保护主机，不保证代码质量 | 沙箱 + 代码审查是互补的，不是替代关系 |
 
 ---
 
-## See Also
+## 另见
 
-- [architecture.md](../core/architecture.md) — Layer 4 (Sub-Agent Architecture) and permission model
-- [security-hardening.md](./security-hardening.md) — MCP vetting, injection defense, CVE tracking
-- [code.claude.com/docs/en/sandboxing](https://code.claude.com/docs/en/sandboxing) — Official Claude Code sandbox docs
-- [docs.docker.com/ai/sandboxes/](https://docs.docker.com/ai/sandboxes/) — Docker Sandboxes documentation
+- [architecture.md](../core/architecture.md) — 第 4 层（子智能体架构）和权限模型
+- [security-hardening.md](./security-hardening.md) — MCP 审查、注入防御、CVE 跟踪
+- [code.claude.com/docs/en/sandboxing](https://code.claude.com/docs/en/sandboxing) — Claude Code 官方沙箱文档
+- [docs.docker.com/ai/sandboxes/](https://docs.docker.com/ai/sandboxes/) — Docker 沙箱文档

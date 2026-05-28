@@ -1,67 +1,67 @@
 > 📚 **AI Spark Wiki** · Claude Code 知识库
 
-# Module 06: Hooks & Events
+# 模块 06：Hooks 与事件
 
-**Time**: 1 hour | **Complexity**: ⭐⭐ Intermediate
+**用时**：1 小时 | **难度**：⭐⭐ 进阶
 
-## Goal
+## 目标
 
-Automate responses to system events. Create scripts that run before or after Claude Code operations.
-
----
-
-## What You'll Learn
-
-- How hooks work and when they trigger
-- Creating pre-commit validation
-- Building post-action notifications
-- Writing safe automation scripts
-- Common hook patterns
+自动化系统事件的响应。创建在 Claude Code 操作前后自动运行的脚本。
 
 ---
 
-## What Are Hooks?
+## 你将学到
 
-A **hook** is a script that runs automatically in response to an event.
+- Hooks（钩子）的工作原理和触发时机
+- 创建提交前验证
+- 构建操作后通知
+- 编写安全的自动化脚本
+- 常见 Hooks 模式
 
-### Example: Pre-Commit Hook
+---
 
-Before you commit changes:
+## 什么是 Hooks？
+
+**Hook（钩子）**是响应某个事件自动运行的脚本。
+
+### 示例：提交前钩子
+
+提交变更前：
 
 ```
-You run: git commit -m "Fix bug"
+你执行：git commit -m "Fix bug"
        ↓
-Hook runs: Check version number consistency
+钩子运行：检查版本号一致性
        ↓
-If version wrong:
-  ❌ Commit blocked
-  Error message shows what's wrong
+版本号错误时：
+  ❌ 提交被阻止
+  错误信息说明问题所在
        ↓
-You fix: Update VERSION file
+你修复：更新 VERSION 文件
        ↓
-Commit succeeds
+提交成功
 ```
 
-Hooks prevent common mistakes from reaching git.
+Hooks 防止常见错误进入 Git。
 
-### Hook Events
+### Hook 事件
 
-Hooks can trigger on:
+Hooks 可在以下事件触发：
 
-| Event | Timing | Use Case |
+| 事件 | 时机 | 使用场景 |
 |-------|--------|----------|
-| PreToolUse | Before Claude runs a tool | Validate request |
-| PostToolUse | After Claude runs a tool | Log results, check output |
-| PreCommit | Before git commit | Validate changes |
-| PostPush | After git push | Notify team |
+| 工具前钩子（PreToolUse） | Claude 运行工具前 | 验证请求 |
+| 工具后钩子（PostToolUse） | Claude 运行工具后 | 记录结果、检查输出 |
+| PreCommit | Git 提交前 | 验证变更 |
+| PostPush | Git 推送后 | 通知团队 |
 
 ---
 
-## Creating Your First Hook
+## 创建你的第一个 Hook
 
-Hooks are bash (or PowerShell) scripts in `.claude/hooks/`.
+Hooks 是 `.claude/hooks/` 中的 Bash（或 PowerShell）脚本。
 
-### Basic Hook Structure
+### 基本 Hook 结构
 
 ```bash
 #!/bin/bash
@@ -70,23 +70,23 @@ Hooks are bash (or PowerShell) scripts in `.claude/hooks/`.
 # Event: PreCommit
 # Description: Check that VERSION file is updated with other changes
 
-# Get the files being committed
+# 获取被提交的文件
 FILES=$(git diff --cached --name-only)
 
-# Check if guide files were changed
+# 检查 guide/ 下的文件是否被修改
 if echo "$FILES" | grep -q "guide/"; then
-  # If guide/ changed, VERSION must also be changed
+  # 如果 guide/ 有变更，VERSION 也必须有变更
   if ! echo "$FILES" | grep -q "VERSION"; then
     echo "❌ Error: guide/ was modified but VERSION wasn't updated"
     echo "Run: echo '3.x.x' > VERSION"
-    exit 1  # Block commit
+    exit 1  # 阻止提交
   fi
 fi
 
-exit 0  # Allow commit
+exit 0  # 允许提交
 ```
 
-### File Location
+### 文件位置
 
 ```
 my-project/
@@ -96,40 +96,40 @@ my-project/
         └── notify-team.sh
 ```
 
-### Hook Exit Codes
+### Hook 退出码
 
 ```bash
-exit 0   # Success - allow operation to proceed
-exit 1   # Failure - block operation and show error
-exit 2   # Warning - allow but show warning message
+exit 0   # 成功——允许操作继续
+exit 1   # 失败——阻止操作并显示错误
+exit 2   # 警告——允许但显示警告信息
 ```
 
 ---
 
-## Hook Patterns
+## Hooks 模式
 
-### Pattern 1: Pre-Commit Validation
+### 模式 1：提交前验证
 
-Block commits that fail validation:
+阻止验证失败的提交：
 
 ```bash
 #!/bin/bash
 # Hook: security-check.sh
-# Block commits if security issues found
+# 发现安全问题则阻止提交
 
-# Check for hardcoded API keys
+# 检查硬编码的 API Key
 if grep -r "sk_live_" .; then
   echo "❌ ERROR: Found hardcoded Stripe key"
   exit 1
 fi
 
-# Check for console.log in production code (not tests)
+# 检查生产代码中的 console.log（排除测试）
 if grep -r "console.log" src/ --exclude-dir=tests; then
   echo "❌ ERROR: Found console.log in source code"
   exit 1
 fi
 
-# Check for TODO comments (warning, not block)
+# 检查 TODO 注释（警告，不阻止）
 if grep -r "TODO:" src/; then
   echo "⚠️  Warning: TODO comments found (not blocking)"
 fi
@@ -137,35 +137,35 @@ fi
 exit 0
 ```
 
-### Pattern 2: Post-Commit Notification
+### 模式 2：提交后通知
 
-After a commit succeeds:
+提交成功后：
 
 ```bash
 #!/bin/bash
 # Hook: notify-team.sh
-# Notify team after certain commits
+# 特定提交后通知团队
 
 COMMIT_MSG=$(git log -1 --pretty=%B)
 
-# If security-related commit
+# 如果是安全相关提交
 if echo "$COMMIT_MSG" | grep -i "security"; then
   echo "🔐 Security commit: $COMMIT_MSG"
-  # Send to Slack (optional)
+  # 发送到 Slack（可选）
   # curl -X POST $SLACK_WEBHOOK -d "Security update: $COMMIT_MSG"
 fi
 
 exit 0
 ```
 
-### Pattern 3: Dependency Check
+### 模式 3：依赖检查
 
-Warn if dependencies need updating:
+警告是否需要更新依赖：
 
 ```bash
 #!/bin/bash
 # Hook: check-deps.sh
-# Check if package.json changed without updating lock file
+# 检查 package.json 是否在未更新 lock 文件的情况下被修改
 
 FILES=$(git diff --cached --name-only)
 
@@ -181,9 +181,9 @@ exit 0
 
 ---
 
-## Registering Hooks
+## 注册 Hooks
 
-Hooks are registered in `.claude/settings.json`:
+Hooks 在 `.claude/settings.json` 中注册：
 
 ```json
 {
@@ -195,7 +195,7 @@ Hooks are registered in `.claude/settings.json`:
 }
 ```
 
-Or in `settings.yaml`:
+或在 `settings.yaml` 中：
 
 ```yaml
 hooks:
@@ -212,42 +212,42 @@ hooks:
 
 ---
 
-## Best Practices for Safe Hooks
+## 安全 Hooks 最佳实践
 
-### DO
+### 应该做
 
-✅ Make hooks **idempotent** (safe to run multiple times)
-✅ Log what the hook is doing
-✅ Exit with clear error messages
-✅ Use `set -e` at top to fail on first error
-✅ Make hooks executable: `chmod +x hook.sh`
+✅ 让 Hooks **幂等**（多次运行安全）
+✅ 记录 Hook 在做什么
+✅ 提供清晰的错误信息后退出
+✅ 在开头使用 `set -e`，遇到第一个错误即退出
+✅ 使脚本可执行：`chmod +x hook.sh`
 
-### DON'T
+### 不应该做
 
-❌ Make hooks take >5 seconds (blocks workflow)
-❌ Have hooks make network calls (unreliable)
-❌ Have hooks modify files (they validate only)
-❌ Make hooks too strict (frustrate developers)
-❌ Forget to test hooks locally first
+❌ 让 Hook 运行超过 5 秒（阻塞工作流）
+❌ 在 Hook 中进行网络调用（不可靠）
+❌ 让 Hook 修改文件（Hook 仅做验证）
+❌ 规则过于严格（令开发者沮丧）
+❌ 忘记先在本地测试 Hook
 
 ---
 
-## Safe Hook Template
+## 安全 Hook 模板
 
 ```bash
 #!/bin/bash
 set -euo pipefail
 
-# Hook template for safe, clear automation
+# 安全、清晰自动化的 Hook 模板
 
 HOOK_NAME="my-hook"
 HOOK_VERSION="1.0.0"
 
-# Colors for output
+# 输出颜色
 RED='\033[0;31m'
 YELLOW='\033[1;33m'
 GREEN='\033[0;32m'
-NC='\033[0m' # No Color
+NC='\033[0m' # 无颜色
 
 log_error() {
   echo -e "${RED}❌ $1${NC}"
@@ -261,11 +261,11 @@ log_success() {
   echo -e "${GREEN}✅ $1${NC}"
 }
 
-# Main validation logic
+# 主验证逻辑
 main() {
   echo "Running: $HOOK_NAME ($HOOK_VERSION)"
   
-  # Your checks here
+  # 你的检查逻辑
   if some_check_fails; then
     log_error "Check failed because X"
     return 1
@@ -275,23 +275,23 @@ main() {
   return 0
 }
 
-# Run and exit
+# 运行并退出
 main
 exit $?
 ```
 
 ---
 
-## Exercise: Create a Validation Hook
+## 练习：创建验证 Hook
 
-### Scenario
+### 场景
 
-You want to prevent accidental commits with:
-- Trailing whitespace
-- Missing test files for new code
-- Unresolved merge conflicts
+你想防止意外提交以下内容：
+- 行尾多余空格
+- 新代码缺少测试文件
+- 未解决的合并冲突
 
-### Step 1: Create the Hook
+### 第一步：创建 Hook
 
 ```bash
 cat > .claude/hooks/pre-commit-validation.sh << 'EOF'
@@ -300,20 +300,20 @@ set -euo pipefail
 
 echo "🔍 Running pre-commit validation..."
 
-# Check 1: No trailing whitespace
+# 检查 1：无行尾空格
 if git diff --cached | grep -E '^[+].*\s+$' > /dev/null; then
   echo "❌ Trailing whitespace found:"
   git diff --cached | grep -E '^[+].*\s+$'
   exit 1
 fi
 
-# Check 2: No merge conflict markers
+# 检查 2：无合并冲突标记
 if git diff --cached | grep -E '^[+].*<<<<<<|^[+].*======|^[+].*>>>>>>' > /dev/null; then
   echo "❌ Merge conflict markers found"
   exit 1
 fi
 
-# Check 3: New files should have tests
+# 检查 3：新文件应有测试
 STAGED_FILES=$(git diff --cached --name-only)
 for file in $STAGED_FILES; do
   if [[ $file == src/*.ts && $file != *test* ]]; then
@@ -331,7 +331,7 @@ EOF
 chmod +x .claude/hooks/pre-commit-validation.sh
 ```
 
-### Step 2: Register in settings.json
+### 第二步：在 settings.json 中注册
 
 ```json
 {
@@ -341,37 +341,37 @@ chmod +x .claude/hooks/pre-commit-validation.sh
 }
 ```
 
-### Step 3: Test It
+### 第三步：测试它
 
-Make a file with trailing whitespace:
+创建一个有行尾空格的文件：
 
 ```bash
-echo "test line   " > test.txt  # Note the trailing spaces
+echo "test line   " > test.txt  # 注意行尾的空格
 git add test.txt
 ```
 
-Try to commit:
+尝试提交：
 
 ```bash
 git commit -m "Test hook"
 ```
 
-The hook blocks:
+Hook 阻止了提交：
 
 ```
 ❌ Trailing whitespace found:
 +test line
 ```
 
-### Step 4: Fix and Retry
+### 第四步：修复并重试
 
 ```bash
-echo "test line" > test.txt  # Remove trailing spaces
+echo "test line" > test.txt  # 删除行尾空格
 git add test.txt
 git commit -m "Test hook (fixed)"
 ```
 
-Now it succeeds:
+现在成功了：
 
 ```
 ✅ Pre-commit validation passed
@@ -379,59 +379,59 @@ Now it succeeds:
 
 ---
 
-## Debugging Hooks
+## 调试 Hooks
 
-If a hook fails mysteriously:
+如果 Hook 神秘地失败了：
 
-1. **Run manually**:
+1. **手动运行**：
 ```bash
 bash .claude/hooks/my-hook.sh
 ```
 
-2. **Add debug output**:
+2. **添加调试输出**：
 ```bash
-set -x  # Print every command
+set -x  # 打印每条命令
 ```
 
-3. **Check exit code**:
+3. **检查退出码**：
 ```bash
 bash .claude/hooks/my-hook.sh; echo "Exit: $?"
 ```
 
-4. **Test hook conditions**:
+4. **测试 Hook 条件**：
 ```bash
-# Test if a file was changed
+# 测试文件是否被修改
 git diff --cached --name-only | grep "VERSION"
-echo $?  # 0 = found, 1 = not found
+echo $?  # 0 = 找到，1 = 未找到
 ```
 
 ---
 
-## Validation: You're Ready If...
+## 验证：以下都满足说明你已准备好
 
-✓ You've created at least one hook script
+✓ 已创建至少一个 Hook 脚本
 
-✓ You understand hook event types (pre-commit, post-commit, etc.)
+✓ 理解 Hook 事件类型（pre-commit、post-commit 等）
 
-✓ You can register hooks in settings.json or settings.yaml
+✓ 能在 settings.json 或 settings.yaml 中注册 Hooks
 
-✓ You've tested a hook locally
+✓ 已在本地测试过 Hook
 
-✓ You know what exit codes mean (0 = success, 1 = failure)
-
----
-
-## What's Next?
-
-**Module 07: Advanced Patterns** covers:
-- Multi-agent orchestration
-- Building complex workflows
-- Error handling and recovery
-- Production-grade automation
-- Team coordination patterns
-
-This teaches you how to combine all previous concepts into sophisticated multi-agent systems.
+✓ 知道退出码的含义（0 = 成功，1 = 失败）
 
 ---
 
-**Completed Module 06?** → Ready for Module 07: Advanced Patterns
+## 下一步
+
+**模块 07：高级模式**涵盖：
+- 多智能体编排
+- 构建复杂工作流
+- 错误处理与恢复
+- 生产级自动化
+- 团队协调模式
+
+这将教你如何将前面所有概念组合成复杂的多智能体系统。
+
+---
+
+**完成模块 06？** → 进入模块 07：高级模式

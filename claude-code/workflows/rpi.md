@@ -1,768 +1,767 @@
 > 📚 **AI Spark Wiki** · Claude Code 知识库
 
 ---
-title: "RPI: Research → Plan → Implement"
-description: "A 3-phase feature development pattern with explicit validation gates between phases"
+title: "RPI：研究 → 计划 → 实现"
+description: "三阶段功能开发模式，每个阶段之间设有明确的验证关卡"
 tags: [workflow, architecture, design-patterns, validation]
 ---
 
-# RPI: Research → Plan → Implement
+# RPI：研究 → 计划 → 实现
 
-> **Confidence**: Tier 2 — Synthesized from production team patterns. The gate-based structure aligns with Anthropic's guidance on agent task decomposition and agentic loop control.
+> **可信度**：Tier 2 — 综合自生产团队实践模式。关卡式结构与 Anthropic 关于智能体任务分解和智能体循环控制的指导方针一致。
 
-Build features in three locked phases: Research feasibility first, plan the implementation second, write code third. Each phase produces a concrete artifact. Each gate requires an explicit GO before the next phase starts.
+将功能开发分为三个锁定阶段：首先研究可行性，其次规划实现方案，最后编写代码。每个阶段产出具体的工件，每个关卡都需要明确的 GO 指令才能进入下一阶段。
 
 ---
 
-## Table of Contents
+## 目录
 
 1. [TL;DR](#tldr)
-2. [When to Use RPI](#when-to-use-rpi)
-3. [How the Gates Work](#how-the-gates-work)
-4. [Phase 1: Research](#phase-1-research)
-5. [Phase 2: Plan](#phase-2-plan)
-6. [Phase 3: Implement](#phase-3-implement)
-7. [Slash Command Templates](#slash-command-templates)
-8. [Worked Example](#worked-example)
-9. [Comparison to Other Workflows](#comparison-to-other-workflows)
-10. [Tips and Troubleshooting](#tips-and-troubleshooting)
-11. [See Also](#see-also)
+2. [何时使用 RPI](#何时使用-rpi)
+3. [关卡如何运作](#关卡如何运作)
+4. [阶段一：研究](#阶段一研究)
+5. [阶段二：计划](#阶段二计划)
+6. [阶段三：实现](#阶段三实现)
+7. [斜杠命令模板](#斜杠命令模板)
+8. [实战示例](#实战示例)
+9. [与其他工作流的对比](#与其他工作流的对比)
+10. [技巧与故障排查](#技巧与故障排查)
+11. [参见](#参见)
 
 ---
 
 ## TL;DR
 
 ```
-Phase 1 — Research:
-  Claude explores feasibility, surfaces risks, asks decision questions
-  Output: RESEARCH.md
-  Gate: You decide GO / NO-GO
+阶段一 — 研究：
+  Claude 探索可行性，揭示风险，提出决策问题
+  产出：RESEARCH.md
+  关卡：你决定 GO / NO-GO
 
-Phase 2 — Plan:
-  Claude writes architecture decisions, user stories, test plan
-  Output: PLAN.md
-  Gate: You approve the plan before any code is written
+阶段二 — 计划：
+  Claude 撰写架构决策、用户故事、测试计划
+  产出：PLAN.md
+  关卡：你在编写任何代码前批准计划
 
-Phase 3 — Implement:
-  Claude implements step by step, tests pass before each next step
-  Output: working code + passing tests
-  Gate: each implementation step validated before the next begins
+阶段三 — 实现：
+  Claude 逐步实现，每步完成测试关卡后才进入下一步
+  产出：可运行的代码 + 通过的测试
+  关卡：每个实现步骤验证通过后才开始下一步
 ```
 
-**Best for**: Features with unclear feasibility, more than a day of work, unknown technical territory, or anything where discovering a wrong assumption late is costly.
+**最适合**：可行性不明确的功能、超过一天工作量的功能、未知技术领域，或因错误假设而造成的代价较高的情况。
 
 ---
 
-## When to Use RPI
+## 何时使用 RPI
 
-### Use RPI When
+### 适合使用 RPI 的情况
 
-- **Feasibility is unknown**: You have an idea but aren't sure it holds up technically
-- **Scope is large**: More than a day's worth of implementation work
-- **Requirements are fuzzy**: You know the outcome you want, not the path to get there
-- **Risk of wrong direction is high**: Security, payments, data migrations, integrations with external systems
-- **You've been surprised before**: A feature looked simple, turned out to involve 6 other systems
+- **可行性未知**：你有想法，但不确定技术上是否可行
+- **规模较大**：实现工作量超过一天
+- **需求模糊**：你知道想要的结果，但不知道如何达到
+- **方向错误的风险较高**：安全、支付、数据迁移、与外部系统集成
+- **之前曾被意外惊到**：某个功能看起来简单，结果涉及 6 个其他系统
 
-### Skip RPI When
+### 跳过 RPI 的情况
 
-| Scenario | Better Approach |
+| 场景 | 更好的方式 |
 |----------|----------------|
-| Fix is obvious (typo, wrong color) | Direct edit |
-| Feature is well-understood, requirements are clear | [Spec-First](./spec-first.md) or [dual-instance](./dual-instance-planning.md) |
-| Exploration mode — you don't know what you want yet | Exploration workflow |
-| Tiny change, single file | Just do it |
+| 修复很明显（错别字、颜色错误） | 直接编辑 |
+| 功能理解清晰，需求明确 | [规范先行](./spec-first.md) 或 [双实例](./dual-instance-planning.md) |
+| 探索模式 — 你还不知道想要什么 | 探索工作流 |
+| 微小改动，仅涉及单文件 | 直接做 |
 
-### Decision Heuristic
+### 决策启发式规则
 
-Ask yourself: "If the research phase reveals a serious problem, am I glad I didn't spend 2 days implementing first?"
+问问自己："如果研究阶段发现了严重问题，我是否庆幸没有先花 2 天时间实现？"
 
-If yes, run RPI. The research phase typically takes 30-60 minutes and can save many hours.
+如果答案是肯定的，就运行 RPI。研究阶段通常需要 30-60 分钟，却能节省数小时工作量。
 
 ---
 
-## How the Gates Work
+## 关卡如何运作
 
-RPI has two human gates and one automated gate per implementation step.
+RPI 有两个人工关卡和每个实现步骤一个自动关卡。
 
 ```
-[Idea]
+[想法]
    |
    v
-[Phase 1: Research]
+[阶段一：研究]
    |
-   +- NO-GO -> Stop. Document why. Archive RESEARCH.md.
+   +- NO-GO -> 停止。记录原因。归档 RESEARCH.md。
    |
    +- GO -------------------------------------------------------->
                                                                  |
-                                                       [Phase 2: Plan]
+                                                       [阶段二：计划]
                                                                  |
-                                          +- Needs revision -> iterate with Claude
+                                          +- 需要修改 -> 与 Claude 迭代
                                           |
-                                          +- Approved -------------------------------->
+                                          +- 已批准 -------------------------------->
                                                                                       |
-                                                                          [Phase 3: Implement]
-                                                                              Step 1 -> Test gate
-                                                                              Step 2 -> Test gate
-                                                                              Step 3 -> Test gate
+                                                                          [阶段三：实现]
+                                                                              步骤 1 -> 测试关卡
+                                                                              步骤 2 -> 测试关卡
+                                                                              步骤 3 -> 测试关卡
                                                                                    |
-                                                                                [Done]
+                                                                                [完成]
 ```
 
-**Gate 1 (after Research)**: You read RESEARCH.md and make a GO/NO-GO decision. This is the most important gate — it prevents building the wrong thing entirely.
+**关卡 1（研究后）**：你阅读 RESEARCH.md 并做出 GO/NO-GO 决定。这是最重要的关卡——它能防止完全构建错误的东西。
 
-**Gate 2 (after Plan)**: You review PLAN.md before any code is written. Minor revisions happen here at zero cost.
+**关卡 2（计划后）**：你在编写任何代码前审查 PLAN.md。轻微修改在此处以零成本完成。
 
-**Step gates (during Implement)**: Each implementation step must have passing tests before Claude moves to the next step. Automated, no human action required unless a step fails.
+**步骤关卡（实现期间）**：每个实现步骤必须通过测试，Claude 才会进入下一步。自动化执行，除非步骤失败，否则无需人工干预。
 
 ---
 
-## Phase 1: Research
+## 阶段一：研究
 
-### What Research Covers
+### 研究内容
 
-The research phase answers five questions:
+研究阶段回答五个问题：
 
-1. **What already exists?** Relevant code, libraries, prior attempts in the codebase
-2. **What needs to be built?** Scope boundary, components to create vs modify
-3. **What are the risks?** Technical, security, integration, performance
-4. **What are the decision points?** Architecture choices that affect the whole plan
-5. **What is the effort estimate?** Rough sizing before committing to a plan
+1. **现有什么？** 代码库中的相关代码、库、之前的尝试
+2. **需要构建什么？** 范围边界，要创建还是要修改的组件
+3. **有哪些风险？** 技术、安全、集成、性能方面的风险
+4. **有哪些决策点？** 影响整体计划的架构选择
+5. **工作量估算是多少？** 在承诺计划前进行粗略评估
 
-Claude explores the codebase, reads relevant files, checks dependencies, and surfaces any constraint that would change the plan. The result is RESEARCH.md.
+Claude 探索代码库，阅读相关文件，检查依赖项，并揭示任何可能改变计划的约束条件。结果保存为 RESEARCH.md。
 
-### Starting Research
+### 启动研究
 
-Create the feature folder and invoke research:
+创建功能文件夹并启动研究：
 
 ```bash
 mkdir -p .claude/features/[feature-name]
 ```
 
-Then in Claude:
+然后在 Claude 中：
 
 ```
-/rpi:research [feature description]
+/rpi:research [功能描述]
 ```
 
-Or without the slash command:
+或不使用斜杠命令：
 
 ```
-Run RPI Phase 1 (Research) for: [feature description]
+为以下功能运行 RPI 阶段一（研究）：[功能描述]
 
-Save output to .claude/features/[feature-name]/RESEARCH.md
-Use Plan Mode to explore without modifying code.
+将输出保存到 .claude/features/[feature-name]/RESEARCH.md
+使用计划模式探索，不要修改任何代码。
 ```
 
-### RESEARCH.md Template
+### RESEARCH.md 模板
 
 ```markdown
-# Research: [Feature Name]
+# 研究：[功能名称]
 
-**Date**: [YYYY-MM-DD]
-**Requested**: [One-sentence description of the feature]
-**Status**: PENDING DECISION
-
----
-
-## What Exists Today
-
-### Relevant Code
-- [file path]: [what it does, why it matters]
-- [file path]: [what it does, why it matters]
-
-### Relevant Libraries
-- [library]: [currently used / available / needs to be added]
-
-### Prior Attempts or Related Work
-- [any existing partial implementation, related PR, note in codebase]
+**日期**：[YYYY-MM-DD]
+**需求**：[一句话描述该功能]
+**状态**：待决策
 
 ---
 
-## What Needs to Be Built
+## 当前现状
 
-### New Files
-- [file path]: [purpose]
-- [file path]: [purpose]
+### 相关代码
+- [文件路径]：[功能说明及重要性]
+- [文件路径]：[功能说明及重要性]
 
-### Files to Modify
-- [file path]: [what changes, why]
+### 相关库
+- [库名]：[当前使用中 / 可用 / 需要新增]
 
-### External Dependencies
-- [dependency]: [reason needed, version constraint if any]
+### 之前的尝试或相关工作
+- [现有的部分实现、相关 PR、代码库中的说明]
 
 ---
 
-## Risks
+## 需要构建的内容
 
-| Risk | Likelihood | Impact | Notes |
+### 新文件
+- [文件路径]：[用途]
+- [文件路径]：[用途]
+
+### 需要修改的文件
+- [文件路径]：[改动内容及原因]
+
+### 外部依赖
+- [依赖项]：[需要的原因，如有版本约束请注明]
+
+---
+
+## 风险
+
+| 风险 | 可能性 | 影响 | 备注 |
 |------|-----------|--------|-------|
-| [risk description] | Low/Med/High | Low/Med/High | [mitigation or blocker] |
+| [风险描述] | 低/中/高 | 低/中/高 | [缓解措施或阻断因素] |
 
 ---
 
-## Architecture Decision Points
+## 架构决策点
 
-Questions that need a decision before planning can start:
+开始计划前需要做出决策的问题：
 
-1. **[Decision]**: Option A (pros: X, cons: Y) vs Option B (pros: X, cons: Y)
-2. **[Decision]**: [Options and trade-offs]
-
----
-
-## Effort Estimate
-
-- Research-to-plan: [time]
-- Implementation: [time range]
-- Testing: [time]
-- **Total estimate**: [range]
-
-**Confidence in estimate**: Low / Medium / High
-**Why**: [reason for confidence level]
+1. **[决策]**：选项 A（优点：X，缺点：Y）vs 选项 B（优点：X，缺点：Y）
+2. **[决策]**：[选项及权衡]
 
 ---
 
-## Recommendation
+## 工作量估算
 
-[GO / NO-GO / NEEDS CLARIFICATION]
+- 研究到计划：[时间]
+- 实现：[时间范围]
+- 测试：[时间]
+- **总估算**：[范围]
 
-[1-3 sentences explaining the recommendation]
+**估算置信度**：低 / 中 / 高
+**原因**：[置信度级别的理由]
 
 ---
 
-**Decision**: [ ] GO  [ ] NO-GO  [ ] NEEDS CLARIFICATION
-**Notes**: [human fills this in]
+## 建议
+
+[GO / NO-GO / 需要澄清]
+
+[1-3 句话说明建议理由]
+
+---
+
+**决策**：[ ] GO  [ ] NO-GO  [ ] 需要澄清
+**备注**：[人工填写]
 ```
 
-### What a NO-GO Looks Like
+### NO-GO 的样子
 
-Not every research phase ends in GO. Common NO-GO reasons:
+并非每次研究都以 GO 结束。常见的 NO-GO 原因：
 
-- **Technical blocker**: External API doesn't support the required operation
-- **Scope creep discovered**: "Simple feature" turns out to require rewriting the auth layer
-- **Better alternative exists**: Research reveals an existing library or config change that solves the problem more simply
-- **Risk too high for now**: The feature is valid but the timing is wrong
+- **技术阻断**：外部 API 不支持所需操作
+- **发现范围蔓延**："简单功能"原来需要重写认证层
+- **存在更好的替代方案**：研究发现现有的库或配置变更能更简单地解决问题
+- **当前时机风险过高**：功能本身有效，但时机不对
 
-Archive NO-GO research docs — they're valuable records of decisions made and why.
+归档 NO-GO 研究文档——它们是关于已做决策及原因的宝贵记录。
 
 ---
 
-## Phase 2: Plan
+## 阶段二：计划
 
-### What the Plan Covers
+### 计划内容
 
-Phase 2 starts only after you mark RESEARCH.md with GO. Claude reads the research doc and produces a precise implementation plan.
+只有在你将 RESEARCH.md 标记为 GO 后，阶段二才会开始。Claude 阅读研究文档并生成精确的实现计划。
 
-A good plan is specific enough that a different engineer (or Claude in a new session) could execute it without asking questions.
+一份好的计划应足够具体，使另一位工程师（或新会话中的 Claude）无需提问就能执行。
 
 ```
 /rpi:plan .claude/features/[feature-name]/RESEARCH.md
 ```
 
-Or without the slash command:
+或不使用斜杠命令：
 
 ```
-Run RPI Phase 2 (Plan) using:
-- Research: .claude/features/[feature-name]/RESEARCH.md
+使用以下内容运行 RPI 阶段二（计划）：
+- 研究文档：.claude/features/[feature-name]/RESEARCH.md
 
-Save output to .claude/features/[feature-name]/PLAN.md
-Do not write any code yet. Plan only.
+将输出保存到 .claude/features/[feature-name]/PLAN.md
+暂时不要编写任何代码，仅输出计划。
 ```
 
-### PLAN.md Template
+### PLAN.md 模板
 
 ```markdown
-# Plan: [Feature Name]
+# 计划：[功能名称]
 
-**Date**: [YYYY-MM-DD]
-**Research**: [link to RESEARCH.md]
-**Estimated effort**: [from research]
-**Risk level**: Low / Medium / High
-
----
-
-## Summary
-
-[2-4 sentences: what this implements, major design decisions taken, what it does NOT include]
+**日期**：[YYYY-MM-DD]
+**研究文档**：[RESEARCH.md 链接]
+**估算工作量**：[来自研究阶段]
+**风险级别**：低 / 中 / 高
 
 ---
 
-## Architecture Decisions
+## 摘要
 
-[Record decisions made from the research decision points]
-
-1. **[Decision]**: Chose [Option] because [reason]
-2. **[Decision]**: Chose [Option] because [reason]
+[2-4 句话：实现内容、主要设计决策、不包含的内容]
 
 ---
 
-## Implementation Steps
+## 架构决策
 
-Steps must be sequential and independently testable.
+[记录研究决策点中做出的决定]
 
-### Step 1: [Name]
-
-**Files**: [list of files to create or modify]
-**What to build**: [precise description]
-**Test gate**: [specific test or check that must pass before Step 2 starts]
-
-### Step 2: [Name]
-
-**Files**: [list of files to create or modify]
-**What to build**: [precise description]
-**Test gate**: [specific test or check that must pass before Step 3 starts]
-
-[...continue for all steps]
+1. **[决策]**：选择了 [选项]，原因是 [理由]
+2. **[决策]**：选择了 [选项]，原因是 [理由]
 
 ---
 
-## Success Criteria
+## 实现步骤
 
-- [ ] [Testable criterion — describes observable behavior, not implementation]
-- [ ] [Testable criterion]
-- [ ] All step test gates pass
+步骤必须是顺序的，且可独立测试。
 
----
+### 步骤 1：[名称]
 
-## Out of Scope
+**文件**：[要创建或修改的文件列表]
+**构建内容**：[精确描述]
+**测试关卡**：[在步骤 2 开始前必须通过的具体测试或检查]
 
-Explicitly list what this plan does NOT cover:
-- [thing excluded]
-- [thing excluded]
+### 步骤 2：[名称]
 
----
+**文件**：[要创建或修改的文件列表]
+**构建内容**：[精确描述]
+**测试关卡**：[在步骤 3 开始前必须通过的具体测试或检查]
 
-## Risks Accepted
-
-[From RESEARCH.md risks, list which are accepted and how they're mitigated]
+[...所有步骤以此类推]
 
 ---
 
-## Rollback Plan
+## 成功标准
 
-If implementation fails mid-way:
-- [what to undo]
-- [how to restore previous state]
+- [ ] [可测试的标准——描述可观测行为，而非实现细节]
+- [ ] [可测试的标准]
+- [ ] 所有步骤测试关卡通过
 
 ---
 
-**Plan approved?** [ ] YES — proceed to implementation
-**Revision notes**: [human fills this in if changes needed]
+## 超出范围
+
+明确列出本计划不涵盖的内容：
+- [排除的内容]
+- [排除的内容]
+
+---
+
+## 已接受的风险
+
+[来自 RESEARCH.md 的风险，列出已接受的风险及其缓解方式]
+
+---
+
+## 回滚计划
+
+若实现中途失败：
+- [需要撤销的内容]
+- [如何恢复到之前的状态]
+
+---
+
+**计划是否批准？** [ ] 是 — 继续实现
+**修改备注**：[如需修改，人工填写]
 ```
 
-### Reviewing the Plan
+### 审查计划
 
-Read PLAN.md carefully before approving. The goal is to catch design problems now, not during implementation. Specific things to check:
+批准前请仔细阅读 PLAN.md。目标是现在发现设计问题，而不是在实现过程中。需要重点检查：
 
-- Implementation steps are in the right order, with no hidden dependencies
-- Test gates are concrete and runnable (not "it looks right")
-- Out-of-scope is explicit (prevents Claude from over-building)
-- Rollback plan exists for anything touching data or shared state
+- 实现步骤顺序是否正确，是否存在隐藏的依赖关系
+- 测试关卡是否具体且可执行（而不是"看起来没问题"这类描述）
+- 超出范围的内容是否明确（防止 Claude 过度构建）
+- 涉及数据或共享状态的操作是否有回滚计划
 
-If the plan needs changes, ask Claude to revise before approving. This is free — revision after approval costs implementation time.
+如果计划需要修改，请在批准前让 Claude 修订。这是免费的——批准后再修订会消耗实现时间。
 
 ---
 
-## Phase 3: Implement
+## 阶段三：实现
 
-### The Step-Gate Pattern
+### 步骤关卡模式
 
-Implementation runs step by step. Each step has a test gate. Claude does not start the next step until the current gate passes.
+实现逐步进行，每步都有测试关卡。Claude 在当前关卡通过前不会开始下一步。
 
 ```
 /rpi:implement .claude/features/[feature-name]/PLAN.md
 ```
 
-Or without the slash command:
+或不使用斜杠命令：
 
 ```
-Run RPI Phase 3 (Implement) using:
-- Plan: .claude/features/[feature-name]/PLAN.md
+使用以下内容运行 RPI 阶段三（实现）：
+- 计划文档：.claude/features/[feature-name]/PLAN.md
 
-Rules:
-- Implement one step at a time
-- After each step, run the test gate specified in the plan
-- Do not start the next step until the test gate passes
-- If a test gate fails, stop and report the failure — do not improvise a fix
-- Commit after each step that passes its gate
+规则：
+- 每次只实现一个步骤
+- 每步结束后，运行计划中指定的测试关卡
+- 在测试关卡通过前不得开始下一步
+- 如果测试关卡失败，停止并报告失败——不要自行修复
+- 每步通过后提交
 ```
 
-### What Happens During Implementation
+### 实现过程中会发生什么
 
-Claude works through the plan's steps sequentially. For each step:
+Claude 按顺序执行计划中的步骤。对于每个步骤：
 
-1. Implements the specified files and changes
-2. Runs the test gate (unit tests, integration check, or manual verification)
-3. If gate passes: commits with a message referencing the step, announces readiness for the next step
-4. If gate fails: reports the failure, the specific test output, and the likely cause. Does not attempt to fix unless you confirm.
+1. 实现指定的文件和变更
+2. 运行测试关卡（单元测试、集成检查或人工验证）
+3. 若关卡通过：以引用该步骤的提交信息提交，宣布准备好进入下一步
+4. 若关卡失败：报告失败、具体的测试输出和可能的原因。在你确认前不尝试修复。
 
-The step-commit pattern gives you a clean git history that mirrors the plan. If something goes wrong in Step 4, you can roll back to the Step 3 commit cleanly.
+步骤提交模式为你提供了与计划对应的清晰 git 历史。如果步骤 4 出了问题，你可以干净地回滚到步骤 3 的提交。
 
-### Step-Gate Failure Protocol
+### 步骤关卡失败协议
 
-When a test gate fails, Claude reports:
+当测试关卡失败时，Claude 报告：
 
 ```
-Step [N] gate failed.
+步骤 [N] 关卡失败。
 
-Gate: [what was supposed to pass]
-Output:
-[actual test output]
+关卡：[本应通过的内容]
+输出：
+[实际测试输出]
 
-Likely cause: [Claude's diagnosis]
-Options:
-1. Fix: [specific change that would likely fix it]
-2. Revise plan: [if the plan step itself has a flaw]
-3. Stop and investigate: [if the failure reveals something unexpected]
+可能原因：[Claude 的诊断]
+选项：
+1. 修复：[可能解决问题的具体变更]
+2. 修订计划：[如果计划步骤本身有缺陷]
+3. 停止并调查：[如果失败揭示了意外情况]
 
-Which should I do?
+我应该怎么做？
 ```
 
-You decide. Claude does not auto-fix and proceed — that's how implementations drift from plans.
+由你决定。Claude 不会自行修复后继续——那样会导致实现偏离计划。
 
 ---
 
-## Slash Command Templates
+## 斜杠命令模板
 
-Save these to `.claude/commands/` to invoke each phase directly.
+将这些保存到 `.claude/commands/` 以直接调用每个阶段。
 
 ### `/rpi:research`
 
-Save to `.claude/commands/rpi-research.md`:
+保存到 `.claude/commands/rpi-research.md`：
 
 ```markdown
-# RPI Phase 1: Research
+# RPI 阶段一：研究
 
-Run feasibility research for the requested feature.
+为所请求的功能进行可行性研究。
 
-## Instructions
+## 指令
 
-1. Enter Plan Mode (do not modify files during research)
-2. Explore the codebase to answer these questions:
-   - What already exists that's relevant?
-   - What files will need to change or be created?
-   - What are the technical risks?
-   - What decisions need to be made before planning?
-   - What is a rough effort estimate?
-3. Save output to `.claude/features/$ARGUMENTS/RESEARCH.md` using the template below
-4. End with a clear recommendation: GO, NO-GO, or NEEDS CLARIFICATION
-5. Ask the user for their GO/NO-GO decision before proceeding
+1. 进入计划模式（研究期间不修改文件）
+2. 探索代码库以回答以下问题：
+   - 现有哪些相关内容？
+   - 哪些文件需要修改或创建？
+   - 技术风险是什么？
+   - 在计划之前需要做哪些决策？
+   - 粗略工作量估算是多少？
+3. 使用以下模板将输出保存到 `.claude/features/$ARGUMENTS/RESEARCH.md`
+4. 以明确的建议结束：GO、NO-GO 或需要澄清
+5. 在继续之前询问用户的 GO/NO-GO 决定
 
-## Constraints
+## 约束
 
-- Do NOT write any code
-- Do NOT modify any files
-- Do NOT start planning implementation steps
-- If uncertain about scope, surface it as a decision point
+- 不得编写任何代码
+- 不得修改任何文件
+- 不得开始规划实现步骤
+- 如果对范围不确定，请将其作为决策点提出
 ```
 
 ### `/rpi:plan`
 
-Save to `.claude/commands/rpi-plan.md`:
+保存到 `.claude/commands/rpi-plan.md`：
 
 ```markdown
-# RPI Phase 2: Plan
+# RPI 阶段二：计划
 
-Create an implementation plan based on approved research.
+基于已批准的研究创建实现计划。
 
-## Pre-check
+## 前置检查
 
-Before starting:
-1. Read the RESEARCH.md file specified in $ARGUMENTS
-2. Verify it has a GO decision marked
-3. If no GO decision found, stop and ask the user to decide first
+开始前：
+1. 阅读 $ARGUMENTS 中指定的 RESEARCH.md 文件
+2. 验证其中标记了 GO 决策
+3. 如果未找到 GO 决策，停止并请用户先做决定
 
-## Instructions
+## 指令
 
-1. Read RESEARCH.md carefully
-2. Create PLAN.md in the same feature folder
-3. Architecture decisions: resolve all decision points from research
-4. Implementation steps: each step must have a concrete test gate
-5. Success criteria: observable, testable, not implementation-internal
-6. Out-of-scope: explicit list of what this plan does NOT cover
-7. Do NOT write any implementation code
-8. After writing the plan, ask the user to review and approve
+1. 仔细阅读 RESEARCH.md
+2. 在同一功能文件夹中创建 PLAN.md
+3. 架构决策：解决研究中所有的决策点
+4. 实现步骤：每步必须有具体的测试关卡
+5. 成功标准：可观测、可测试，不依赖内部实现细节
+6. 超出范围：明确列出本计划不涵盖的内容
+7. 不得编写任何实现代码
+8. 写完计划后，请用户审查并批准
 
-## Constraints
+## 约束
 
-- Do NOT write implementation code
-- Steps must be sequential and independently testable
-- Test gates must be runnable commands or precise manual checks, not vague descriptions
-- Each step should be achievable in a single focused session
+- 不得编写实现代码
+- 步骤必须是顺序的且可独立测试
+- 测试关卡必须是可运行的命令或精确的人工检查，不能是模糊描述
+- 每步应在单个专注的会话中可完成
 ```
 
 ### `/rpi:implement`
 
-Save to `.claude/commands/rpi-implement.md`:
+保存到 `.claude/commands/rpi-implement.md`：
 
 ```markdown
-# RPI Phase 3: Implement
+# RPI 阶段三：实现
 
-Implement the feature following an approved plan, one step at a time.
+按照已批准的计划逐步实现功能。
 
-## Pre-check
+## 前置检查
 
-Before starting:
-1. Read the PLAN.md file specified in $ARGUMENTS
-2. Verify it has an approval marked
-3. If no approval found, stop and ask the user to approve first
+开始前：
+1. 阅读 $ARGUMENTS 中指定的 PLAN.md 文件
+2. 验证其中标记了批准
+3. 如果未找到批准，停止并请用户先批准
 
-## Instructions
+## 指令
 
-For each step in the plan:
-1. Read the step description carefully
-2. Implement only what the step specifies — nothing more
-3. Run the test gate exactly as written in the plan
-4. If the gate passes:
-   - Commit with message: "feat([feature]): step [N] — [step name]"
-   - Announce step completion and readiness for next step
-5. If the gate fails:
-   - Report the exact failure output
-   - Diagnose the likely cause
-   - Present options (fix, revise plan, stop)
-   - Wait for human decision before proceeding
+对计划中的每个步骤：
+1. 仔细阅读步骤描述
+2. 仅实现步骤中指定的内容——不多也不少
+3. 严格按照计划中写明的方式运行测试关卡
+4. 若关卡通过：
+   - 以这样的提交信息提交："feat([feature]): 步骤 [N] — [步骤名称]"
+   - 宣布步骤完成及准备好进入下一步
+5. 若关卡失败：
+   - 报告确切的失败输出
+   - 诊断可能的原因
+   - 提供选项（修复、修订计划、停止）
+   - 等待人工决定后再继续
 
-## Constraints
+## 约束
 
-- Never skip a test gate
-- Never start the next step before the current gate passes
-- Never modify files outside the scope of the current step
-- If you encounter something unexpected that changes the plan, stop and report it
-- Commit after each passing step — not at the end
+- 绝不跳过测试关卡
+- 在当前关卡通过前绝不开始下一步
+- 绝不修改当前步骤范围之外的文件
+- 如果遇到改变计划的意外情况，停止并报告
+- 每步通过后提交——不要等到最后
 ```
 
 ---
 
-## Worked Example
+## 实战示例
 
-**Request**: "Add rate limiting to the public API endpoints."
+**需求**："为公开 API 端点添加速率限制。"
 
-### Phase 1: Research Output (abbreviated)
+### 阶段一：研究输出（简略版）
 
 ```markdown
-# Research: API Rate Limiting
+# 研究：API 速率限制
 
-**Date**: 2026-03-12
-**Status**: PENDING DECISION
+**日期**：2026-03-12
+**状态**：待决策
 
-## What Exists Today
+## 当前现状
 
-- `src/middleware/` — has auth middleware, no rate limiting
-- `package.json` — express-rate-limit not installed, redis available
-- `src/routes/api.ts` — 14 public endpoints, unauthenticated routes mixed with authenticated ones
+- `src/middleware/` — 有认证中间件，无速率限制
+- `package.json` — 未安装 express-rate-limit，Redis 可用
+- `src/routes/api.ts` — 14 个公开端点，未认证路由与已认证路由混合
 
-## What Needs to Be Built
+## 需要构建的内容
 
-- Rate limiter middleware for public endpoints
-- Separate limits for authenticated vs unauthenticated users
-- Redis store for distributed rate limiting (app runs on 3 instances)
+- 公开端点的速率限制中间件
+- 已认证 vs 未认证用户的不同限制
+- 用于分布式速率限制的 Redis 存储（应用运行 3 个实例）
 
-## Risks
+## 风险
 
-| Risk | Likelihood | Impact | Notes |
+| 风险 | 可能性 | 影响 | 备注 |
 |------|-----------|--------|-------|
-| Redis connection failure disables all API access | Low | High | Need fallback to in-memory if Redis unavailable |
-| Rate limit too aggressive — breaks existing integrations | Medium | High | Need to survey current usage patterns first |
+| Redis 连接失败导致所有 API 访问禁用 | 低 | 高 | 需要在 Redis 不可用时回退到内存存储 |
+| 速率限制过于激进——破坏现有集成 | 中 | 高 | 需要先调查当前使用模式 |
 
-## Architecture Decision Points
+## 架构决策点
 
-1. **Library**: express-rate-limit (maintained, battle-tested) vs custom middleware
-2. **Bypass for trusted IPs**: Allow internal services to bypass rate limiting?
+1. **库**：express-rate-limit（维护中，经过实战验证）vs 自定义中间件
+2. **受信 IP 的绕过**：是否允许内部服务绕过速率限制？
 
-## Effort Estimate
+## 工作量估算
 
-- Implementation: 2-4 hours
-- Testing: 2 hours
-- **Total**: 4-6 hours
+- 实现：2-4 小时
+- 测试：2 小时
+- **总计**：4-6 小时
 
-**Recommendation**: GO — standard problem, good library options, main risk is Redis fallback which is solvable.
+**建议**：GO — 标准问题，有好的库选项，主要风险是 Redis 回退，可解决。
 ```
 
-**Human decision**: GO. Use express-rate-limit. No IP bypass for now.
+**人工决定**：GO。使用 express-rate-limit。暂时不设 IP 绕过。
 
-### Phase 2: Plan (abbreviated)
+### 阶段二：计划（简略版）
 
 ```markdown
-# Plan: API Rate Limiting
+# 计划：API 速率限制
 
-**Risk level**: Medium (shared Redis state, potential to block legitimate traffic)
+**风险级别**：中（共享 Redis 状态，有潜力阻断合法流量）
 
-## Architecture Decisions
+## 架构决策
 
-1. Library: express-rate-limit with rate-limit-redis store
-2. No IP bypass initially — revisit if internal service issues arise
-3. Unauthenticated: 100 requests/15 minutes. Authenticated: 1000 requests/15 minutes.
-4. Redis failure fallback: in-memory store (accepts single-instance inconsistency)
+1. 库：express-rate-limit with rate-limit-redis store
+2. 暂时不设 IP 绕过——如果内部服务出问题再重新考虑
+3. 未认证：100 次请求/15 分钟。已认证：1000 次请求/15 分钟。
+4. Redis 失败回退：内存存储（接受单实例不一致）
 
-## Implementation Steps
+## 实现步骤
 
-### Step 1: Install dependencies and configure Redis store
+### 步骤 1：安装依赖并配置 Redis 存储
 
-**Files**: `package.json`, `src/config/rate-limit.ts`
-**Test gate**: `npm install` completes, `src/config/rate-limit.ts` exports config without errors
+**文件**：`package.json`、`src/config/rate-limit.ts`
+**测试关卡**：`npm install` 完成，`src/config/rate-limit.ts` 无报错地导出配置
 
-### Step 2: Implement rate limiter middleware
+### 步骤 2：实现速率限制中间件
 
-**Files**: `src/middleware/rate-limit.ts`
-**Test gate**: Unit test — limiter blocks 101st request from same IP within 15 minutes
+**文件**：`src/middleware/rate-limit.ts`
+**测试关卡**：单元测试——限制器在 15 分钟内阻断来自同一 IP 的第 101 个请求
 
-### Step 3: Apply to routes
+### 步骤 3：应用到路由
 
-**Files**: `src/routes/api.ts`
-**Test gate**: Integration test — unauthenticated route returns 429 after 100 requests; authenticated route does not
+**文件**：`src/routes/api.ts`
+**测试关卡**：集成测试——未认证路由在 100 次请求后返回 429；已认证路由不受影响
 
-### Step 4: Add Redis fallback
+### 步骤 4：添加 Redis 回退
 
-**Files**: `src/config/rate-limit.ts`
-**Test gate**: Test with Redis unavailable — API still responds (200, not 500), in-memory limiting active
+**文件**：`src/config/rate-limit.ts`
+**测试关卡**：在 Redis 不可用时测试——API 仍正常响应（200，而非 500），内存限制生效
 ```
 
-**Human review**: Approved.
+**人工审查**：已批准。
 
-### Phase 3: Implementation
+### 阶段三：实现
 
-Claude implements Step 1, runs the gate (`npm install` + import check), commits `feat(rate-limit): step 1 — dependencies and config`. Then Step 2, Step 3, Step 4 in sequence. Each commit is clean. Each gate must pass before proceeding.
+Claude 实现步骤 1，运行关卡（`npm install` + 导入检查），提交 `feat(rate-limit): step 1 — dependencies and config`。然后按顺序执行步骤 2、3、4。每次提交都是干净的，每个关卡必须通过才能继续。
 
 ---
 
-## Comparison to Other Workflows
+## 与其他工作流的对比
 
-| Workflow | Phase structure | Human gates | Best for |
+| 工作流 | 阶段结构 | 人工关卡 | 最适合 |
 |----------|----------------|------------|----------|
-| **RPI** | Research + Plan + Implement | GO/NO-GO + plan approval | Unknown feasibility, >1 day, high risk of wrong direction |
-| **Dual-Instance** | Plan + Implement (separate Claude instances) | Plan approval | Known features needing careful execution, spec-heavy work |
-| **Spec-First** | Spec + Implement | None (spec is implicit gate) | Design-focused work, API contracts, team alignment |
-| **TDD** | Test-first + Implement | None (tests are the gate) | Test coverage as driver, refactoring, incremental behavior |
-| **Direct** | None | None | Simple changes, obvious scope, less than 2 hours |
+| **RPI** | 研究 + 计划 + 实现 | GO/NO-GO + 计划批准 | 可行性未知、超过 1 天、方向错误风险高 |
+| **双实例** | 计划 + 实现（独立 Claude 实例） | 计划批准 | 已知功能需精细执行、规范密集型工作 |
+| **规范先行** | 规范 + 实现 | 无（规范是隐式关卡） | 以设计为导向、API 契约、团队对齐 |
+| **TDD** | 测试先行 + 实现 | 无（测试是关卡） | 测试覆盖率驱动、重构、增量行为 |
+| **直接编码** | 无 | 无 | 简单变更、范围明确、不超过 2 小时 |
 
-### RPI vs Dual-Instance
+### RPI vs 双实例
 
-Dual-instance separates planning and implementation into two Claude instances with strict role enforcement. It works well when you already know what you're building and want a high-quality plan. RPI adds a feasibility phase before planning, which makes it better for ambiguous requests. If you already have a clear spec, skip Research and use dual-instance or spec-first.
+双实例将计划和实现分为两个 Claude 实例，严格执行角色分工。当你已经知道要构建什么并想要高质量计划时效果很好。RPI 在计划前增加了可行性阶段，更适合模糊的需求。如果你已有明确的规范，跳过研究阶段，使用双实例或规范先行即可。
 
-### RPI vs Spec-First
+### RPI vs 规范先行
 
-Spec-first is design-oriented: you define what the system should do, then Claude implements it. RPI is implementation-oriented with validation gates: you describe a goal, Claude researches how to achieve it, then the two of you agree on a plan before touching code. Use spec-first when the design is clear. Use RPI when the technical path is not.
+规范先行以设计为导向：你定义系统应该做什么，然后 Claude 实现它。RPI 以实现为导向，带有验证关卡：你描述目标，Claude 研究如何实现，然后你们在接触代码前就计划达成共识。设计清晰时用规范先行，技术路径不明时用 RPI。
 
-### RPI vs Direct Coding
+### RPI vs 直接编码
 
-For anything under 2 hours with a clear scope, just ask Claude to do it. RPI adds overhead that isn't justified for small tasks. The research phase alone takes 30-60 minutes. That overhead pays off on multi-day features where discovering a wrong assumption late is much more expensive.
+对于所有范围清晰、不超过 2 小时的任务，直接让 Claude 去做就好。RPI 增加的开销对小任务并不合算。仅研究阶段就需要 30-60 分钟。这个开销在多天功能开发中才值得，因为晚期发现错误假设的代价要昂贵得多。
 
 ---
 
-## Tips and Troubleshooting
+## 技巧与故障排查
 
-### Claude Skips to Implementation in Research Phase
+### Claude 在研究阶段跳到了实现
 
-**Problem**: Claude starts writing code during the research phase.
+**问题**：Claude 在研究阶段开始编写代码。
 
-**Solution**: Use Plan Mode (Shift+Tab twice) explicitly for the research phase. Include this line in the research command:
+**解决方案**：明确为研究阶段启用计划模式（按两次 Shift+Tab）。在研究命令中包含这行：
 
 ```
-You are in Plan Mode. Do not modify files. Do not write implementation code.
-Research only. Output goes to RESEARCH.md.
+你处于计划模式。不要修改文件。不要编写实现代码。
+仅进行研究。输出写入 RESEARCH.md。
 ```
 
-Or add to your CLAUDE.md:
+或添加到你的 CLAUDE.md：
 
 ```markdown
-## RPI Rules
-- /rpi:research runs in Plan Mode only — no file modifications
-- /rpi:plan produces only PLAN.md — no implementation code
-- /rpi:implement runs one step at a time, waits for test gate before next step
+## RPI 规则
+- /rpi:research 仅在计划模式下运行——不修改文件
+- /rpi:plan 仅生成 PLAN.md——不编写实现代码
+- /rpi:implement 每次只实现一步，等待测试关卡通过后才进入下一步
 ```
 
-### Research Phase Runs Too Long
+### 研究阶段时间过长
 
-**Problem**: Claude explores the entire codebase instead of focusing on what's relevant.
+**问题**：Claude 探索了整个代码库，而不是专注于相关内容。
 
-**Solution**: Scope the research explicitly:
+**解决方案**：明确限定研究范围：
 
 ```
 /rpi:research payment-processing
 
-Focus area: src/payments/, src/routes/checkout.ts
-Do not explore: frontend, auth, unrelated backend modules
-Time budget: complete research in one session
+关注范围：src/payments/、src/routes/checkout.ts
+不要探索：前端、认证、无关的后端模块
+时间预算：在一个会话中完成研究
 ```
 
-### Plan Has Too Many Steps
+### 计划步骤过多
 
-**Problem**: PLAN.md has 12 steps, making the implementation unwieldy.
+**问题**：PLAN.md 有 12 个步骤，导致实现难以管理。
 
-**Solution**: A plan with more than 6-8 steps usually needs a scope reduction, not more granular implementation. Ask Claude:
-
-```
-The plan has too many steps. What is the minimal viable scope that delivers
-the core value? Revise the plan to implement only that, with a clear
-"Future work" section for the rest.
-```
-
-### Test Gates Are Vague
-
-**Problem**: A step's test gate says "verify it works" rather than a specific command.
-
-**Solution**: Reject vague gates before approving the plan. Push back with:
+**解决方案**：超过 6-8 个步骤的计划通常需要缩减范围，而不是更细粒度的实现。让 Claude：
 
 ```
-Step 3's test gate is "verify rate limiting works." Make it specific:
-what command do I run, and what output do I expect to see when it passes?
+计划的步骤太多了。能交付核心价值的最小可行范围是什么？
+修改计划，只实现那部分内容，并在"未来工作"章节中列出其余内容。
 ```
 
-A good test gate:
+### 测试关卡描述模糊
+
+**问题**：某步骤的测试关卡写的是"验证它可以工作"，而不是具体命令。
+
+**解决方案**：在批准计划前拒绝模糊的关卡。这样反驳：
 
 ```
-Test gate: `npm test src/middleware/rate-limit.test.ts` — all 4 tests pass
+步骤 3 的测试关卡是"验证速率限制有效"。请具体说明：
+我运行什么命令，通过时我预期看到什么输出？
 ```
 
-A bad test gate:
+好的测试关卡：
 
 ```
-Test gate: rate limiting is working correctly
+测试关卡：`npm test src/middleware/rate-limit.test.ts` — 全部 4 个测试通过
 ```
 
-### A Step Gate Fails Repeatedly
-
-**Problem**: Step 2's gate keeps failing even after attempted fixes.
-
-**Solution**: Two failures means investigate the plan, not keep iterating on fixes.
+坏的测试关卡：
 
 ```
-Stop implementation. The Step 2 gate has failed twice.
-Review the plan — is the test gate achievable given the Step 1 output?
-Do we need to revise the plan before continuing?
+测试关卡：速率限制正常工作
+```
+
+### 某步骤关卡反复失败
+
+**问题**：步骤 2 的关卡在尝试修复后仍一直失败。
+
+**解决方案**：两次失败意味着要调查计划，而不是继续迭代修复。
+
+```
+停止实现。步骤 2 的关卡已失败两次。
+回顾计划——考虑到步骤 1 的输出，该测试关卡是否可以实现？
+在继续之前我们是否需要修订计划？
 ```
 
 ---
 
-## File Structure Summary
+## 文件结构摘要
 
 ```
 .claude/
 └── features/
     └── [feature-name]/
-        ├── RESEARCH.md     # Phase 1 output (human annotates GO/NO-GO)
-        └── PLAN.md         # Phase 2 output (human annotates approval)
+        ├── RESEARCH.md     # 阶段一输出（人工标注 GO/NO-GO）
+        └── PLAN.md         # 阶段二输出（人工标注批准）
 
 .claude/commands/
-├── rpi-research.md         # /rpi:research slash command
-├── rpi-plan.md             # /rpi:plan slash command
-└── rpi-implement.md        # /rpi:implement slash command
+├── rpi-research.md         # /rpi:research 斜杠命令
+├── rpi-plan.md             # /rpi:plan 斜杠命令
+└── rpi-implement.md        # /rpi:implement 斜杠命令
 ```
 
-Archive completed features:
+归档已完成的功能：
 
 ```bash
 mkdir -p .claude/features/_archive
 mv .claude/features/payment-processing .claude/features/_archive/
 ```
 
-The archive is a learning resource: completed RESEARCH.md and PLAN.md files show how previous features were reasoned about.
+归档是一份学习资源：已完成的 RESEARCH.md 和 PLAN.md 展示了之前如何思考各个功能。
 
 ---
 
-## See Also
+## 参见
 
-- [dual-instance-planning.md](./dual-instance-planning.md) — Two-instance pattern for spec-heavy implementation
-- [spec-first.md](./spec-first.md) — Design-first workflow using CLAUDE.md as contract
-- [tdd-with-claude.md](./tdd-with-claude.md) — Combine with TDD for test-gate implementation
-- [task-management.md](./task-management.md) — Managing multi-phase tasks across sessions
-- **Main guide**: Advanced Patterns section — Multi-instance and planning pattern overview
+- [dual-instance-planning.md](./dual-instance-planning.md) — 规范密集型实现的双实例模式
+- [spec-first.md](./spec-first.md) — 使用 CLAUDE.md 作为契约的设计优先工作流
+- [tdd-with-claude.md](./tdd-with-claude.md) — 与 TDD 结合实现测试关卡驱动
+- [task-management.md](./task-management.md) — 跨会话管理多阶段任务
+- **主指南**：高级模式章节 — 多实例与计划模式概述

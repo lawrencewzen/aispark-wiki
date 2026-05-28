@@ -1,333 +1,333 @@
 > 📚 **AI Spark Wiki** · Claude Code 知识库
 
 ---
-title: "Agent Harness Engineering"
-description: "The nine-component infrastructure that turns a raw LLM into a reliable production agent — from while-loop engine to permission enforcement"
+title: "智能体框架工程"
+description: "将原始大语言模型转化为可靠生产级智能体的九大基础设施组件——从 while 循环引擎到权限执行"
 tags: [guide, agents, architecture, security, observability]
 ---
 
-# Agent Harness Engineering
+# 智能体框架工程
 
-> **Confidence**: Tier 1 — Multiple independent sources (Martin Fowler, arXiv 2605.18747, Anthropic, O'Reilly, AWS, GitHub) converge on this framing.
+> **可信度**：一级 —— 多个独立来源（Martin Fowler、arXiv 2605.18747、Anthropic、O'Reilly、AWS、GitHub）对此框架高度一致。
 >
-> **Reading time**: ~25 minutes
+> **预计阅读时间**：约 25 分钟
 
 ---
 
-## The core claim
+## 核心主张
 
-A raw LLM is not an agent. It becomes one when connected to a harness.
+原始大语言模型不是智能体。只有连接到框架（harness），它才能成为智能体。
 
-Martin Fowler, Addy Osmani, O'Reilly's 2026 AI Radar, and arXiv 2605.18747 (May 2026) all converge on this: the relevant unit of engineering is not the model but the infrastructure that wraps it. Fowler defines a harness as a "cybernetic governor" combining feed-forward and feedback to regulate agent behavior toward a desired state. The harness is what makes "AI generates most of the code" sustainable at scale rather than a gradual drift toward unmaintainable systems.
+Martin Fowler、Addy Osmani、O'Reilly 2026 年 AI Radar，以及 arXiv 2605.18747（2026 年 5 月）都指向同一个结论：真正需要工程化的单元不是模型本身，而是包裹它的基础设施。Fowler 将框架定义为一种"控制论调节器"，结合前馈和反馈来将智能体行为引导至期望状态。正是框架，让"AI 生成大部分代码"这件事能在大规模场景下可持续运转，而非逐渐演变为难以维护的系统。
 
-As of May 2026, 57% of organizations have agents running in production, and 32% cite quality as their primary obstacle (LangChain State of Agent Engineering). The teams that have closed this gap have one thing in common: they engineered the harness, not just the prompt.
-
----
-
-## Table of Contents
-
-1. [Three Foundational Properties](#1-three-foundational-properties)
-2. [The Nine Components](#2-the-nine-components)
-3. [The Lethal Trifecta: Security Model](#3-the-lethal-trifecta-security-model)
-4. [CI/CD Agentic Patterns](#4-cicd-agentic-patterns)
-5. [Digital Twin Testing](#5-digital-twin-testing)
-6. [Observability Stack](#6-observability-stack)
-7. [Test Distribution Anti-pattern](#7-test-distribution-anti-pattern)
-8. [Creator-Verifier Pattern](#8-creator-verifier-pattern)
-9. [Reference Architecture](#9-reference-architecture)
+截至 2026 年 5 月，57% 的组织已有智能体在生产环境运行，32% 的组织将质量列为首要障碍（LangChain 智能体工程现状报告）。成功缩小这一差距的团队有一个共同点：他们工程化的是框架，而不只是提示词。
 
 ---
 
-## 1. Three Foundational Properties
+## 目录
 
-arXiv 2605.18747 ("Code as Agent Harness", May 2026) formalizes three properties that distinguish a harness from a simple LLM wrapper:
-
-**Executability**: the harness can verify what the agent actually did, not just what it said it would do. A harness that only logs prompts and completions is not executable, because it cannot distinguish a successful tool call from a hallucinated one.
-
-**Inspectability**: when something fails, the harness produces actionable diagnostic output. Stack traces pointing to the prompt assembly step. Friction events tagged with which rules and skills were active. Token consumption by component. Without inspectability, debugging an agent failure requires reconstructing the session from logs, which is expensive and often incomplete.
-
-**Statefulness**: the harness maintains continuity between sessions. Session state is externalized, not held in the model's context window. When the agent resumes after a context reset, it can reconstruct where it was without the human providing a full briefing. Anthropic's own telemetry shows the 99.9th percentile session duration passed 45 minutes in January 2026, up from 25 minutes in October 2025. At that length, statefulness is not optional.
-
----
-
-## 2. The Nine Components
-
-These nine components appear across Claude Code, Anthropic SDK, OpenAI Agents SDK, LangGraph, AWS Bedrock AgentCore, and Factory.ai Missions. No single tool implements all nine in exactly the same way, but the structure is consistent enough to use as an evaluation checklist when assessing a harness against a new tool or framework.
-
-### 2.1 While-Loop Engine
-
-The main loop: perceive (read context, tool outputs, latest user instruction), plan (call LLM with assembled prompt), act (execute tools). This is the heartbeat. Anthropic SDK, OpenAI Agents SDK, and LangGraph implement it differently (Anthropic is streaming-first, LangGraph is graph-based), but all three have this loop as the core abstraction.
-
-Where problems emerge: loops that don't cap iterations, loops that don't handle LLM refusals or ambiguous tool calls, loops that let the context grow without summarization until they hit the window limit and abort.
-
-### 2.2 Context Management
-
-What goes into the prompt on each loop iteration: conversation history, tool outputs, retrieved memory, current task state, rules from CLAUDE.md. The challenge is that context is finite and expensive. Strategies:
-
-- **Compaction / summarization**: replace earlier turns with a compressed summary. Claude Code's `/compact` does this manually; robust harnesses do it automatically when usage crosses a threshold.
-- **Sliding window**: keep the last N turns verbatim, summarize everything before.
-- **Retrieval-augmented context**: retrieve relevant chunks from long-term storage rather than carrying everything in the window.
-
-The ACE pipeline (see [context-engineering.md §6](./context-engineering.md#6-the-ace-pipeline)) is the Config-Persistence layer above context management: it governs what rules and skills are loaded across sessions.
-
-### 2.3 Tool Registry
-
-The catalog of available tools: name, schema, description, permissions, cost estimate. A static tool registry loads all tool schemas on every call. A dynamic registry ("tool search on demand") loads only what the current task plausibly needs.
-
-Anthropic's internal data (cited in the Fowler article, source: practitioner post) cites a 37% reduction in token usage from dynamic tool dispatch versus static loading. This number is not independently replicated, but the directional claim is credible: giving the model 40 tool schemas when it needs 4 adds noise and cost.
-
-MCP (Model Context Protocol) tools must pass through a gateway that validates the calling agent's identity before the tool executes. This is not an optional hardening step; it is the baseline for preventing privilege escalation via chained tool calls.
-
-### 2.4 Sub-Agent Management
-
-Delegation to specialized sub-agents with their own context windows and task scope. The orchestrator spawns a worker, provides a bounded task description, and receives a structured result. The worker does not share the orchestrator's full context; it receives only what it needs.
-
-Factory.ai Missions formalizes this: an orchestrator agent decomposes requirements, delegates implementation to workers, and routes completed work to adversarial validator agents. On a documented Slack clone project, independent validators caught 81 problems before any code was merged, generating 34% of the implementation work as "fix features."
-
-Key constraint: sub-agent permissions must not be inherited from the parent. The principle of least privilege applies at the delegation boundary.
-
-### 2.5 Built-in Skills
-
-Native operations that do not require an LLM call: file read/write, web search, code execution, shell commands. Claude Code formalizes skills as loadable modules since late 2025. The distinction matters: a skill is deterministic (read this file, run this test), while an agent action involves LLM reasoning.
-
-The test distribution anti-pattern (Section 7 below) is partly caused by conflating skill testing (deterministic, unit-testable) with agent reasoning testing (probabilistic, requires LLM-as-judge or behavioral simulation).
-
-### 2.6 Session Persistence
-
-State that survives context resets and session interruptions. Not the same as long-term memory (which is a higher-level concept). Persistence at the harness level means: the agent can reconstruct its current task state from externalized artifacts rather than from the in-context conversation history.
-
-Factory.ai Missions uses a shared artifact layer (validation contracts, feature lists, skill definitions) to survive the context limits of multi-day missions. E2B and Northflank provide this at the infrastructure level via persistent sandbox state. Anthropic Claude Managed Agents provide it as a product feature with checkpointing.
-
-### 2.7 Dynamic Prompt Assembly
-
-The step that turns the current state (task description + relevant context + tool definitions + memory + rules) into the actual prompt sent to the LLM. This is not standardized across frameworks. LangChain, LangGraph, and the Anthropic SDK each have different abstractions.
-
-The places where assembly goes wrong: rule injection that conflicts with the user instruction, tool schemas that overlap in ways that confuse the model's selection, memory retrieval that surfaces outdated context. Harnesses that make assembly visible (logging the final assembled prompt, not just the response) are dramatically easier to debug.
-
-### 2.8 Lifecycle Hooks
-
-Injection points that fire at defined moments: pre-LLM-call, post-LLM-call, pre-tool-execution, post-tool-execution, on-error. Claude Code implements this via the settings.json hooks system. AWS Bedrock AgentCore and GitHub Agentic Workflows have their own hook models.
-
-Hooks are where you insert: observability instrumentation, permission validation, rate limiting, output sanitization, audit logging. Hooks that run inline (blocking) can abort bad actions before they execute. Hooks that run async (fire-and-forget) are appropriate for logging that doesn't need to interrupt the loop.
-
-### 2.9 Permission Enforcement
-
-Every action passes through the policy layer. Not as a human review (see Section 3 for why that fails at scale), but as a structural enforcement that happens before the tool call executes.
-
-The two mechanisms that work:
-
-1. **Sandbox isolation**: the agent runs in an environment where destructive actions are physically impossible, not just disallowed by policy but literally impossible given the network, filesystem, and process constraints. Kubernetes agent-sandbox, E2B microVMs, and Northflank BYOC runners implement this at the hardware level.
-
-2. **Identity gateway**: every MCP tool call is authenticated at call time with a per-session credential, not a static API key. Strata Maverics and Microsoft Entra Agent ID implement this with OAuth OBO (On-Behalf-Of) flows that scope permissions to the current task context.
+1. [三大基础属性](#1-三大基础属性)
+2. [九大组件](#2-九大组件)
+3. [致命铁三角：安全模型](#3-致命铁三角安全模型)
+4. [CI/CD 智能体模式](#4-cicd-智能体模式)
+5. [数字孪生测试](#5-数字孪生测试)
+6. [可观测性栈](#6-可观测性栈)
+7. [测试分布反模式](#7-测试分布反模式)
+8. [创建者-验证者模式](#8-创建者-验证者模式)
+9. [参考架构](#9-参考架构)
 
 ---
 
-## 3. The Lethal Trifecta: Security Model
+## 1. 三大基础属性
 
-Simon Willison coined this term in 2025 (see [martinfowler.com/articles/202508-ai-thoughts.html](https://martinfowler.com/articles/202508-ai-thoughts.html)):
+arXiv 2605.18747（《代码即智能体框架》，2026 年 5 月）正式定义了框架区别于简单大语言模型包装器的三大属性：
 
-**Private data + untrusted content + external communication = documented exfiltration vector.**
+**可执行性（Executability）**：框架能验证智能体实际做了什么，而不只是它说它会做什么。一个只记录提示词和补全结果的框架不具备可执行性，因为它无法区分成功的工具调用和幻觉出来的调用。
 
-Any two of the three are manageable. All three together, without structural isolation, create a path where an attacker plants instructions in data the agent will read (a document, a code comment, a Jira ticket), the agent processes those instructions using its access to private data, and then uses its communication capabilities to exfiltrate.
+**可检查性（Inspectability）**：当某处出错时，框架能产出可操作的诊断信息——指向提示词组装步骤的堆栈跟踪、标注了哪些规则和 Skills（技能模块）处于激活状态的摩擦事件、按组件细分的 Token（词元）消耗。没有可检查性，调试智能体故障就需要从日志重建会话，成本高昂且往往不完整。
 
-This is not theoretical. GitHub Security has documented prompt injection attacks in Copilot via malicious repository content. The defense is not better prompt engineering; it is structural isolation.
+**有状态性（Statefulness）**：框架在会话之间维持连续性。会话状态被外部化存储，而非保存在模型的上下文窗口中。当智能体在上下文重置后恢复时，它能重建上次停止的位置，无需人类提供完整的情况说明。Anthropic 自身的遥测数据显示，2026 年 1 月，第 99.9 百分位的会话时长已超过 45 分钟，高于 2025 年 10 月的 25 分钟。达到这一时长，有状态性已不再是可选项。
 
-### Defense layers
+---
 
-| Layer | Mechanism | Implementation |
+## 2. 九大组件
+
+这九大组件出现在 Claude Code、Anthropic SDK、OpenAI Agents SDK、LangGraph、AWS Bedrock AgentCore 以及 Factory.ai Missions 中。没有任何单一工具以完全相同的方式实现所有九项，但这一结构足够一致，可作为评估新工具或框架时的核查清单。
+
+### 2.1 While 循环引擎
+
+主循环：感知（读取上下文、工具输出、最新用户指令）→ 规划（使用组装好的提示词调用大语言模型）→ 行动（执行工具）。这是整个系统的心跳。Anthropic SDK、OpenAI Agents SDK 和 LangGraph 的实现方式各有不同（Anthropic 以流式为主，LangGraph 基于图结构），但三者都以这个循环作为核心抽象。
+
+问题高发点：迭代次数无上限的循环、无法处理大语言模型拒绝或工具调用歧义的循环、让上下文不断增长而不做摘要直到触达窗口限制然后中止的循环。
+
+### 2.2 上下文管理
+
+每次循环迭代时注入提示词的内容：对话历史、工具输出、检索到的记忆、当前任务状态、来自 CLAUDE.md 的规则。挑战在于上下文有限且昂贵。常见策略：
+
+- **压缩（/compact）/ 摘要化**：用压缩摘要替换早期轮次。Claude Code 的 `/compact` 命令可手动执行；健壮的框架会在使用量超过阈值时自动触发。
+- **滑动窗口**：保留最近 N 轮的完整内容，对更早的内容做摘要。
+- **检索增强上下文**：从长期存储中检索相关片段，而非将所有内容都保存在上下文窗口中。
+
+ACE 流水线（参见 [context-engineering.md §6](./context-engineering.md#6-the-ace-pipeline)）是位于上下文管理之上的配置持久化层：它负责管理跨会话加载哪些规则和 Skills（技能模块）。
+
+### 2.3 工具注册表
+
+可用工具的目录：名称、Schema、描述、权限、成本估算。静态工具注册表在每次调用时加载所有工具 Schema；动态注册表（"按需工具搜索"）只加载当前任务可能需要的工具。
+
+Anthropic 内部数据（引自 Fowler 文章，来源：从业者帖子）显示，与静态加载相比，动态工具分发可减少 37% 的 Token（词元）消耗。这一数字尚未经过独立验证，但方向性结论是可信的：当模型只需要 4 个工具时，提供 40 个工具 Schema 只会增加噪声和成本。
+
+MCP（模型上下文协议）工具在执行前必须通过网关，由网关验证调用智能体的身份。这不是可选的加固步骤，而是防止通过链式工具调用进行权限提升的基线要求。
+
+### 2.4 子智能体管理
+
+将任务委托给拥有独立上下文窗口和任务范围的专用子智能体。编排者派生一个工作智能体，提供有界的任务描述，并接收结构化结果。工作智能体不共享编排者的完整上下文，它只接收完成任务所必需的信息。
+
+Factory.ai Missions 将此正式化：编排者智能体分解需求，将实现委托给工作智能体，再将完成的工作路由给对抗性验证智能体。在一个有据可查的 Slack 克隆项目中，独立验证者在任何代码合并前发现了 81 个问题，产生了相当于 34% 实现工作量的"修复功能"。
+
+关键约束：子智能体权限不得继承自父智能体。最小权限原则适用于委托边界。
+
+### 2.5 内置 Skills（技能模块）
+
+无需大语言模型调用的原生操作：文件读写、网络搜索、代码执行、Shell 命令。Claude Code 自 2025 年底起将 Skills（技能模块）正式化为可加载模块。这一区分至关重要：Skills（技能模块）是确定性的（读取这个文件，运行这个测试），而智能体动作涉及大语言模型的推理。
+
+第 7 节中的测试分布反模式，部分原因正是将 Skills（技能模块）测试（确定性、可单元测试）与智能体推理测试（概率性、需要以大语言模型为评判者或行为模拟）混为一谈。
+
+### 2.6 会话持久化
+
+在上下文重置和会话中断后仍能保留的状态。这与长期记忆（更高层次的概念）不同。框架层的持久化意味着：智能体能从外部化产物（而非上下文内的对话历史）重建当前任务状态。
+
+Factory.ai Missions 通过共享产物层（验证合约、功能列表、技能定义）来应对多天任务的上下文限制。E2B 和 Northflank 通过持久沙盒状态在基础设施层实现这一点。Anthropic Claude 托管智能体（Managed Agents）则将其作为带检查点功能的产品特性提供。
+
+### 2.7 动态提示词组装
+
+将当前状态（任务描述 + 相关上下文 + 工具定义 + 记忆 + 规则）转换为实际发送给大语言模型的提示词这一步骤，在各框架中并不统一。LangChain、LangGraph 和 Anthropic SDK 各有不同的抽象。
+
+组装出错的常见位置：与用户指令冲突的规则注入、让模型选择困难的重叠工具 Schema、浮现了过时上下文的记忆检索。让组装过程可见（记录最终组装好的提示词，而非只记录响应）的框架，调试效率会大幅提升。
+
+### 2.8 生命周期 Hooks（钩子）
+
+在定义时刻触发的注入点：大语言模型调用前、大语言模型调用后、工具执行前、工具执行后、出错时。Claude Code 通过 settings.json 中的 Hooks（钩子）系统实现这一点。AWS Bedrock AgentCore 和 GitHub Agentic Workflows 有各自的 Hooks（钩子）模型。
+
+Hooks（钩子）是插入以下内容的地方：可观测性埋点、权限验证、限流、输出清洗、审计日志。内联运行（阻塞式）的 Hooks（钩子）可在坏操作执行前将其中止。异步运行（即发即忘）的 Hooks（钩子）适用于无需中断循环的日志记录。
+
+### 2.9 权限执行
+
+每个动作都经过策略层。不是靠人工审核（第 3 节说明了为何这在规模化时失效），而是在工具调用执行前进行结构性执行。
+
+两种有效机制：
+
+1. **沙盒隔离**：智能体运行在破坏性操作物理上不可能发生的环境中——不只是策略不允许，而是在给定的网络、文件系统和进程约束下从根本上不可能发生。Kubernetes agent-sandbox、E2B microVM 和 Northflank BYOC 运行器在硬件层面实现了这一点。
+
+2. **身份网关**：每次 MCP 工具调用在调用时使用每会话凭证（而非静态 API 密钥）进行身份验证。Strata Maverics 和 Microsoft Entra Agent ID 通过 OAuth OBO（代表流）实现，将权限范围限定在当前任务上下文。
+
+---
+
+## 3. 致命铁三角：安全模型
+
+Simon Willison 于 2025 年创造了这个术语（参见 [martinfowler.com/articles/202508-ai-thoughts.html](https://martinfowler.com/articles/202508-ai-thoughts.html)）：
+
+**私有数据 + 不可信内容 + 对外通信 = 有据可查的数据泄露路径。**
+
+三者中任意两个的组合都是可控的。但三者同时存在，且没有结构性隔离，就会产生一条攻击路径：攻击者在智能体会读取的数据（文档、代码注释、Jira 工单）中植入指令，智能体用其私有数据访问权限处理这些指令，然后通过通信能力将数据泄露出去。
+
+这不是理论。GitHub Security 已记录了通过恶意仓库内容对 Copilot 发动的提示注入攻击。防御手段不是更好的提示词工程，而是结构性隔离。
+
+### 防御层
+
+| 层级 | 机制 | 实现 |
 |-------|-----------|---------------|
-| Network isolation | Agent cannot reach external endpoints except an explicit allowlist | GitHub Agentic Workflows: Squid proxy on allowlist; Northflank: egress firewall |
-| Filesystem isolation | Agent writes to a temporary workspace, not the host filesystem | Kubernetes agent-sandbox, E2B microVM |
-| Identity scoping | Every tool call carries a per-session credential with minimum required permissions | Strata Maverics, Microsoft Entra Agent ID |
-| Output validation | Agent-generated content passes through a threat detection step before reaching any production surface | GitHub Agentic Workflows: Safe Outputs pattern (Semgrep + TruffleHog + LlamaGuard) |
-| Read-only execution context | Agent reads the codebase but cannot write directly; writes go through a PR/review gate | GitHub Agentic Workflows default posture |
+| 网络隔离 | 智能体只能访问显式白名单中的外部端点 | GitHub Agentic Workflows：基于白名单的 Squid 代理；Northflank：出口防火墙 |
+| 文件系统隔离 | 智能体写入临时工作区，而非宿主文件系统 | Kubernetes agent-sandbox，E2B microVM |
+| 身份范围限定 | 每次工具调用携带具有最小所需权限的每会话凭证 | Strata Maverics，Microsoft Entra Agent ID |
+| 输出验证 | 智能体生成的内容在到达任何生产表面之前经过威胁检测步骤 | GitHub Agentic Workflows：安全输出模式（Semgrep + TruffleHog + LlamaGuard） |
+| 只读执行上下文 | 智能体可读取代码库但不能直接写入；写入须经 PR/审核门控 | GitHub Agentic Workflows 默认姿态 |
 
-### Why human review alone fails
+### 为何仅靠人工审核会失效
 
-Anthropic's internal data (shared responsibility model documentation, April 2026): 93% of agent permission requests in production are approved without adequate review. This is not a criticism of the humans involved; it is a structural consequence of volume and cognitive load. When a human approves 50 permission dialogs per hour, individual approval becomes a formality.
+Anthropic 内部数据（共享责任模型文档，2026 年 4 月）：生产环境中 93% 的智能体权限请求在未经充分审核的情况下被批准。这不是对相关人员的批评，而是数量和认知负担在结构上造成的必然结果。当人类每小时批准 50 个权限对话框时，单次批准就变成了走形式。
 
-The defense that scales: structural isolation (makes certain actions impossible) and second-agent validation (creator-verifier pattern, Section 8). Human review remains appropriate for high-stakes, low-frequency decisions, not for routine agent actions.
+真正可规模化的防御：结构性隔离（让某些操作在物理上不可能发生）和第二智能体验证（创建者-验证者模式，第 8 节）。人工审核仍适用于高风险、低频率的决策，而不是常规智能体操作。
 
 ---
 
-## 4. CI/CD Agentic Patterns
+## 4. CI/CD 智能体模式
 
-Three platforms have productized agents as a CI/CD primitive. The choice between them is an architectural decision, not a feature comparison.
+三个平台已将智能体作为 CI/CD 原语产品化。它们之间的选择是架构决策，而非功能比较。
 
 ### GitHub Agentic Workflows
 
-The central concept: `gh aw compile` takes an agent workflow definition in Markdown and produces a `.lock.yml`, a hardened GitHub Actions file that executes the workflow with enforced isolation. The compilation step is where security properties are baked in, not added later.
+核心概念：`gh aw compile` 接收 Markdown 格式的智能体工作流定义，生成 `.lock.yml`——一个内置执行隔离的强化版 GitHub Actions 文件。安全属性在编译步骤中就被烘焙进去，而非事后添加。
 
-**Execution model**: agent runs in a read-only context. It can analyze and generate. Any write (commit, comment, deployment) goes through "Safe Outputs", a separate job that validates the generated artifact before it touches production surfaces. Safe Outputs runs Semgrep (SAST), TruffleHog (secrets detection), and LlamaGuard (harmful content) on agent-generated diffs before they are applied.
+**执行模型**：智能体在只读上下文中运行。它可以分析和生成内容。任何写入操作（提交、评论、部署）都须经过"安全输出"——一个独立的 Job，在产物触达生产表面之前验证智能体生成的内容。安全输出对智能体生成的差异对比（diff）运行 Semgrep（SAST）、TruffleHog（密钥检测）和 LlamaGuard（有害内容检测），然后才应用。
 
-**Code review integration**: GitHub Copilot Code Review has processed 60M+ code reviews as of 2026. On Code Review Bench (Martian, March 2026, 200,000+ open-source PRs, 17 tools evaluated), Augment Code leads at 62.8% recall, Copilot at 53.3%. Graphite leads precision at 75% but recall at 8.8% (high precision means few false positives, low recall means many real bugs missed). No tool dominates both metrics.
+**代码审核集成**：GitHub Copilot Code Review 截至 2026 年已处理超过 6000 万次代码审核。在 Code Review Bench（Martian，2026 年 3 月，超过 20 万个开源 PR，评估了 17 个工具）中，Augment Code 以 62.8% 的召回率领先，Copilot 为 53.3%。Graphite 精确率最高达 75%，但召回率仅 8.8%（高精确率意味着极少误报，低召回率意味着遗漏了许多真实 Bug）。没有任何工具在两项指标上都领先。
 
-**c-CRAB benchmark** (arXiv 2603.23448): Claude Code achieves 32.1% pass rate on pull requests with executable test suites as oracles. The union of four tools reaches 41.5%. These are ceiling numbers; average production use is lower.
+**c-CRAB 基准**（arXiv 2603.23448）：Claude Code 在以可执行测试套件为基准的 Pull Request 上实现了 32.1% 的通过率。四个工具的并集达到 41.5%。这些是上限数字，实际生产使用中的平均值更低。
 
-**Best for**: organizations that want GitHub-native audit trails and a straightforward integration with existing Actions pipelines.
+**最适合**：希望拥有 GitHub 原生审计追踪并与现有 Actions 流水线直接集成的组织。
 
 ### AWS Bedrock AgentCore
 
-A managed runtime for production agents: versioning of agent definitions, Memory for cross-session state persistence, native Observability (OTel-compatible), and continuous evaluation on 1-2% of live traffic. The eval-on-traffic feature catches silent degradation: a model upgrade that regresses quality without triggering any explicit alarm.
+面向生产智能体的托管运行时：智能体定义版本管理、跨会话状态持久化的 Memory、原生可观测性（OTel 兼容），以及对 1-2% 线上流量的持续评估。流量评估功能能捕获静默退化——模型升级导致质量下降，但未触发任何显式告警。
 
-**Best for**: organizations already invested in the AWS ecosystem that need managed state persistence and want continuous quality monitoring without building their own eval infrastructure.
+**最适合**：已深度投资 AWS 生态系统、需要托管状态持久化、并希望在不自建评估基础设施的情况下进行持续质量监控的组织。
 
 ### GitLab Duo
 
-Fix CI/CD Pipeline reached General Availability in GitLab 18.8. When a pipeline fails, Duo reads up to 150 KiB of logs, diagnoses the root cause, and proposes a fix as a Merge Request. CI Expert Agent is in beta as of 18.11 for broader pipeline assistance.
+Fix CI/CD Pipeline 在 GitLab 18.8 中正式发布（GA）。当流水线失败时，Duo 读取最多 150 KiB 的日志，诊断根因，并以合并请求的形式提出修复方案。CI Expert Agent 在 18.11 版本中进入 Beta，提供更广泛的流水线辅助。
 
-**Key constraint**: 150 KiB log limit. Pipelines with verbose output beyond this threshold get truncated context, which degrades diagnosis quality. Worth knowing before routing all failures through this path.
+**关键约束**：150 KiB 日志限制。输出量超过此阈值的流水线会获得被截断的上下文，从而降低诊断质量。在将所有失败路由到此路径前，值得了解这一限制。
 
-**Best for**: GitLab-centric organizations that want agent-assisted CI diagnosis without adopting a separate platform.
+**最适合**：以 GitLab 为中心、希望在不引入独立平台的情况下获得智能体辅助 CI 诊断的组织。
 
 ---
 
-## 5. Digital Twin Testing
+## 5. 数字孪生测试
 
-Agents cannot be tested safely in production on the first pass. The standard practice for testing non-AI software is staging environments. For agents that call external services (Slack, Jira, Okta, Google Drive), staging means either burning real API quota or using behavioral mocks that simulate the service accurately enough to surface integration bugs.
+智能体在第一次就安全地在生产环境中测试是不可能的。针对非 AI 软件的标准做法是预发布环境。对于调用外部服务（Slack、Jira、Okta、Google Drive）的智能体来说，预发布意味着要么消耗真实 API 配额，要么使用行为模拟（mock），该模拟需要足够精确地模拟服务，以便暴露集成 Bug。
 
-**The behavioral mock distinction**: a static mock returns a fixed response. A behavioral mock maintains internal state that evolves logically through sequences of interactions, replicates rate limiting, delayed state propagation, and conditional dependencies. An agent that retries after a 429 response will behave differently against a mock that accurately replicates Slack's rate limit window versus one that just returns 200 for everything.
+**行为模拟与静态模拟的区别**：静态模拟返回固定响应。行为模拟维护内部状态，该状态在一系列交互中合乎逻辑地演变，复现限速、延迟状态传播和条件依赖。一个在 429 响应后重试的智能体，面对一个精确复现 Slack 限速窗口的模拟，与面对一个对所有请求都返回 200 的模拟，行为将截然不同。
 
-### Current coverage by service
+### 当前各服务的覆盖情况
 
-| Service | Best available mock | Coverage |
+| 服务 | 最佳可用模拟 | 覆盖范围 |
 |---------|---------------------|---------|
-| Slack | Slack-Mock (github.com/Skellington-Closet/slack-mock) | 7 interaction channels: Web API, RTM, Events API, Slash Commands, Webhooks, Interactive Buttons, message delivery. State management included. Most complete. |
-| Google Drive | Mockoon pre-configured sample | REST API surface. Limited behavioral state. |
-| Okta | Community patterns, DevForum | Authentication flows and identity lifecycle. No official mock. Custom build required. |
-| Jira | Atlassian-recommended staging environments | Separate app keys for isolation. Not a behavioral mock. |
-| Generic HTTP | WireMock (stateful), Beeceptor (AI-powered, multi-protocol) | No behavioral state for specific services, but configurable for arbitrary HTTP. |
+| Slack | Slack-Mock（github.com/Skellington-Closet/slack-mock） | 7 个交互通道：Web API、RTM、Events API、斜杠命令、Webhooks、交互式按钮、消息推送。包含状态管理。最为完整。 |
+| Google Drive | Mockoon 预配置样本 | REST API 接口。行为状态有限。 |
+| Okta | 社区模式，DevForum | 认证流程和身份生命周期。无官方模拟，需自行构建。 |
+| Jira | Atlassian 推荐的独立预发布环境 | 使用独立 App 密钥进行隔离。不是行为模拟。 |
+| 通用 HTTP | WireMock（有状态）、Beeceptor（AI 驱动，多协议） | 无针对特定服务的行为状态，但可配置为任意 HTTP。 |
 
-Materialize ("always-current digital twins") takes a different approach: real-time sync with operational systems, with logical isolation. Closer to a managed staging environment than a mock. Useful when agents need authentic data distributions rather than plausible-but-fake test data.
+Materialize（"永远保持最新的数字孪生"）采用了不同的方法：与运营系统实时同步，并进行逻辑隔离。比模拟更接近托管预发布环境。当智能体需要真实数据分布而非看似合理但虚假的测试数据时，非常有用。
 
-LangWatch Scenario SDK ([langwatch.ai/scenario](https://langwatch.ai/scenario)) is the only attempt at systematic behavioral agent testing without requiring a real running service: it simulates multi-turn conversations against an agent-user that generates realistic inputs, while an agent-judge evaluates whether the system agent met its success criteria.
+LangWatch Scenario SDK（[langwatch.ai/scenario](https://langwatch.ai/scenario)）是唯一一个在不需要真实运行服务的情况下进行系统性行为智能体测试的尝试：它通过一个生成真实输入的智能体用户来模拟与智能体的多轮对话，同时由智能体评判者评估系统智能体是否达到了成功标准。
 
 ---
 
-## 6. Observability Stack
+## 6. 可观测性栈
 
-The open-source baseline that works in production, documented by independent organizations:
+经独立组织记录的、在生产环境中可用的开源基准：
 
 ```
-OpenLLMetry (Traceloop)       ← instrumentation layer (Python + TypeScript)
+OpenLLMetry (Traceloop)       ← 埋点层（Python + TypeScript）
       +
-OpenInference (Arize)         ← semantic schema for LLM/agent attributes
+OpenInference (Arize)         ← 大语言模型/智能体属性的语义 Schema
       ↓
-Langfuse or Arize Phoenix      ← tracing backend + eval storage
+Langfuse or Arize Phoenix      ← 链路追踪后端 + 评估存储
       +
-DeepEval or LangWatch Scenario ← quality evaluation
+DeepEval or LangWatch Scenario ← 质量评估
 ```
 
-For enterprise with governance requirements, add Strata Maverics or Entra Agent ID in the identity layer.
+对于有治理要求的企业，在身份层加入 Strata Maverics 或 Entra Agent ID。
 
-### OTel GenAI conventions (May 2026 status)
+### OTel GenAI 规范（2026 年 5 月现状）
 
-| Span type | Status | Key attributes |
+| Span 类型 | 状态 | 关键属性 |
 |-----------|--------|---------------|
-| `gen_ai.client` | Stable | `gen_ai.request.model`, `gen_ai.usage.input_tokens`, `gen_ai.usage.output_tokens` |
-| `gen_ai.agent` | Experimental | `gen_ai.agent.name`, `gen_ai.agent.id` — may change |
-| Events | Stable | Prompt/completion content as structured events |
-| Metrics | Stable | Token counters, latency histograms |
+| `gen_ai.client` | 稳定 | `gen_ai.request.model`、`gen_ai.usage.input_tokens`、`gen_ai.usage.output_tokens` |
+| `gen_ai.agent` | 实验性 | `gen_ai.agent.name`、`gen_ai.agent.id` — 可能变更 |
+| Events（事件） | 稳定 | 提示词/补全内容作为结构化事件 |
+| Metrics（指标） | 稳定 | Token（词元）计数器、延迟直方图 |
 
-The experimental status of `gen_ai.agent` spans matters: attributes may be renamed or restructured before stabilization. Production harnesses using agent spans today should expect a remapping cost when the spec stabilizes. OpenInference (Arize) and OpenLLMetry (Traceloop) address this by providing a stable schema on top of the evolving OTel spec.
+`gen_ai.agent` Span 的实验性状态很重要：属性在稳定前可能被重命名或重构。今天在生产框架中使用智能体 Span 的团队，应预期在规范稳定时需要承担重新映射的成本。OpenInference（Arize）和 OpenLLMetry（Traceloop）通过在不断演进的 OTel 规范之上提供稳定 Schema 来解决这一问题。
 
-### What to instrument first
+### 首先需要埋点的内容
 
-1. **Every LLM call**: latency, input tokens, output tokens, model name, finish reason.
-2. **Every tool call**: tool name, arguments (redacted if sensitive), result success/failure, latency.
-3. **Session-level**: total tokens per session, session duration, task completion (binary).
-4. **Eval scores**: task completion rate, tool correctness rate (correct tools used / total tools used).
+1. **每次大语言模型调用**：延迟、输入 Token（词元）、输出 Token（词元）、模型名称、结束原因。
+2. **每次工具调用**：工具名称、参数（敏感时脱敏）、结果成功/失败、延迟。
+3. **会话级别**：每会话总 Token（词元）数、会话时长、任务完成情况（二值）。
+4. **评估分数**：任务完成率、工具正确率（正确使用的工具数 / 总使用工具数）。
 
-Datadog, Honeycomb, New Relic, and MLflow all support OTel GenAI conventions. Arize Phoenix processes 1 trillion spans per month across DoorDash, Instacart, Reddit, Uber, and Booking.com, making it the most documented production scale for an open-source option in this space.
+Datadog、Honeycomb、New Relic 和 MLflow 均支持 OTel GenAI 规范。Arize Phoenix 每月处理 1 万亿个 Span，服务于 DoorDash、Instacart、Reddit、Uber 和 Booking.com，是此领域开源方案中有据可查的最大生产规模。
 
-### LLM-as-judge limitations
+### 以大语言模型为评判者的局限性
 
-JudgeBiasBench (arXiv 2604.23178, Hongli Zhou et al., April 2026) measured more than 50% error rates for frontier models on advanced bias detection tests. Style bias is the dominant pattern: scores of 0.76-0.92, versus position bias below 0.04. The practical consequence: an LLM judge approves stylistically polished but incorrect outputs significantly more often than it should. True negative rates for identifying invalid outputs typically sit below 25%.
+JudgeBiasBench（arXiv 2604.23178，Hongli Zhou 等，2026 年 4 月）测量了前沿模型在高级偏见检测测试中超过 50% 的错误率。风格偏见是主导模式：得分 0.76-0.92，而位置偏见低于 0.04。实际后果：大语言模型评判者批准文笔优雅但内容错误的输出的频率，显著高于应有水平。识别无效输出的真负率通常低于 25%。
 
-No commercial platform (Arize, LangWatch, Openlayer, Langfuse as of May 2026) publicly documents how it neutralizes style bias in its evaluators.
+截至 2026 年 5 月，没有任何商业平台（Arize、LangWatch、Openlayer、Langfuse）公开说明其如何在评估器中消除风格偏见。
 
-The working solution: use LLM-as-judge for qualitative dimensions that cannot be evaluated deterministically (tone, explanation quality, context sensitivity). Use code-based checks for anything that can be evaluated mechanically (tool selection correctness, structured output schema compliance, regression tests on known examples). Do not use LLM-as-judge alone as the quality gate for production traffic.
-
----
-
-## 7. Test Distribution Anti-pattern
-
-An empirical study across 39 open-source agent frameworks and 439 agentic applications (arXiv 2509.19185) found that more than 70% of testing effort in agentic systems targets the deterministic components (tools, APIs, workflow logic), while less than 5% targets the Plan Body, the LLM reasoning core. Adoption of dedicated LLM evaluation tools (DeepEval) was below 1% despite those tools' high marketing visibility.
-
-This is structurally backwards. The deterministic components are the most testable with standard unit tests and will fail loudly when broken. The LLM reasoning core is where the non-obvious, non-deterministic failures live: the ones that produce plausible-looking but wrong outputs, miss edge cases in tool selection, or hallucinate capability claims.
-
-**Recommended rebalancing**: allocate at minimum 20-30% of testing effort to the Plan Body. The pass^k pattern addresses non-determinism: run a critical test 3-5 times and require it to pass in k out of k runs. Promptfoo's `--repeat` flag implements this. LangWatch Scenario SDK does it at the multi-turn simulation level.
-
-For deterministic components: standard unit tests, schema validation, explicit tool call checks. For LLM reasoning: behavioral simulation (LangWatch Scenario), LLM-as-judge with bias awareness, regression suites on known-good examples from production.
+有效解法：将大语言模型评判者用于无法确定性评估的定性维度（语气、解释质量、上下文敏感性）。对任何可机械评估的内容（工具选择正确性、结构化输出 Schema 合规性、已知示例的回归测试），使用基于代码的检查。不要单独使用大语言模型评判者作为生产流量的质量门控。
 
 ---
 
-## 8. Creator-Verifier Pattern
+## 7. 测试分布反模式
 
-A structural pattern that consistently improves output correctness: one agent (or agent step) generates, a separate agent verifies, with no shared context between the two.
+一项针对 39 个开源智能体框架和 439 个智能体应用的实证研究（arXiv 2509.19185）发现，智能体系统中超过 70% 的测试工作针对确定性组件（工具、API、工作流逻辑），而针对计划主体（Plan Body）——即大语言模型推理核心——的测试不足 5%。尽管 DeepEval 等专用大语言模型评估工具在营销上拥有极高的知名度，其实际采用率却不足 1%。
 
-The data:
+这在结构上是本末倒置的。确定性组件最容易用标准单元测试覆盖，出错时也会大声失败。大语言模型推理核心才是非显而易见、非确定性故障的藏身之处：那些产生看似合理但实际错误输出的故障、在工具选择中遗漏边缘情况的故障、或虚构能力声明的故障。
 
-- Microsoft Agent Framework, AutoGen Studio, and Google ADK have all adopted this as a standard pattern.
-- Playwright Test Agents implements it as a three-agent architecture: planner designs the test strategy, generator writes the test code, healer fixes failures.
-- Independent verification improves correctness by +12 to +26% versus self-verification across documented implementations.
-- Factory.ai Missions: adversarial validators caught 81 problems in a Slack clone project, generating 34% of the implementation work as fix features.
-- OpenAI Codex's auto-review system reduced human approval requirements by a factor of 200x versus manual review.
+**推荐的再平衡方案**：将至少 20-30% 的测试工作分配给计划主体。`pass^k` 模式应对非确定性：对关键测试运行 3-5 次，要求在 k 次运行中通过 k 次。Promptfoo 的 `--repeat` 参数实现了这一点。LangWatch Scenario SDK 在多轮模拟层面实现了它。
 
-The underlying reason self-verification fails: the model that generated the output carries the same biases and context as the model that reviews it. Verification by a fresh model instance, with only the artifact and the success criteria in context, is structurally different from self-review.
-
-Practical implementation: spawn a second agent with the output artifact and the original requirements. Ask whether the output satisfies each requirement. Do not ask "is this good?" Ask "does this satisfy requirement X?" with explicit pass/fail for each.
-
-This does not eliminate hallucination; it catches the subset of hallucinations that are inconsistent with the stated requirements. For catching hallucinations that are internally consistent but factually wrong, you need domain-specific test cases.
+对于确定性组件：标准单元测试、Schema 验证、显式工具调用检查。对于大语言模型推理：行为模拟（LangWatch Scenario）、具有偏见意识的大语言模型评判、基于生产已知好示例的回归套件。
 
 ---
 
-## 9. Reference Architecture
+## 8. 创建者-验证者模式
+
+一种持续改善输出正确性的结构性模式：一个智能体（或智能体步骤）负责生成，另一个独立智能体负责验证，两者之间不共享上下文。
+
+相关数据：
+
+- Microsoft Agent Framework、AutoGen Studio 和 Google ADK 均已将此作为标准模式采用。
+- Playwright Test Agents 将其实现为三智能体架构：规划者设计测试策略，生成者编写测试代码，修复者解决失败问题。
+- 在有据可查的实现中，独立验证比自我验证的正确性提升了 +12 到 +26%。
+- Factory.ai Missions：对抗性验证者在一个 Slack 克隆项目中发现了 81 个问题，产生了相当于 34% 实现工作量的修复功能。
+- OpenAI Codex 的自动审查系统将人工审批需求减少了 200 倍（相对于人工审核）。
+
+自我验证失败的根本原因：生成输出的模型与审查它的模型携带相同的偏见和上下文。由一个只在上下文中包含产物和成功标准的全新模型实例进行验证，在结构上与自我审查有本质区别。
+
+实践实现：派生第二个智能体，提供输出产物和原始需求。询问输出是否满足每项需求。不要问"这个好吗？"，而要问"这是否满足需求 X？"，并对每项给出明确的通过/失败判断。
+
+这不能消除幻觉；它捕获的是与已声明需求不一致的那部分幻觉。对于捕获内部一致但事实错误的幻觉，你需要特定领域的测试用例。
+
+---
+
+## 9. 参考架构
 
 ```
-User instruction
+用户指令
       ↓
 ┌─────────────────────────────────────────────────────────────────┐
-│                       HARNESS                                    │
+│                         框架                                     │
 │                                                                  │
 │  ┌─────────────┐      ┌──────────────┐      ┌───────────────┐   │
-│  │   Context   │      │  While-Loop  │      │  Permission   │   │
-│  │  Management │◄────►│    Engine    │◄────►│  Enforcement  │   │
+│  │   上下文    │      │  While 循环  │      │   权限执行    │   │
+│  │   管理      │◄────►│    引擎      │◄────►│               │   │
 │  └─────────────┘      └──────┬───────┘      └───────────────┘   │
 │                              │                                    │
 │  ┌─────────────┐      ┌──────▼───────┐      ┌───────────────┐   │
-│  │   Session   │      │   Dynamic    │      │   Lifecycle   │   │
-│  │ Persistence │◄────►│   Prompt     │◄────►│    Hooks      │   │
-│  └─────────────┘      │  Assembly   │      └───────────────┘   │
-│                        └──────┬───────┘                          │
-│  ┌─────────────┐             │              ┌───────────────┐   │
-│  │    Tool     │      ┌──────▼───────┐      │  Sub-Agent    │   │
-│  │  Registry   │◄────►│  LLM Call    │◄────►│  Management   │   │
+│  │   会话      │      │   动态提示   │      │   生命周期    │   │
+│  │   持久化    │◄────►│   词组装     │◄────►│   Hooks       │   │
+│  └─────────────┘      └──────┬───────┘      └───────────────┘   │
+│                              │                                    │
+│  ┌─────────────┐      ┌──────▼───────┐      ┌───────────────┐   │
+│  │    工具     │      │  大语言模型  │      │   子智能体    │   │
+│  │   注册表    │◄────►│    调用      │◄────►│   管理        │   │
 │  └─────────────┘      └──────────────┘      └───────────────┘   │
 │                                                                  │
 │  ┌─────────────┐                                                  │
-│  │  Built-in   │                                                  │
-│  │   Skills    │                                                  │
+│  │  内置 Skills │                                                  │
+│  │  （技能模块）│                                                  │
 │  └─────────────┘                                                  │
 └─────────────────────────────────────────────────────────────────┘
       ↓
 ┌──────────────┐      ┌──────────────┐      ┌──────────────────┐
-│   Sandbox    │      │   Identity   │      │  Observability   │
-│  (E2B/k8s/  │      │  Gateway     │      │  (OTel + eval)   │
-│  Northflank) │      │(Strata/Entra)│      │                  │
+│   沙盒       │      │   身份网关   │      │   可观测性       │
+│ (E2B/k8s/   │      │(Strata/Entra)│      │ (OTel + 评估)    │
+│  Northflank) │      │              │      │                  │
 └──────────────┘      └──────────────┘      └──────────────────┘
 ```
 
 ---
 
-## See Also
+## 参见
 
-- [Context Engineering](./context-engineering.md) — ACE pipeline, signal taxonomy, drift management
-- [Security Hardening](../security/security-hardening.md) — production safety, injection defense
-- [DevOps & SRE](../ops/devops-sre.md) — CI/CD integration patterns
-- [AI Roles](../roles/ai-roles.md) — Harness Engineer, Agent Identity Architect, AI Eval Engineer
-- [Spec-First Development](../workflows/spec-first.md) — spec as the input to the harness
+- [上下文工程](./context-engineering.md) — ACE 流水线、信号分类、退化管理
+- [安全加固](../security/security-hardening.md) — 生产安全、注入防御
+- [DevOps 与 SRE](../ops/devops-sre.md) — CI/CD 集成模式
+- [AI 角色](../roles/ai-roles.md) — 框架工程师、智能体身份架构师、AI 评估工程师
+- [规范优先开发](../workflows/spec-first.md) — 规范作为框架的输入
 
 ---
 
-*Last updated: May 2026. arXiv 2605.18747 (Code as Agent Harness) is the primary academic source for the three properties. Martin Fowler's Harness Engineering article is the primary practitioner reference. Both were published in 2025-2026.*
+*最后更新：2026 年 5 月。arXiv 2605.18747（《代码即智能体框架》）是三大属性的主要学术来源。Martin Fowler 的框架工程文章是主要的从业者参考资料。两者均发表于 2025-2026 年。*

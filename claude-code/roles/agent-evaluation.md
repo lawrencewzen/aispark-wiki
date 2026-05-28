@@ -1,81 +1,81 @@
 > 📚 **AI Spark Wiki** · Claude Code 知识库
 
 ---
-title: "Agent Evaluation"
-description: "Metrics, patterns, and tools for measuring custom agent effectiveness"
+title: "智能体评估"
+description: "衡量自定义智能体效果的指标、模式与工具"
 tags: [agents, testing, guide]
 ---
 
-# Agent Evaluation
+# 智能体评估
 
-**Quick nav**: [Why Evaluate?](#why-evaluate-agents) · [Metrics to Track](#metrics-to-track) · [Implementation](#implementation-patterns) · [Example](#example-agent-with-evaluation) · [Tools](#tools--references)
-
----
-
-## Why Evaluate Agents?
-
-When you create custom agents in `.claude/agents/`, you're encoding specialized expertise into reusable workflows. But how do you know if your agents are actually effective?
-
-**Without evaluation**, you're building blind:
-- ❌ No way to measure if agent responses are improving or degrading over time
-- ❌ Can't compare different agent configurations objectively
-- ❌ Difficult to identify which aspects of agent context/instructions need refinement
-- ❌ No data to justify investment in agent development
-
-**With evaluation**, you iterate with confidence:
-- ✅ Quantify agent quality through metrics (response time, accuracy, tool usage)
-- ✅ A/B test different agent configurations with measurable outcomes
-- ✅ Identify patterns in successful vs failed interactions
-- ✅ Build feedback loops for continuous improvement
-
-**Core principle**: Agents are code. Like all code, they need tests, metrics, and observability.
+**快速导航**：[为什么评估？](#为什么要评估智能体) · [追踪指标](#追踪指标) · [实施模式](#实施模式) · [示例](#示例带评估的智能体) · [工具](#工具与参考)
 
 ---
 
-## Metrics to Track
+## 为什么要评估智能体？
 
-### 1. Response Quality Metrics
+当你在 `.claude/agents/` 中创建自定义智能体时，你将专业知识编码为可复用的工作流。但如何知道你的智能体是否真正有效？
 
-**What to measure**:
-- **Task completion rate**: Did the agent accomplish the stated goal?
-- **Correctness**: Were the agent's outputs factually accurate?
-- **Relevance**: Did the response stay on-topic and address the actual question?
-- **Hallucination rate**: How often did the agent invent information?
+**没有评估**，你在摸黑构建：
+- ❌ 无法衡量智能体响应随时间是在改善还是下降
+- ❌ 无法客观比较不同的智能体配置
+- ❌ 难以识别智能体上下文/指令的哪些方面需要改进
+- ❌ 没有数据来证明智能体开发投入的合理性
 
-**How to track**:
+**有了评估**，你可以有信心地迭代：
+- ✅ 通过指标量化智能体质量（响应时间、准确性、工具使用）
+- ✅ 对不同智能体配置进行可衡量的 A/B 测试
+- ✅ 识别成功 vs 失败交互中的模式
+- ✅ 建立持续改进的反馈循环
+
+**核心原则**：智能体就是代码。像所有代码一样，它们需要测试、指标和可观测性。
+
+---
+
+## 追踪指标
+
+### 1. 响应质量指标
+
+**衡量什么**：
+- **任务完成率**：智能体是否完成了既定目标？
+- **正确性**：智能体的输出是否事实准确？
+- **相关性**：响应是否保持主题相关并解决实际问题？
+- **幻觉率**：智能体发明信息的频率？
+
+**如何追踪**：
 ```bash
-# Post-response hook: .claude/hooks/log-response-quality.sh
-# Triggered after each agent response
+# 工具后钩子：.claude/hooks/log-response-quality.sh
+# 每次智能体响应后触发
 
-# Log structure:
+# 日志结构：
 {
   "timestamp": "2026-02-10T14:32:00Z",
   "agent_id": "backend-architect",
   "task_completed": true,
-  "correctness_score": 4.5,  # User rating 1-5
+  "correctness_score": 4.5,  # 用户评分 1-5
   "hallucinations": 0,
   "response_tokens": 1250
 }
 ```
 
-**Implementation tip**: Use user feedback prompts (thumbs up/down) or automated checks (test suite passing after agent code generation).
+**实施提示**：使用用户反馈提示（点赞/点踩）或自动检查（智能体代码生成后的测试套件通过情况）。
 
 ---
 
-### 2. Tool Usage Metrics
+### 2. 工具使用指标
 
-**What to measure**:
-- **Tool call success rate**: Percentage of tool calls that executed without errors
-- **Tool selection accuracy**: Did agent choose the right tool for the task?
-- **Tool call efficiency**: Minimum calls to achieve goal (avoid unnecessary reads/searches)
-- **Error recovery**: Did agent handle tool failures gracefully?
+**衡量什么**：
+- **工具调用成功率**：无错误执行的工具调用百分比
+- **工具选择准确性**：智能体是否为任务选择了正确的工具？
+- **工具调用效率**：实现目标所需的最少调用（避免不必要的读取/搜索）
+- **错误恢复**：智能体是否优雅处理工具失败？
 
-**How to track**:
+**如何追踪**：
 ```bash
-# Post-tool-use hook: .claude/hooks/log-tool-usage.sh
-# Triggered after each tool call
+# 工具后钩子：.claude/hooks/log-tool-usage.sh
+# 每次工具调用后触发
 
-# Log structure:
+# 日志结构：
 {
   "timestamp": "2026-02-10T14:32:05Z",
   "agent_id": "backend-architect",
@@ -86,24 +86,24 @@ When you create custom agents in `.claude/agents/`, you're encoding specialized 
 }
 ```
 
-**Implementation tip**: Use Claude Code hooks system (see `examples/hooks/`) to automatically log tool calls.
+**实施提示**：使用 Claude Code Hooks 系统（见 `examples/hooks/`）自动记录工具调用。
 
 ---
 
-### 3. Performance Metrics
+### 3. 性能指标
 
-**What to measure**:
-- **Response time**: Total time from user prompt to complete response
-- **Token efficiency**: Input/output tokens used per task
-- **Context utilization**: How much of context window was used?
-- **Cost per task**: API cost for the full interaction
+**衡量什么**：
+- **响应时间**：从用户提示词到完整响应的总时间
+- **Token（词元）效率**：每个任务使用的输入/输出 Token（词元）数
+- **上下文利用率**：使用了多少上下文窗口？
+- **每任务成本**：完整交互的 API 成本
 
-**How to track**:
+**如何追踪**：
 ```bash
-# Session-end hook: .claude/hooks/log-performance.sh
-# Triggered at end of session
+# 会话结束钩子：.claude/hooks/log-performance.sh
+# 会话结束时触发
 
-# Log structure:
+# 日志结构：
 {
   "timestamp": "2026-02-10T14:35:00Z",
   "agent_id": "backend-architect",
@@ -115,182 +115,182 @@ When you create custom agents in `.claude/agents/`, you're encoding specialized 
 }
 ```
 
-**Implementation tip**: Parse Claude Code session logs or use MCP observability tools.
+**实施提示**：解析 Claude Code 会话日志或使用 MCP 可观测性工具。
 
 ---
 
-### 4. User Satisfaction Metrics
+### 4. 用户满意度指标
 
-**What to measure**:
-- **Explicit feedback**: User ratings, comments, bug reports
-- **Implicit signals**: Did user accept agent's suggestions? Did they retry the prompt?
-- **Adoption rate**: How often is this agent used vs alternatives?
-- **Retention**: Do users return to this agent for similar tasks?
+**衡量什么**：
+- **明确反馈**：用户评分、评论、Bug 报告
+- **隐式信号**：用户是否接受了智能体的建议？他们是否重新提示？
+- **采用率**：相比替代方案，这个智能体的使用频率？
+- **留存率**：用户是否会为类似任务回来使用这个智能体？
 
-**How to track**:
+**如何追踪**：
 ```bash
-# Manual feedback collection
-# After agent completes task, prompt user:
-"Rate this agent's performance (1-5): _"
+# 手动反馈收集
+# 智能体完成任务后，提示用户：
+"给这个智能体的表现打分（1-5）：_"
 
-# Log:
+# 日志：
 {
   "timestamp": "2026-02-10T14:35:10Z",
   "agent_id": "backend-architect",
   "user_rating": 5,
-  "user_comment": "Perfect analysis of auth flow",
+  "user_comment": "完美分析了认证流程",
   "would_use_again": true
 }
 ```
 
-**Implementation tip**: Add feedback prompts to agent templates or use post-session surveys.
+**实施提示**：在智能体模板中添加反馈提示，或使用会话后调查。
 
 ---
 
-## Implementation Patterns
+## 实施模式
 
-### Pattern 1: Logging Hook System
+### 模式 1：日志 Hook 系统
 
-**Use Case**: Automatically track all agent interactions without manual intervention
+**用例**：自动追踪所有智能体交互，无需手动干预
 
-**Setup**:
+**设置**：
 ```bash
 # .claude/hooks/post-tool-use.sh
 #!/bin/bash
-# Triggered after every tool call
+# 每次工具调用后触发
 
 AGENT_ID=$(echo "$CLAUDE_AGENT_ID" | jq -r)
 TOOL_NAME=$(echo "$CLAUDE_TOOL_NAME" | jq -r)
 TOOL_SUCCESS=$(echo "$CLAUDE_TOOL_SUCCESS" | jq -r)
 
-# Append to metrics log
+# 追加到指标日志
 echo "{\"timestamp\":\"$(date -Iseconds)\",\"agent\":\"$AGENT_ID\",\"tool\":\"$TOOL_NAME\",\"success\":$TOOL_SUCCESS}" \
   >> .claude/logs/agent-metrics.jsonl
 ```
 
-**Pros**: Zero manual overhead, complete coverage, time-series data
-**Cons**: Requires parsing Claude Code environment variables (may change across versions)
+**优点**：零手动开销，完整覆盖，时序数据
+**缺点**：需要解析 Claude Code 环境变量（可能跨版本变化）
 
 ---
 
-### Pattern 2: Agent Unit Tests
+### 模式 2：智能体单元测试
 
-**Use Case**: Regression testing to ensure agent improvements don't break existing capabilities
+**用例**：回归测试，确保智能体改进不会破坏现有能力
 
-**Setup**:
+**设置**：
 ```bash
 # tests/agents/backend-architect.test.sh
 #!/bin/bash
 
-# Test 1: Agent correctly identifies hexagonal architecture layers
-echo "Test: Hexagonal architecture analysis"
-RESULT=$(claude agent backend-architect "Analyze src/auth.ts for layer violations")
+# 测试 1：智能体正确识别六边形架构层
+echo "测试：六边形架构分析"
+RESULT=$(claude agent backend-architect "分析 src/auth.ts 的层违规")
 if echo "$RESULT" | grep -q "domain layer"; then
-  echo "✅ PASS: Identified layers"
+  echo "✅ 通过：识别了层次"
 else
-  echo "❌ FAIL: Did not identify layers"
+  echo "❌ 失败：未识别层次"
   exit 1
 fi
 
-# Test 2: Agent recommends correct patterns
-echo "Test: Pattern recommendations"
-RESULT=$(claude agent backend-architect "Improve error handling in src/api.ts")
+# 测试 2：智能体推荐正确模式
+echo "测试：模式建议"
+RESULT=$(claude agent backend-architect "改进 src/api.ts 中的错误处理")
 if echo "$RESULT" | grep -q "Result<T, E>"; then
-  echo "✅ PASS: Recommended Result pattern"
+  echo "✅ 通过：推荐了 Result 模式"
 else
-  echo "❌ FAIL: Incorrect pattern"
+  echo "❌ 失败：模式不正确"
   exit 1
 fi
 ```
 
-**Pros**: Automated, catches regressions, CI/CD integration
-**Cons**: Requires maintenance, may have false positives/negatives
+**优点**：自动化，捕获回归，CI/CD 集成
+**缺点**：需要维护，可能有误报/漏报
 
 ---
 
-### Pattern 3: A/B Testing Configurations
+### 模式 3：A/B 测试配置
 
-**Use Case**: Compare two versions of agent to determine which performs better
+**用例**：比较两个版本的智能体以确定哪个表现更好
 
-**Setup**:
+**设置**：
 ```yaml
-# .claude/agents/backend-architect-v1.md (control)
+# .claude/agents/backend-architect-v1.md（对照）
 name: backend-architect
 version: 1.0
 instructions: |
-  You are a backend architect specializing in...
-  [original instructions]
+  你是一名专注于...的后端架构师
+  [原始指令]
 
-# .claude/agents/backend-architect-v2.md (experiment)
+# .claude/agents/backend-architect-v2.md（实验）
 name: backend-architect-v2
 version: 2.0
 instructions: |
-  You are a backend architect specializing in...
-  [modified instructions with new pattern emphasis]
+  你是一名专注于...的后端架构师
+  [修改后的指令，带有新的模式强调]
 ```
 
-**Evaluation**:
+**评估**：
 ```bash
-# Run same task with both agents, compare metrics
-# Task: "Analyze src/auth.ts for security issues"
+# 对两个智能体运行相同任务，比较指标
+# 任务："分析 src/auth.ts 的安全问题"
 
-# Version 1 metrics:
-# - Response time: 45s
-# - Issues found: 3
-# - User rating: 4/5
+# 版本 1 指标：
+# - 响应时间：45 秒
+# - 发现的问题：3 个
+# - 用户评分：4/5
 
-# Version 2 metrics:
-# - Response time: 38s
-# - Issues found: 5 (2 additional critical issues)
-# - User rating: 5/5
+# 版本 2 指标：
+# - 响应时间：38 秒
+# - 发现的问题：5 个（额外 2 个关键问题）
+# - 用户评分：5/5
 
-# Conclusion: Version 2 is more thorough and faster → promote to production
+# 结论：版本 2 更彻底且更快 → 提升到生产
 ```
 
-**Pros**: Data-driven decisions, quantifiable improvements
-**Cons**: Requires discipline to run controlled experiments
+**优点**：数据驱动的决策，可量化的改进
+**缺点**：需要规范地运行受控实验
 
 ---
 
-### Pattern 4: Feedback Loop Integration
+### 模式 4：反馈循环集成
 
-**Use Case**: Continuously improve agent based on real-world usage data
+**用例**：根据实际使用数据持续改进智能体
 
-**Setup**:
+**设置**：
 ```bash
-# After agent completes task
-echo "How would you rate this response? (1-5, or 'skip'): "
+# 智能体完成任务后
+echo "你如何评价这个响应？（1-5，或'跳过'）："
 read RATING
 
 if [ "$RATING" != "skip" ]; then
-  echo "Any specific feedback?: "
+  echo "有具体反馈吗？："
   read COMMENT
 
-  # Log feedback
+  # 记录反馈
   echo "{\"timestamp\":\"$(date -Iseconds)\",\"agent\":\"$AGENT_ID\",\"rating\":$RATING,\"comment\":\"$COMMENT\"}" \
     >> .claude/logs/agent-feedback.jsonl
 fi
 
-# Weekly: Review feedback.jsonl, identify patterns
-# Monthly: Update agent instructions based on aggregated feedback
+# 每周：审查 feedback.jsonl，识别模式
+# 每月：根据聚合反馈更新智能体指令
 ```
 
-**Pros**: Aligns agent with actual user needs, identifies edge cases
-**Cons**: Requires manual review and action on feedback
+**优点**：与实际用户需求对齐，识别边缘案例
+**缺点**：需要手动审查和对反馈采取行动
 
 ---
 
-## Example: Agent with Evaluation
+## 示例：带评估的智能体
 
-**Full template available**: [`examples/agents/analytics-with-eval/`](../../examples/agents/analytics-with-eval/) includes complete agent definition, hooks, analysis scripts, and report template.
+**完整模板可在此获取**：[`examples/agents/analytics-with-eval/`](../../examples/agents/analytics-with-eval/) 包含完整的智能体定义、Hooks、分析脚本和报告模板。
 
-### Setup: Analytics Agent with Built-in Metrics
+### 设置：带内置指标的分析智能体
 
 ```yaml
 # .claude/agents/analytics-agent.md
 ---
 name: analytics-agent
-description: SQL query generator with evaluation hooks
+description: 带评估 Hooks 的 SQL 查询生成器
 version: 1.0
 tools:
   - Read
@@ -300,145 +300,145 @@ hooks:
   post_response: .claude/hooks/log-analytics-metrics.sh
 ---
 
-# Analytics Agent
+# 分析智能体
 
-You are an expert SQL analyst helping users query databases.
+你是帮助用户查询数据库的专业 SQL 分析师。
 
-## Evaluation Criteria
+## 评估标准
 
-After each query:
-1. **Correctness**: Does query produce expected results?
-2. **Performance**: Query execution time < 5s?
-3. **Safety**: No destructive operations (DELETE, DROP, TRUNCATE)?
-4. **Best practices**: Uses proper JOINs, indexes, parameterized queries?
+每次查询后：
+1. **正确性**：查询是否产生预期结果？
+2. **性能**：查询执行时间 < 5 秒？
+3. **安全性**：无破坏性操作（DELETE、DROP、TRUNCATE）？
+4. **最佳实践**：使用了正确的 JOIN、索引、参数化查询？
 
-## Instructions
+## 指令
 
-[... agent instructions ...]
+[... 智能体指令 ...]
 ```
 
-### Metrics Hook
+### 指标 Hook
 
 ```bash
 # .claude/hooks/log-analytics-metrics.sh
 #!/bin/bash
-# Triggered after analytics-agent response
+# 分析智能体响应后触发
 
-# Extract query from response (naive grep, improve with jq)
+# 从响应中提取查询（朴素的 grep，可以用 jq 改进）
 QUERY=$(echo "$CLAUDE_RESPONSE" | grep -oP 'SELECT.*?;')
 
 if [ -n "$QUERY" ]; then
-  # Test query (requires database connection)
+  # 测试查询（需要数据库连接）
   EXEC_TIME=$( (time psql -U user -d db -c "$QUERY") 2>&1 | grep real | awk '{print $2}')
 
-  # Check for destructive operations
+  # 检查破坏性操作
   if echo "$QUERY" | grep -iE 'DELETE|DROP|TRUNCATE'; then
     SAFETY="FAIL"
   else
     SAFETY="PASS"
   fi
 
-  # Log metrics
+  # 记录指标
   echo "{\"timestamp\":\"$(date -Iseconds)\",\"query\":\"$QUERY\",\"exec_time\":\"$EXEC_TIME\",\"safety\":\"$SAFETY\"}" \
     >> .claude/logs/analytics-metrics.jsonl
 fi
 ```
 
-### Analysis
+### 分析
 
 ```bash
-# Monthly review: Analyze metrics
+# 月度审查：分析指标
 jq -s 'group_by(.safety) | map({safety: .[0].safety, count: length})' \
   .claude/logs/analytics-metrics.jsonl
 
-# Output:
+# 输出：
 # [
 #   {"safety": "PASS", "count": 127},
 #   {"safety": "FAIL", "count": 3}
 # ]
 
-# Action: Review 3 failed queries, update agent instructions to prevent future violations
+# 行动：审查 3 个失败的查询，更新智能体指令以防止未来违规
 ```
 
 ---
 
-## Tools & References
+## 工具与参考
 
-### Open-Source Evaluation Frameworks
+### 开源评估框架
 
-#### nao (Analytics Agents)
+#### nao（分析智能体）
 
-**URL**: [github.com/getnao/nao](https://github.com/getnao/nao/)
+**网址**：[github.com/getnao/nao](https://github.com/getnao/nao/)
 
-**What it provides**:
-- Built-in evaluation framework for analytics agents
-- Unit testing capabilities for agent responses
-- Metrics collection (response quality, tool usage, performance)
-- Feedback loop integration
+**提供的内容**：
+- 分析智能体的内置评估框架
+- 智能体响应的单元测试能力
+- 指标收集（响应质量、工具使用、性能）
+- 反馈循环集成
 
-**How to adapt for Claude Code**:
-- **Context builder pattern**: Apply nao's structured context approach to `.claude/agents/` config
-- **Evaluation hooks**: Translate nao's evaluation framework to Claude Code hooks system
-- **Metrics schema**: Use nao's metrics schema as template for your logs
+**如何适配到 Claude Code**：
+- **上下文构建器模式**：将 nao 的结构化上下文方法应用于 `.claude/agents/` 配置
+- **评估 Hooks**：将 nao 的评估框架转换为 Claude Code Hooks 系统
+- **指标 Schema**：使用 nao 的指标 Schema 作为日志模板
 
-**Status**: Production-ready, actively maintained, TypeScript + Python
-
----
-
-### Claude Code Native Patterns
-
-**Hooks system**: `.claude/hooks/` for automated logging (see `examples/hooks/README.md`)
-
-**Agents directory**: `.claude/agents/` for custom agent definitions (see `guide/ultimate-guide.md` Section 4)
-
-**MCP observability**: Use MCP servers for advanced logging and metrics aggregation
+**状态**：生产就绪，积极维护，TypeScript + Python
 
 ---
 
-## Best Practices
+### Claude Code 原生模式
 
-### Start Simple
+**Hooks 系统**：`.claude/hooks/` 用于自动日志记录（见 `examples/hooks/README.md`）
 
-**Week 1**: Add basic logging hook (tool calls only)
-**Week 2**: Add user feedback prompt (manual ratings)
-**Week 3**: Build dashboard to visualize metrics
-**Week 4**: Run first A/B test on agent configuration
+**智能体目录**：`.claude/agents/` 用于自定义智能体定义（见 `guide/ultimate-guide.md` 第 4 节）
 
-### Focus on Actionable Metrics
-
-Don't track metrics you won't act on. Prioritize:
-1. **Task completion rate** → Refine agent instructions
-2. **Tool call errors** → Improve context or add examples
-3. **User ratings** → Identify confusing or unhelpful responses
-
-### Automate Where Possible
-
-Manual evaluation doesn't scale. Use:
-- Hooks for automatic logging
-- CI/CD integration for agent unit tests
-- Scripts for periodic metric aggregation
-
-### Build Feedback Loops
-
-Metrics are useless without action:
-- Weekly: Review metrics, identify patterns
-- Monthly: Update agent instructions based on data
-- Quarterly: Major agent refactoring if needed
+**MCP 可观测性**：使用 MCP 服务器进行高级日志记录和指标聚合
 
 ---
 
-## Related Sections
+## 最佳实践
 
-- **[Agents](#4-agents)**: Creating custom agents
-- **[Hooks](#7-hooks)**: Automation with event hooks
-- **[Observability](../ops/observability.md)**: Logging and monitoring strategies
-- **[AI Ecosystem](../ecosystem/ai-ecosystem.md#82-domain-specific-agent-frameworks)**: External frameworks like nao
+### 从简单开始
+
+**第 1 周**：添加基本日志 Hook（仅工具调用）
+**第 2 周**：添加用户反馈提示（手动评分）
+**第 3 周**：构建仪表板以可视化指标
+**第 4 周**：对智能体配置运行第一个 A/B 测试
+
+### 专注于可操作指标
+
+不要追踪你不会行动的指标。优先考虑：
+1. **任务完成率** → 改进智能体指令
+2. **工具调用错误** → 改善上下文或添加示例
+3. **用户评分** → 识别令人困惑或无帮助的响应
+
+### 尽可能自动化
+
+手动评估无法扩展。使用：
+- Hooks 进行自动日志记录
+- CI/CD 集成进行智能体单元测试
+- 脚本进行定期指标聚合
+
+### 建立反馈循环
+
+指标如果不采取行动就没用：
+- 每周：审查指标，识别模式
+- 每月：根据数据更新智能体指令
+- 每季度：如有需要进行重大智能体重构
 
 ---
 
-**Next steps**:
-1. Add logging hook to your most-used agent
-2. Collect 1 week of metrics
-3. Analyze and refine agent based on data
+## 相关章节
 
-**Template**: See `examples/agents/analytics-with-eval/` for complete implementation with hooks, scripts, and report template
+- **[智能体](#4-agents)**：创建自定义智能体
+- **[Hooks](#7-hooks)**：使用事件 Hooks 进行自动化
+- **[可观测性](../ops/observability.md)**：日志记录和监控策略
+- **[AI 生态系统](../ecosystem/ai-ecosystem.md#82-domain-specific-agent-frameworks)**：外部框架（如 nao）
+
+---
+
+**后续步骤**：
+1. 为你最常用的智能体添加日志 Hook
+2. 收集 1 周的指标
+3. 根据数据分析和改进智能体
+
+**模板**：见 `examples/agents/analytics-with-eval/` 获取包含 Hooks、脚本和报告模板的完整实现

@@ -1,265 +1,265 @@
 > 📚 **AI Spark Wiki** · Claude Code 知识库
 
-# Claude Code Learning Path
+# Claude Code 学习路径
 
-**Master Claude Code in 8-11 hours. Go deep on what matters to you with optional deep dives.**
+**8-11 小时掌握 Claude Code。按需深入你最感兴趣的方向。**
 
-This is your structured entry point. Follow the modules in order, then jump into the full guide for depth.
+这是你的结构化入口。按顺序学完各模块，再进入完整指南深度精读。
 
 ---
 
-## The 7-Module Path
+## 7 模块路径总览
 
-| Module | Time | Focus | Complexity |
+| 模块 | 用时 | 重点 | 难度 |
 |--------|------|-------|------------|
-| **[01-Installation & Setup](01-installation.md)** | 15 min | Get Claude Code running | ⭐ Beginner |
-| **[02-Core Loop](02-core-loop.md)** | 45 min | How Claude Code actually works | ⭐ Beginner |
-| **[03-Memory & Config](03-memory.md)** | 1 hour | CLAUDE.md and settings | ⭐⭐ Intermediate |
-| **[04-Agents & Specialization](04-agents.md)** | 1.5 hours | Creating focused agents | ⭐⭐ Intermediate |
-| **[05-Skills & Automation](05-skills.md)** | 1.5 hours | Reusable capabilities | ⭐⭐ Intermediate |
-| **[06-Hooks & Events](06-hooks.md)** | 1 hour | Triggering automation | ⭐⭐ Intermediate |
-| **[07-Advanced Patterns](07-advanced.md)** | 2-3 hours | Multi-agent orchestration | ⭐⭐⭐ Advanced |
+| **[01-安装与配置](01-installation.md)** | 15 分钟 | 让 Claude Code 跑起来 | ⭐ 入门 |
+| **[02-核心循环](02-core-loop.md)** | 45 分钟 | Claude Code 实际运作原理 | ⭐ 入门 |
+| **[03-记忆与配置](03-memory.md)** | 1 小时 | CLAUDE.md 与设置管理 | ⭐⭐ 进阶 |
+| **[04-智能体与专业化](04-agents.md)** | 1.5 小时 | 创建专注型智能体 | ⭐⭐ 进阶 |
+| **[05-Skills 与自动化](05-skills.md)** | 1.5 小时 | 可复用能力构建 | ⭐⭐ 进阶 |
+| **[06-Hooks 与事件](06-hooks.md)** | 1 小时 | 触发自动化响应 | ⭐⭐ 进阶 |
+| **[07-高级模式](07-advanced.md)** | 2-3 小时 | 多智能体编排 | ⭐⭐⭐ 高级 |
 
-**Total: 8-11 hours base learning** + optional deep dives.
-
----
-
-## How to Use This Path
-
-### Step 1: Assess Your Level
-
-**Beginner** (day 1 of Claude Code):
-- Take the quick path: 01 → 02 → 03 (2 hours)
-- Then jump to full guide `Part 1: Quick Start`
-
-**Intermediate** (using Claude Code 1-4 weeks):
-- Take the full path: 01 → 07 (8-11 hours)
-- Focus on modules 04, 05, 06, 07 for depth
-
-**Advanced** (using Claude Code 1+ months):
-- Skim 01-03, deep-dive 04-07
-- Jump to guide Part 9: Advanced Patterns for orchestration
-
-### Step 2: Choose Your Track
-
-**Track A: Master the Fundamentals** (11 hours)
-- Follow modules 01-07 in order
-- Complete all exercises
-- Take `/lesson-quiz [topic]` after each module
-- Finish with `/self-assessment comprehensive`
-
-**Track B: Skill-Focused Deep Dive** (4-6 hours)
-- Module 01-02 (basics)
-- Skip to Module 04, 05, or 06 based on your goal
-- Go deep on that one module
-- Link to advanced patterns as needed
-
-**Track C: Team Adoption** (5-7 hours)
-- Module 01-02 (teach fundamentals)
-- Module 03 (team configuration)
-- Modules 04-07 (team workflows)
-- Run `/self-assessment` across team, identify gaps
-- Create follow-up training plan from gaps
-
-### Step 3: Learn & Validate
-
-Each module includes:
-- 📖 **Reading** (10-30 min) — Concepts and mental models
-- 🔨 **Hands-on practice** (20-45 min) — Real examples from `examples/`
-- 📝 **Validation** — `/lesson-quiz [topic]` to verify understanding
-
-### Step 4: Go Deeper
-
-After this path, you have options:
-
-**Option A: Deep Reference**
-→ Jump to relevant section in `guide/ultimate-guide.md`
-
-**Option B: Master a Domain**
-→ Read dedicated guides (e.g., `guide/security/`, `guide/ops/`)
-
-**Option C: Build with Plugins**
-→ Install a plugin bundle from `examples/plugins/`
-
-**Option D: Self-Assess**
-→ Run `/self-assessment comprehensive` to identify remaining gaps
+**总计：8-11 小时基础学习** + 可选深度精读。
 
 ---
 
-## Module Details
+## 如何使用本学习路径
 
-### Module 01: Installation & Setup (15 min)
-**Goal:** Get Claude Code running and confirm it works
+### 第一步：评估你的水平
 
-- Install for your platform (macOS/Linux/Windows)
-- Run your first command
-- Understand the prompt → output loop
-- **Exercise:** Complete the "First 5 Minutes" workflow
+**入门级**（Claude Code 第 1 天）：
+- 走快速路线：01 → 02 → 03（约 2 小时）
+- 然后跳入完整指南 `第 1 部分：快速上手`
 
-**Complexity:** ⭐ (Beginner)
-**Read:** [01-installation.md](01-installation.md)
-**Then:** Part 1: Quick Start in main guide
+**进阶级**（使用 Claude Code 1-4 周）：
+- 走完整路线：01 → 07（8-11 小时）
+- 重点深入模块 04、05、06、07
 
----
+**高级**（使用 Claude Code 1 个月以上）：
+- 快速浏览 01-03，深度精读 04-07
+- 跳至指南 第 9 部分：高级模式，学习编排
 
-### Module 02: Core Loop (45 min)
-**Goal:** Understand how Claude Code works at the system level
+### 第二步：选择学习路线
 
-- The interaction loop (prompt → tool → decision → feedback)
-- Context and sessions
-- Plans and thinking modes
-- **Exercise:** Use `/plan` to plan a real task, observe the flow
+**路线 A：掌握基础**（11 小时）
+- 按顺序完成模块 01-07
+- 完成全部练习
+- 每个模块后运行 `/lesson-quiz [主题]`
+- 最后用 `/self-assessment comprehensive` 收尾
 
-**Complexity:** ⭐ (Beginner)
-**Read:** [02-core-loop.md](02-core-loop.md)
-**Then:** Part 2: Core Concepts in main guide
+**路线 B：技能专项深潜**（4-6 小时）
+- 模块 01-02（基础）
+- 根据目标跳至模块 04、05 或 06
+- 深度精读该模块
+- 按需链接到高级模式
 
----
+**路线 C：团队推广落地**（5-7 小时）
+- 模块 01-02（教授基础）
+- 模块 03（团队配置）
+- 模块 04-07（团队工作流）
+- 全团队运行 `/self-assessment`，识别知识缺口
+- 根据缺口制定后续培训计划
 
-### Module 03: Memory & Config (1 hour)
-**Goal:** Configure Claude Code for your workflow
+### 第三步：学习与验证
 
-- CLAUDE.md structure and hierarchy
-- Settings precedence (global → project → session)
-- Environment variables
-- **Exercise:** Create your first CLAUDE.md, customize settings
+每个模块包含：
+- 📖 **阅读**（10-30 分钟）—— 概念与心智模型
+- 🔨 **动手实践**（20-45 分钟）—— 来自 `examples/` 的真实案例
+- 📝 **验证**—— 运行 `/lesson-quiz [主题]` 检验理解
 
-**Complexity:** ⭐⭐ (Intermediate)
-**Read:** [03-memory.md](03-memory.md)
-**Then:** Part 3: Memory & Settings in main guide
+### 第四步：深入进阶
 
----
+完成本路径后，你有以下选择：
 
-### Module 04: Agents & Specialization (1.5 hours)
-**Goal:** Create focused agents for specific tasks
+**选项 A：深度参考**
+→ 跳至 `guide/ultimate-guide.md` 相关章节
 
-- When to use agents vs a single session
-- Tool restriction and isolation
-- Creating agents (AGENT.md format)
-- **Exercise:** Build 2 agents (generalist + specialist), test them
+**选项 B：掌握某一领域**
+→ 阅读专项指南（如 `guide/security/`、`guide/ops/`）
 
-**Complexity:** ⭐⭐ (Intermediate)
-**Read:** [04-agents.md](04-agents.md)
-**Then:** Part 4: Agents in main guide
+**选项 C：用插件构建**
+→ 从 `examples/plugins/` 安装插件包
 
----
-
-### Module 05: Skills & Automation (1.5 hours)
-**Goal:** Build reusable capabilities that trigger automatically
-
-- Skill lifecycle and frontmatter
-- Auto-invocation patterns
-- Bundling scripts with skills
-- **Exercise:** Create a skill that solves a repeated problem
-
-**Complexity:** ⭐⭐ (Intermediate)
-**Read:** [05-skills.md](05-skills.md)
-**Then:** Part 5: Skills in main guide
+**选项 D：自我评估**
+→ 运行 `/self-assessment comprehensive` 找出剩余知识缺口
 
 ---
 
-### Module 06: Hooks & Events (1 hour)
-**Goal:** Automate responses to system events
+## 模块详情
 
-- Hook events and matching
-- Pre-validation vs post-execution
-- Writing safe hooks
-- **Exercise:** Add 2 hooks (one pre, one post) to your config
+### 模块 01：安装与配置（15 分钟）
+**目标：** 让 Claude Code 运行起来并确认可用
 
-**Complexity:** ⭐⭐ (Intermediate)
-**Read:** [06-hooks.md](06-hooks.md)
-**Then:** Part 7: Hooks in main guide
+- 在你的平台上安装（macOS/Linux/Windows）
+- 运行第一条命令
+- 理解提示词 → 输出的循环
+- **练习：** 完成"前 5 分钟"工作流
 
----
-
-### Module 07: Advanced Patterns (2-3 hours)
-**Goal:** Orchestrate multi-agent workflows
-
-- Multi-agent teams and dependencies
-- Orchestration patterns
-- Error handling and recovery
-- **Exercise:** Design a 3-agent workflow for a realistic scenario
-
-**Complexity:** ⭐⭐⭐ (Advanced)
-**Read:** [07-advanced.md](07-advanced.md)
-**Then:** Part 9: Advanced Patterns in main guide
+**难度：** ⭐（入门）
+**阅读：** [01-installation.md](01-installation.md)
+**然后：** 完整指南 第 1 部分：快速上手
 
 ---
 
-## After the Learning Path
+### 模块 02：核心循环（45 分钟）
+**目标：** 在系统层面理解 Claude Code 的工作原理
 
-### Assessment
-Take `/self-assessment comprehensive` to:
-- Measure where you stand
-- Identify knowledge gaps
-- Get a personalized next-step plan
+- 交互循环（提示词 → 工具 → 决策 → 反馈）
+- 上下文与会话
+- 计划与思考模式
+- **练习：** 用 `/plan` 规划一个真实任务，观察流程
 
-### Specialization
-Choose where to go next:
+**难度：** ⭐（入门）
+**阅读：** [02-core-loop.md](02-core-loop.md)
+**然后：** 完整指南 第 2 部分：核心概念
 
-| Interest | Path |
+---
+
+### 模块 03：记忆与配置（1 小时）
+**目标：** 为你的工作流配置 Claude Code
+
+- CLAUDE.md 结构与层级
+- 设置优先级（全局 → 项目 → 会话）
+- 环境变量
+- **练习：** 创建你的第一个 CLAUDE.md，自定义设置
+
+**难度：** ⭐⭐（进阶）
+**阅读：** [03-memory.md](03-memory.md)
+**然后：** 完整指南 第 3 部分：记忆与设置
+
+---
+
+### 模块 04：智能体与专业化（1.5 小时）
+**目标：** 为特定任务创建专注型智能体
+
+- 何时使用智能体 vs. 单一会话
+- 工具限制与隔离
+- 创建智能体（AGENT.md 格式）
+- **练习：** 构建 2 个智能体（通用型 + 专业型）并测试
+
+**难度：** ⭐⭐（进阶）
+**阅读：** [04-agents.md](04-agents.md)
+**然后：** 完整指南 第 4 部分：智能体
+
+---
+
+### 模块 05：Skills 与自动化（1.5 小时）
+**目标：** 构建可自动触发的可复用能力
+
+- Skills（技能模块）生命周期与前置元数据
+- 自动调用模式
+- 将脚本与技能打包
+- **练习：** 创建一个解决重复性问题的技能
+
+**难度：** ⭐⭐（进阶）
+**阅读：** [05-skills.md](05-skills.md)
+**然后：** 完整指南 第 5 部分：Skills
+
+---
+
+### 模块 06：Hooks 与事件（1 小时）
+**目标：** 自动化系统事件的响应
+
+- Hook 事件与匹配规则
+- 前置验证 vs. 后置执行
+- 编写安全的 Hook
+- **练习：** 在你的配置中添加 2 个 Hook（一个前置，一个后置）
+
+**难度：** ⭐⭐（进阶）
+**阅读：** [06-hooks.md](06-hooks.md)
+**然后：** 完整指南 第 7 部分：Hooks
+
+---
+
+### 模块 07：高级模式（2-3 小时）
+**目标：** 编排多智能体工作流
+
+- 多智能体团队与依赖关系
+- 编排模式
+- 错误处理与恢复
+- **练习：** 为真实场景设计一个 3 智能体工作流
+
+**难度：** ⭐⭐⭐（高级）
+**阅读：** [07-advanced.md](07-advanced.md)
+**然后：** 完整指南 第 9 部分：高级模式
+
+---
+
+## 完成学习路径之后
+
+### 自我评估
+运行 `/self-assessment comprehensive` 来：
+- 衡量你的当前水平
+- 识别知识缺口
+- 获取个性化下一步计划
+
+### 专业化方向
+选择你的进阶方向：
+
+| 兴趣方向 | 推荐路径 |
 |----------|------|
-| **Security & Production** | → `guide/security/` (43KB) |
-| **DevOps & Operations** | → `guide/ops/` (113KB) |
-| **Architecture & Design** | → `guide/core/architecture.md` (77KB) |
-| **Building with AI** | → `guide/roles/learning-with-ai.md` (53KB) |
-| **Teams & Adoption** | → `guide/roles/adoption-approaches.md` (15KB) |
+| **安全与生产** | → `guide/security/`（43KB） |
+| **DevOps 与运维** | → `guide/ops/`（113KB） |
+| **架构与设计** | → `guide/core/architecture.md`（77KB） |
+| **AI 应用开发** | → `guide/roles/learning-with-ai.md`（53KB） |
+| **团队推广** | → `guide/roles/adoption-approaches.md`（15KB） |
 
-### Practice
-Try one of the practice projects from `/self-assessment` results:
-- Project 1: Your first automation workflow
-- Project 2: Team configuration
-- Project 3: Production-grade setup
-
----
-
-## Time Estimates
-
-**For different goals:**
-
-- **Just getting started:** 2 hours (Modules 01-02 only)
-- **Daily usage:** 6 hours (Modules 01-05)
-- **Team adoption:** 8-11 hours (Modules 01-07)
-- **Deep mastery:** 15-20 hours (Path + guide deep-dives)
-- **Specialization:** 20-30+ hours (Path + domain expertise)
+### 动手实践
+尝试 `/self-assessment` 结果中推荐的实践项目：
+- 项目 1：你的第一个自动化工作流
+- 项目 2：团队配置
+- 项目 3：生产级配置
 
 ---
 
-## What You'll Be Able to Do
+## 时间估算
 
-After this learning path, you'll:
+**不同目标对应用时：**
 
-✓ Navigate Claude Code without the docs
-✓ Create custom agents and skills for your workflow
-✓ Configure team-level settings and governance
-✓ Build multi-agent orchestration
-✓ Automate repetitive tasks with hooks
-✓ Know where to go for deeper expertise
-
----
-
-## Common Questions
-
-**Q: Can I skip modules?**
-A: Yes, but 01-03 are prerequisites. If you know basics, start at 04.
-
-**Q: How long does it really take?**
-A: 8-11 hours for the full path. Budget extra time for exercises.
-
-**Q: Do I need prior Claude Code experience?**
-A: No, start at Module 01. If you've used it before, skim 01-02.
-
-**Q: After this, what's the full guide?**
-A: `guide/ultimate-guide.md` (25K lines) is your reference. This path gets you to the point where you can read it effectively.
+- **刚刚起步：** 2 小时（仅模块 01-02）
+- **日常使用：** 6 小时（模块 01-05）
+- **团队推广：** 8-11 小时（模块 01-07）
+- **深度掌握：** 15-20 小时（路径 + 指南深度精读）
+- **专业化：** 20-30+ 小时（路径 + 领域专业知识）
 
 ---
 
-## Ready? Start Here
+## 学完之后你能做什么
 
-**First time:** → [Module 01: Installation](01-installation.md)
-**Already using Claude Code:** → Assess your level, jump to relevant module
-**Team adoption:** → [Module 03: Memory & Config](03-memory.md)
+完成本学习路径后，你将能够：
+
+✓ 不查文档也能熟练使用 Claude Code
+✓ 为你的工作流创建自定义智能体和 Skills
+✓ 配置团队级设置与治理规则
+✓ 构建多智能体编排流程
+✓ 用 Hooks 自动化重复性任务
+✓ 知道如何寻找更深度的专业知识
 
 ---
 
-**Or take the quick assessment:** `/self-assessment quick` (5 minutes)
+## 常见问题
+
+**Q：可以跳过某些模块吗？**
+A：可以，但 01-03 是前置要求。如果你已了解基础，从 04 开始即可。
+
+**Q：实际需要多长时间？**
+A：完整路径约 8-11 小时。练习需要额外留出时间。
+
+**Q：需要 Claude Code 使用经验吗？**
+A：不需要，从模块 01 开始即可。如果你用过，可以快速浏览 01-02。
+
+**Q：完成后，完整指南是什么？**
+A：`guide/ultimate-guide.md`（25K 行）是你的参考手册。本路径让你具备有效阅读它的基础。
+
+---
+
+## 准备好了？从这里开始
+
+**第一次使用：** → [模块 01：安装](01-installation.md)
+**已有使用经验：** → 评估你的水平，跳至对应模块
+**团队推广：** → [模块 03：记忆与配置](03-memory.md)
+
+---
+
+**或者先做快速评估：** `/self-assessment quick`（5 分钟）

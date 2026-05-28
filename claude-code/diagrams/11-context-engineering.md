@@ -1,48 +1,48 @@
 > 📚 **AI Spark Wiki** · Claude Code 知识库
 
 ---
-title: "Claude Code — Context Engineering Diagrams"
-description: "3-layer context system, adherence degradation, modular architecture, rule placement decision tree"
-tags: [context-engineering, configuration, architecture, modular, adherence]
+title: "Claude Code — 上下文工程图表"
+description: "3 层上下文系统、遵循度退化、模块化架构、规则放置决策树"
+tags: [上下文工程, 配置, 架构, 模块化, 遵循度]
 ---
 
-# Context Engineering
+# 上下文工程
 
-How to fill Claude's context window with the right information at the right time — and how architectural choices determine whether Claude consistently follows your conventions.
+如何在正确的时间将正确的信息填充到 Claude 的上下文窗口中——以及架构选择如何决定 Claude 是否能持续遵循你的规范。
 
-> "Context engineering is the art of filling the context window with the right information at the right time." — Andrej Karpathy
+> "上下文工程是一门艺术，目标是在正确的时间将正确的信息填充到上下文窗口中。" — Andrej Karpathy
 
 ---
 
-### The 3-Layer Context System
+### 3 层上下文系统
 
-Context engineering operates across 3 distinct layers with different scopes and persistence. Understanding which layer to use prevents the most common mistake: cramming everything into one file.
+上下文工程跨越 3 个不同层次，各有不同的作用域和持久性。理解该使用哪一层，可以避免最常见的错误：将所有内容都塞进一个文件。
 
 ```mermaid
 flowchart TD
-    subgraph GLOBAL["🌍 Layer 1: Global — ~/.claude/CLAUDE.md"]
-        G1["Identity & tone preferences"]
-        G2["Universal tool preferences"]
-        G3["Cross-project coding conventions"]
-        G4["Target: under 200 lines"]
+    subgraph GLOBAL["🌍 第 1 层：全局 — ~/.claude/CLAUDE.md"]
+        G1["身份与语气偏好"]
+        G2["通用工具偏好"]
+        G3["跨项目编码规范"]
+        G4["目标：200 行以内"]
     end
 
-    subgraph PROJECT["📁 Layer 2: Project — ./CLAUDE.md + path modules"]
-        P1["Stack & architecture decisions"]
-        P2["Team conventions + deployment rules"]
-        P3["Path-scoped @imports for subsystems"]
-        P4["Target: under 150 lines (root) + modules"]
+    subgraph PROJECT["📁 第 2 层：项目 — ./CLAUDE.md + 路径模块"]
+        P1["技术栈与架构决策"]
+        P2["团队规范 + 部署规则"]
+        P3["子系统的路径作用域 @imports"]
+        P4["目标：根目录 150 行以内 + 模块"]
     end
 
-    subgraph SESSION["⚡ Layer 3: Session — inline instructions, /add, flags"]
-        S1["One-off task constraints"]
-        S2["Temporary overrides"]
-        S3["Ephemeral — not persisted after session"]
+    subgraph SESSION["⚡ 第 3 层：会话 — 内联指令、/add、CLI 参数"]
+        S1["一次性任务约束"]
+        S2["临时覆盖"]
+        S3["临时 — 会话结束后不持久"]
     end
 
     GLOBAL --> PROJECT --> SESSION
 
-    OVR["Override order: Session > Project > Global<br/>More specific beats less specific<br/>Later-declared beats earlier at same level"] -.-> SESSION
+    OVR["覆盖顺序：会话 > 项目 > 全局<br/>更具体的覆盖不那么具体的<br/>同一层级中后声明的覆盖先声明的"] -.-> SESSION
 
     style G1 fill:#E87E2F,color:#fff
     style G2 fill:#E87E2F,color:#fff
@@ -57,59 +57,59 @@ flowchart TD
     style S3 fill:#B8B8B8,color:#333
     style OVR fill:#7BC47F,color:#333
 
-    click G1 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/core/context-engineering.md#3-configuration-hierarchy" "Identity & tone"
-    click G2 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/core/context-engineering.md#3-configuration-hierarchy" "Universal tools"
-    click G3 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/core/context-engineering.md#3-configuration-hierarchy" "Cross-project conventions"
-    click G4 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/core/context-engineering.md#3-configuration-hierarchy" "Target: under 200 lines"
-    click P1 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/core/context-engineering.md#3-configuration-hierarchy" "Stack & architecture"
-    click P2 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/core/context-engineering.md#3-configuration-hierarchy" "Team conventions"
-    click P3 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/core/context-engineering.md#3-configuration-hierarchy" "Path-scoped imports"
-    click P4 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/core/context-engineering.md#4-modular-architecture" "Target: under 150 lines"
-    click S1 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/core/context-engineering.md#3-configuration-hierarchy" "One-off constraints"
-    click S2 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/core/context-engineering.md#3-configuration-hierarchy" "Temporary overrides"
-    click S3 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/core/context-engineering.md#3-configuration-hierarchy" "Ephemeral"
-    click OVR href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/core/context-engineering.md#3-configuration-hierarchy" "Override semantics"
+    click G1 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/core/context-engineering.md#3-configuration-hierarchy" "身份与语气"
+    click G2 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/core/context-engineering.md#3-configuration-hierarchy" "通用工具"
+    click G3 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/core/context-engineering.md#3-configuration-hierarchy" "跨项目规范"
+    click G4 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/core/context-engineering.md#3-configuration-hierarchy" "目标：200 行以内"
+    click P1 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/core/context-engineering.md#3-configuration-hierarchy" "技术栈与架构"
+    click P2 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/core/context-engineering.md#3-configuration-hierarchy" "团队规范"
+    click P3 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/core/context-engineering.md#3-configuration-hierarchy" "路径作用域 imports"
+    click P4 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/core/context-engineering.md#4-modular-architecture" "目标：150 行以内"
+    click S1 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/core/context-engineering.md#3-configuration-hierarchy" "一次性约束"
+    click S2 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/core/context-engineering.md#3-configuration-hierarchy" "临时覆盖"
+    click S3 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/core/context-engineering.md#3-configuration-hierarchy" "临时"
+    click OVR href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/core/context-engineering.md#3-configuration-hierarchy" "覆盖语义"
 ```
 
 <details>
-<summary>ASCII version</summary>
+<summary>ASCII 版本</summary>
 
 ```
-GLOBAL ~/.claude/CLAUDE.md     → Identity, universal tools, cross-project conventions (<200 lines)
-    │ overridden by ↓
-PROJECT ./CLAUDE.md + modules  → Stack, architecture, team rules, path-scoped @imports (<150 lines root)
-    │ overridden by ↓
-SESSION inline / /add / flags  → One-off constraints, temporary overrides (ephemeral)
+全局 ~/.claude/CLAUDE.md     → 身份、通用工具、跨项目规范（<200 行）
+    │ 被以下覆盖 ↓
+项目 ./CLAUDE.md + 模块       → 技术栈、架构、团队规则、路径作用域 @imports（根目录 <150 行）
+    │ 被以下覆盖 ↓
+会话 内联 / /add / 参数       → 一次性约束、临时覆盖（临时）
 
-Override order: Session > Project > Global
-More specific beats less specific at the same level
+覆盖顺序：会话 > 项目 > 全局
+同一层级中更具体的覆盖不那么具体的
 ```
 
 </details>
 
-> **Source**: [Context Engineering — Configuration Hierarchy](../core/context-engineering.md#3-configuration-hierarchy)
+> **来源**：[上下文工程 — 配置层级](../core/context-engineering.md#3-configuration-hierarchy)
 
 ---
 
-### Context Budget & Adherence Degradation
+### 上下文预算与遵循度退化
 
-Adherence to CLAUDE.md rules degrades predictably as file size grows. Beyond ~150 rules, models begin selectively ignoring instructions. Path-scoping is the primary fix — it reduces always-on context by 40-50% without losing coverage.
+随着文件大小增长，对 CLAUDE.md 规则的遵循度会有规律地退化。超过约 150 条规则后，模型开始选择性地忽略指令。路径作用域是主要的修复手段——它可以在不减少覆盖范围的前提下，将始终在线的上下文减少 40-50%。
 
 ```mermaid
 flowchart LR
-    subgraph ZONES["Adherence by CLAUDE.md lines"]
-        Z1["1–100 lines<br/>~95% adherence ✓"]
-        Z2["100–200 lines<br/>~88% adherence"]
-        Z3["200–400 lines<br/>~75% adherence ⚠️"]
-        Z4["400–600 lines<br/>~60% adherence"]
-        Z5["600+ lines<br/>~45% and falling ✗"]
+    subgraph ZONES["按 CLAUDE.md 行数划分的遵循度"]
+        Z1["1–100 行<br/>~95% 遵循度 ✓"]
+        Z2["100–200 行<br/>~88% 遵循度"]
+        Z3["200–400 行<br/>~75% 遵循度 ⚠️"]
+        Z4["400–600 行<br/>~60% 遵循度"]
+        Z5["600+ 行<br/>~45% 且持续下降 ✗"]
     end
 
     Z1 --> Z2 --> Z3 --> Z4 --> Z5
 
-    FIX["✅ Path-scoping fix:<br/>Root CLAUDE.md: shared rules only (~2K tokens)<br/>Per subsystem: module loaded on demand<br/>Result: 40–50% always-on reduction<br/>Adherence stays in green zone"] -.-> Z1
+    FIX["✅ 路径作用域修复方案：<br/>根 CLAUDE.md：仅共享规则（~2K Token）<br/>按子系统：模块按需加载<br/>结果：始终在线减少 40–50%<br/>遵循度保持在绿色区域"] -.-> Z1
 
-    SIGNALS["🔴 Signs of context overload:<br/>Rule silencing (80% followed, some ignored)<br/>Contradictory behavior across files<br/>Generic outputs instead of project-specific<br/>Slow first responses"] -.-> Z5
+    SIGNALS["🔴 上下文超载的迹象：<br/>规则静默（80% 遵循，部分被忽略）<br/>跨文件行为矛盾<br/>通用输出而非项目专属输出<br/>首次响应缓慢"] -.-> Z5
 
     style Z1 fill:#7BC47F,color:#333
     style Z2 fill:#7BC47F,color:#333
@@ -119,48 +119,48 @@ flowchart LR
     style FIX fill:#7BC47F,color:#333
     style SIGNALS fill:#E85D5D,color:#fff
 
-    click Z1 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/core/context-engineering.md#2-the-context-budget" "1-100 lines: ~95%"
-    click Z2 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/core/context-engineering.md#2-the-context-budget" "100-200 lines: ~88%"
-    click Z3 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/core/context-engineering.md#2-the-context-budget" "200-400 lines: ~75%"
-    click Z4 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/core/context-engineering.md#2-the-context-budget" "400-600 lines: ~60%"
-    click Z5 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/core/context-engineering.md#2-the-context-budget" "600+ lines: ~45%"
-    click FIX href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/core/context-engineering.md#2-the-context-budget" "Path-scoping fix"
-    click SIGNALS href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/core/context-engineering.md#2-the-context-budget" "Signs of overload"
+    click Z1 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/core/context-engineering.md#2-the-context-budget" "1-100 行：~95%"
+    click Z2 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/core/context-engineering.md#2-the-context-budget" "100-200 行：~88%"
+    click Z3 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/core/context-engineering.md#2-the-context-budget" "200-400 行：~75%"
+    click Z4 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/core/context-engineering.md#2-the-context-budget" "400-600 行：~60%"
+    click Z5 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/core/context-engineering.md#2-the-context-budget" "600+ 行：~45%"
+    click FIX href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/core/context-engineering.md#2-the-context-budget" "路径作用域修复方案"
+    click SIGNALS href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/core/context-engineering.md#2-the-context-budget" "超载迹象"
 ```
 
 <details>
-<summary>ASCII version</summary>
+<summary>ASCII 版本</summary>
 
 ```
-Lines in CLAUDE.md    Adherence    Status
-──────────────────    ─────────    ──────
-1 – 100               ~95%         ✓ Green zone
-100 – 200             ~88%         ✓ Acceptable
-200 – 400             ~75%         ⚠️ Caution
-400 – 600             ~60%         ✗ Degraded
-600+                  ~45% ↓       ✗ Critical
+CLAUDE.md 行数     遵循度     状态
+──────────────     ─────────  ──────
+1 – 100            ~95%       ✓ 绿色区域
+100 – 200          ~88%       ✓ 可接受
+200 – 400          ~75%       ⚠️ 注意
+400 – 600          ~60%       ✗ 退化
+600+               ~45% ↓     ✗ 危急
 
-Fix: path-scope by subsystem → root CLAUDE.md stays <150 lines
-Result: 40-50% always-on context reduction, adherence back in green zone
+修复方案：按子系统路径作用域 → 根 CLAUDE.md 保持 <150 行
+结果：始终在线上下文减少 40-50%，遵循度回到绿色区域
 ```
 
 </details>
 
-> **Source**: [Context Budget](../core/context-engineering.md#2-the-context-budget) — Adherence data: HumanLayer production data (15-25% improvement with structured context)
+> **来源**：[上下文预算](../core/context-engineering.md#2-the-context-budget) — 遵循度数据：HumanLayer 生产数据（结构化上下文提升 15-25%）
 
 ---
 
-### Monolithic vs. Modular Architecture
+### 单体 vs 模块化架构
 
-The monolithic CLAUDE.md is the most common failure mode in team contexts. Path-scoped modules fix it by loading only what's relevant for the current task.
+单体 CLAUDE.md 是团队场景中最常见的失败模式。路径作用域模块通过仅加载当前任务相关内容来修复这一问题。
 
 ```mermaid
 flowchart TD
-    subgraph BAD["❌ Anti-Pattern: Monolithic CLAUDE.md"]
-        B1(["CLAUDE.md (600 lines)<br/>API rules + DB rules + UI rules<br/>+ Deploy rules — all mixed together"])
-        B2("All 600 lines loaded<br/>for every session, every file")
-        B3("Rules 1–20 get ~95% attention<br/>Rules 500+ get ~30% attention")
-        B4(["Adherence degrades continuously"])
+    subgraph BAD["❌ 反模式：单体 CLAUDE.md"]
+        B1(["CLAUDE.md（600 行）<br/>API 规则 + DB 规则 + UI 规则<br/>+ 部署规则 — 全部混在一起"])
+        B2("全部 600 行<br/>在每次会话、每个文件时加载")
+        B3("规则 1-20 获得 ~95% 关注<br/>规则 500+ 获得 ~30% 关注")
+        B4(["遵循度持续退化"])
         B1 --> B2 --> B3 --> B4
         style B1 fill:#E85D5D,color:#fff
         style B2 fill:#E85D5D,color:#fff
@@ -168,12 +168,12 @@ flowchart TD
         style B4 fill:#E85D5D,color:#fff
     end
 
-    subgraph GOOD["✅ Best Practice: Path-Scoped Modules"]
-        G1(["CLAUDE.md root (~100 lines)<br/>Shared rules only + @import declarations"])
-        G2["src/api/CLAUDE-api.md<br/>Loaded ONLY when in src/api/"]
-        G3["src/components/CLAUDE-components.md<br/>Loaded ONLY when in src/components/"]
-        G4["prisma/CLAUDE-db.md<br/>Loaded ONLY when in prisma/"]
-        G5(["Each module: full coverage<br/>Always-on: 40–50% smaller"])
+    subgraph GOOD["✅ 最佳实践：路径作用域模块"]
+        G1(["CLAUDE.md 根目录（~100 行）<br/>仅共享规则 + @import 声明"])
+        G2["src/api/CLAUDE-api.md<br/>仅在 src/api/ 中时加载"]
+        G3["src/components/CLAUDE-components.md<br/>仅在 src/components/ 中时加载"]
+        G4["prisma/CLAUDE-db.md<br/>仅在 prisma/ 中时加载"]
+        G5(["每个模块：完整覆盖<br/>始终在线：减少 40–50%"])
         G1 --> G2
         G1 --> G3
         G1 --> G4
@@ -185,58 +185,58 @@ flowchart TD
         style G5 fill:#7BC47F,color:#333
     end
 
-    click B1 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/core/context-engineering.md#4-modular-architecture" "Anti-pattern: monolith"
-    click B4 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/core/context-engineering.md#2-the-context-budget" "Adherence degradation"
-    click G1 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/core/context-engineering.md#4-modular-architecture" "Root CLAUDE.md"
-    click G2 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/core/context-engineering.md#4-modular-architecture" "API module"
-    click G3 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/core/context-engineering.md#4-modular-architecture" "Components module"
-    click G4 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/core/context-engineering.md#4-modular-architecture" "DB module"
-    click G5 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/core/context-engineering.md#4-modular-architecture" "Result: coverage with less bloat"
+    click B1 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/core/context-engineering.md#4-modular-architecture" "反模式：单体"
+    click B4 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/core/context-engineering.md#2-the-context-budget" "遵循度退化"
+    click G1 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/core/context-engineering.md#4-modular-architecture" "根 CLAUDE.md"
+    click G2 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/core/context-engineering.md#4-modular-architecture" "API 模块"
+    click G3 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/core/context-engineering.md#4-modular-architecture" "组件模块"
+    click G4 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/core/context-engineering.md#4-modular-architecture" "DB 模块"
+    click G5 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/core/context-engineering.md#4-modular-architecture" "结果：覆盖完整，负担更小"
 ```
 
 <details>
-<summary>ASCII version</summary>
+<summary>ASCII 版本</summary>
 
 ```
-BAD: CLAUDE.md (600 lines, everything mixed)
-  → All 600 lines loaded every session
-  → Rules 500+ get ~30% attention weight
-  → Adherence degrades continuously
+差：CLAUDE.md（600 行，所有内容混在一起）
+  → 每次会话加载全部 600 行
+  → 规则 500+ 仅获得 ~30% 的注意权重
+  → 遵循度持续退化
 
-GOOD: Root CLAUDE.md (~100 lines, shared only)
-  + src/api/CLAUDE-api.md      ← loaded only when editing API files
-  + src/components/CLAUDE-*.md ← loaded only when editing components
-  + prisma/CLAUDE-db.md        ← loaded only when editing DB files
+好：根 CLAUDE.md（~100 行，仅共享内容）
+  + src/api/CLAUDE-api.md      ← 仅在编辑 API 文件时加载
+  + src/components/CLAUDE-*.md ← 仅在编辑组件时加载
+  + prisma/CLAUDE-db.md        ← 仅在编辑 DB 文件时加载
 
-Result: 40-50% reduction in always-on tokens, full coverage per subsystem
+结果：始终在线 Token 减少 40-50%，每个子系统覆盖完整
 ```
 
 </details>
 
-> **Source**: [Modular Architecture](../core/context-engineering.md#4-modular-architecture) — Path-scoping pattern
+> **来源**：[模块化架构](../core/context-engineering.md#4-modular-architecture) — 路径作用域模式
 
 ---
 
-### Rule Placement Decision Tree
+### 规则放置决策树
 
-Every new instruction or convention needs to land in the right layer. Wrong placement wastes tokens (too global) or loses coverage (too scoped). This tree makes the decision explicit.
+每条新指令或规范都需要落在正确的层级。放置错误会浪费 Token（过于全局化）或降低覆盖率（作用域过窄）。这个决策树让选择变得明确。
 
 ```mermaid
 flowchart TD
-    A([New rule or instruction to place]) --> B{Relevant to\nevery project\nyou work on?}
-    B -->|Yes| C([Global CLAUDE.md<br/>~/.claude/CLAUDE.md])
+    A([需要放置的新规则或指令]) --> B{与你参与的\n每个项目都相关？}
+    B -->|是| C([全局 CLAUDE.md<br/>~/.claude/CLAUDE.md])
 
-    B -->|No| D{Specific to\ncertain files\nor subsystems?}
-    D -->|Yes| E([Path-scoped module<br/>e.g. src/api/CLAUDE-api.md])
+    B -->|否| D{特定于\n某些文件\n或子系统？}
+    D -->|是| E([路径作用域模块<br/>例如 src/api/CLAUDE-api.md])
 
-    D -->|No| F{Procedural<br/>step-by-step\nworkflow?}
-    F -->|Yes: how to do something| G([Skill file<br/>.claude/skills/task-name.md<br/>Loaded on demand, not always-on])
+    D -->|否| F{是逐步操作的\n程序性\n工作流？}
+    F -->|是：如何做某事| G([Skills 文件<br/>.claude/skills/task-name.md<br/>按需加载，非始终在线])
 
-    F -->|No: constraint or standard| H{Applies to<br/>whole project?}
-    H -->|Yes| I([Project CLAUDE.md root<br/>./CLAUDE.md])
-    H -->|No: one task only| J([Session inline instruction<br/>Tell Claude directly this session])
+    F -->|否：约束或标准| H{适用于<br/>整个项目？}
+    H -->|是| I([项目根 CLAUDE.md<br/>./CLAUDE.md])
+    H -->|否：仅本次任务| J([会话内联指令<br/>本次会话直接告诉 Claude])
 
-    RULE["Rule of thumb:<br/>If you write it more than once<br/>it belongs in a permanent layer"] -.-> J
+    RULE["经验法则：<br/>如果你写了不止一次<br/>它就应该在永久层级中"] -.-> J
 
     style A fill:#F5E6D3,color:#333
     style B fill:#E87E2F,color:#fff
@@ -250,38 +250,38 @@ flowchart TD
     style J fill:#F5E6D3,color:#333
     style RULE fill:#7BC47F,color:#333
 
-    click A href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/core/context-engineering.md#3-configuration-hierarchy" "New rule to place"
-    click B href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/core/context-engineering.md#3-configuration-hierarchy" "Relevant to every project?"
-    click C href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#31-memory-files-claudemd" "Global CLAUDE.md"
-    click D href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/core/context-engineering.md#4-modular-architecture" "Specific to certain files?"
-    click E href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/core/context-engineering.md#4-modular-architecture" "Path-scoped module"
-    click F href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/core/context-engineering.md#4-modular-architecture" "Procedural workflow?"
-    click G href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#51-understanding-skills" "Skill file"
-    click H href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/core/context-engineering.md#3-configuration-hierarchy" "Whole project?"
-    click I href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#31-memory-files-claudemd" "Project CLAUDE.md root"
-    click J href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/core/context-engineering.md#3-configuration-hierarchy" "Session inline"
-    click RULE href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/core/context-engineering.md#3-configuration-hierarchy" "Rule of thumb"
+    click A href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/core/context-engineering.md#3-configuration-hierarchy" "需要放置的新规则"
+    click B href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/core/context-engineering.md#3-configuration-hierarchy" "与每个项目都相关？"
+    click C href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#31-memory-files-claudemd" "全局 CLAUDE.md"
+    click D href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/core/context-engineering.md#4-modular-architecture" "特定于某些文件？"
+    click E href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/core/context-engineering.md#4-modular-architecture" "路径作用域模块"
+    click F href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/core/context-engineering.md#4-modular-architecture" "程序性工作流？"
+    click G href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#51-understanding-skills" "Skills 文件"
+    click H href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/core/context-engineering.md#3-configuration-hierarchy" "适用于整个项目？"
+    click I href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#31-memory-files-claudemd" "项目根 CLAUDE.md"
+    click J href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/core/context-engineering.md#3-configuration-hierarchy" "会话内联"
+    click RULE href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/core/context-engineering.md#3-configuration-hierarchy" "经验法则"
 ```
 
 <details>
-<summary>ASCII version</summary>
+<summary>ASCII 版本</summary>
 
 ```
-New rule to place
+需要放置的新规则
 │
-Relevant to every project? ──Yes──► Global CLAUDE.md (~/.claude/CLAUDE.md)
-│ No
-Specific to certain files/subsystems? ──Yes──► Path-scoped module (src/area/CLAUDE-area.md)
-│ No
-Procedural step-by-step? ──Yes──► Skill file (.claude/skills/) [loaded on demand]
-│ No
-Applies to whole project? ──Yes──► Project CLAUDE.md root (./CLAUDE.md)
-│ No
-└──► Session inline instruction (ephemeral)
+与每个项目都相关？──是──► 全局 CLAUDE.md（~/.claude/CLAUDE.md）
+│ 否
+特定于某些文件/子系统？──是──► 路径作用域模块（src/area/CLAUDE-area.md）
+│ 否
+逐步操作的程序性？──是──► Skills 文件（.claude/skills/）[按需加载]
+│ 否
+适用于整个项目？──是──► 项目根 CLAUDE.md（./CLAUDE.md）
+│ 否
+└──► 会话内联指令（临时）
 
-Rule of thumb: if you say it more than once, promote it to a permanent layer.
+经验法则：如果你说了不止一次，就将其提升到永久层级。
 ```
 
 </details>
 
-> **Source**: [Rule Placement](../core/context-engineering.md#3-configuration-hierarchy) — Decision tree from §3
+> **来源**：[规则放置](../core/context-engineering.md#3-configuration-hierarchy) — 第 3 节决策树

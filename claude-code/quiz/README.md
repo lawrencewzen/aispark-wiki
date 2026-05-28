@@ -1,88 +1,88 @@
 > 📚 **AI Spark Wiki** · Claude Code 知识库
 
-# Claude Code Knowledge Quiz
+# Claude Code 知识测验
 
-Test your understanding of Claude Code with interactive multiple-choice questions.
+通过交互式多选题测试你对 Claude Code 的理解。
 
 [![Node.js](https://img.shields.io/badge/Node.js-18+-green.svg)](https://nodejs.org/)
 [![Platform](https://img.shields.io/badge/Platform-macOS%20%7C%20Linux%20%7C%20Windows-blue.svg)]()
 
-## Quick Start
+## 快速开始
 
 ```bash
-# Navigate to quiz directory
+# 进入 quiz 目录
 cd quiz
 
-# Install dependencies
+# 安装依赖
 npm install
 
-# Run the quiz
+# 运行测验
 npm start
 
-# Or run directly
+# 或直接运行
 node src/index.js
 ```
 
-## Features
+## 功能特色
 
-- **4 User Profiles**: Junior, Senior, Power User, Product Manager
-- **10 Topic Categories**: From Quick Start to Advanced Patterns
-- **159 Curated Questions**: Practical knowledge, not trivia
-- **Immediate Feedback**: Learn from mistakes with explanations
-- **Documentation Links**: Direct references to guide sections
-- **Score Tracking**: See strengths and weak areas
-- **Session Persistence**: History saved to `~/.claude-quiz/`
-- **Cross-Platform**: Works on macOS, Linux, and Windows
+- **4 种用户画像**：初级、高级、资深用户、产品经理
+- **10 个主题分类**：从快速上手到高级模式全覆盖
+- **159 道精选题目**：考察实用知识，而非死记硬背
+- **即时反馈**：从错题中学习，附带详细解析
+- **文档链接**：直接引用指南对应章节
+- **得分追踪**：了解强项和薄弱环节
+- **会话持久化**：历史记录保存至 `~/.claude-quiz/`
+- **跨平台支持**：兼容 macOS、Linux 和 Windows
 
-## Usage
+## 使用方法
 
-### Interactive Mode (Recommended)
+### 交互模式（推荐）
 
 ```bash
 npm start
 ```
 
-You'll be prompted to:
-1. Select your profile (Junior/Senior/Power User/PM)
-2. Choose topics (all or specific sections)
-3. Answer questions with A/B/C/D
+系统会提示你：
+1. 选择用户画像（初级/高级/资深用户/产品经理）
+2. 选择主题（全部或指定章节）
+3. 用 A/B/C/D 回答问题
 
-### Command Line Options
+### 命令行选项
 
 ```bash
 node src/index.js [options]
 
 Options:
-  -p, --profile <type>   Pre-select profile (junior|senior|power|pm)
-  -t, --topics <list>    Quiz specific sections (1-10, comma-separated)
-  -c, --count <n>        Limit number of questions (1-50)
-  -d, --dynamic          Enable dynamic question generation via claude -p
-  -h, --help             Show help message
-  -v, --version          Show version
+  -p, --profile <type>   预选用户画像 (junior|senior|power|pm)
+  -t, --topics <list>    指定测验章节 (1-10，逗号分隔)
+  -c, --count <n>        限制题目数量 (1-50)
+  -d, --dynamic          通过 claude -p 启用动态题目生成
+  -h, --help             显示帮助信息
+  -v, --version          显示版本号
 ```
 
-### Examples
+### 示例
 
 ```bash
-# Interactive mode
+# 交互模式
 npm start
 
-# Senior profile, default topics
+# 高级画像，默认主题
 node src/index.js -p senior
 
-# Power user, specific topics (Agents, Hooks, MCP)
+# 资深用户，指定主题（智能体、Hooks、MCP）
 node src/index.js -p power -t 4,7,8
 
-# Quick 10-question quiz
+# 快速 10 题测验
 node src/index.js -c 10
 
-# Junior profile with dynamic generation
+# 初级画像 + 动态题目生成
 node src/index.js -p junior -d
 ```
 
-## Example Session
+## 示例会话
 
-Here's what a typical quiz session looks like:
+以下是一次典型测验会话的样子：
 
 ```
 ============================================================
@@ -169,31 +169,31 @@ Time: 9 minutes 2 seconds
   Exit
 ```
 
-## Profiles
+## 用户画像
 
-| Profile | Questions | Focus Areas |
+| 画像 | 题目数量 | 重点章节 |
 |---------|-----------|-------------|
-| **Junior Developer** | 15 | Sections 1-3, 6 (essentials) |
-| **Senior Developer** | 20 | Sections 2-4, 7, 9 (architecture, automation) |
-| **Power User** | 25 | All sections |
-| **Product Manager** | 10 | Sections 1-3 (conceptual overview) |
+| **初级开发者** | 15 | 第 1-3、6 章（基础必备） |
+| **高级开发者** | 20 | 第 2-4、7、9 章（架构、自动化） |
+| **资深用户** | 25 | 全部章节 |
+| **产品经理** | 10 | 第 1-3 章（概念概览） |
 
-## Topics
+## 主题分类
 
-| # | Topic | Key Concepts |
+| # | 主题 | 核心概念 |
 |---|-------|--------------|
-| 1 | Quick Start & Installation | Installation, first workflow, essential commands |
-| 2 | Core Concepts | Context management, Plan Mode, interaction loop |
-| 3 | Memory & Settings | CLAUDE.md, .claude/ folder, permissions |
-| 4 | Agents | Custom agents, specialization, orchestration |
-| 5 | Skills | Reusable knowledge, skill composition |
-| 6 | Commands | Slash commands, custom commands |
-| 7 | Hooks | Event system, security hooks, exit codes |
-| 8 | MCP Servers | Context7, Serena, Sequential, plugins |
-| 9 | Advanced Patterns | The Trinity, CI/CD, composition |
-| 10 | Reference | Shortcuts, troubleshooting, daily workflow |
+| 1 | 快速上手与安装 | 安装、首次工作流、核心命令 |
+| 2 | 核心概念 | 上下文管理、计划模式、交互循环 |
+| 3 | 记忆与设置 | CLAUDE.md、.claude/ 文件夹、权限 |
+| 4 | 智能体 | 自定义智能体、专业化、编排 |
+| 5 | Skills（技能模块） | 可复用知识、技能组合 |
+| 6 | 命令 | 斜杠命令、自定义命令 |
+| 7 | Hooks（钩子） | 事件系统、安全钩子、退出码 |
+| 8 | MCP 服务器 | Context7、Serena、Sequential、插件 |
+| 9 | 高级模式 | 三位一体、CI/CD、组合 |
+| 10 | 参考速查 | 快捷键、故障排查、日常工作流 |
 
-## Quiz Flow
+## 测验流程
 
 ```
 ┌─────────────────────────────────────────────┐
@@ -202,129 +202,129 @@ Time: 9 minutes 2 seconds
                      │
                      ▼
 ┌─────────────────────────────────────────────┐
-│  Select Profile (Junior/Senior/Power/PM)    │
+│  选择用户画像（初级/高级/资深/产品经理）       │
 └─────────────────────────────────────────────┘
                      │
                      ▼
 ┌─────────────────────────────────────────────┐
-│  Select Topics (All or Specific 1-10)       │
+│  选择主题（全部或指定 1-10）                  │
 └─────────────────────────────────────────────┘
                      │
                      ▼
 ┌─────────────────────────────────────────────┐
-│  Question 1/20 [Category]                   │
+│  第 1/20 题 [类别]                           │
 │                                             │
-│  What is the recommended action when...?    │
+│  以下场景中推荐的操作是什么？                 │
 │                                             │
-│    A) Option A                              │
-│    B) Option B                              │
-│    C) Option C                              │
-│    D) Option D                              │
+│    A) 选项 A                                │
+│    B) 选项 B                                │
+│    C) 选项 C                                │
+│    D) 选项 D                                │
 └─────────────────────────────────────────────┘
                      │
             ┌────────┴────────┐
             ▼                 ▼
      ┌──────────┐      ┌──────────────────┐
-     │ CORRECT! │      │ INCORRECT        │
-     │          │      │ Correct: C       │
-     │          │      │ Explanation...   │
-     │          │      │ See: guide#...   │
+     │  正确！  │      │ 错误             │
+     │          │      │ 正确答案：C      │
+     │          │      │ 解析...          │
+     │          │      │ 参见：guide#...  │
      └──────────┘      └──────────────────┘
             │                 │
             └────────┬────────┘
                      ▼
-              (Next Question)
+              （下一题）
                      │
                      ▼
 ┌─────────────────────────────────────────────┐
-│           QUIZ COMPLETE                     │
+│           测验完成                          │
 │                                             │
-│  Overall Score: 16/20 (80%)                 │
+│  总得分：16/20 (80%)                        │
 │                                             │
-│  By Category:                               │
-│    Core Concepts:  6/7  (86%)  [████████░░] │
-│    Agents:         5/7  (71%)  [███████░░░] │
-│    Hooks:          5/6  (83%)  [████████░░] │
+│  按类别：                                   │
+│    核心概念：  6/7  (86%)  [████████░░]     │
+│    智能体：    5/7  (71%)  [███████░░░]     │
+│    Hooks：     5/6  (83%)  [████████░░]     │
 │                                             │
-│  Weak Areas: Agents (review section 4)      │
+│  薄弱环节：智能体（复习第 4 章）             │
 └─────────────────────────────────────────────┘
                      │
                      ▼
 ┌─────────────────────────────────────────────┐
-│  [R] Retry wrong questions only             │
-│  [N] New quiz (different questions)         │
-│  [E] Exit                                   │
+│  [R] 只重做错题                             │
+│  [N] 新测验（不同题目）                     │
+│  [E] 退出                                   │
 └─────────────────────────────────────────────┘
 ```
 
-## Session Persistence
+## 会话持久化
 
-Quiz sessions are automatically saved to `~/.claude-quiz/`:
+测验会话自动保存至 `~/.claude-quiz/`：
 
 ```
 ~/.claude-quiz/
   sessions/
-    2026-01-12_143052.json   # Individual session data
+    2026-01-12_143052.json   # 单次会话数据
     2026-01-12_150623.json
-  stats.json                  # Aggregate statistics
+  stats.json                  # 汇总统计
 ```
 
-### Session Data Includes:
-- Profile and topics selected
-- Questions answered (correct/incorrect/skipped)
-- Time taken
-- Category breakdown
-- Wrong questions with correct answers
+### 会话数据包含：
+- 已选用户画像和主题
+- 已作答题目（正确/错误/跳过）
+- 用时
+- 分类得分明细
+- 错题及正确答案
 
-## Dynamic Question Generation
+## 动态题目生成
 
-When the `--dynamic` flag is enabled and the Claude CLI is installed, the quiz can generate additional questions on-the-fly using `claude -p`:
+启用 `--dynamic` 标志且已安装 Claude CLI 时，测验可通过 `claude -p` 实时生成额外题目：
 
 ```bash
 node src/index.js -d
 ```
 
-This requires:
-- Claude CLI installed (`npm install -g @anthropic-ai/claude-code`)
-- Active API key configured
+此功能需要：
+- 已安装 Claude CLI（`npm install -g @anthropic-ai/claude-code`）
+- 已配置有效的 API Key
 
-Dynamic questions supplement the static pool when:
-- Static pool is exhausted for selected topics
-- User requests fresh questions
-- Variety is needed for repeated quizzes
+在以下情况下动态题目会补充静态题库：
+- 所选主题的静态题库已耗尽
+- 用户请求新题目
+- 重复测验需要多样性
 
-## Contributing Questions
+## 贡献题目
 
-We welcome question contributions! See [`templates/question-template.yaml`](./templates/question-template.yaml) for the format.
+欢迎提交题目！格式请参见 [`templates/question-template.yaml`](./templates/question-template.yaml)。
 
-### Quality Guidelines
+### 质量标准
 
-**Good questions test:**
-- Practical application ("When should you...")
-- Decision-making ("Which approach is best for...")
-- Understanding ("Why does Claude...")
-- Troubleshooting ("What would you do if...")
+**好题目考察：**
+- 实际应用（"什么情况下应该……"）
+- 决策判断（"以下哪种方法最适合……"）
+- 理解深度（"为什么 Claude 会……"）
+- 故障排查（"如果遇到……你会怎么做"）
 
-**Avoid:**
-- Trivia ("What is the exact command syntax...")
-- Pure memorization ("List all keyboard shortcuts...")
-- Version-specific details that may change
+**避免：**
+- 纯记忆（"确切的命令语法是……"）
+- 死背（"列出所有键盘快捷键……"）
+- 可能变化的版本特定细节
 
-### Submitting Questions
+### 提交题目
 
-1. Fork the repository
-2. Add questions to the appropriate `questions/XX-category.yaml` file
-3. Follow the template format exactly
-4. Ensure `doc_reference` points to valid sections
-5. Submit a PR with description of added questions
+1. Fork 本仓库
+2. 将题目添加到对应的 `questions/XX-category.yaml` 文件
+3. 严格遵循模板格式
+4. 确保 `doc_reference` 指向有效章节
+5. 提交 PR 并说明新增题目内容
 
-## Troubleshooting
+## 故障排查
 
 ### "No questions available"
 
-- Check that selected topics have questions in `questions/` directory
-- Verify YAML files are valid (use a YAML validator)
-- Try selecting different topics or "All topics"
+- 检查所选主题在 `questions/` 目录中是否有题目文件
+- 验证 YAML 文件格式是否正确（用 YAML 验证器检查）
+- 尝试选择其他主题或"全部主题"
 
 ### "Cannot find module 'yaml'"
 
@@ -333,16 +333,16 @@ cd quiz
 npm install
 ```
 
-### Quiz hangs on input
+### 测验卡在输入处
 
-- Ensure you're running in an interactive terminal
-- Try pressing Enter if stuck
-- Use Ctrl+C to exit and restart
+- 确认在交互式终端中运行
+- 若卡住请按回车
+- 用 Ctrl+C 退出并重启
 
-## License
+## 许可证
 
-Same as parent repository: [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/)
+与父仓库相同：[CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/)
 
 ---
 
-**Part of**: [claude-code-ultimate-guide](https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide)
+**所属项目**：[claude-code-ultimate-guide](https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide)

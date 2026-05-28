@@ -1,61 +1,61 @@
 > 📚 **AI Spark Wiki** · Claude Code 知识库
 
-# Module 04: Agents & Specialization
+# 模块 04：智能体与专业化
 
-**Time**: 1.5 hours | **Complexity**: ⭐⭐ Intermediate
+**用时**：1.5 小时 | **难度**：⭐⭐ 进阶
 
-## Goal
+## 目标
 
-Create specialized agents for specific tasks. Learn how to focus AI capabilities on targeted problems.
-
----
-
-## What You'll Learn
-
-- What agents are and why they're useful
-- Creating custom agents with AGENT.md
-- Restricting agent capabilities (sandboxing)
-- Using agents for specific tasks
-- When to use agents vs Claude directly
+为特定任务创建专业化智能体。学习如何将 AI 能力聚焦在特定问题上。
 
 ---
 
-## What Are Agents?
+## 你将学到
 
-An **agent** is a specialized version of Claude Code configured for one specific task.
+- 什么是智能体，以及它们的价值
+- 使用 AGENT.md 创建自定义智能体
+- 限制智能体能力（沙箱化）
+- 针对特定任务使用智能体
+- 何时使用智能体 vs 直接使用 Claude
 
-### Example: Code Reviewer Agent
+---
 
-Instead of asking regular Claude for code reviews (which takes mental context-switching), you use:
+## 什么是智能体？
+
+**智能体**是专为某一特定任务配置的 Claude Code 特化版本。
+
+### 示例：代码审查智能体
+
+与其向普通 Claude 请求代码审查（需要切换心智上下文），你可以这样用：
 
 ```bash
 /agent code-reviewer
 Review this function for bugs and performance issues
 ```
 
-The code-reviewer agent:
-- Only handles code review
-- Has review-specific tools
-- Knows security vulnerability patterns
-- Doesn't get distracted by other tasks
+代码审查智能体：
+- 只处理代码审查
+- 拥有审查专用工具
+- 了解安全漏洞模式
+- 不会被其他任务分散注意力
 
-### Normal Claude vs Agents
+### 普通 Claude vs 智能体
 
-| Aspect | Normal Claude | Agent |
+| 方面 | 普通 Claude | 智能体 |
 |--------|---------------|-------|
-| Scope | General purpose | Specialized |
-| Context | Remembers everything | Focused task memory |
-| Tools | All available | Restricted set |
-| Speed | Multi-task capable | Fast at one thing |
-| Use | Exploration, learning | Repetitive, specific tasks |
+| 范围 | 通用 | 专业化 |
+| 上下文 | 记住所有内容 | 聚焦于任务记忆 |
+| 工具 | 全部可用 | 受限集合 |
+| 速度 | 多任务能力 | 单一任务快速 |
+| 用途 | 探索、学习 | 重复性、特定任务 |
 
 ---
 
-## Creating Your First Agent
+## 创建你的第一个智能体
 
-Agents are defined in `.claude/agents/AGENT.md` files.
+智能体定义在 `.claude/agents/AGENT.md` 文件中。
 
-### Basic Structure
+### 基本结构
 
 ```markdown
 ---
@@ -66,38 +66,38 @@ auto_invoke: false
 requires_approval: true
 ---
 
-# Code Reviewer Agent
+# 代码审查智能体
 
-## Purpose
-Review code for:
-- Bugs and logical errors
-- Performance issues
-- Security vulnerabilities
-- Code style consistency
-- Test coverage
+## 用途
+审查代码中的：
+- Bug 和逻辑错误
+- 性能问题
+- 安全漏洞
+- 代码风格一致性
+- 测试覆盖率
 
-## Tools
-- Code analysis
-- Git diff viewer
-- Test runner
-- Linting tools
+## 工具
+- 代码分析
+- Git diff 查看器
+- 测试运行器
+- Lint 工具
 
-## Instructions
-When reviewing:
-1. Check for null pointers and edge cases
-2. Look for performance bottlenecks (O(n²), nested loops)
-3. Scan for security issues (SQL injection, XSS)
-4. Verify tests cover the change
-5. Suggest improvements without being harsh
+## 指令
+审查时：
+1. 检查空指针和边界情况
+2. 寻找性能瓶颈（O(n²)、嵌套循环）
+3. 扫描安全问题（SQL 注入、XSS）
+4. 验证测试覆盖了变更
+5. 友善地建议改进
 
-## Example Usage
+## 使用示例
 /agent code-reviewer
 Review src/auth.js for security issues
 ```
 
-### File Location
+### 文件位置
 
-Place it in your project:
+放在你的项目中：
 
 ```
 my-project/
@@ -106,26 +106,26 @@ my-project/
         └── code-reviewer.md
 ```
 
-### Making It Available
+### 使其可用
 
-In your project CLAUDE.md, reference it:
+在项目 CLAUDE.md 中引用它：
 
 ```markdown
-## Available Agents
-Run agents with: /agent [name]
+## 可用智能体
+运行方式：/agent [名称]
 
-- **code-reviewer** - Code quality and security review
-  Usage: /agent code-reviewer <description>
+- **code-reviewer** - 代码质量与安全审查
+  用法：/agent code-reviewer <描述>
   
-- **test-writer** - Generate tests for code
-  Usage: /agent test-writer <file path>
+- **test-writer** - 为代码生成测试
+  用法：/agent test-writer <文件路径>
 ```
 
 ---
 
-## Agent Design Patterns
+## 智能体设计模式
 
-### Pattern 1: Quality Checker
+### 模式 1：质量检查器
 
 ```markdown
 ---
@@ -133,30 +133,30 @@ name: quality-auditor
 description: Audits code quality metrics
 ---
 
-# Quality Auditor
+# 质量审计智能体
 
-## Purpose
-Check code for:
-- Test coverage (<80% = fail)
-- Type safety (TypeScript strict mode)
-- Code duplication
-- Cyclomatic complexity
+## 用途
+检查代码：
+- 测试覆盖率（<80% = 不通过）
+- 类型安全（TypeScript 严格模式）
+- 代码重复
+- 圈复杂度
 
-## Tools
-- Code analysis
-- Coverage reporter
-- Type checker
+## 工具
+- 代码分析
+- 覆盖率报告
+- 类型检查器
 
-## Output Format
-- ✅ Passed: [metric] = X
-- ⚠️ Warning: [metric] = X
-- ❌ Failed: [metric] = X
+## 输出格式
+- ✅ 通过：[指标] = X
+- ⚠️ 警告：[指标] = X
+- ❌ 不通过：[指标] = X
 
-## Scoring
-Score /100 based on all metrics.
+## 评分
+基于所有指标打分 /100。
 ```
 
-### Pattern 2: Security Specialist
+### 模式 2：安全专家
 
 ```markdown
 ---
@@ -165,29 +165,29 @@ description: Scans code for vulnerabilities
 requires_approval: true
 ---
 
-# Security Auditor
+# 安全审计智能体
 
-## Purpose
-Find security vulnerabilities:
-- Injection attacks (SQL, NoSQL, command)
-- Authentication/authorization issues
-- Cryptography mistakes
-- Data exposure risks
+## 用途
+发现安全漏洞：
+- 注入攻击（SQL、NoSQL、命令注入）
+- 认证/授权问题
+- 加密错误
+- 数据泄露风险
 - OWASP Top 10
 
-## Tools
-- Static analysis
-- Dependency checker
-- Secret detection
+## 工具
+- 静态分析
+- 依赖检查器
+- 密钥检测
 
-## Severity Levels
-- CRITICAL: Stop work immediately
-- HIGH: Fix before merge
-- MEDIUM: Fix in next sprint
-- LOW: Consider fixing
+## 严重级别
+- CRITICAL：立即停止工作
+- HIGH：合并前修复
+- MEDIUM：在下一个冲刺中修复
+- LOW：考虑修复
 ```
 
-### Pattern 3: Documentation Writer
+### 模式 3：文档撰写者
 
 ```markdown
 ---
@@ -195,118 +195,118 @@ name: doc-writer
 description: Generates documentation
 ---
 
-# Documentation Writer
+# 文档撰写智能体
 
-## Purpose
-Create or improve:
-- README files
-- API documentation
-- Architecture docs
-- User guides
-- CHANGELOG entries
+## 用途
+创建或改进：
+- README 文件
+- API 文档
+- 架构文档
+- 用户指南
+- CHANGELOG 条目
 
-## Output Format
-- Clear headings
-- Code examples for each feature
-- Link to related docs
-- Numbered lists for sequences
+## 输出格式
+- 清晰的标题
+- 每个功能有代码示例
+- 链接到相关文档
+- 序列步骤用有序列表
 
-## Style
-- Beginner-friendly
-- No jargon without explanation
-- Show before/after examples
+## 风格
+- 对初学者友好
+- 术语必须附带解释
+- 展示前后对比示例
 ```
 
 ---
 
-## Agent Capabilities & Restrictions
+## 智能体能力与限制
 
-### Default Capabilities
+### 默认能力
 
-All agents can:
-- Read files (git-aware)
-- Analyze code
-- Write documentation
-- Check syntax
-- Run tests
+所有智能体都能：
+- 读取文件（Git 感知）
+- 分析代码
+- 编写文档
+- 检查语法
+- 运行测试
 
-### Restricting Capabilities
+### 限制能力
 
-Use `capabilities` to sandbox an agent:
+使用 `capabilities` 对智能体进行沙箱化：
 
 ```markdown
 ---
 name: code-reviewer
 capabilities:
-  - read_files      # Can read code
-  - run_tests       # Can run test suites
-  - check_syntax    # Can lint
-  - write_comments  # Can suggest changes but...
-  - NO: commit      # ...cannot commit
-  - NO: push        # ...cannot push to git
+  - read_files      # 可以读取代码
+  - run_tests       # 可以运行测试套件
+  - check_syntax    # 可以 lint
+  - write_comments  # 可以建议变更但...
+  - NO: commit      # ...不能提交
+  - NO: push        # ...不能推送到 Git
 ---
 ```
 
-This agent can review but can't accidentally push broken code.
+这个智能体能做审查，但不能意外推送有问题的代码。
 
-### Common Restrictions
+### 常见限制
 
 ```markdown
-# Analyzer (read-only)
+# 分析器（只读）
 capabilities:
   - read_files
   - run_tests
-# Can't modify anything
+# 不能修改任何内容
 
-# Refactoring Agent (write, no push)
+# 重构智能体（可写，不能推送）
 capabilities:
   - read_files
   - write_files
   - run_tests
   - NO: commit
   - NO: push
-# Can change code but you review before pushing
+# 可以改代码，但你在推送前审阅
 
-# Full Agent (unrestricted)
+# 完整智能体（无限制）
 capabilities:
   - all
-# Can do anything (use with caution)
+# 可以做任何事（谨慎使用）
 ```
 
 ---
 
-## Using Agents in Your Workflow
+## 在工作流中使用智能体
 
-### Calling an Agent
+### 调用智能体
 
 ```bash
 /agent code-reviewer
 Review the changes I just made to src/auth.js
 ```
 
-Claude switches to the code-reviewer agent and responds.
+Claude 切换到代码审查智能体并作出响应。
 
-### Chaining Agents
+### 链式调用智能体
 
-Use agents sequentially:
+顺序使用多个智能体：
 
 ```bash
-# Step 1: Test Writer generates tests
+# 步骤 1：测试写作智能体生成测试
 /agent test-writer
 Write tests for src/utils/validators.js
 
-# Step 2: Code Reviewer checks the tests
+# 步骤 2：代码审查智能体检查测试
 /agent code-reviewer
 Review the tests that were just written
 
-# Step 3: Security Auditor scans
+# 步骤 3：安全审计智能体扫描
 /agent security-auditor
 Check the tests and code for vulnerabilities
 ```
 
-### Agent with Plan Mode
+### 智能体 + 计划模式
 
-For risky operations, use `/plan` within an agent:
+对于高风险操作，在智能体内使用 `/plan`：
 
 ```bash
 /agent refactoring-specialist
@@ -316,9 +316,9 @@ Refactor the payment processing module to use async/await
 
 ---
 
-## Exercise: Create a Test-Writer Agent
+## 练习：创建测试写作智能体
 
-### Step 1: Create the Agent File
+### 第一步：创建智能体文件
 
 ```bash
 cat > .claude/agents/test-writer.md << 'EOF'
@@ -331,133 +331,133 @@ capabilities:
   - run_tests
 ---
 
-# Test Writer Agent
+# 测试写作智能体
 
-## Purpose
-Generate high-quality tests for:
-- Unit tests (pure functions)
-- Integration tests (component interactions)
-- Edge cases and error conditions
-- Performance tests
+## 用途
+为以下内容生成高质量测试：
+- 单元测试（纯函数）
+- 集成测试（组件交互）
+- 边界情况和错误条件
+- 性能测试
 
-## Style
-- Arrange-Act-Assert pattern
-- Descriptive test names
-- Each test focuses on ONE behavior
-- 70%+ code coverage target
+## 风格
+- Arrange-Act-Assert 模式
+- 描述性测试名称
+- 每个测试只关注一个行为
+- 目标覆盖率 70%+
 
-## Tools
-- Test framework (Jest, pytest, etc)
-- Mock libraries
-- Assertion libraries
+## 工具
+- 测试框架（Jest、pytest 等）
+- Mock 库
+- 断言库
 
-## Output
-- Tests in same directory as source
-- Naming: [file].test.js or [file].spec.js
-- Include setup/teardown code
+## 输出
+- 测试文件与源码同目录
+- 命名：[file].test.js 或 [file].spec.js
+- 包含 setup/teardown 代码
 EOF
 ```
 
-### Step 2: Reference in CLAUDE.md
+### 第二步：在 CLAUDE.md 中引用
 
 ```markdown
-## Available Agents
-- test-writer: Generate tests for any function or module
-  Usage: /agent test-writer <file path>
+## 可用智能体
+- test-writer：为任何函数或模块生成测试
+  用法：/agent test-writer <文件路径>
 ```
 
-### Step 3: Use It
+### 第三步：使用它
 
 ```bash
 /agent test-writer
 Write tests for src/utils/formatDate.js
 ```
 
-The agent will:
-1. Read formatDate.js
-2. Understand what it does
-3. Generate comprehensive tests
-4. Show you the test file
+智能体会：
+1. 读取 formatDate.js
+2. 理解其功能
+3. 生成全面的测试
+4. 向你展示测试文件
 
-### Step 4: Review
+### 第四步：审阅
 
-Check the tests before accepting:
-- Do they cover edge cases?
-- Is naming clear?
-- Do they actually run?
-
----
-
-## When to Use Agents
-
-### Use Agents When:
-
-✅ You do the same task repeatedly (code review, testing, security audit)
-✅ You want focused AI for one job
-✅ You want to restrict capabilities (safety)
-✅ You're building team workflows
-✅ The task has clear success criteria
-
-### Use Regular Claude When:
-
-✅ You're exploring/learning
-✅ The task is novel
-✅ You need general-purpose help
-✅ You're debugging something complex
-✅ You want conversational back-and-forth
+接受前检查测试：
+- 是否覆盖了边界情况？
+- 命名是否清晰？
+- 能否实际运行？
 
 ---
 
-## Best Practices
+## 何时使用智能体
 
-### DO
+### 使用智能体的情况：
 
-✅ Give agents clear, narrow purposes
+✅ 同一任务重复执行（代码审查、测试、安全审计）
+✅ 需要专注型 AI 处理一项工作
+✅ 需要限制能力（安全性）
+✅ 构建团队工作流
+✅ 任务有明确的成功标准
 
-✅ Document output format in the agent definition
+### 使用普通 Claude 的情况：
 
-✅ Restrict capabilities you don't need
-
-✅ Test agents on sample tasks first
-
-✅ Version control your agents (in .claude/agents/)
-
-### DON'T
-
-❌ Create agents with overlapping purposes (confusing)
-
-❌ Make agents too general (defeats the purpose)
-
-❌ Trust an agent completely (always review)
-
-❌ Create an agent for a one-off task (just use Claude)
+✅ 在探索/学习
+✅ 任务是全新的
+✅ 需要通用帮助
+✅ 在调试复杂问题
+✅ 需要来回对话交流
 
 ---
 
-## Validation: You're Ready If...
+## 最佳实践
 
-✓ You've created at least one custom agent
+### 应该做
 
-✓ You understand the purpose of agents vs Claude
+✅ 给智能体清晰、单一的用途
 
-✓ You can restrict agent capabilities
+✅ 在智能体定义中记录输出格式
 
-✓ You know how to call an agent (/agent name)
+✅ 限制不需要的能力
 
-✓ You've tested your agent on a real task
+✅ 先用示例任务测试智能体
+
+✅ 对智能体进行版本控制（放在 .claude/agents/）
+
+### 不应该做
+
+❌ 创建用途重叠的智能体（令人困惑）
+
+❌ 让智能体过于通用（违背了专业化的初衷）
+
+❌ 完全信任智能体（始终要审阅）
+
+❌ 为一次性任务创建智能体（直接用 Claude 就好）
 
 ---
 
-## What's Next?
+## 验证：以下都满足说明你已准备好
 
-**Module 05: Skills & Automation** covers:
-- Creating reusable skills (knowledge modules)
-- Bundling capabilities for distribution
-- Skill auto-invocation
-- Building your custom knowledge base
+✓ 已创建至少一个自定义智能体
 
-This teaches you how to package knowledge so Claude remembers it across sessions.
+✓ 理解智能体与 Claude 的用途区别
+
+✓ 能限制智能体的能力
+
+✓ 知道如何调用智能体（/agent name）
+
+✓ 已在真实任务上测试过你的智能体
 
 ---
 
-**Completed Module 04?** → Ready for Module 05: Skills & Automation
+## 下一步
+
+**模块 05：Skills 与自动化**涵盖：
+- 创建可复用的 Skills（知识模块）
+- 打包能力以便分发
+- Skills 自动调用
+- 构建你的自定义知识库
+
+这将教你如何将知识封装，让 Claude 跨会话记住它。
+
+---
+
+**完成模块 04？** → 进入模块 05：Skills 与自动化

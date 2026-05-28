@@ -1,325 +1,323 @@
 > 📚 **AI Spark Wiki** · Claude Code 知识库
 
 ---
-title: "Exploration Before Implementation"
-description: "Ask Claude for multiple approaches with trade-offs before coding to prevent anchoring bias"
+title: "实现前先探索"
+description: "编码前请 Claude 提供多种方案及利弊，防止锚定偏差"
 tags: [workflow, architecture, design-patterns]
 ---
 
-# Exploration Before Implementation
+# 实现前先探索
 
-> **Confidence**: Tier 2 — Validated by practitioner studies (+20-30% decision quality, +40% alternatives identified).
-> **Source**: [MetalBear Engineering Blog](https://metalbear.com/blog/engineering-ai-use/), arXiv practitioner studies
+> **可信度**：Tier 2 — 从业者研究验证（决策质量提升 20-30%，识别替代方案提升 40%）。
+> **来源**：[MetalBear 工程博客](https://metalbear.com/blog/engineering-ai-use/)，arXiv 从业者研究
 
-Before coding, ask Claude for multiple approaches with trade-offs. This prevents anchoring bias—the tendency to fixate on the first solution proposed.
+编码之前，先让 Claude 提供多种方案及其利弊。这能防止锚定偏差——固着于第一个提出的解决方案的倾向。
 
 ---
 
-## Table of Contents
+## 目录
 
 1. [TL;DR](#tldr)
-2. [The Pattern](#the-pattern)
-3. [Anti-Anchoring Prompts](#anti-anchoring-prompts)
-4. [When to Use](#when-to-use)
-5. [Integration with Claude Code](#integration-with-claude-code)
-6. [Anti-Patterns](#anti-patterns)
-7. [See Also](#see-also)
+2. [模式说明](#模式说明)
+3. [反锚定提示词](#反锚定提示词)
+4. [适用场景](#适用场景)
+5. [与 Claude Code 集成](#与-claude-code-集成)
+6. [反模式](#反模式)
+7. [延伸阅读](#延伸阅读)
 
 ---
 
 ## TL;DR
 
 ```
-1. Describe problem (no code, no preconception)
-2. Request 3-5 approaches with trade-offs
-3. Ask for quantified comparison
-4. Choose approach
-5. Then implement
+1. 描述问题（无代码，无先入之见）
+2. 请求 3-5 种方案及利弊
+3. 要求量化比较
+4. 选择方案
+5. 然后实现
 ```
 
-Key insight: **Once a model proposes a concrete solution, it can unintentionally narrow your thinking.**
+核心洞察：**一旦模型提出具体解决方案，它可能会无意中缩窄你的思维空间。**
 
 ---
 
-## The Pattern
+## 模式说明
 
-### Step 1: Problem Statement Only
+### 第一步：仅描述问题
 
-Start with the problem, not a solution direction:
-
-```
-I need to handle user sessions in a Node.js API.
-Requirements:
-- Support 10K concurrent users
-- Session data: user ID, permissions, preferences
-- Must survive server restarts
-```
-
-**Not this** (anchors on Redis):
-```
-I'm thinking of using Redis for sessions. How should I implement it?
-```
-
-### Step 2: Request Multiple Approaches
+从问题出发，而非解决方案方向：
 
 ```
-Give me 4 different approaches to solve this.
-For each, include:
-- Architecture overview
-- Pros and cons
-- Performance characteristics
-- Complexity to implement
+我需要在 Node.js API 中处理用户会话。
+要求：
+- 支持 10,000 并发用户
+- 会话数据：用户 ID、权限、偏好
+- 必须在服务器重启后存活
 ```
 
-### Step 3: Quantified Comparison
-
+**不要这样**（锚定在 Redis 上）：
 ```
-Now rank these approaches on a 1-10 scale for:
-- Latency (lower is better)
-- Scalability (10K → 100K users)
-- Operational complexity
-- Development time
+我在考虑用 Redis 做会话。我应该怎么实现？
 ```
 
-### Step 4: Choose, Then Implement
+### 第二步：请求多种方案
 
 ```
-I'll go with approach B (JWT + Redis hybrid).
-Now implement it following our existing patterns in src/auth/.
+给我 4 种不同的解决方案。
+对于每种，请包含：
+- 架构概述
+- 优缺点
+- 性能特征
+- 实现复杂度
+```
+
+### 第三步：量化比较
+
+```
+现在用 1-10 分制对这些方案评分：
+- 延迟（越低越好）
+- 可扩展性（10,000 → 100,000 用户）
+- 运维复杂度
+- 开发时间
+```
+
+### 第四步：选择，然后实现
+
+```
+我选择方案 B（JWT + Redis 混合）。
+现在按照 src/auth/ 中的现有模式实现它。
 ```
 
 ---
 
-## Anti-Anchoring Prompts
+## 反锚定提示词
 
-LLMs can fixate on their first suggestion. These prompts combat that:
+LLM 可能会固着于其第一个建议。这些提示词对此有帮助：
 
-| Prompt Type | Template | Effect |
+| 提示词类型 | 模板 | 效果 |
 |-------------|----------|--------|
-| **Fresh start** | "Ignore any prior ideas. Generate 4 novel approaches to [X]" | Forces diversity |
-| **Reflection loop** | "Generate 3 options, then critique each, then recommend" | Self-correction (-25% anchoring bias) |
-| **Quantified trade-offs** | "Rank by [metric1], [metric2], [metric3] with scores 1-10" | Objective comparison |
-| **Devil's advocate** | "What are the strongest arguments against your recommendation?" | Surface hidden trade-offs |
-| **Constraint variation** | "Now solve the same problem with [opposite constraint]" | Expand solution space |
+| **全新开始** | 「忽略之前的任何想法。生成 4 种解决 [X] 的新颖方法」 | 强制多样性 |
+| **反思循环** | 「生成 3 个选项，然后批评每个，然后推荐」 | 自我纠正（锚定偏差减少 25%） |
+| **量化权衡** | 「用 1-10 分制按 [指标1]、[指标2]、[指标3] 排名」 | 客观比较 |
+| **魔鬼代言人** | 「反对你推荐方案的最强论据是什么？」 | 发现隐藏权衡 |
+| **约束变换** | 「现在用 [相反约束] 解决同一问题」 | 扩展解决方案空间 |
 
-### Example: Anti-Anchoring Prompt
-
-```
-I need pagination for a REST API with 1M+ records.
-
-IMPORTANT: Don't suggest offset-based pagination first.
-Generate 4 different pagination strategies, including at least one
-unconventional approach. For each:
-
-1. How it works (2-3 sentences)
-2. Best use case
-3. Worst use case
-4. Performance at 1M records
-
-Then recommend one, explaining why it beats the others for my use case.
-```
-
-### Reflection Loop Prompt
+### 示例：反锚定提示词
 
 ```
-For implementing real-time notifications:
+我需要为有 100 万以上记录的 REST API 实现分页。
 
-Phase 1: Generate 3 approaches (WebSockets, SSE, Long Polling)
-Phase 2: For each, list 2 things that could go wrong in production
-Phase 3: Based on Phase 2, which approach is most resilient?
+重要：不要先建议基于偏移量的分页。
+生成 4 种不同的分页策略，至少包含一种非常规方法。对于每种：
 
-Show your reasoning for each phase.
+1. 工作原理（2-3 句话）
+2. 最佳使用场景
+3. 最差使用场景
+4. 100 万条记录的性能表现
+
+然后推荐一种，解释为什么它对我的使用场景比其他方案更优。
+```
+
+### 反思循环提示词
+
+```
+关于实现实时通知：
+
+第一阶段：生成 3 种方案（WebSocket、SSE、长轮询）
+第二阶段：对于每种，列出 2 个可能在生产中出错的地方
+第三阶段：基于第二阶段，哪种方案最有弹性？
+
+展示每个阶段的推理过程。
 ```
 
 ---
 
-## When to Use
+## 适用场景
 
-### Use Exploration
+### 使用探索
 
-| Scenario | Why |
+| 场景 | 原因 |
 |----------|-----|
-| Greenfield features | No existing pattern to follow |
-| Architecture decisions | High impact, hard to reverse |
-| Multiple valid approaches | Need informed choice |
-| Unfamiliar domain | Don't know what you don't know |
-| Team disagreement | Get neutral analysis of options |
+| 全新功能 | 没有可遵循的现有模式 |
+| 架构决策 | 影响高，难以逆转 |
+| 多种有效方案 | 需要明智选择 |
+| 陌生领域 | 不知道自己不知道什么 |
+| 团队分歧 | 获取对各选项的中立分析 |
 
-### Skip Exploration
+### 跳过探索
 
-| Scenario | Why |
+| 场景 | 原因 |
 |----------|-----|
-| Bug fixes | Solution usually obvious from symptoms |
-| Single valid approach | No real choice to make |
-| Time-critical hotfixes | Speed > perfection |
-| Following existing pattern | Decision already made |
-| Trivial changes | Overhead not worth it |
+| Bug 修复 | 解决方案通常从症状中就很明显 |
+| 唯一有效方案 | 没有真正的选择 |
+| 时间紧迫的紧急修复 | 速度优先于完美 |
+| 遵循现有模式 | 决策已经做出 |
+| 微小变更 | 开销不值得 |
 
 ---
 
-## Integration with Claude Code
+## 与 Claude Code 集成
 
-### With Plan Mode
+### 配合计划模式
 
-Exploration happens **before** entering Plan Mode:
+探索发生在**进入计划模式之前**：
 
 ```
-# Step 1: Explore (not in Plan Mode yet)
-I need to add caching to the API. What are my options?
+# 第一步：探索（尚未在计划模式中）
+我需要为 API 添加缓存。有哪些选项？
 
-# Claude responds with 4 approaches
+# Claude 回复 4 种方案
 
-# Step 2: Choose
-Let's go with approach C (edge caching with Cloudflare).
+# 第二步：选择
+我们选方案 C（使用 Cloudflare 的边缘缓存）。
 
-# Step 3: Plan (press Shift+Tab twice to enter Plan Mode)
-Implement edge caching using Cloudflare Workers.
-Follow the patterns in our existing middleware.
+# 第三步：规划（按两次 Shift+Tab 进入计划模式）
+使用 Cloudflare Workers 实现边缘缓存。
+遵循我们现有中间件中的模式。
 ```
 
-### With CLAUDE.md
+### 配合 CLAUDE.md
 
-Add exploration triggers to your project instructions:
+在项目指令中添加探索触发条件：
 
 ```markdown
-## Workflow Preferences
+## 工作流偏好
 
-### Before New Features
-When implementing new features, first explore 3-4 approaches
-with trade-offs before committing to implementation.
-Use quantified comparison (1-10 scale) for:
-- Performance
-- Maintainability
-- Time to implement
+### 新功能前
+实现新功能时，先探索 3-4 种方案及利弊，然后再确定实现。
+使用量化比较（1-10 分制）对以下维度评分：
+- 性能
+- 可维护性
+- 实现时间
 ```
 
-### With Task Tool
+### 配合任务工具
 
-Track exploration as tasks:
-
-```
-TaskCreate: "Explore caching approaches"
-TaskCreate: "Choose approach based on analysis"
-TaskCreate: "Implement cache invalidation"
-TaskCreate: "Add cache headers to responses"
-# Mark completed as you progress with TaskUpdate
-```
-
----
-
-## Anti-Patterns
-
-### Premature Anchoring
+将探索作为任务追踪：
 
 ```
-# Wrong
-"I want to use Redis for caching. How do I set it up?"
-
-# Right
-"I need caching for API responses. What are my options?"
-```
-
-You've eliminated 90% of solutions before exploring.
-
-### Shallow Comparison
-
-```
-# Wrong
-"Which is better: Redis or Memcached?"
-
-# Right
-"Compare Redis, Memcached, and in-process caching for:
-- 50MB cache size
-- Read-heavy workload (95% reads)
-- Single server deployment
-Include latency, memory overhead, and operational complexity."
-```
-
-### Ignoring Trade-offs
-
-```
-# Wrong
-"Just tell me the best approach"
-
-# Right
-"What would I give up by choosing approach A over B?
-What scenarios would make me regret this choice?"
-```
-
-### Analysis Paralysis
-
-```
-# Wrong
-Exploring 10 options for a simple feature
-
-# Right
-Set a limit: "Give me your top 3 approaches, no more"
-Make a decision and iterate if needed
+TaskCreate: 「探索缓存方案」
+TaskCreate: 「基于分析选择方案」
+TaskCreate: 「实现缓存失效」
+TaskCreate: 「为响应添加缓存头」
+# 随进度用 TaskUpdate 标记完成
 ```
 
 ---
 
-## Example Session
+## 反模式
 
-### Initial Exploration
+### 过早锚定
 
 ```
-User: I need to implement real-time updates in our React dashboard.
-      The dashboard shows ~50 metrics that update every 5 seconds.
-      Currently we poll, but users complain about stale data.
+# 错误
+「我想用 Redis 做缓存。我该怎么配置？」
 
-Claude: Here are 4 approaches:
+# 正确
+「我需要为 API 响应做缓存。我有哪些选项？」
+```
 
-**A) WebSockets**
-- Full duplex, server can push anytime
-- Pros: Lowest latency, true real-time
-- Cons: Connection management, scaling complexity
-- Best for: Sub-second updates, bidirectional communication
+你在探索之前就排除了 90% 的解决方案。
 
-**B) Server-Sent Events (SSE)**
-- Unidirectional server → client stream
-- Pros: Simple, HTTP-based, auto-reconnect
-- Cons: One-way only, limited browser connections
-- Best for: Dashboard feeds, notifications
+### 浅层比较
 
-**C) Long Polling**
-- Client holds request until data ready
-- Pros: Works everywhere, simple fallback
-- Cons: Higher latency, more server load
-- Best for: Legacy compatibility
+```
+# 错误
+「Redis 和 Memcached 哪个更好？」
 
-**D) GraphQL Subscriptions**
-- WebSocket-based with GraphQL schema
-- Pros: Type-safe, selective updates
-- Cons: Requires GraphQL infrastructure
-- Best for: Existing GraphQL APIs
+# 正确
+「比较 Redis、Memcached 和进程内缓存，针对以下场景：
+- 50MB 缓存大小
+- 读密集型工作负载（95% 读）
+- 单服务器部署
+包含延迟、内存开销和运维复杂度。」
+```
 
-User: Rank these for our use case (React, 50 metrics, 5s refresh,
-      team has no WebSocket experience).
+### 忽略权衡
 
-Claude: Scores (1-10, higher is better):
+```
+# 错误
+「直接告诉我最好的方案」
 
-| Approach | Latency | Complexity | Team Fit | Scalability |
+# 正确
+「选择方案 A 而非 B，我会放弃什么？
+什么情况下我会后悔这个选择？」
+```
+
+### 分析瘫痪
+
+```
+# 错误
+为简单功能探索 10 个选项
+
+# 正确
+设置限制：「给我你的前 3 个方案，不超过这个数」
+做出决定，如果需要再迭代
+```
+
+---
+
+## 示例会话
+
+### 初步探索
+
+```
+用户：我需要在 React 仪表盘中实现实时更新。
+      仪表盘显示约 50 个指标，每 5 秒更新一次。
+      目前我们在轮询，但用户抱怨数据过时。
+
+Claude：以下是 4 种方案：
+
+**A) WebSocket**
+- 全双工，服务器可随时推送
+- 优点：最低延迟，真正实时
+- 缺点：连接管理，扩展复杂性
+- 适合：亚秒级更新，双向通信
+
+**B) Server-Sent Events（SSE）**
+- 单向服务器 → 客户端流
+- 优点：简单，基于 HTTP，自动重连
+- 缺点：单向，浏览器连接数有限
+- 适合：仪表盘数据流，通知
+
+**C) 长轮询**
+- 客户端持有请求直到数据就绪
+- 优点：处处可用，简单的降级方案
+- 缺点：更高延迟，更多服务器负载
+- 适合：兼容遗留系统
+
+**D) GraphQL 订阅**
+- 基于 WebSocket 的 GraphQL schema
+- 优点：类型安全，选择性更新
+- 缺点：需要 GraphQL 基础设施
+- 适合：现有 GraphQL API
+
+用户：针对我们的使用场景（React、50 个指标、5 秒刷新、
+      团队没有 WebSocket 经验）对这些方案排名。
+
+Claude：评分（1-10，越高越好）：
+
+| 方案 | 延迟 | 复杂度 | 团队适配 | 可扩展性 |
 |----------|---------|------------|----------|-------------|
-| WebSockets | 10 | 4 | 3 | 7 |
+| WebSocket | 10 | 4 | 3 | 7 |
 | SSE | 8 | 8 | 8 | 8 |
-| Long Polling | 5 | 9 | 9 | 5 |
-| GraphQL Subs | 9 | 3 | 2 | 7 |
+| 长轮询 | 5 | 9 | 9 | 5 |
+| GraphQL 订阅 | 9 | 3 | 2 | 7 |
 
-**Recommendation: SSE**
-Best balance of simplicity and real-time capability.
-Your team can implement it in a day, and it handles your
-50 metrics × 5s updates easily. Upgrade to WebSockets later
-if you need bidirectional or sub-second updates.
+**推荐：SSE**
+简单性与实时能力的最佳平衡。
+你的团队可以在一天内实现，轻松处理
+50 个指标 × 5 秒更新。如果你后续需要
+双向或亚秒级更新，再升级到 WebSocket。
 
-User: Let's go with SSE. Now implement it.
+用户：我们选 SSE。现在实现它。
 ```
 
 ---
 
-## See Also
+## 延伸阅读
 
-- [plan-driven.md](./plan-driven.md) — For codebase exploration (/plan mode)
-- [iterative-refinement.md](./iterative-refinement.md) — Refine after choosing approach
-- [../examples/semantic-anchors/anchor-catalog.md](../../examples/semantic-anchors/anchor-catalog.md) — Precision vocabulary for prompts
-- [spec-first.md](./spec-first.md) — Define requirements before exploring
+- [plan-driven.md](./plan-driven.md) — 代码库探索的计划模式
+- [iterative-refinement.md](./iterative-refinement.md) — 选择方案后的迭代优化
+- [../examples/semantic-anchors/anchor-catalog.md](../../examples/semantic-anchors/anchor-catalog.md) — 提示词精确词汇
+- [spec-first.md](./spec-first.md) — 探索前先定义需求

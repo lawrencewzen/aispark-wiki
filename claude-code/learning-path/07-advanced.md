@@ -1,178 +1,178 @@
 > 📚 **AI Spark Wiki** · Claude Code 知识库
 
-# Module 07: Advanced Patterns
+# 模块 07：高级模式
 
-**Time**: 2-3 hours | **Complexity**: ⭐⭐⭐ Advanced
+**用时**：2-3 小时 | **难度**：⭐⭐⭐ 高级
 
-## Goal
+## 目标
 
-Orchestrate multi-agent workflows. Build complex automation that coordinates multiple specialized agents.
-
----
-
-## What You'll Learn
-
-- Multi-agent architecture patterns
-- Orchestration strategies
-- Error handling and recovery
-- Production-grade automation
-- Team workflows
-- Real-world scenarios
+编排多智能体工作流。构建协调多个专业化智能体的复杂自动化流程。
 
 ---
 
-## Multi-Agent Systems
+## 你将学到
 
-A **multi-agent system** is when multiple specialized agents work together on one goal.
+- 多智能体架构模式
+- 编排策略
+- 错误处理与恢复
+- 生产级自动化
+- 团队工作流
+- 真实场景案例
 
-### Example: Code Release Workflow
+---
 
-Instead of one Claude handling everything:
+## 多智能体系统
+
+**多智能体系统**是多个专业化智能体协同完成同一目标的系统。
+
+### 示例：代码发布工作流
+
+不是让一个 Claude 处理所有事情：
 
 ```
-You: "Release version 3.5.0"
+你："Release version 3.5.0"
     ↓
-    ├─→ [Version Agent] Updates VERSION file
+    ├─→ [版本智能体] 更新 VERSION 文件
     │
-    ├─→ [Changelog Agent] Creates release notes
+    ├─→ [更新日志智能体] 创建发布说明
     │
-    ├─→ [Test Agent] Runs full test suite
+    ├─→ [测试智能体] 运行完整测试套件
     │
-    ├─→ [Security Agent] Security audit
+    ├─→ [安全智能体] 安全审计
     │
-    ├─→ [Docs Agent] Updates documentation
+    ├─→ [文档智能体] 更新文档
     │
-    └─→ [Release Agent] Tags, builds, publishes
+    └─→ [发布智能体] 打标签、构建、发布
 
-Result: Complete, tested, documented release
+结果：完整的、经过测试的、有文档的发布版本
 ```
 
-Each agent is fast at its specialized task.
+每个智能体都在其专业任务上高效运行。
 
 ---
 
-## Orchestration Patterns
+## 编排模式
 
-### Pattern 1: Sequential (Pipeline)
+### 模式 1：顺序（流水线）
 
-Agents run one after another. Output of agent N becomes input to agent N+1.
+智能体依次运行。第 N 个智能体的输出成为第 N+1 个的输入。
 
 ```
-Input
+输入
   ↓
-[Agent 1: Parse Requirements] → Output: structured requirements
+[智能体 1：解析需求] → 输出：结构化需求
   ↓
-[Agent 2: Design Schema] → Output: database schema
+[智能体 2：设计数据库结构] → 输出：数据库结构
   ↓
-[Agent 3: Generate Code] → Output: code skeleton
+[智能体 3：生成代码] → 输出：代码骨架
   ↓
-[Agent 4: Write Tests] → Output: test suite
+[智能体 4：编写测试] → 输出：测试套件
   ↓
-Final Result
+最终结果
 ```
 
-**When to use**: Workflows where each step depends on the previous.
+**适用场景**：每个步骤依赖上一步的工作流。
 
-**Example**:
+**示例**：
 ```bash
 /agent requirements-parser
 Parse the feature request into specifications
 
-# Later, once we have specifications:
+# 有了规范之后：
 /agent database-designer
 Design the schema based on these specs
 
-# Once schema is approved:
+# 结构批准后：
 /agent code-generator
 Generate models based on the schema
 ```
 
-### Pattern 2: Parallel (Fork-Join)
+### 模式 2：并行（分叉-汇聚）
 
-Multiple agents work simultaneously, results combined.
+多个智能体同时工作，结果合并。
 
 ```
-         Input
+         输入
            ↓
     ┌──────┼──────┐
     ↓      ↓      ↓
- [Unit   [Int.  [Sec.
-  Tests] Tests] Audit]
+ [单元   [集成  [安全
+  测试]  测试]  审计]
     ↓      ↓      ↓
     └──────┼──────┘
            ↓
-      Combine Results
+      合并结果
            ↓
-      Final Report
+      最终报告
 ```
 
-**When to use**: Independent checks or tasks.
+**适用场景**：独立的检查或任务。
 
-**Example**:
+**示例**：
 ```
-Request: "Review my code changes"
+请求："Review my code changes"
 
-Parallel tasks:
-- Code quality agent reviews
-- Security agent scans
-- Test coverage agent checks
-- Performance agent analyzes
+并行任务：
+- 代码质量智能体审查
+- 安全智能体扫描
+- 测试覆盖率智能体检查
+- 性能智能体分析
 
-(All run at the same time)
+（同时运行）
 
-Results combined into one report
+结果合并为一份报告
 ```
 
-### Pattern 3: Conditional (If-Then)
+### 模式 3：条件（if-then）
 
-Route to different agents based on conditions.
+根据条件路由到不同的智能体。
 
 ```
-Input: "Fix the bug"
+输入："Fix the bug"
   ↓
-[Analyzer: Is it security?]
-  ├─ YES → [Security Agent]
-  ├─ PERFORMANCE → [Performance Agent]
-  └─ LOGIC → [Logic Agent]
+[分析器：是安全问题吗？]
+  ├─ 是 → [安全智能体]
+  ├─ 性能 → [性能智能体]
+  └─ 逻辑 → [逻辑智能体]
   ↓
-Result
+结果
 ```
 
-**Example**:
+**示例**：
 ```bash
 /agent bug-classifier
 Categorize this bug: security, performance, or logic
 
-# Based on response:
-# If security:
+# 根据响应：
+# 如果是安全问题：
 /agent security-patcher
 Fix the security vulnerability
 
-# If performance:
+# 如果是性能问题：
 /agent perf-optimizer
 Optimize this code
 ```
 
 ---
 
-## Building a Release Workflow
+## 构建发布工作流
 
-### Scenario
+### 场景
 
-You want to automate your release process. Right now you:
-1. Update VERSION file
-2. Update CHANGELOG
-3. Run tests
-4. Run security scan
-5. Create git tag
-6. Push to origin
-7. Deploy to staging
+你想自动化发布流程。当前你需要：
+1. 更新 VERSION 文件
+2. 更新 CHANGELOG
+3. 运行测试
+4. 运行安全扫描
+5. 创建 Git 标签
+6. 推送到 origin
+7. 部署到预发布环境
 
-### Solution: Multi-Agent Workflow
+### 解决方案：多智能体工作流
 
-**Step 1: Create agents** (each specializes in one task)
+**第一步：创建智能体**（每个专注于一项任务）
 
-`.claude/agents/version-manager.md`:
+`.claude/agents/version-manager.md`：
 ```markdown
 ---
 name: version-manager
@@ -183,146 +183,146 @@ capabilities:
   - NO: push
 ---
 
-# Version Manager
+# 版本管理智能体
 
-## Purpose
-Update VERSION files and create git tags
+## 用途
+更新 VERSION 文件并创建 Git 标签
 
-## Tasks
-- Bump version (patch, minor, major)
-- Update VERSION file
-- Update version in package.json, pyproject.toml, etc
-- Create annotated git tags
+## 任务
+- 版本号递增（patch、minor、major）
+- 更新 VERSION 文件
+- 更新 package.json、pyproject.toml 等中的版本号
+- 创建带注释的 Git 标签
 ```
 
-`.claude/agents/changelog-generator.md`:
+`.claude/agents/changelog-generator.md`：
 ```markdown
 ---
 name: changelog-generator
 description: Generates release notes
 ---
 
-# Changelog Generator
+# 更新日志生成智能体
 
-## Purpose
-Create readable release notes from commits
+## 用途
+从提交记录生成可读的发布说明
 
-## Output Format
-- Version header
-- Breaking changes (if any)
-- New features
-- Bug fixes
-- Deprecations
+## 输出格式
+- 版本标题
+- 破坏性变更（如有）
+- 新功能
+- Bug 修复
+- 废弃项
 ```
 
-`.claude/agents/test-validator.md`:
+`.claude/agents/test-validator.md`：
 ```markdown
 ---
 name: test-validator
 description: Runs full test suite
 ---
 
-# Test Validator
+# 测试验证智能体
 
-## Purpose
-Execute all tests and verify coverage
+## 用途
+执行所有测试并验证覆盖率
 
-## Minimum Requirements
-- All tests pass
-- Coverage >80%
-- No flaky tests
+## 最低要求
+- 所有测试通过
+- 覆盖率 >80%
+- 无不稳定测试
 ```
 
-`.claude/agents/release-publisher.md`:
+`.claude/agents/release-publisher.md`：
 ```markdown
 ---
 name: release-publisher
 description: Publishes and deploys
 ---
 
-# Release Publisher
+# 发布智能体
 
-## Purpose
-Tag and push to origin
+## 用途
+打标签并推送到 origin
 
-## Steps
-1. Create git tag
-2. Push to origin
-3. Trigger CI/CD pipeline
-4. Monitor deployment
+## 步骤
+1. 创建 Git 标签
+2. 推送到 origin
+3. 触发 CI/CD 流水线
+4. 监控部署
 ```
 
-**Step 2: Create a release workflow command**
+**第二步：创建发布工作流命令**
 
-`.claude/commands/release-workflow.md`:
+`.claude/commands/release-workflow.md`：
 ```markdown
 # /release-workflow
 
-Orchestrate a complete release process.
+编排完整的发布流程。
 
-Usage:
+用法：
 ```
 /release-workflow patch|minor|major
 ```
 
-## Process
+## 流程
 
-1. Validate release readiness
-2. Update version (version-manager agent)
-3. Generate changelog (changelog-generator agent)
-4. Run tests (test-validator agent)
-5. Security scan (security-auditor agent)
-6. Publish and deploy (release-publisher agent)
+1. 验证发布就绪状态
+2. 更新版本（version-manager 智能体）
+3. 生成更新日志（changelog-generator 智能体）
+4. 运行测试（test-validator 智能体）
+5. 安全扫描（security-auditor 智能体）
+6. 发布部署（release-publisher 智能体）
 
-## Requirements
-- All tests passing
-- No outstanding security issues
-- Changelog updated
+## 要求
+- 所有测试通过
+- 无未解决的安全问题
+- 更新日志已更新
 ```
 
-**Step 3: Use the workflow**
+**第三步：使用工作流**
 
 ```bash
 /release-workflow patch
 ```
 
-Claude then:
-1. Calls version-manager → updates VERSION
-2. Calls changelog-generator → creates release notes
-3. Calls test-validator → verifies tests pass
-4. Calls security-auditor → scans for vulnerabilities
-5. Calls release-publisher → creates tag, pushes
-6. You review, then approve each step
+Claude 随后：
+1. 调用 version-manager → 更新 VERSION
+2. 调用 changelog-generator → 创建发布说明
+3. 调用 test-validator → 验证测试通过
+4. 调用 security-auditor → 扫描漏洞
+5. 调用 release-publisher → 创建标签、推送
+6. 你逐步审阅并批准每个步骤
 
 ---
 
-## Error Handling in Multi-Agent Systems
+## 多智能体系统中的错误处理
 
-### Pattern: Graceful Degradation
+### 模式：优雅降级
 
-If one agent fails, others continue:
+如果一个智能体失败，其他继续：
 
 ```
-[Test Agent] ❌ FAILED: 3 test failures
+[测试智能体] ❌ 失败：3 个测试不通过
   ↓
-[Security Agent] ✅ PASSED: No vulnerabilities
+[安全智能体] ✅ 通过：无漏洞
   ↓
-[Docs Agent] ✅ PASSED: Docs updated
+[文档智能体] ✅ 通过：文档已更新
   ↓
-[Aggregate Results]
-  ⚠️  Release blocked (tests failed)
-  ✅ Security passed
-  ✅ Docs ready
-  [Instructions to fix tests first]
+[汇总结果]
+  ⚠️  发布被阻止（测试失败）
+  ✅ 安全通过
+  ✅ 文档就绪
+  [先修复测试的操作指引]
 ```
 
-### Pattern: Retry on Failure
+### 模式：失败重试
 
-For transient failures (network, timeouts):
+对于瞬时故障（网络、超时）：
 
 ```bash
 #!/bin/bash
-# In a hook or skill
+# 在 Hook 或技能中
 
 max_retries=3
 retry=0
@@ -344,13 +344,13 @@ echo "❌ Tests failed after $max_retries attempts"
 exit 1
 ```
 
-### Pattern: Rollback on Error
+### 模式：出错回滚
 
-If something goes wrong, undo changes:
+出现问题时撤销变更：
 
 ```bash
 #!/bin/bash
-# Rollback helper
+# 回滚助手
 
 ORIGINAL_VERSION=$(git rev-parse HEAD:VERSION)
 ORIGINAL_TAG=$(git describe --tags --abbrev=0)
@@ -363,7 +363,7 @@ cleanup_and_exit() {
   exit 1
 }
 
-# Run release steps
+# 运行发布步骤
 if ! /agent version-manager bump-version patch; then
   cleanup_and_exit
 fi
@@ -372,39 +372,39 @@ if ! /agent test-validator validate-all; then
   cleanup_and_exit
 fi
 
-# If we get here, release succeeded
+# 到达这里说明发布成功
 exit 0
 ```
 
 ---
 
-## Production Patterns
+## 生产级模式
 
-### Pattern 1: Staged Rollout
+### 模式 1：分阶段发布
 
-Release to different environments progressively:
+逐步向不同环境部署：
 
 ```
 /release major
   ↓
-[Dev] Deploy and test
-  ✅ Verified
+[开发环境] 部署并测试
+  ✅ 验证通过
   ↓
-[Staging] Deploy and test
-  ✅ Verified
+[预发布环境] 部署并测试
+  ✅ 验证通过
   ↓
-[Prod] Deploy with monitoring
-  ✅ Monitoring green
+[生产环境] 部署并监控
+  ✅ 监控指标正常
   ↓
-Release Complete
+发布完成
 ```
 
-### Pattern 2: Approval Gates
+### 模式 2：审批关卡
 
-Block advancement until reviewed:
+在通过前阻塞等待审阅：
 
 ```bash
-# In .claude/hooks/pre-prod-deploy.sh
+# 在 .claude/hooks/pre-prod-deploy.sh 中
 
 echo "🚨 PRODUCTION DEPLOY"
 echo "Changes: $CHANGES"
@@ -421,17 +421,17 @@ fi
 exit 0
 ```
 
-### Pattern 3: Monitoring & Rollback
+### 模式 3：监控与回滚
 
-After deployment, verify health:
+部署后验证健康状态：
 
 ```bash
 #!/bin/bash
-# Post-deploy hook
+# 部署后 Hook
 
-sleep 10  # Let services start
+sleep 10  # 等待服务启动
 
-# Health checks
+# 健康检查
 if ! curl -f https://api.example.com/health; then
   echo "❌ Health check failed"
   echo "Rolling back..."
@@ -446,137 +446,137 @@ exit 0
 
 ---
 
-## Exercise: Build Your First Multi-Agent Workflow
+## 练习：构建你的第一个多智能体工作流
 
-### Scenario
+### 场景
 
-You have a data science project. Release checklist:
-1. Update model version
-2. Run validation tests
-3. Generate performance report
-4. Update documentation
-5. Create release tag
+你有一个数据科学项目。发布清单：
+1. 更新模型版本
+2. 运行验证测试
+3. 生成性能报告
+4. 更新文档
+5. 创建发布标签
 
-### Step 1: Create Agents
+### 第一步：创建智能体
 
-Create `.claude/agents/` with:
-- `model-versioner.md` - Updates VERSION, model metadata
-- `validator.md` - Runs validation tests
-- `report-generator.md` - Creates performance metrics
-- `doc-updater.md` - Updates README, API docs
-- `release-tagger.md` - Creates git tag
+在 `.claude/agents/` 中创建：
+- `model-versioner.md` - 更新 VERSION、模型元数据
+- `validator.md` - 运行验证测试
+- `report-generator.md` - 创建性能指标
+- `doc-updater.md` - 更新 README、API 文档
+- `release-tagger.md` - 创建 Git 标签
 
-### Step 2: Create the Orchestration Command
+### 第二步：创建编排命令
 
-`.claude/commands/ml-release.md`:
+`.claude/commands/ml-release.md`：
 ```markdown
 # /ml-release
 
-Release a new model version.
+发布新的模型版本。
 
-Usage:
+用法：
 ```
 /ml-release [major|minor|patch]
 ```
 
-## Workflow
-1. Version agent bumps version
-2. Validator runs test suite
-3. Report agent generates metrics
-4. Doc agent updates documentation
-5. Tagger creates release tag
+## 工作流
+1. 版本智能体递增版本号
+2. 验证器运行测试套件
+3. 报告智能体生成指标
+4. 文档智能体更新文档
+5. 标签智能体创建发布标签
 ```
 
-### Step 3: Test It
+### 第三步：测试它
 
 ```bash
 /ml-release patch
 ```
 
-Watch as agents coordinate the full release.
+观察智能体协调完成整个发布过程。
 
 ---
 
-## Best Practices for Advanced Systems
+## 高级系统最佳实践
 
-### DO
+### 应该做
 
-✅ Design agents to be **composable** (outputs fit into next agent)
+✅ 将智能体设计为**可组合**的（输出能作为下一个智能体的输入）
 
-✅ **Log everything** (helps debug failures)
+✅ **记录所有日志**（帮助调试失败）
 
-✅ Test workflows on **small changes first**
+✅ 先在**小变更**上测试工作流
 
-✅ **Document the orchestration flow** (so others understand)
+✅ **记录编排流程**（让他人理解）
 
-✅ Build in **approval gates** for risky operations
+✅ 为高风险操作设置**审批关卡**
 
-✅ **Monitor after automation** (verify success)
+✅ 自动化后**持续监控**（验证成功）
 
-### DON'T
+### 不应该做
 
-❌ Chain too many agents (>7 becomes hard to debug)
+❌ 串联太多智能体（超过 7 个就难以调试）
 
-❌ Make agents **interdependent** (prefer loose coupling)
+❌ 让智能体相互**强依赖**（优先松耦合）
 
-❌ Skip **error handling** (things will fail)
+❌ 跳过**错误处理**（事情一定会失败）
 
-❌ Deploy automated releases **without testing** workflow first
+❌ 在未测试工作流的情况下**部署自动化发布**
 
-❌ Assume agents will **always agree** (build conflict resolution)
-
----
-
-## Validation: You're Ready If...
-
-✓ You can explain multi-agent orchestration patterns
-
-✓ You've created at least 2-3 cooperating agents
-
-✓ You understand error handling strategies
-
-✓ You know how to design workflows with approval gates
-
-✓ You could build a release automation for your project
+❌ 假设智能体总会**达成一致**（要构建冲突解决机制）
 
 ---
 
-## What's Next?
+## 验证：以下都满足说明你已准备好
 
-You've completed the 7-module learning path! You now understand:
+✓ 能解释多智能体编排模式
 
-- ✅ Installation and setup
-- ✅ Core loop and context
-- ✅ Memory and configuration
-- ✅ Agent specialization
-- ✅ Skills and knowledge
-- ✅ Hooks and automation
-- ✅ Advanced orchestration
+✓ 已创建至少 2-3 个协作智能体
 
-### Next Steps
+✓ 理解错误处理策略
 
-**Option A: Deep Dive into a Domain**
-- Go deeper into security: `guide/security/`
-- Go deeper into DevOps: `guide/ops/`
-- Go deeper into architecture: `guide/core/architecture.md`
+✓ 知道如何设计带审批关卡的工作流
 
-**Option B: Build Something**
-- Create a multi-agent workflow for your project
-- Implement one of the exercises from this path
-- Build a plugin bundle and share with team
-
-**Option C: Learn from Examples**
-- Review production agents in `examples/agents/`
-- Study plugin bundles in `examples/plugins/`
-- Explore skills in `guide/core/skill-design-patterns.md`
-
-**Option D: Self-Assess**
-- Take `/self-assessment comprehensive` to find gaps
-- Get personalized recommendations
-- Create a learning plan for weak areas
+✓ 能为你的项目构建发布自动化
 
 ---
 
-**Completed Module 07?** → You're a Claude Code power user! 🚀
+## 下一步
 
-Explore the full guide at `guide/ultimate-guide.md` for depth, or teach others what you've learned.
+你已完成 7 模块学习路径！你现在掌握了：
+
+- ✅ 安装与配置
+- ✅ 核心循环与上下文
+- ✅ 记忆与配置
+- ✅ 智能体专业化
+- ✅ Skills 与知识
+- ✅ Hooks 与自动化
+- ✅ 高级编排
+
+### 接下来的路
+
+**选项 A：深入某一领域**
+- 深入安全：`guide/security/`
+- 深入 DevOps：`guide/ops/`
+- 深入架构：`guide/core/architecture.md`
+
+**选项 B：构建项目**
+- 为你的项目创建多智能体工作流
+- 实现本路径中的某个练习
+- 构建插件包并与团队共享
+
+**选项 C：从示例中学习**
+- 查看 `examples/agents/` 中的生产级智能体
+- 研究 `examples/plugins/` 中的插件包
+- 探索 `guide/core/skill-design-patterns.md` 中的技能
+
+**选项 D：自我评估**
+- 运行 `/self-assessment comprehensive` 找出薄弱环节
+- 获取个性化建议
+- 为薄弱领域制定学习计划
+
+---
+
+**完成模块 07？** → 你已成为 Claude Code 资深用户！
+
+探索 `guide/ultimate-guide.md` 获取更深入的内容，或将你学到的分享给他人。

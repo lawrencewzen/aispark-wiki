@@ -1,294 +1,294 @@
 > 📚 **AI Spark Wiki** · Claude Code 知识库
 
 ---
-title: "MCP vs CLI — Decision Guide"
-description: "When to use MCP servers vs CLI tools in Claude Code workflows. Tradeoffs, decision dimensions, and guidance by situation."
+title: "MCP vs CLI — 决策指南"
+description: "Claude Code 工作流中何时使用 MCP 服务器、何时使用 CLI 工具。权衡取舍、决策维度与情境建议。"
 tags: [mcp, cli, tokens, architecture, decision]
 ---
 
-# MCP vs CLI — Decision Guide
+# MCP vs CLI — 决策指南
 
-**Last updated**: May 2026
+**最后更新**：2026 年 5 月
 
-> Interactive version with guidance table and practitioner quotes: [cc.)
+> 含交互式决策表和实践者观点的互动版本：[cc.)
 
-The debate emerged from a rapid succession of interface paradigms: browser-based AI (2022-23), then AI in the IDE with MCP connecting agents to external services (2024-25), then full CLI agents that execute commands and write files without an intermediary layer (2025-26). That progression explains why the question exists at all.
+这场讨论源于接口范式的快速更迭：2022-23 年的浏览器端 AI，然后是 MCP 将智能体连接至外部服务的 IDE 内 AI（2024-25 年），再到无需中间层就能执行命令和写文件的完整 CLI 智能体（2025-26 年）。这一演进过程解释了为什么这个问题存在。
 
-This page compares two integration patterns for giving Claude Code access to external tools and services: MCP servers and CLI tools. Neither is universally better. The right choice depends on your context — and most real workflows end up using both.
-
----
-
-## What each approach does
-
-**MCP servers** inject tool schemas into Claude's context at session start. Claude sees a structured list of available tools with parameters, types, and descriptions. It then calls those tools natively, receiving structured responses.
-
-**CLI tools** are shell commands that Claude invokes via Bash. Claude drives them the same way a developer would: constructing command strings, parsing text output. No schema injection at startup. The shell is the interface.
+本页对比两种给 Claude Code 访问外部工具和服务的集成模式：MCP 服务器与 CLI 工具。两者没有绝对优劣，正确选择取决于你的具体情况——大多数实际工作流最终会同时使用两者。
 
 ---
 
-## Tradeoffs
+## 两种方式分别做什么
 
-### MCP strengths
+**MCP 服务器**在会话开始时将工具 Schema 注入 Claude 的上下文。Claude 看到一份包含参数、类型和描述的可用工具结构化列表，然后原生调用这些工具并接收结构化响应。
 
-| Advantage | Detail |
+**CLI 工具**是 Claude 通过 Bash 调用的 shell 命令。Claude 的驾驭方式与开发者相同：构建命令字符串、解析文本输出。启动时无 Schema 注入，shell 就是接口。
+
+---
+
+## 权衡取舍
+
+### MCP 的优势
+
+| 优势 | 详情 |
 |-----------|--------|
-| **Structured interface** | Tool schemas guide Claude precisely — fewer hallucinated flags or arguments |
-| **Complex auth** | OAuth, token refresh, secrets rotation handled by the server, not the prompt |
-| **Structured output** | JSON responses are directly parseable by Claude and downstream agents |
-| **Observability** | Remote MCP servers can log every call — essential for enterprise usage tracking and ROI attribution |
-| **Distribution at scale** | Update the server once, all connected clients get the change. No per-machine package management. |
-| **Non-technical users** | Users who never touch a terminal can access tools transparently via MCP connectors |
-| **Weaker models** | A structured schema compensates when the model is less capable of parsing CLI help text |
+| **结构化接口** | 工具 Schema 精确引导 Claude——减少幻觉标志或参数 |
+| **复杂认证** | OAuth、令牌刷新、密钥轮换由服务器处理，不在提示词中处理 |
+| **结构化输出** | JSON 响应可被 Claude 和下游智能体直接解析 |
+| **可观测性** | 远程 MCP 服务器可记录每次调用——对企业使用追踪和 ROI 归因至关重要 |
+| **规模化分发** | 服务器更新一次，所有连接的客户端自动获得变更，无需逐机管理包 |
+| **非技术用户** | 从未接触终端的用户可通过 MCP 连接器透明地访问工具 |
+| **弱模型** | Schema 在模型能力较弱、难以解析 CLI 帮助文本时给予补偿 |
 
-### CLI strengths
+### CLI 的优势
 
-| Advantage | Detail |
+| 优势 | 详情 |
 |-----------|--------|
-| **Zero context overhead** | No schema injected at startup. Since v2.1.7 lazy loading closes most of the gap, but CLI is still the absolute minimum. |
-| **Deterministic actions** | Explicit commands with predictable output are easier to audit and test |
-| **Human + AI use** | The same CLI wrapper works for a developer running it manually and for Claude |
-| **Frontier models** | Claude Opus/Sonnet 4.6 can drive complex CLIs (aws-cli, glab, gh) without a structured schema |
-| **Speed** | No connection setup, no MCP handshake — direct subprocess execution |
-| **Simplicity** | Easier to debug, log, and reason about than a remote server call chain |
-| **Skills encapsulation** | A CLI wrapped in a skill is transparent to the user and keeps the tool logic version-controlled |
+| **零上下文开销** | 启动时无 Schema 注入。v2.1.7 的延迟加载弥合了大部分差距，但 CLI 仍是绝对最小值。 |
+| **确定性操作** | 输出可预测的明确命令更易审计和测试 |
+| **人机共用** | 同一个 CLI 封装可供开发者手动运行，也可供 Claude 使用 |
+| **前沿模型** | Claude Opus/Sonnet 4.6 可直接驾驭复杂 CLI（aws-cli、glab、gh），无需 Schema |
+| **速度** | 无连接建立，无 MCP 握手——直接子进程执行 |
+| **简洁性** | 比远程服务器调用链更易调试、记录和理解 |
+| **Skills（技能模块）封装** | 封装在 Skill（技能模块）中的 CLI 对用户透明，工具逻辑保持版本控制 |
 
-### MCP weaknesses
+### MCP 的劣势
 
-| Weakness | Detail |
+| 劣势 | 详情 |
 |----------|--------|
-| **Schema token cost** | Since v2.1.7, lazy loading (MCP Tool Search) means unused tools inject only their name, not their full schema. Cost is still non-zero: tool names load at startup, full schemas load on first use. The pre-v2.1.7 worst case (~55K tokens for a 5-server setup) now averages ~8.7K — an 85% reduction, but not zero. |
-| **Connection overhead** | Session startup takes longer with many MCP servers connected |
-| **Debugging difficulty** | Failures inside an MCP server are harder to trace than a failed shell command |
-| **Maintenance complexity** | Running, updating, and securing remote MCP servers adds infrastructure |
-| **Overkill for simple APIs** | A GitLab MCP that surfaces 20% of glab's functionality is worse than glab itself |
+| **Schema Token（词元）成本** | v2.1.7 起，延迟加载（MCP 工具搜索）意味着未使用的工具只注入名称，而非完整 Schema。成本仍非零：工具名称在启动时加载，完整 Schema 在首次使用时加载。v2.1.7 之前的最坏情况（5 个服务器约 55K Token（词元））现平均约 8,700 Token（词元）——降低 85%，但不为零。 |
+| **连接开销** | 连接多个 MCP 服务器时，会话启动时间更长 |
+| **调试难度** | MCP 服务器内部的故障比失败的 shell 命令更难追踪 |
+| **维护复杂度** | 运行、更新和保护远程 MCP 服务器增加基础设施负担 |
+| **简单 API 用 MCP 大材小用** | 只暴露 glab 20% 功能的 GitLab MCP 还不如 glab 本身 |
 
-### CLI weaknesses
+### CLI 的劣势
 
-| Weakness | Detail |
+| 劣势 | 详情 |
 |----------|--------|
-| **No observability** | Shell commands on a local machine are invisible to ops/management tooling |
-| **Distribution problem** | Keeping CLIs updated across a team requires package management discipline (brew, scoop, etc.) |
-| **Weaker models struggle** | A less capable model may hallucinate flags or misread help text — schemas help |
-| **No multi-agent structure** | CLI output requires parsing; structured MCP responses are more reliable across agent-to-agent handoffs |
-| **Non-tech user barrier** | A non-technical user cannot be expected to have a configured CLI environment |
+| **无可观测性** | 本地机器上的 shell 命令对运维/管理工具不可见 |
+| **分发问题** | 在团队内保持 CLI 更新需要包管理规范（brew、scoop 等） |
+| **弱模型表现差** | 能力较弱的模型可能产生幻觉标志或误读帮助文本——Schema 有助于此 |
+| **无多智能体结构** | CLI 输出需要解析；结构化 MCP 响应在智能体间传递时更可靠 |
+| **非技术用户门槛** | 无法期望非技术用户拥有配置好的 CLI 环境 |
 
 ---
 
-## The API wrapper pattern
+## API 封装模式
 
-Most production MCP servers for SaaS tools sit on top of existing REST or GraphQL APIs. The server translates tool calls into HTTP requests against those APIs, processes responses, and returns structured output to the agent. It does not add backend capabilities that the underlying API lacks.
+大多数 SaaS 工具的生产 MCP 服务器建立在现有 REST 或 GraphQL API 之上。服务器将工具调用转换为对这些 API 的 HTTP 请求，处理响应，并向智能体返回结构化输出。它不增加底层 API 所缺少的后端能力。
 
-Official documentation from four major providers confirms this directly:
+四大提供商的官方文档直接证实了这一点：
 
-- **Notion**: "converted MCP tool calls into HTTP API calls to Notion's public API" (Notion engineering blog)
-- **Sentry**: "middleware to the upstream Sentry API, optimized for coding assistants like Cursor and Claude Code" (sentry-mcp README)
-- **Slack**: "a wrapper around an external API, like Slack" (Slack developer docs)
-- **GitHub**: "integrates with GitHub, allowing LLMs to interact with repositories via the GitHub API" (github-mcp-server README)
+- **Notion**："将 MCP 工具调用转换为对 Notion 公开 API 的 HTTP API 调用"（Notion 工程博客）
+- **Sentry**："Sentry 上游 API 的中间件，针对 Cursor 和 Claude Code 等编程助手优化"（sentry-mcp README）
+- **Slack**："外部 API（如 Slack）的封装层"（Slack 开发者文档）
+- **GitHub**："与 GitHub 集成，使 LLM 能够通过 GitHub API 与仓库交互"（github-mcp-server README）
 
-The practical consequence: a CLI script calling the same REST or GraphQL API has the same capabilities. MCP and CLI reach the same backend, with the same credentials, triggering the same operations. The difference is the interface layer, not what the backend can do.
+实际意义：调用相同 REST 或 GraphQL API 的 CLI 脚本具有相同能力。MCP 和 CLI 到达相同的后端，使用相同的凭证，触发相同的操作。区别在于接口层，而非后端能做什么。
 
-What MCP adds that a CLI cannot replicate:
+MCP 能做而 CLI 无法复制的内容：
 
-- **OAuth token management**: server-held auth with browser redirect flows (Slack, Google Drive, Figma, hosted Notion). A CLI can hold an API key in an env var, but not a refresh token or a PKCE exchange, which require server-side state.
-- **LLM-tuned schemas**: curated tool selection, not the full API surface, with parameter types and descriptions calibrated for agent reasoning.
-- **Centralized hosting**: one deployment serves many clients; CLIs require per-machine installation and per-user credential configuration.
-- **Usage attribution**: remote MCP servers associate each tool call with a user and session, feeding observability dashboards. Local CLI calls on developer machines are invisible.
+- **OAuth 令牌管理**：服务器端的认证，支持浏览器重定向流程（Slack、Google Drive、Figma、托管的 Notion）。CLI 可以在环境变量中保存 API 密钥，但无法持有刷新令牌或进行 PKCE 交换（这需要服务器端状态）。
+- **为 LLM 调优的 Schema**：精心挑选的工具子集，而非完整 API 表面，参数类型和描述针对智能体推理进行校准。
+- **集中托管**：一次部署服务多个客户端；CLI 需要逐机安装和逐用户配置凭证。
+- **使用归因**：远程 MCP 服务器将每次工具调用与用户和会话关联，为可观测性仪表板提供数据。开发者本地机器上的 CLI 调用不可见。
 
-This sharpens the decision criterion. If a service authenticates via API key or environment token, a CLI calling the same API is functionally equivalent to an MCP server. The question becomes whether you need OAuth, centralized observability, or cross-client standardization. If none of those apply, the CLI avoids the schema overhead and reaches the same backend.
-
----
-
-## The four decision dimensions
-
-Before asking "MCP or CLI?", answer these four questions. They rank from most to least constraining.
-
-### 1. Who is the end user?
-
-This is the dominant variable. Everything else is secondary.
-
-- **Non-technical user** (using a chat interface, no terminal) → **MCP or skill-encapsulated CLI**. You cannot expose a raw CLI to a non-dev user. Connectors must be MCP-based or wrapped invisibly in a skill that handles the CLI internally.
-- **Technical user / developer** → continue to question 2.
-
-### 2. Which model is driving the tool?
-
-- **Frontier model** (Claude Opus/Sonnet 4.6) → strong enough to drive complex CLIs directly. A structured MCP schema adds overhead without proportional benefit.
-- **Smaller or local model** (Qwen, Mistral, lighter deployments) → structured MCP schemas compensate for weaker CLI parsing ability. MCP is more reliable here.
-
-### 3. Does your organization need observability?
-
-- **Yes** (enterprise, C-level reporting, compliance, ROI attribution on AI spend) → **MCP Remote server**. Local CLI calls are invisible. A remote MCP server can log every tool invocation, associate it with a user, and feed dashboards. You cannot replicate this with CLIs on local machines.
-- **No** (individual dev, local workflow) → observability is not a constraint. CLI is fine.
-
-### 4. How often does the tool schema change?
-
-- **Stable API** (mature tool, versioned interface) → MCP investment pays off over time.
-- **Rapidly changing** or **thin wrapper** → CLI is cheaper to maintain. A hand-rolled glab wrapper that exposes only the 5 commands you actually use is more durable than a GitLab MCP that duplicates the full API surface.
+这使决策标准更加清晰。如果服务通过 API 密钥或环境令牌认证，调用相同 API 的 CLI 在功能上等同于 MCP 服务器。问题变成：你是否需要 OAuth、集中式可观测性或跨客户端标准化。如果这三者都不适用，CLI 避免了 Schema 开销并到达相同的后端。
 
 ---
 
-## Guidance by situation
+## 四个决策维度
 
-Quick reference — not rules, but directional defaults.
+在问"MCP 还是 CLI？"之前，先回答这四个问题。按约束力从强到弱排列。
 
-| Situation | Lean toward | Rationale |
+### 1. 最终用户是谁？
+
+这是最主要的变量，其他一切都是次要的。
+
+- **非技术用户**（使用聊天界面，无终端）→ **MCP 或 Skill（技能模块）封装的 CLI**。无法将裸 CLI 暴露给非开发者用户。连接器必须基于 MCP 或在 Skill（技能模块）中无缝封装。
+- **技术用户/开发者** → 继续回答第二个问题。
+
+### 2. 哪个模型在驾驭工具？
+
+- **前沿模型**（Claude Opus/Sonnet 4.6）→ 足以直接驾驭复杂 CLI。结构化 MCP Schema 增加开销而无相应收益。
+- **较小或本地模型**（Qwen、Mistral、轻量级部署）→ 结构化 MCP Schema 弥补较弱的 CLI 解析能力，MCP 更可靠。
+
+### 3. 你的组织是否需要可观测性？
+
+- **是**（企业、高管报告、合规、AI 支出 ROI 归因）→ **MCP 远程服务器**。本地 CLI 调用不可见。远程 MCP 服务器可记录每次工具调用、与用户关联，并为仪表板提供数据。CLI 无法在本地机器上复制这一点。
+- **否**（个人开发者、本地工作流）→ 可观测性不是约束条件，CLI 完全可以。
+
+### 4. 工具 Schema 变化频率如何？
+
+- **稳定 API**（成熟工具，版本化接口）→ MCP 投入随时间回报。
+- **快速变化**或**薄封装**→ CLI 维护成本更低。只暴露你实际使用的 5 个命令的手工 glab 封装，比复制完整 API 表面的 GitLab MCP 更耐用。
+
+---
+
+## 情境建议
+
+快速参考——不是规则，而是方向性默认值。
+
+| 情境 | 倾向于 | 理由 |
 |-----------|-------------|-----------|
-| Non-technical user, chat interface | **MCP / Skill** | CLI is inaccessible; connectors must be invisible |
-| Frontier model (Claude 4.x), developer workflow | **CLI** | Model handles it natively; schemas are overhead |
-| Smaller/local model | **MCP** | Schema guides the model reliably |
-| Enterprise, observability required | **MCP Remote** | Only way to log, attribute, and report on usage |
-| Team distribution (10+ devs) | **MCP** | Central update vs per-machine CLI maintenance |
-| Individual dev, local machine | **CLI or skill** | Simpler, faster, no infrastructure |
-| Deterministic actions (git, CI, deploy) | **CLI** | Explicit commands, predictable output, auditable |
-| Complex auth (OAuth, token refresh) | **MCP** | Server handles auth; CLI would require credential plumbing |
-| Tight context budget / many tools loaded | **CLI** | Still the minimum-overhead option. Lazy loading (v2.1.7+) reduces MCP cost significantly, but CLI has zero schema cost by design. |
-| Agent-to-agent structured output | **MCP** | JSON responses are more reliable than parsed CLI text |
-| Debugging / prototyping a new integration | **CLI** | Easier to inspect, faster to iterate |
-| Browser automation (non-frontier model) | **MCP** | Playwright MCP structures interaction reliably |
-| Browser automation (frontier model, Claude Code) | **CLI + skill** | playwright-cli + skill reported faster and more efficient in practice |
-| GitLab / GitHub access | **CLI** (glab, gh) | Official CLIs are richer than most MCP wrappers |
-| Documentation lookup (Context7) | **MCP** | No CLI equivalent; structured doc retrieval has no shell analog |
+| 非技术用户，聊天界面 | **MCP / Skill（技能模块）** | CLI 无法使用；连接器必须无缝 |
+| 前沿模型（Claude 4.x），开发者工作流 | **CLI** | 模型原生处理；Schema 是开销 |
+| 较小/本地模型 | **MCP** | Schema 可靠引导模型 |
+| 企业，需要可观测性 | **MCP 远程** | 唯一能记录、归因和报告使用情况的方式 |
+| 团队分发（10+ 开发者） | **MCP** | 集中更新 vs 逐机 CLI 维护 |
+| 个人开发者，本地机器 | **CLI 或 Skill（技能模块）** | 更简单、更快，无基础设施 |
+| 确定性操作（git、CI、部署） | **CLI** | 明确命令，输出可预测，可审计 |
+| 复杂认证（OAuth、令牌刷新） | **MCP** | 服务器处理认证；CLI 需要繁琐的凭证配置 |
+| 上下文预算紧张/加载工具多 | **CLI** | 仍是最小开销选项。延迟加载（v2.1.7+）显著降低 MCP 成本，但 CLI 设计上零 Schema 开销。 |
+| 智能体间结构化输出 | **MCP** | JSON 响应比解析的 CLI 文本更可靠 |
+| 调试/原型开发新集成 | **CLI** | 更易检查，迭代更快 |
+| 浏览器自动化（非前沿模型） | **MCP** | Playwright MCP 可靠地结构化交互 |
+| 浏览器自动化（前沿模型，Claude Code） | **CLI + Skill（技能模块）** | playwright-cli + Skill（技能模块）实践中更快更高效 |
+| GitLab / GitHub 访问 | **CLI**（glab、gh） | 官方 CLI 比大多数 MCP 封装功能更丰富 |
+| 文档查询（Context7） | **MCP** | 无 CLI 等效；结构化文档检索无 shell 类比 |
 
 ---
 
-## Per-server recommendation
+## 按服务器推荐
 
-The table below applies the four decision dimensions to the 18 most commonly discussed MCP servers. "Verdict" is the default for a developer using a frontier model on a local machine. Your context (non-technical users, enterprise observability, or a smaller model) may shift any row toward MCP.
+下表对 18 个最常讨论的 MCP 服务器应用四个决策维度。"结论"是使用前沿模型在本地机器上进行开发的默认建议。你的具体情况（非技术用户、企业可观测性需求或较小模型）可能使任何行偏向 MCP。
 
-| MCP Server | Verdict | CLI Alternative | Reason |
+| MCP 服务器 | 结论 | CLI 替代 | 原因 |
 |------------|---------|-----------------|--------|
-| GitHub MCP | **Use CLI** | `gh` | `gh` covers the full API surface; model knows it from training; official GitHub MCP was archived |
-| GitLab MCP | **Use CLI** | `glab` | Official CLI is richer than the MCP wrapper; practitioner consensus confirms |
-| Git MCP (Anthropic) | **Use CLI** | `git` | Git is the CLI the model knows best; MCP schema adds cost without structural benefit on frontier models |
-| Filesystem MCP | **Use CLI** | `cat`, `ls`, `find` | Shell commands are universal; no benefit from schema overhead |
-| Docker MCP | **Use CLI** | `docker` | Docker CLI is universally known; no widely adopted MCP adds comparable value |
-| AWS MCP | **Use CLI** | `aws-cli` | aws-cli v2 covers the full surface; model drives it natively from training knowledge |
-| Terraform MCP | **Use CLI** | `terraform` | Deterministic plan/apply workflow; CLI output is structured and auditable |
-| Semgrep MCP | **Use CLI** | `semgrep` | Mature CLI, well-documented; MCP adds value mainly in CI/CD observability contexts |
-| Playwright MCP | **Depends** | `playwright-cli` + skill | Frontier model: CLI + skill is faster. Smaller model: MCP structures browser interaction reliably |
-| Kubernetes MCP | **Depends** | `kubectl` | Auth complexity and multi-cluster setups favor MCP; simple operations favor kubectl |
-| Vercel MCP | **Depends** | `vercel` CLI | CLI for deploy, env, and domains; MCP for dashboard integration and team workflow comments |
-| Sentry MCP | **Use MCP** | `sentry-cli` (CI/CD scoped) | `sentry-cli` handles releases, source map uploads, and CI/CD ops, but has no equivalent for interactive issue querying. MCP provides structured error triage for coding agents. |
-| Slack MCP | **Use MCP** | none | OAuth required; no practical CLI for workspace access from an agent |
-| Notion MCP | **Use MCP** | none | OAuth required; API-key access is limited to integrations, not user-scoped workspace access |
-| Google Drive MCP | **Use MCP** | none | OAuth 2.1 with refresh token rotation; cannot be replicated by a skill or CLI |
-| Figma MCP | **Use MCP** | none | OAuth required; design file access has no CLI equivalent |
-| Linear MCP | **Use MCP** | none | MCP handles GraphQL complexity; structured project management without raw API calls |
-| Context7 MCP | **Use MCP** | none | No CLI equivalent for curated, version-specific doc retrieval |
+| GitHub MCP | **用 CLI** | `gh` | `gh` 覆盖完整 API 表面；模型从训练中了解它；官方 GitHub MCP 已归档 |
+| GitLab MCP | **用 CLI** | `glab` | 官方 CLI 比 MCP 封装更丰富；实践者共识确认 |
+| Git MCP（Anthropic） | **用 CLI** | `git` | Git 是模型最了解的 CLI；MCP Schema 在前沿模型上增加成本而无结构性优势 |
+| Filesystem MCP | **用 CLI** | `cat`、`ls`、`find` | Shell 命令通用；Schema 开销无对应收益 |
+| Docker MCP | **用 CLI** | `docker` | Docker CLI 众所周知；没有广泛采用的 MCP 提供相当价值 |
+| AWS MCP | **用 CLI** | `aws-cli` | aws-cli v2 覆盖完整表面；模型从训练知识中原生驾驭 |
+| Terraform MCP | **用 CLI** | `terraform` | 确定性 plan/apply 工作流；CLI 输出结构化可审计 |
+| Semgrep MCP | **用 CLI** | `semgrep` | CLI 成熟，文档完善；MCP 主要在 CI/CD 可观测性场景中增值 |
+| Playwright MCP | **视情况** | `playwright-cli` + Skill（技能模块） | 前沿模型：CLI + Skill（技能模块）更快。较小模型：MCP 可靠地结构化浏览器交互 |
+| Kubernetes MCP | **视情况** | `kubectl` | 认证复杂性和多集群设置倾向 MCP；简单操作倾向 kubectl |
+| Vercel MCP | **视情况** | `vercel` CLI | CLI 用于部署、环境变量和域名；MCP 用于仪表板集成和团队工作流注释 |
+| Sentry MCP | **用 MCP** | `sentry-cli`（CI/CD 范围） | `sentry-cli` 处理版本、source map 上传和 CI/CD 操作，但无法交互式查询 issue。MCP 为编程助手提供结构化错误分类。 |
+| Slack MCP | **用 MCP** | 无 | 需要 OAuth；智能体无实用 CLI 访问工作区 |
+| Notion MCP | **用 MCP** | 无 | 需要 OAuth；API 密钥访问仅限集成，非用户范围的工作区访问 |
+| Google Drive MCP | **用 MCP** | 无 | OAuth 2.1 带刷新令牌轮换；无法被 Skill（技能模块）或 CLI 复制 |
+| Figma MCP | **用 MCP** | 无 | 需要 OAuth；设计文件访问无 CLI 等效 |
+| Linear MCP | **用 MCP** | 无 | MCP 处理 GraphQL 复杂性；无需原始 API 调用的结构化项目管理 |
+| Context7 MCP | **用 MCP** | 无 | 无 CLI 等效用于策划的、版本特定的文档检索 |
 
-The pattern: if the service has a mature CLI the model knows from training, use the CLI. If the service requires OAuth or has no CLI, use MCP. "Depends" means the decision hinges on model capability or specific workflow needs.
+规律：如果服务有模型从训练中了解的成熟 CLI，用 CLI。如果服务需要 OAuth 或没有 CLI，用 MCP。"视情况"意味着决策取决于模型能力或特定工作流需求。
 
-> Take the interactive quiz (6 questions, under 1 minute): [cc.)
-
----
-
-## The hybrid is the default
-
-Most production workflows don't choose one. They use both, with each covering the layer it handles best.
-
-**A practical example** (from practitioners):
-
-- **Inner layer** (local dev iteration, git, file ops, shell scripts) → CLI, fast, deterministic, no overhead
-- **Outer layer** (CI/CD, shared infrastructure, cross-team services) → MCP Remote, observable, centralized, scalable
-- **Skill layer** (user-facing actions, CLI tools encapsulated for non-tech users) → CLIs wrapped in skills, transparent to the end user
-
-The mistake is applying one answer to both layers. A solo developer building a Claude Code workflow for themselves should mostly use CLIs. A team deploying an AI assistant to non-technical colleagues should mostly use MCP.
+> 参与互动测试（6 道题，不到 1 分钟）：[cc.)
 
 ---
 
-## Token cost of MCP schemas — what the numbers look like
+## 混合使用才是默认选择
 
-Since v2.1.7 (January 2026), Claude Code uses **MCP Tool Search** (lazy loading) by default. This changes the token math significantly, but does not eliminate schema cost entirely.
+大多数生产工作流不会二选一。它们同时使用两者，各自覆盖最擅长的层面。
 
-**How lazy loading works:** instead of injecting all tool schemas at session start, Claude receives only tool names in an `<available-deferred-tools>` block. Full schemas are fetched via `ToolSearch` only when Claude decides to call a specific tool. Unused tools in a session cost only their name in context (~0 schema tokens), not the full definition.
+**一个实际例子**（来自实践者）：
 
-**Measured impact** (Anthropic benchmarks, 5-server setup):
+- **内层**（本地开发迭代、git、文件操作、shell 脚本）→ CLI，快速、确定性、无开销
+- **外层**（CI/CD、共享基础设施、跨团队服务）→ MCP 远程，可观测、集中、可扩展
+- **Skill（技能模块）层**（面向用户的操作，为非技术用户封装的 CLI 工具）→ 封装在 Skill（技能模块）中的 CLI，对最终用户透明
 
-| Scenario | Token overhead | Note |
+错误在于将同一个答案应用于两层。独自构建 Claude Code 工作流的单一开发者应主要使用 CLI。将 AI 助手部署给非技术同事的团队应主要使用 MCP。
+
+---
+
+## MCP Schema 的 Token（词元）成本——数字是什么样的
+
+v2.1.7（2026 年 1 月）起，Claude Code 默认使用 **MCP 工具搜索**（延迟加载）。这显著改变了 Token（词元）计算，但没有完全消除 Schema 成本。
+
+**延迟加载工作原理**：Claude 在 `<available-deferred-tools>` 块中只接收工具名称，而非在会话开始时注入所有工具 Schema。只有当 Claude 决定调用特定工具时，才通过 `ToolSearch` 获取完整 Schema。会话中未使用的工具只消耗其名称的上下文成本（约 0 个 Schema Token（词元）），而非完整定义。
+
+**实测影响**（Anthropic 基准测试，5 服务器配置）：
+
+| 场景 | Token（词元）开销 | 备注 |
 |----------|---------------|------|
-| Before v2.1.7 (eager loading) | ~55,000 tokens | All schemas preloaded |
-| After v2.1.7 (lazy loading) | ~8,700 tokens | 85% reduction |
-| CLI (no MCP) | ~0 tokens | Baseline |
+| v2.1.7 之前（急切加载） | 约 55,000 Token（词元） | 所有 Schema 预加载 |
+| v2.1.7 之后（延迟加载） | 约 8,700 Token（词元） | 降低 85% |
+| CLI（无 MCP） | 约 0 Token（词元） | 基准线 |
 
-The old worst-case claim of "500-2,000 tokens per server" described eager loading, which is no longer the default. With lazy loading, the cost per unused server is near zero. The cost per *used* server (~600 tokens per tool schema loaded on demand) remains real, but is now pay-per-use rather than always-on.
+旧的最坏情况声明"每个服务器 500-2,000 Token（词元）"描述的是急切加载，现在已不再是默认行为。使用延迟加载，每个未使用服务器的成本接近零。每个*使用中*服务器的成本（按需加载的每个工具 Schema 约 600 Token（词元））仍然存在，但现在是按使用付费而非始终在线。
 
-**What still adds overhead even with lazy loading:**
+**即使有延迟加载，仍会增加开销的内容**：
 
-- Tool names are still injected at startup (one line per tool per server)
-- Schemas load at first invocation — long sessions using many tools accumulate cost
-- Connection setup per server is unchanged (latency, not tokens)
-- Many connected MCP servers still means more names in context, even if schemas stay deferred
+- 工具名称仍在启动时注入（每个服务器每个工具一行）
+- Schema 在首次调用时加载——使用多种工具的长会话会积累成本
+- 每个服务器的连接建立不变（延迟，而非 Token（词元））
+- 连接许多 MCP 服务器意味着上下文中有更多名称，即使 Schema 保持延迟
 
-**Configuration** (v2.1.9+): the `ENABLE_TOOL_SEARCH` environment variable controls the threshold. `auto:N` triggers lazy loading when MCP tools exceed N% of context (default 10%).
+**配置**（v2.1.9+）：`ENABLE_TOOL_SEARCH` 环境变量控制阈值。`auto:N` 在 MCP 工具超过上下文 N% 时触发延迟加载（默认 10%）。
 
-**Mitigation strategies** (still relevant, lower urgency):
+**缓解策略**（仍然相关，紧迫性降低）：
 
-- Load MCP servers selectively per project (project-level config vs global config)
-- Use CLI tools for high-frequency tight loops where any overhead compounds (compile → test → fix)
-- Monitor token usage per session to identify which schemas are being loaded at invocation time
-- Consider a CLI wrapper for tools you use constantly but don't need structured output from
+- 按项目选择性加载 MCP 服务器（项目级配置 vs 全局配置）
+- 对于开销积累的高频紧密循环（编译 → 测试 → 修复），使用 CLI 工具
+- 监控每次会话的 Token（词元）使用，识别哪些 Schema 在调用时被加载
+- 对于频繁使用但不需要结构化输出的工具，考虑 CLI 封装
 
 ---
 
-## Tooling in this space
+## 相关工具
 
-| Tool | What it does | Status |
+| 工具 | 功能 | 状态 |
 |------|-------------|--------|
-| **RTK** (Rust Token Killer) | Filters CLI output before it reaches Claude's context — reduces response verbosity, not schema overhead | Production-ready, actively maintained |
-| **MCPorter** (steipete) | TypeScript runtime for calling MCP servers from scripts, generating CLI wrappers, and emitting typed TS clients. Useful for testing MCP servers and writing hooks that need MCP access. | 3K stars, MIT, 2+ weeks, ready to use |
-| **mcp2cli** (knowsuchagency) | Converts MCP/OpenAPI/GraphQL to runtime CLI, eliminating schema injection. Benchmarked at 32× token reduction on the 43-tool GitHub MCP server (44K → 1.4K tokens). | ~1.9K stars, Show HN Best of March 2026 — production-viable for remote MCP servers with 10+ tools. See [full breakdown](./third-party-tools.md#mcp2cli). |
+| **RTK**（Rust Token Killer） | 在 CLI 输出到达 Claude 上下文之前过滤——降低响应冗长性，而非 Schema 开销 | 生产就绪，活跃维护 |
+| **MCPorter**（steipete） | 用于从脚本调用 MCP 服务器、生成 CLI 封装和发出类型化 TS 客户端的 TypeScript 运行时。适用于测试 MCP 服务器和编写需要 MCP 访问的 Hooks。 | 3K stars，MIT，2 周以上，可用 |
+| **mcp2cli**（knowsuchagency） | 将 MCP/OpenAPI/GraphQL 转换为运行时 CLI，消除 Schema 注入。在 43 工具的 GitHub MCP 服务器上基准测试达到 32 倍 Token（词元）减少（44K → 1.4K Token（词元））。 | 约 1,900 stars，2026 年 3 月 Show HN 精选——对远程 MCP 服务器（10+ 工具）具有生产可用性。见[完整解析](./third-party-tools.md#mcp2cli)。 |
 
-Note on mcp2cli: the token savings are real for direct API use, remote MCP servers, and CI/CD pipelines — benchmarked independently by Firecrawl, Scalekit, and CircleCI. For standard Claude Code sessions where lazy loading (v2.1.7+) already defers most schemas, the gain is smaller. mcp2cli applies most clearly when you drive MCP tools from scripts or agents that don't have deferred loading built in.
-
----
-
-## MCP vs Skills
-
-Skills (`.claude/skills/*.md`) are a third integration paradigm — distinct from both MCP servers and CLI tools. Conflating them with CLIs is the most common framing error in this space.
-
-**What each layer does:**
-
-- **Skills** encode *how the agent should behave* — step-by-step workflows, decision trees, and SOPs written in markdown. They are loaded on demand into the agent's context and guide its reasoning without injecting external tool schemas.
-- **MCP servers** provide *structured access to external systems* — APIs, databases, file systems — with typed tool interfaces the agent calls directly.
-- **CLI tools** provide *command-line access to external systems* — the agent constructs shell commands and parses text output.
-
-Skills and MCP address different layers, not the same problem. A skill can describe when and how to invoke an MCP tool (check this field, then call that tool) while the MCP server handles the actual connection. Asking "should I write a skill or an MCP server?" usually means the layers are being conflated.
-
-### The OAuth boundary
-
-This is MCP's clearest structural advantage over skills, and it's not a matter of convenience.
-
-A skill can instruct an agent to "authenticate with Google Drive before proceeding." What it cannot do is hold a refresh token, complete a browser redirect, or manage a PKCE exchange. Those operations require server-side state, which a markdown file does not have.
-
-Enterprise SaaS APIs — Google Workspace, Salesforce, Slack, GitHub — require OAuth 2.1 with refresh token rotation. When that is the authentication mechanism, MCP is not just more convenient: it is the only option that works without asking the user to paste credentials manually at the start of every session.
-
-Practical test: if the service authenticates via an API key in a header, a skill or CLI can handle it. If it requires a browser redirect or server-held refresh token, that belongs in MCP.
-
-### Community consensus (2026)
-
-The debate has largely settled on a three-layer model rather than a binary choice:
-
-- **Skills** handle *what to do and when* — workflow orchestration, decision guidance, reproducible agent behavior
-- **MCP** handles *connectivity and auth* — external systems that require structured interfaces, OAuth, or enterprise observability
-- **CLI** handles *deterministic local operations* — git, file ops, test runners, anything the model can drive directly from training knowledge
-
-The convergence is now part of the spec: SEP-2640 ("Skills Over MCP") proposes distributing skills as MCP resources, so users install workflows the same way they install tool servers. The two paradigms are being unified rather than forced to compete.
+关于 mcp2cli 的说明：对于直接 API 使用、远程 MCP 服务器和 CI/CD 流水线，Token（词元）节省是真实的——由 Firecrawl、Scalekit 和 CircleCI 独立基准测试验证。对于延迟加载（v2.1.7+）已内置延迟大多数 Schema 的标准 Claude Code 会话，收益更小。mcp2cli 最明显的应用场景是从脚本或没有内置延迟加载的智能体驾驭 MCP 工具时。
 
 ---
 
-## What practitioners say
+## MCP vs Skills（技能模块）
 
-A few representative perspectives from experienced Claude Code users:
+Skills（技能模块）（`.claude/skills/*.md`）是第三种集成范式——有别于 MCP 服务器和 CLI 工具。将其与 CLI 混淆是这一领域最常见的框架错误。
 
-> "I prefer CLI for deterministic actions. For GitLab interactions I use glab (the GitLab MCP is too limited) wrapped in a custom CLI — usable by both humans and AI." — practitioner
+**各层各自做什么**：
 
-> "On Claude Code with frontier models, fewer MCPs is better. I replaced playwright-mcp with playwright-cli + skill — faster and more effective. I still use context7-mcp only because I haven't found a CLI equivalent." — practitioner
+- **Skills（技能模块）**编码*智能体应如何行动*——以 markdown 编写的分步工作流、决策树和标准操作程序。它们按需加载到智能体上下文中，引导推理，无需注入外部工具 Schema。
+- **MCP 服务器**提供*对外部系统的结构化访问*——API、数据库、文件系统——带有智能体直接调用的类型化工具接口。
+- **CLI 工具**提供*对外部系统的命令行访问*——智能体构建 shell 命令并解析文本输出。
 
-> "The CLI vs MCP debate is only happening among devs doing dev things. But there's one fundamental constraint: you cannot propose a CLI solution to a non-technical user who just wants to use their tool simply." — practitioner
+Skills（技能模块）和 MCP 处理不同层面，而非同一问题。Skill（技能模块）可以描述何时以及如何调用 MCP 工具（检查这个字段，然后调用那个工具），而 MCP 服务器处理实际连接。问"我应该写 Skill（技能模块）还是 MCP 服务器？"通常意味着这些层面被混淆了。
 
-> "For enterprise industrialization, observability is non-negotiable. CLI on a local machine is a black box. MCP Remote gives you the logging that C-levels need to attribute investment." — practitioner
+### OAuth 边界
 
-> "Frontier models are strong enough to drive a CLI directly. A weaker local model will struggle — that's where MCP schemas earn their overhead." — practitioner
+这是 MCP 相对于 Skills（技能模块）最清晰的结构性优势，而且不是便利性问题。
+
+Skill（技能模块）可以指示智能体"在继续之前向 Google Drive 进行身份验证"。它无法做到的是持有刷新令牌、完成浏览器重定向或管理 PKCE 交换。这些操作需要服务器端状态，而 markdown 文件没有。
+
+企业 SaaS API——Google Workspace、Salesforce、Slack、GitHub——需要带刷新令牌轮换的 OAuth 2.1。当这是认证机制时，MCP 不仅更方便：它是唯一不需要用户在每次会话开始时手动粘贴凭证就能工作的选项。
+
+实用检验：如果服务通过标头中的 API 密钥认证，Skill（技能模块）或 CLI 可以处理。如果需要浏览器重定向或服务器端刷新令牌，那属于 MCP。
+
+### 社区共识（2026 年）
+
+争论已在很大程度上收敛于三层模型，而非二选一：
+
+- **Skills（技能模块）**处理*做什么和何时做*——工作流编排、决策引导、可复现的智能体行为
+- **MCP**处理*连接和认证*——需要结构化接口、OAuth 或企业可观测性的外部系统
+- **CLI**处理*确定性本地操作*——git、文件操作、测试运行器，任何模型可从训练知识直接驾驭的
+
+这种融合现在是规范的一部分：SEP-2640（"Skills Over MCP"）提议将 Skills（技能模块）作为 MCP 资源分发，用户安装工作流的方式与安装工具服务器相同。两种范式正在统一，而非被迫竞争。
 
 ---
 
-*Back to [MCP Servers Ecosystem](./mcp-servers-ecosystem.md) | [Third-Party Tools](./third-party-tools.md) | [Main guide](../ultimate-guide.md)*
+## 实践者怎么说
+
+来自有经验的 Claude Code 用户的几个代表性观点：
+
+> "对于确定性操作，我偏好 CLI。对于 GitLab 交互，我使用 glab（GitLab MCP 功能太有限），封装在自定义 CLI 中——人机都可使用。" — 实践者
+
+> "使用前沿模型的 Claude Code，MCP 越少越好。我用 playwright-cli + Skill（技能模块）替换了 playwright-mcp——更快更有效。我仍然使用 context7-mcp 只是因为我还没找到 CLI 等效。" — 实践者
+
+> "CLI vs MCP 的争论只发生在做开发工作的开发者中。但有一个根本约束：你无法向只想简单使用工具的非技术用户提出 CLI 解决方案。" — 实践者
+
+> "对于企业工业化，可观测性是不可妥协的。本地机器上的 CLI 是黑盒。MCP 远程给你高管需要归因投资的日志。" — 实践者
+
+> "前沿模型足够强大，可以直接驾驭 CLI。较弱的本地模型会遇到困难——这正是 MCP Schema 值回其开销的地方。" — 实践者
+
+---
+
+*返回 [MCP 服务器生态系统](./mcp-servers-ecosystem.md) | [第三方工具](./third-party-tools.md) | [主指南](../ultimate-guide.md)*

@@ -1,38 +1,38 @@
 > 📚 **AI Spark Wiki** · Claude Code 知识库
 
 ---
-title: "Claude Code — Architecture Internals Diagrams"
-description: "Master loop, tool categories, system prompt assembly, sub-agent isolation"
-tags: [architecture, internals, master-loop, tools]
+title: "Claude Code — 架构内部图表"
+description: "主循环、工具分类、系统提示词组装、子智能体隔离"
+tags: [架构, 内部机制, 主循环, 工具]
 ---
 
-# Architecture Internals
+# 架构内部
 
-What happens under the hood when Claude Code runs.
+Claude Code 运行时的底层机制。
 
 ---
 
-### The Master Loop
+### 主循环
 
-Claude Code's core execution is two nested loops: an **inner agent loop** that keeps calling the API as long as tool calls are returned, and an **outer conversation loop** that starts a new turn when the user responds.
+Claude Code 的核心执行由两个嵌套循环组成：**内层智能体循环**——只要返回工具调用就持续调用 API；**外层对话循环**——在用户响应时开始新轮次。
 
 ```mermaid
 flowchart TD
-    A([User Input]) --> B(Build System Prompt<br/>+ context + tools)
+    A([用户输入]) --> B(构建系统提示词<br/>+ 上下文 + 工具)
     B --> C
 
-    subgraph AGENT_LOOP["Agent Loop — repeats until no tool calls"]
-        C{{Claude API Call}} --> D{Response<br/>contains tool calls?}
-        D -->|Yes| E(Execute tools in parallel<br/>Glob, Grep, Bash...)
-        E --> F(Append tool results<br/>to conversation)
+    subgraph AGENT_LOOP["智能体循环 — 重复直到没有工具调用"]
+        C{{Claude API 调用}} --> D{响应是否<br/>包含工具调用？}
+        D -->|是| E(并行执行工具<br/>Glob、Grep、Bash……)
+        E --> F(将工具结果<br/>追加到对话)
         F --> C
     end
 
-    D -->|No| H(Extract text response)
-    H --> I([Display to User])
-    I --> J{User sends<br/>next message?}
-    J -->|Yes| B
-    J -->|No| K([Session ends])
+    D -->|否| H(提取文本响应)
+    H --> I([展示给用户])
+    I --> J{用户发送<br/>下一条消息？}
+    J -->|是| B
+    J -->|否| K([会话结束])
 
     style A fill:#F5E6D3,color:#333
     style C fill:#E87E2F,color:#fff
@@ -43,93 +43,93 @@ flowchart TD
     style J fill:#E87E2F,color:#fff
     style K fill:#B8B8B8,color:#333
 
-    click A href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#12-first-workflow" "User Input"
-    click B href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/core/architecture.md#1-the-master-loop" "Build System Prompt"
-    click C href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/core/architecture.md#1-the-master-loop" "Claude API Call"
-    click D href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/core/architecture.md#1-the-master-loop" "Response contains tool calls?"
-    click E href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/core/architecture.md#2-the-tool-arsenal" "Execute tools in parallel"
-    click F href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/core/architecture.md#1-the-master-loop" "Append tool results"
-    click H href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/core/architecture.md#1-the-master-loop" "Extract text response"
-    click I href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#12-first-workflow" "Display to User"
-    click J href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/core/architecture.md#1-the-master-loop" "User sends next message?"
-    click K href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/core/architecture.md#1-the-master-loop" "Session ends"
+    click A href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#12-first-workflow" "用户输入"
+    click B href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/core/architecture.md#1-the-master-loop" "构建系统提示词"
+    click C href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/core/architecture.md#1-the-master-loop" "Claude API 调用"
+    click D href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/core/architecture.md#1-the-master-loop" "响应包含工具调用？"
+    click E href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/core/architecture.md#2-the-tool-arsenal" "并行执行工具"
+    click F href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/core/architecture.md#1-the-master-loop" "追加工具结果"
+    click H href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/core/architecture.md#1-the-master-loop" "提取文本响应"
+    click I href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#12-first-workflow" "展示给用户"
+    click J href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/core/architecture.md#1-the-master-loop" "用户发送下一条消息？"
+    click K href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/core/architecture.md#1-the-master-loop" "会话结束"
 ```
 
 <details>
-<summary>ASCII version</summary>
+<summary>ASCII 版本</summary>
 
 ```
-User Input
+用户输入
      │
-Build prompt (system + context + tools)
+构建提示词（系统 + 上下文 + 工具）
      │
- ┌── Agent Loop ──────────────────────┐
+ ┌── 智能体循环 ───────────────────────┐
  │ Claude API ◄────────────────────┐  │
  │      │                          │  │
- │ Tool calls?                     │  │
- │  ├─ Yes → Execute tools ────────┘  │
- │  └─ No  → exit loop               │
+ │ 有工具调用？                     │  │
+ │  ├─ 是 → 执行工具 ──────────────┘  │
+ │  └─ 否  → 退出循环                 │
  └────────────────────────────────────┘
                │
-         Display response
+         展示响应
                │
-         User next msg? ──► Yes → rebuild prompt → loop
-               └─ No → Session ends
+         用户下一条消息？──► 是 → 重建提示词 → 循环
+               └─ 否 → 会话结束
 ```
 
 </details>
 
-> **Source**: [Architecture: Master Loop](../core/architecture.md#master-loop) — Line ~72
+> **来源**：[架构：主循环](../core/architecture.md#master-loop) — 第 ~72 行
 >
-> *Source-confirmed (2026-03-31): Inner loop is `queryLoop()` async generator. Tools execute via `StreamingToolExecutor` (up to 10 concurrent). Loop exits via one of 10 terminal reasons (`completed`, `max_turns`, `aborted_tools`, etc.).*
+> *来源确认（2026-03-31）：内层循环为 `queryLoop()` 异步生成器。工具通过 `StreamingToolExecutor` 执行（最多 10 个并发）。循环通过 10 种终止原因之一退出（`completed`、`max_turns`、`aborted_tools` 等）。*
 
 ---
 
-### Tool Categories & Selection
+### 工具分类与选择
 
-Claude Code has 6 tool categories, each optimized for different operations. Understanding which tool Claude chooses (and why) helps you write instructions that guide better tool selection.
+Claude Code 有 6 种工具类别，各自针对不同操作进行优化。了解 Claude 选择哪种工具（以及原因），有助于你编写能引导更好工具选择的指令。
 
 ```mermaid
 flowchart TD
-    ROOT["Claude Code Tools"] --> READ
+    ROOT["Claude Code 工具集"] --> READ
     ROOT --> WRITE
     ROOT --> EXECUTE
     ROOT --> WEB
     ROOT --> WORKFLOW
     ROOT --> CONTROL
 
-    subgraph READ["📖 Read Tools"]
-        R1[Glob<br/>Find files by pattern]
-        R2[Grep<br/>Search file content]
-        R3[Read<br/>Read file content]
-        R4[LS<br/>List directory]
+    subgraph READ["📖 读取工具"]
+        R1[文件匹配工具<br/>按模式查找文件]
+        R2[搜索工具<br/>搜索文件内容]
+        R3[读取工具<br/>读取文件内容]
+        R4[LS<br/>列出目录]
     end
 
-    subgraph WRITE["✏️ Write Tools"]
-        W1[Write<br/>Create new file]
-        W2[Edit<br/>Modify existing file]
-        W3[MultiEdit<br/>Batch modifications]
+    subgraph WRITE["✏️ 写入工具"]
+        W1[写入工具<br/>创建新文件]
+        W2[编辑工具<br/>修改已有文件]
+        W3[MultiEdit<br/>批量修改]
     end
 
-    subgraph EXECUTE["⚙️ Execute Tools"]
-        E1[Bash<br/>Shell commands]
-        E2[Task<br/>Spawn sub-agent]
+    subgraph EXECUTE["⚙️ 执行工具"]
+        E1[Bash 工具<br/>Shell 命令]
+        E2[任务工具<br/>派生子智能体]
     end
 
-    subgraph WEB["🌐 Web Tools"]
-        WB1[WebSearch<br/>Search the web]
-        WB2[WebFetch<br/>Fetch URL content]
+    subgraph WEB["🌐 Web 工具"]
+        WB1[WebSearch<br/>网页搜索]
+        WB2[WebFetch<br/>抓取 URL 内容]
     end
 
-    subgraph WORKFLOW["📋 Workflow Tools"]
-        WF1[TodoWrite<br/>Manage task list]
-        WF2[NotebookEdit<br/>Jupyter notebooks]
+    subgraph WORKFLOW["📋 工作流工具"]
+        WF1[TodoWrite<br/>管理任务列表]
+        WF2[NotebookEdit<br/>Jupyter 笔记本]
     end
 
-    subgraph CONTROL["🎛️ Control Flow Tools"]
-        CF1[EnterPlanMode / ExitPlanMode<br/>Toggle plan mode]
-        CF2[EnterWorktree / ExitWorktree<br/>Worktree navigation]
-        CF3[AskUserQuestion<br/>Request human input]
+    subgraph CONTROL["🎛️ 控制流工具"]
+        CF1[EnterPlanMode / ExitPlanMode<br/>切换计划模式]
+        CF2[EnterWorktree / ExitWorktree<br/>工作树导航]
+        CF3[AskUserQuestion<br/>请求用户输入]
     end
 
     style ROOT fill:#E87E2F,color:#fff
@@ -150,148 +150,148 @@ flowchart TD
     style CF2 fill:#B8B8B8,color:#333
     style CF3 fill:#B8B8B8,color:#333
 
-    click ROOT href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/core/architecture.md#2-the-tool-arsenal" "Claude Code Tools"
-    click R1 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/core/architecture.md#2-the-tool-arsenal" "Glob — Find files by pattern"
-    click R2 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/core/architecture.md#2-the-tool-arsenal" "Grep — Search file content"
-    click R3 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/core/architecture.md#2-the-tool-arsenal" "Read — Read file content"
-    click R4 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/core/architecture.md#2-the-tool-arsenal" "LS — List directory"
-    click W1 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/core/architecture.md#2-the-tool-arsenal" "Write — Create new file"
-    click W2 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/core/architecture.md#2-the-tool-arsenal" "Edit — Modify existing file"
-    click W3 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/core/architecture.md#2-the-tool-arsenal" "MultiEdit — Batch modifications"
-    click E1 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/core/architecture.md#2-the-tool-arsenal" "Bash — Shell commands"
-    click E2 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#41-what-are-agents" "Task — Spawn sub-agent"
+    click ROOT href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/core/architecture.md#2-the-tool-arsenal" "Claude Code 工具集"
+    click R1 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/core/architecture.md#2-the-tool-arsenal" "文件匹配工具 — 按模式查找文件"
+    click R2 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/core/architecture.md#2-the-tool-arsenal" "搜索工具 — 搜索文件内容"
+    click R3 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/core/architecture.md#2-the-tool-arsenal" "读取工具 — 读取文件内容"
+    click R4 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/core/architecture.md#2-the-tool-arsenal" "LS — 列出目录"
+    click W1 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/core/architecture.md#2-the-tool-arsenal" "写入工具 — 创建新文件"
+    click W2 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/core/architecture.md#2-the-tool-arsenal" "编辑工具 — 修改已有文件"
+    click W3 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/core/architecture.md#2-the-tool-arsenal" "MultiEdit — 批量修改"
+    click E1 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/core/architecture.md#2-the-tool-arsenal" "Bash 工具 — Shell 命令"
+    click E2 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#41-what-are-agents" "任务工具 — 派生子智能体"
     click WB1 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/core/architecture.md#2-the-tool-arsenal" "WebSearch"
     click WB2 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/core/architecture.md#2-the-tool-arsenal" "WebFetch"
-    click WF1 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/core/architecture.md#2-the-tool-arsenal" "TodoWrite — Task list"
+    click WF1 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/core/architecture.md#2-the-tool-arsenal" "TodoWrite — 任务列表"
     click WF2 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/core/architecture.md#2-the-tool-arsenal" "NotebookEdit — Jupyter"
-    click CONTROL href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/core/architecture.md#2-the-tool-arsenal" "Control Flow Tools"
+    click CONTROL href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/core/architecture.md#2-the-tool-arsenal" "控制流工具"
     click CF1 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/core/architecture.md#2-the-tool-arsenal" "EnterPlanMode / ExitPlanMode"
     click CF2 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/core/architecture.md#2-the-tool-arsenal" "EnterWorktree / ExitWorktree"
     click CF3 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/core/architecture.md#2-the-tool-arsenal" "AskUserQuestion"
 ```
 
 <details>
-<summary>ASCII version</summary>
+<summary>ASCII 版本</summary>
 
 ```
-READ:     Glob (find), Grep (search), Read (content), LS (list)
-WRITE:    Write (create), Edit (modify), MultiEdit (batch)
-EXECUTE:  Bash (shell), Task (sub-agent)  ← most powerful/risky
-WEB:      WebSearch, WebFetch
-WORKFLOW: TodoWrite, NotebookEdit
-CONTROL:  EnterPlanMode/ExitPlanMode, EnterWorktree/ExitWorktree, AskUserQuestion
+读取：   文件匹配工具（查找）、搜索工具（搜索）、读取工具（内容）、LS（列表）
+写入：   写入工具（创建）、编辑工具（修改）、MultiEdit（批量）
+执行：   Bash 工具（Shell）、任务工具（子智能体）← 最强大/高风险
+Web：    WebSearch、WebFetch
+工作流： TodoWrite、NotebookEdit
+控制：   EnterPlanMode/ExitPlanMode、EnterWorktree/ExitWorktree、AskUserQuestion
 ```
 
 </details>
 
-> **Source**: [Architecture: Tools](../core/architecture.md#tools) — Line ~213
+> **来源**：[架构：工具](../core/architecture.md#tools) — 第 ~213 行
 
-> *Simplified — additional tools available. See [Architecture: Tool Arsenal](../core/architecture.md#tools) for the full list.*
+> *已简化——还有更多工具可用。完整列表见 [架构：工具集](../core/architecture.md#tools)。*
 
 ---
 
-### System Prompt Assembly
+### 系统提示词组装
 
-Before every API call, Claude Code assembles a system prompt from multiple sources in a specific order. The prompt is split into two cache zones separated by a boundary marker.
+在每次 API 调用前，Claude Code 会按照特定顺序从多个来源组装系统提示词。提示词被分为两个缓存区域，中间由边界标记分隔。
 
 ```mermaid
 sequenceDiagram
     participant CC as Claude Code
-    participant G as Global CLAUDE.md
-    participant P as Project CLAUDE.md
-    participant T as Tool Registry
+    participant G as 全局 CLAUDE.md
+    participant P as 项目 CLAUDE.md
+    participant T as 工具注册表
     participant A as Claude API
 
-    Note over CC: STATIC zone (cached globally — shared across all users)
-    CC->>CC: 1. Load base instructions + safety rules
-    CC->>G: 2. Read ~/.claude/CLAUDE.md
-    G->>CC: Global preferences, rules
-    CC->>P: 3. Read project CLAUDE.md(s)
-    P->>CC: Project conventions, context
-    CC->>T: 4. Get available tools list
-    T->>CC: Tool schemas (Glob, Grep, Bash...)
-    Note over CC: ── BOUNDARY MARKER ──────────────────────────
-    Note over CC: DYNAMIC zone (cached per-session, not cross-org)
-    CC->>CC: 5. Add working directory + git info
-    CC->>CC: 6. Add MCP server capabilities (uncached — recomputed every turn)
-    CC->>CC: 7. Add memory (MEMORY.md), session guidance, language
-    CC->>A: System prompt (assembled)<br/>+ User message
-    Note over A: One large call with<br/>all context embedded
+    Note over CC: 静态区域（全局缓存 — 所有用户共享）
+    CC->>CC: 1. 加载基础指令 + 安全规则
+    CC->>G: 2. 读取 ~/.claude/CLAUDE.md
+    G->>CC: 全局偏好、规则
+    CC->>P: 3. 读取项目 CLAUDE.md（多个）
+    P->>CC: 项目规范、上下文
+    CC->>T: 4. 获取可用工具列表
+    T->>CC: 工具 Schema（文件匹配、搜索、Bash……）
+    Note over CC: ── 边界标记 ──────────────────────────────
+    Note over CC: 动态区域（按会话缓存，不跨组织共享）
+    CC->>CC: 5. 添加工作目录 + Git 信息
+    CC->>CC: 6. 添加 MCP 服务器能力（不缓存 — 每轮重新计算）
+    CC->>CC: 7. 添加记忆（MEMORY.md）、会话指导、语言设置
+    CC->>A: 系统提示词（已组装）<br/>+ 用户消息
+    Note over A: 一次包含所有<br/>上下文的大请求
 ```
 
 <details>
-<summary>ASCII version</summary>
+<summary>ASCII 版本</summary>
 
 ```
-STATIC zone (globally cacheable, cross-org):
-1. Base instructions (hardcoded)
+静态区域（全局可缓存，跨组织）：
+1. 基础指令（硬编码）
 2. ~/.claude/CLAUDE.md
-3. /project/CLAUDE.md + subdirs
-4. Tool definitions list
-────── BOUNDARY MARKER ──────────
-DYNAMIC zone (per-session cache):
-5. Working directory + git status
-6. MCP server capabilities (always recomputed)
-7. Memory, session guidance, language
-──────────────────────────────────
-→ All combined → Claude API call
+3. /project/CLAUDE.md + 子目录
+4. 工具定义列表
+────── 边界标记 ──────
+动态区域（按会话缓存）：
+5. 工作目录 + Git 状态
+6. MCP 服务器能力（始终重新计算）
+7. 记忆、会话指导、语言设置
+──────────────────────
+→ 全部合并 → Claude API 调用
 ```
 
 </details>
 
-> **Source**: [Architecture: System Prompt](../core/architecture.md#system-prompt) — Line ~354
+> **来源**：[架构：系统提示词](../core/architecture.md#system-prompt) — 第 ~354 行
 >
-> *Source-confirmed (2026-03-31): Two-zone architecture via `SYSTEM_PROMPT_DYNAMIC_BOUNDARY` marker. Static zone has `cacheScope: 'global'` (shared across all users). MCP instructions explicitly uncached — comment in source: "servers connect/disconnect between turns".*
+> *来源确认（2026-03-31）：通过 `SYSTEM_PROMPT_DYNAMIC_BOUNDARY` 标记实现两区域架构。静态区域设有 `cacheScope: 'global'`（所有用户共享）。MCP 指令明确不缓存——源码注释：「服务器在每轮之间连接/断开」。*
 
 ---
 
-### Sub-Agent Context Isolation
+### 子智能体上下文隔离
 
-Sub-agents are completely isolated from the parent — they can't read the parent's conversation or modify parent state. This isolation is a feature (safety) and a constraint (intentional design).
+子智能体与父级完全隔离——它们无法读取父级的对话，也无法修改父级状态。这种隔离既是一种安全特性，也是有意为之的设计约束。
 
 ```mermaid
 sequenceDiagram
-    participant P as Parent Claude
-    participant T as Task Tool
-    participant S as Sub-Agent
-    participant EXT as External Services
+    participant P as 父级 Claude
+    participant T as 任务工具
+    participant S as 子智能体
+    participant EXT as 外部服务
 
-    Note over P: Has full conversation history
-    P->>T: Task(prompt="do X", tools=[Read,Write,Bash])
-    Note over T: Creates new Claude instance
-    T->>S: spawn(prompt + tool grants ONLY)
-    Note over S: Does NOT receive:<br/>- Parent conversation<br/>- Parent tool results<br/>- Parent state
+    Note over P: 拥有完整对话历史
+    P->>T: Task(prompt="执行 X", tools=[Read,Write,Bash])
+    Note over T: 创建新的 Claude 实例
+    T->>S: spawn(提示词 + 工具授权 仅此而已)
+    Note over S: 不接收：<br/>- 父级对话<br/>- 父级工具调用结果<br/>- 父级状态
 
-    S->>EXT: read files, bash, web (as granted)
-    EXT->>S: Results
+    S->>EXT: 读取文件、bash、web（按已授权）
+    EXT->>S: 结果
 
-    Note over S: Independent reasoning<br/>with limited context
+    Note over S: 在有限上下文中<br/>独立推理
 
-    S->>T: return "task complete: details..."
-    Note over T: Only text passes back
-    T->>P: Result string
-    Note over P: Parent gets text only<br/>No shared state
+    S->>T: 返回「任务完成：详情……」
+    Note over T: 只传递文本
+    T->>P: 结果字符串
+    Note over P: 父级只获得文本<br/>无共享状态
 ```
 
 <details>
-<summary>ASCII version</summary>
+<summary>ASCII 版本</summary>
 
 ```
-Parent (full context)
+父级（完整上下文）
     │
     Task(prompt, tools=[...])
     │
     ▼
-Sub-Agent (ISOLATED)
-  Input: prompt + tool grants only
-  Can: use granted tools independently
-  Cannot: see parent conversation, modify parent state
-  Output: text result ONLY
+子智能体（隔离）
+  输入：提示词 + 工具授权 仅此而已
+  能做：独立使用已授权的工具
+  不能做：查看父级对话、修改父级状态
+  输出：仅文本结果
     │
     ▼
-Parent receives: text string
+父级接收：文本字符串
 ```
 
 </details>
 
-> **Source**: [Architecture: Sub-Agents](../core/architecture.md#sub-agents) — Line ~444
+> **来源**：[架构：子智能体](../core/architecture.md#sub-agents) — 第 ~444 行

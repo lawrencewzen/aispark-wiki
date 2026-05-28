@@ -1,462 +1,462 @@
 > 📚 **AI Spark Wiki** · Claude Code 知识库
 
 ---
-title: "Team Metrics for AI-Augmented Engineering"
-description: "How to measure and pilot a tech-product team using AI. DORA, SPACE, and the metrics that matter when AI writes 70%+ of your code."
+title: "AI 增强工程的团队指标"
+description: "如何衡量和运营 AI 辅助技术产品团队。当 AI 编写 70%+ 代码时，DORA、SPACE 与真正重要的指标。"
 tags: [guide, metrics, dora, space, team, observability, ai-augmented]
 ---
 
-# Team Metrics for AI-Augmented Engineering
+# AI 增强工程的团队指标
 
-> Velocity is easy to measure and easy to misread. AI raises the bar for what "moving fast" even means.
+> 速度容易衡量，也容易误读。AI 提高了"快速移动"的标准。
 
-## Table of Contents
+## 目录
 
-1. [The Measurement Problem](#the-measurement-problem)
-2. [The DORA Foundation](#the-dora-foundation)
-3. [DORA in an AI-Augmented Context](#dora-in-an-ai-augmented-context)
-4. [Beyond DORA: The SPACE Framework](#beyond-dora-the-space-framework)
-5. [AI-Specific Metrics](#ai-specific-metrics)
-6. [Agentic Metrics: What DORA Doesn't Measure](#agentic-metrics-what-dora-doesnt-measure)
-7. [Product Metrics (the often-missing layer)](#product-metrics-the-often-missing-layer)
-8. [By Team Size](#by-team-size)
-9. [Vanity Metrics to Drop](#vanity-metrics-to-drop)
-10. [The 4-Question Test](#the-4-question-test)
-11. [Tooling](#tooling)
-12. [Implementation Roadmap](#implementation-roadmap)
-13. [See Also](#see-also)
-
----
-
-## The Measurement Problem
-
-AI-assisted development changes delivery speed fast enough to break most existing benchmarks. A team shipping 2 features per sprint in 2022 might now ship 6, with AI generating 70-90% of the code. That looks like a win on every traditional scorecard, and it might genuinely be one — or the velocity is hiding shallow reviews, skill atrophy, and a growing pile of AI-generated technical debt that nobody fully understands.
-
-The core tension: activity metrics spike immediately when you adopt AI tools, but quality and long-term maintainability signals are slower and harder to track. Sprint velocity, commits per day, and lines written all go up. Bug escape rate, time-to-understand a PR, and developer confidence are harder to wire up but far more informative.
-
-This page gives engineering managers, tech leads, and CTOs a practical measurement stack — starting from the DORA foundation, layering in human factors via SPACE, then adding the AI-specific signals that the standard frameworks don't cover.
+1. [衡量问题](#衡量问题)
+2. [DORA 基础](#dora-基础)
+3. [AI 增强语境下的 DORA](#ai-增强语境下的-dora)
+4. [超越 DORA：SPACE 框架](#超越-doraspace-框架)
+5. [AI 特定指标](#ai-特定指标)
+6. [智能体指标：DORA 未能衡量的内容](#智能体指标dora-未能衡量的内容)
+7. [产品指标（常被忽视的层次）](#产品指标常被忽视的层次)
+8. [按团队规模分类](#按团队规模分类)
+9. [应该丢弃的虚荣指标](#应该丢弃的虚荣指标)
+10. [四问测试](#四问测试)
+11. [工具](#工具)
+12. [实施路线图](#实施路线图)
+13. [参见](#参见)
 
 ---
 
-## The DORA Foundation
+## 衡量问题
 
-DORA (DevOps Research and Assessment) measures the health of your delivery system, not individual contributors. That distinction matters: it keeps metrics conversations focused on process improvement rather than surveillance. It's also the most validated framework in the field, backed by years of research across thousands of organizations.
+AI 辅助开发改变交付速度的速度足以打破大多数现有基准。一个 2022 年每个迭代交付 2 个功能的团队，现在可能交付 6 个，AI 生成 70-90% 的代码。这在每个传统记分卡上看起来都是胜利，可能确实是——或者速度只是掩盖了浅显的审查、技能萎缩，以及一堆没人完全理解的 AI 生成技术债务。
 
-The four core metrics:
+核心张力：采用 AI 工具后，活动指标立即飙升，但质量和长期可维护性信号则更慢、更难追踪。Sprint 速度、每日提交次数和代码行数都在上升。Bug 逃逸率、理解 PR 所需时间和开发者信心更难衡量，但信息量更大。
 
-### Deployment Frequency
+本页为工程管理者、技术负责人和 CTO 提供一个实用的指标体系——从 DORA 基础开始，通过 SPACE 加入人的因素，然后添加标准框架未覆盖的 AI 特定信号。
 
-**What it measures**: How often you deploy to production (or release to end users).
+---
 
-**How to measure**: Count production deployments per day, week, or month. Most CI/CD tools expose this directly (GitHub Actions, CircleCI, Vercel, etc.).
+## DORA 基础
 
-**2024 benchmarks**:
+DORA（DevOps 研究与评估）衡量你的交付系统健康状况，而非个人贡献者。这一区别很重要：它让指标对话聚焦于流程改进，而非监控。它也是该领域最经过验证的框架，有数年跨数千个组织的研究支撑。
 
-| Tier | Frequency |
+四个核心指标：
+
+### 部署频率
+
+**衡量什么**：多久向生产环境部署一次（或向最终用户发布一次）。
+
+**如何衡量**：统计每天、每周或每月的生产部署次数。大多数 CI/CD 工具直接暴露这一数据（GitHub Actions、CircleCI、Vercel 等）。
+
+**2024 年基准**：
+
+| 级别 | 频率 |
 |------|-----------|
-| Elite | Multiple times per day |
-| High | Once per day to once per week |
-| Medium | Once per week to once per month |
-| Low | Less than once per month |
+| 精英 | 每天多次 |
+| 高 | 每天一次到每周一次 |
+| 中 | 每周一次到每月一次 |
+| 低 | 每月一次以下 |
 
-**Common pitfall**: Teams conflate "deployment" with "release." If you deploy to prod but hide behind feature flags, the metric looks good but customer value isn't delivered. Track both deployment frequency and feature flag rollout cadence if your team uses flags heavily.
+**常见陷阱**：团队混淆"部署"和"发布"。如果你部署到生产但隐藏在功能标志后面，指标看起来良好，但客户价值未交付。如果你的团队大量使用功能标志，同时追踪部署频率和功能标志推出节奏。
 
 ---
 
-### Lead Time for Changes
+### 变更前置时间
 
-**What it measures**: Time from a code commit to that code running in production.
+**衡量什么**：从代码提交到该代码在生产中运行的时间。
 
-**How to measure**: Timestamp at commit, timestamp at deployment. The delta is your lead time. Tools like LinearB and Faros.ai automate this from your CI/CD pipeline.
+**如何衡量**：提交时间戳，部署时间戳。差值就是你的前置时间。LinearB 和 Faros.ai 等工具从 CI/CD 流水线自动化这一过程。
 
-**2024 benchmarks**:
+**2024 年基准**：
 
-| Tier | Lead Time |
+| 级别 | 前置时间 |
 |------|-----------|
-| Elite | Less than 1 hour |
-| High | 1 hour to 1 week |
-| Medium | 1 week to 1 month |
-| Low | More than 6 months |
+| 精英 | 不到 1 小时 |
+| 高 | 1 小时到 1 周 |
+| 中 | 1 周到 1 个月 |
+| 低 | 超过 6 个月 |
 
-**Common pitfall**: Lead time measures calendar time, not active work time. A PR that sits in review for 3 days has 3 days of lead time even if the actual coding took 20 minutes. If your lead time is long, check where it's accumulating: is it in review queues, staging environments, or deployment pipelines?
+**常见陷阱**：前置时间衡量日历时间，而非活跃工作时间。在审查中停留 3 天的 PR，即使实际编码只花了 20 分钟，也有 3 天的前置时间。如果你的前置时间很长，检查它在哪里积累：是在审查队列、暂存环境还是部署流水线？
 
 ---
 
-### Change Failure Rate
+### 变更失败率
 
-**What it measures**: Percentage of deployments that cause a production incident or require a rollback.
+**衡量什么**：导致生产事故或需要回滚的部署百分比。
 
-**How to measure**: (Number of failed deployments) / (Total deployments). "Failed" means requiring a hotfix, rollback, or incident response. Define this clearly before measuring or you'll argue over what counts.
+**如何衡量**：（失败部署数量）/（总部署数量）。"失败"意味着需要热修复、回滚或事件响应。在衡量之前明确定义这一点，否则你会为什么算数而争论。
 
-**2024 benchmarks**:
+**2024 年基准**：
 
-| Tier | Rate |
+| 级别 | 比率 |
 |------|------|
-| Elite | 0-5% |
-| High | 5-10% |
-| Medium | 10-15% |
-| Low | More than 15% |
+| 精英 | 0-5% |
+| 高 | 5-10% |
+| 中 | 10-15% |
+| 低 | 超过 15% |
 
-**Common pitfall**: If you're not tracking incidents formally, this metric defaults to zero — which looks great but means nothing. Invest in an on-call system (PagerDuty, OpsGenie, even a Slack channel with a naming convention) before tracking CFR.
+**常见陷阱**：如果你没有正式跟踪事件，这个指标默认为零——看起来很好但毫无意义。在跟踪 CFR 之前，先投资于值班系统（PagerDuty、OpsGenie，甚至使用命名约定的 Slack 频道）。
 
 ---
 
-### Mean Time to Recovery (MTTR)
+### 平均恢复时间（MTTR）
 
-**What it measures**: How long it takes to restore service after a production failure.
+**衡量什么**：生产故障后恢复服务所需的时间。
 
-**How to measure**: Time from incident alert to service restored. Track in your incident management system. Even a spreadsheet works if your incident volume is low.
+**如何衡量**：从事件告警到服务恢复的时间。在事件管理系统中跟踪。如果你的事件量较低，即使是电子表格也能用。
 
-**2024 benchmarks**:
+**2024 年基准**：
 
-| Tier | MTTR |
+| 级别 | MTTR |
 |------|------|
-| Elite | Less than 1 hour |
-| High | Less than 1 day |
-| Medium | 1 day to 1 week |
-| Low | More than 1 week |
+| 精英 | 不到 1 小时 |
+| 高 | 不到 1 天 |
+| 中 | 1 天到 1 周 |
+| 低 | 超过 1 周 |
 
-**Common pitfall**: MTTR only tells you recovery speed, not root cause distribution. Combine with a lightweight post-mortem process so you know whether you're improving resilience or just getting faster at firefighting the same classes of issues.
-
----
-
-### On the 2025 DORA Evolution
-
-The 2025 DORA report made a significant methodological shift: the four-tier model (Elite/High/Medium/Low) was retired. DORA now identifies **7 organizational archetypes** measured across **8 dimensions** — throughput, stability, team performance, product performance, individual effectiveness, time on valuable work, friction, and burnout.
-
-The implication for teams: stop chasing "Elite" as an endpoint. "Elite" on deployment frequency can coexist with burnout and high friction. The new model pushes you to identify your archetype (e.g., "Thriving Achievers," "Struggling Strugglers," "Balanced Performers") and improve your weakest dimensions rather than optimizing the metrics you're already good at. The four classic metrics remain valid input signals; they're just no longer the whole story.
+**常见陷阱**：MTTR 只告诉你恢复速度，而非根本原因分布。结合轻量级事后分析流程，这样你就知道自己是在提高弹性，还是只是在同类问题上恢复得更快。
 
 ---
 
-## DORA in an AI-Augmented Context
+### 关于 2025 年 DORA 演进
 
-Each DORA metric reacts differently when AI enters the development workflow. Understanding those effects helps you set the right targets and spot the right warning signs.
+2025 年 DORA 报告做出了重大方法论转变：四级模型（精英/高/中/低）被淘汰。DORA 现在在**8 个维度**上识别**7 种组织原型**——吞吐量、稳定性、团队绩效、产品绩效、个人效能、有价值工作的时间、摩擦和倦怠。
 
-### Deployment Frequency
+对团队的影响：停止将"精英"作为终点追求。部署频率上的"精英"可以与倦怠和高摩擦共存。新模型推动你识别自己的原型（例如"蓬勃达成者"、"挣扎着"、"均衡执行者"）并改善你最薄弱的维度，而非优化你已经擅长的指标。四个经典指标仍然是有效的输入信号；它们只是不再是完整的故事。
 
-AI accelerates feature development, so your deployment cadence should increase — provided your pipeline can keep up. If deployment frequency stays flat after widespread AI adoption, the bottleneck is downstream: staging environments, manual QA gates, or review throughput, not coding speed. AI gives you more PRs to merge; it doesn't automatically improve the rest of the pipeline.
+---
 
-Watch for: deployment frequency climbing while change failure rate also climbs. That's AI-accelerated code that isn't being reviewed carefully.
+## AI 增强语境下的 DORA
 
-### Lead Time for Changes
+当 AI 进入开发工作流时，每个 DORA 指标的反应不同。理解这些影响有助于设置正确的目标并发现正确的警告信号。
 
-AI cuts coding time but has limited effect on the non-coding segments of lead time. PR review, staging validation, context-switching delays, and deployment windows are largely unchanged by AI assistance. If your lead time isn't improving alongside AI adoption, the constraint is in review velocity or pipeline automation, not coding. Map your lead time stages explicitly — code time, review wait, staging wait, deploy window — to know where the leverage is.
+### 部署频率
 
-### Change Failure Rate
+AI 加速功能开发，所以你的部署节奏应该提高——前提是你的流水线能跟上。如果在广泛采用 AI 后部署频率保持不变，瓶颈在下游：暂存环境、手动 QA 关卡或审查吞吐量，而非编码速度。AI 给你更多要合并的 PR；它不会自动改善流水线的其余部分。
 
-This is the metric most at risk when AI adoption outpaces review discipline. AI generates syntactically correct, structurally plausible code that can still have subtle behavioral errors. Teams that treat AI-generated PRs as "lower risk" and rubber-stamp reviews tend to see CFR creep up over 6-12 months. The failure mode is gradual: each individual AI PR looks fine, but the cumulative effect of reduced scrutiny shows up in production.
+注意：部署频率上升而变更失败率也上升。这是 AI 加速的代码没有被仔细审查的信号。
 
-Track CFR separately for AI-generated code versus manually written code (most AI coding tools can tag commits). If AI-generated CFR is materially higher, your review process needs reinforcement, not your AI tooling.
+### 变更前置时间
+
+AI 减少编码时间，但对前置时间中非编码部分影响有限。PR 审查、暂存验证、上下文切换延迟和部署窗口在很大程度上不受 AI 辅助影响。如果你的前置时间在 AI 采用后没有改善，约束在审查速度或流水线自动化，而非编码。明确绘制你的前置时间阶段——代码时间、审查等待、暂存等待、部署窗口——以了解杠杆在哪里。
+
+### 变更失败率
+
+这是 AI 采用超过审查规范时风险最大的指标。AI 生成语法正确、结构合理的代码，但仍然可能有微妙的行为错误。将 AI 生成的 PR 视为"风险较低"并走形式审查的团队，往往在 6-12 个月内看到 CFR 蔓延上升。失败模式是渐进的：每个 AI PR 单独看起来都不错，但减少审查的累积效果在生产中显现。
+
+按代码来源分别跟踪 CFR：AI 生成的提交 vs 手动编写的提交（大多数 AI 编程工具可以标记提交）。如果 AI 生成的 CFR 明显更高，你的审查流程需要加强，而非你的 AI 工具。
 
 ### MTTR
 
-AI genuinely helps here — if observability is already in place. AI-assisted diagnosis can cut time-to-root-cause significantly when the model has access to error logs, stack traces, and codebase context. But AI diagnosis is only as good as the signals it can read. A team without structured logging, without request tracing, and without alerting won't get a meaningful MTTR improvement from AI. The sequencing matters: instrument first, then expect AI to accelerate incident response.
+如果可观测性已到位，AI 在这里确实有帮助。当模型能访问错误日志、堆栈追踪和代码库上下文时，AI 辅助诊断可以显著减少找到根本原因的时间。但 AI 诊断的质量只与它能读到的信号一样好。没有结构化日志、没有请求追踪、没有告警的团队不会从 AI 获得有意义的 MTTR 改善。顺序很重要：先做仪表盘，再期望 AI 加速事件响应。
 
-### Raising the Baseline
+### 提高基准
 
-The practical consequence of AI assistance at scale: "Medium" DORA is no longer a credible target. Anthropic's internal engineering data from January 2026 shows +67% PRs per engineer per day, with 70-90% of shipped code AI-assisted. If your team is operating at AI-assisted development and still sitting in Medium tier on deployment frequency or lead time, the constraint is in your processes and pipeline — not in your developers' output. Adjust your targets accordingly.
-
----
-
-## Beyond DORA: The SPACE Framework
-
-DORA measures the delivery system. SPACE measures the people inside it. Both are necessary; neither is sufficient alone.
-
-SPACE was developed by researchers at GitHub, Microsoft, and the University of Victoria (published 2021). It covers five dimensions:
-
-### Satisfaction and Well-being
-
-Are developers satisfied with their work, tools, and processes? Are they experiencing burnout signals?
-
-Measure with: quarterly developer experience survey (5-8 questions, anonymous). Track trend over time, not absolute score. A team scoring 3.2/5 that improves to 3.8/5 over 6 months is in a better position than one stuck at 4.0/5.
-
-### Performance
-
-Is the work being delivered actually working as intended? Does it meet quality and reliability expectations?
-
-Measure with: Change Failure Rate (overlaps with DORA), Bug Escape Rate (bugs that reach production divided by total bugs), and customer satisfaction on specific features.
-
-### Activity
-
-What volume of work is being produced?
-
-Measure with: Deployment Frequency, throughput (features shipped per cycle), PR merge rate.
-
-Critical note: Activity is the easiest dimension to measure and the easiest to game. High commit count, high PR volume, high deployment frequency can all coexist with low actual value delivered. Activity metrics are inputs, not outcomes.
-
-### Communication and Collaboration
-
-Is knowledge flowing? Are teams unblocked and connected?
-
-Measure with: PR review latency (time from PR open to first review), cross-team dependency resolution time, onboarding time for new contributors.
-
-### Efficiency and Flow
-
-Are developers able to do deep work without constant interruption? How much friction exists in the development process?
-
-Measure with: self-reported flow state frequency (in your developer survey), context-switching frequency, ratio of unplanned work to planned work.
-
-### The Velocity Trap
-
-Teams can hit "High" on DORA deployment frequency while simultaneously scoring poorly on satisfaction, well-being, and efficiency. More deployments, but developers working nights to hit sprint commitments, skipping design discussions because AI makes coding fast enough to skip planning, accumulating cognitive debt from reviewing AI code they don't fully understand. SPACE catches this. DORA doesn't. Running both frameworks gives you the full picture.
-
-### SPACE + DORA Together
-
-Use DORA for your monthly leadership review: system health, delivery system performance. Use SPACE (specifically the satisfaction and efficiency dimensions) quarterly: human health, sustainable pace, skill development. Treat a divergence — strong DORA, weak SPACE — as a leading indicator of future DORA degradation. Burnt-out teams ship slower.
+AI 辅助规模化的实际结果："中等" DORA 不再是可靠的目标。Anthropic 2026 年 1 月内部工程数据显示每位工程师每天 PR 数量增加 67%，70-90% 的交付代码由 AI 辅助。如果你的团队在 AI 辅助开发中，部署频率或前置时间仍处于中等级别，约束在流程和流水线，而非开发者产出。相应调整目标。
 
 ---
 
-## AI-Specific Metrics
+## 超越 DORA：SPACE 框架
 
-Standard frameworks weren't designed with AI-assisted development in mind. These metrics fill the gap.
+DORA 衡量交付系统，SPACE 衡量其中的人。两者都是必要的；单独任何一个都不够。
 
-### % AI-Assisted Code
+SPACE 由 GitHub、微软和维多利亚大学的研究人员开发（2021 年发表）。涵盖五个维度：
 
-The proportion of committed code that was AI-generated or AI-assisted. Available in Anthropic Contribution Metrics (Team and Enterprise plans), GitHub Copilot metrics dashboard, and similar tools for other AI coding assistants.
+### 满意度与幸福感
 
-**Why it matters**: Provides context for everything else. A 5% increase in CFR is a different signal if AI assists 10% of your code versus 80%. Track this as denominator for all quality metrics.
+开发者对工作、工具和流程是否满意？是否有倦怠信号？
 
-**Watch for**: This number typically climbs over time as adoption increases. Benchmark it quarterly.
+衡量方式：季度开发者体验调查（5-8 个问题，匿名）。追踪随时间的趋势，而非绝对分数。6 个月内从 3.2/5 改善到 3.8/5 的团队，比停滞在 4.0/5 的团队处境更好。
 
-### AI Code vs Human Code Quality
+### 绩效
 
-Split your Change Failure Rate by code origin: AI-generated commits versus manually written commits. Most enterprise AI coding tools can tag commits or PRs.
+交付的工作是否按预期工作？是否满足质量和可靠性期望？
 
-If AI-generated CFR is within 2-3 percentage points of manual CFR, your review process is working. If AI-generated CFR is materially higher, review discipline has dropped. If it's lower, AI tooling may genuinely be improving code quality in your domain.
+衡量方式：变更失败率（与 DORA 重叠）、Bug 逃逸率（到达生产的 Bug 除以总 Bug）以及特定功能的客户满意度。
 
-### Review Time: AI PRs vs Manual PRs
+### 活动
 
-Compare average review time (open to merge) for AI-generated PRs versus manually written PRs. If AI PRs are getting merged significantly faster than manual ones, you may have a rubber-stamping problem.
+产出了多少工作量？
 
-AI-generated code requires at least as much review scrutiny as manually written code — arguably more, because it can be confidently wrong in non-obvious ways. A 30% faster review cycle for AI PRs is a yellow flag worth investigating.
+衡量方式：部署频率、吞吐量（每个周期交付的功能）、PR 合并率。
 
-### Developer Code Comprehension
+关键注意：活动是最容易衡量也最容易被操纵的维度。高提交次数、高 PR 量、高部署频率可以与低实际交付价值共存。活动指标是输入，不是结果。
 
-A qualitative, binary signal: during PR review, can the author explain their AI-generated code in their own words — not just what it does, but why it does it that way?
+### 沟通与协作
 
-Track this informally through your code review culture. If reviewers start noticing that authors can't explain their AI-generated submissions, that's a skill atrophy signal that will show up in higher CFR and longer MTTR 6-12 months later.
+知识是否流动？团队是否畅通无阻？
 
-### Time-to-Understand a PR
+衡量方式：PR 审查延迟（PR 开放到第一次审查的时间）、跨团队依赖解决时间、新贡献者入职时间。
 
-A rough proxy for code clarity and maintainability: ask reviewers to self-report how long it took them to understand what a PR does (before they could evaluate whether it was correct). Track the median across your team.
+### 效率与心流
 
-Increasing time-to-understand suggests that code is growing more complex or less well-organized over time, regardless of who wrote it. AI-generated code can inflate this metric by producing syntactically dense implementations that are harder to reason about than simpler, more explicit alternatives.
+开发者是否能在不被持续打断的情况下做深度工作？开发流程中存在多少摩擦？
+
+衡量方式：自报的心流状态频率（在开发者调查中）、上下文切换频率、非计划工作与计划工作的比率。
+
+### 速度陷阱
+
+团队可以在 DORA 部署频率上达到"高"，同时在满意度、幸福感和效率上表现糟糕。更多部署，但开发者为了赶上 Sprint 承诺而熬夜，因为 AI 让编码足够快而跳过设计讨论，积累了认知债务（来自审查他们不完全理解的 AI 代码）。SPACE 能捕捉到这些。DORA 捕捉不到。同时运行两个框架给你完整的图景。
+
+### SPACE + DORA 结合
+
+DORA 用于月度领导层审查：系统健康、交付系统绩效。SPACE（特别是满意度和效率维度）用于季度审查：人的健康、可持续节奏、技能发展。将分歧——强 DORA、弱 SPACE——视为未来 DORA 退化的领先指标。倦怠的团队交付更慢。
 
 ---
 
-## Agentic Metrics: What DORA Doesn't Measure
+## AI 特定指标
 
-DORA and SPACE were designed for deterministic software systems. Agents introduce non-determinism, probabilistic quality, and failure modes that fall through every existing metric category. Three groups of metrics fill that gap.
+标准框架不是为 AI 辅助开发设计的。这些指标填补了这一空白。
 
-### Why standard DORA is insufficient for agent workflows
+### AI 辅助代码百分比
 
-DORA measures pipeline health, not output correctness. A study of 39 agent frameworks and 439 agentic applications (arXiv 2509.19185) found that 70% of test effort concentrates on deterministic components (tools, workflows) while less than 5% covers the LLM Plan Body — the central reasoning component most likely to produce incorrect results. Most DORA tooling has the same blind spot.
+提交的代码中 AI 生成或 AI 辅助的比例。可以在 Anthropic 贡献指标（Team 和 Enterprise 计划）、GitHub Copilot 指标仪表板以及其他 AI 编程助手的类似工具中获得。
 
-A second structural gap: DORA doesn't capture the cost of the verification loop. Agent-generated PRs require at least as much review scrutiny as manually written code, and in practice more, because subtle behavioral errors can appear in syntactically correct code. The standard deployment frequency and lead time metrics look identical whether review is thorough or rubber-stamped.
+**为什么重要**：为其他所有指标提供背景。如果 AI 辅助你 10% 的代码 vs 80%，CFR 增加 5% 是不同的信号。按季度将其作为所有质量指标的分母追踪。
 
-### Group 1: RCT-verifiable metrics
+**注意**：随着采用率增加，这个数字通常会随时间攀升。按季度设定基准。
 
-These replicate what METR and DeputyDev measured. Run them on real tasks, not synthetic benchmarks. They give you numbers calibrated to your own team rather than vendor estimates.
+### AI 代码 vs 人类代码质量
 
-| Metric | What it measures | Published baseline |
+按代码来源拆分变更失败率：AI 生成的提交 vs 手动编写的提交。大多数企业级 AI 编程工具可以标记提交或 PR。
+
+如果 AI 生成的 CFR 在人工 CFR 的 2-3 个百分点以内，你的审查流程在起作用。如果 AI 生成的 CFR 明显更高，审查规范已下降。如果更低，AI 工具可能确实在提高你领域的代码质量。
+
+### 审查时间：AI PR vs 手动 PR
+
+比较 AI 生成的 PR 与手动编写的 PR 的平均审查时间（开放到合并）。如果 AI PR 的合并速度明显快于手动 PR，你可能有走形式审查的问题。
+
+AI 生成的代码需要至少与手动编写代码同等严格的审查——可以说更多，因为它可能以非明显的方式自信地出错。AI PR 审查周期快 30% 是值得调查的黄色信号。
+
+### 开发者代码理解度
+
+定性的二值信号：在 PR 审查期间，作者是否能用自己的话解释他们的 AI 生成代码——不只是它做什么，而是为什么这样做？
+
+通过你的代码审查文化非正式地追踪这一点。如果审查者开始注意到作者无法解释他们的 AI 生成提交，这是技能萎缩的信号，将在 6-12 个月后以更高的 CFR 和更长的 MTTR 体现。
+
+### 理解 PR 所需时间
+
+代码清晰度和可维护性的粗略代理指标：询问审查者自我报告理解 PR 做什么需要多长时间（在他们能评估是否正确之前）。追踪团队中的中位数。
+
+理解时间增加表明代码随时间变得更复杂或组织更差，无论谁写的。AI 生成的代码可能通过生成语法上密集、比简单明确替代方案更难推理的实现来推高这一指标。
+
+---
+
+## 智能体指标：DORA 未能衡量的内容
+
+DORA 和 SPACE 是为确定性软件系统设计的。智能体引入了非确定性、概率性质量和落入每个现有指标类别缝隙的失败模式。三组指标填补了这一缺口。
+
+### 为什么标准 DORA 对智能体工作流不足
+
+DORA 衡量流水线健康，而非输出正确性。对 39 个智能体框架和 439 个智能体应用的研究（arXiv 2509.19185）发现，70% 的测试工作集中在确定性组件（工具、工作流）上，而不到 5% 覆盖 LLM 计划主体——最可能产生错误结果的核心推理组件。大多数 DORA 工具有同样的盲点。
+
+第二个结构性缺口：DORA 不捕获验证循环的成本。智能体生成的 PR 需要至少与手动编写代码同等严格的审查，实践中更多，因为语法正确的代码中可能出现微妙的行为错误。标准部署频率和前置时间指标看起来相同，无论审查是彻底的还是走形式的。
+
+### 第一组：可随机对照试验验证的指标
+
+这些复制了 METR 和 DeputyDev 的测量方式。在真实任务上运行，而非合成基准。它们给你针对自己团队校准的数字，而非供应商估计。
+
+| 指标 | 衡量什么 | 已发布基准 |
 |--------|-----------------|-------------------|
-| Task completion time, AI vs. no AI | Actual speedup or slowdown for your task type | METR Study 1 (July 2025, arXiv 2507.09089): -19% for experienced developers on complex open-source repos. Perception gap: +39 points (developers believed they were 20% faster) |
-| PR cycle time, AI-assisted vs. baseline | Pipeline throughput change | DeputyDev (arXiv 2509.19708): -31.8% PR cycle time (p=0.0018), n=300 engineers, 12 months |
-| Pass rate on PRs with executable tests as oracle | How often agent-generated code actually passes functional validation | c-CRAB (arXiv 2603.23448, March 2026): Claude Code 32.1% pass rate on real PRs. Union of four tools: 41.5%. This is the practical ceiling for current AI code review quality |
+| 任务完成时间，AI vs 无 AI | 你的任务类型的实际加速或减速 | METR 研究 1（2025 年 7 月，arXiv 2507.09089）：有经验的开发者在复杂开源仓库上-19%。感知差距：+39 点（开发者认为自己快了 20%）|
+| PR 周期时间，AI 辅助 vs 基准 | 流水线吞吐量变化 | DeputyDev（arXiv 2509.19708）：-31.8% PR 周期时间（p=0.0018），n=300 工程师，12 个月 |
+| 带可执行测试作为预言机的 PR 通过率 | 智能体生成代码实际通过功能验证的频率 | c-CRAB（arXiv 2603.23448，2026 年 3 月）：Claude Code 在真实 PR 上通过率 32.1%。四种工具的并集：41.5%。这是当前 AI 代码审查质量的实际天花板 |
 
-The METR -19% figure applies specifically to L1-L2 workflows (Cursor Pro and Claude 3.5/3.7 Sonnet on complex existing repos). It is the only rigorous control-group measurement available for this context. Self-reported figures from McKinsey (20-45%), BCG (64%), and GitHub's own studies are not replicated under controlled conditions and should be treated as aspirational estimates, not planning inputs.
+METR -19% 数字适用于 L1-L2 工作流（在复杂现有仓库上使用 Cursor Pro 和 Claude 3.5/3.7 Sonnet）。它是此上下文中唯一可用的严格对照组测量。来自麦肯锡（20-45%）、BCG（64%）和 GitHub 自己研究的自我报告数字未在受控条件下复现，应视为有志于此的估计，而非规划输入。
 
-### Group 2: Agentic pipeline metrics
+### 第二组：智能体流水线指标
 
-These require instrumentation via Langfuse, Arize Phoenix, or AWS Bedrock AgentCore. They do not replace DORA; they sit alongside it as a layer specific to non-deterministic systems.
+这些需要通过 Langfuse、Arize Phoenix 或 AWS Bedrock AgentCore 进行仪表盘测量。它们不替代 DORA；它们作为特定于非确定性系统的层次并列存在。
 
-| Metric | What it measures | Reference |
+| 指标 | 衡量什么 | 参考 |
 |--------|-----------------|-----------|
-| Spec quality score | Completeness and precision of specs before agent execution. Acts as a leading indicator for output quality | No standard rubric yet; define internally. Factory.ai's pre-implementation validation contracts are the closest documented proxy |
-| Validation contract pass rate | Percentage of agent-generated implementations that pass pre-defined behavioral contracts, measured before human review | Factory.ai Missions pattern: 81 problems detected in a Slack clone from spec alone, generating 34% of implementation work as fix features |
-| Agent task completion rate | Tasks the agent completes without human correction, expressed as a percentage | Instrument via harness logs. Anthropic's internal data shows the 99.9th-percentile task duration grew from 25 to 45 minutes between October 2025 and January 2026, indicating agents are handling more complex tasks |
-| Code review recall | Rate at which agent-generated review comments are acted on by developers | Code Review Bench (Martian, March 2026, 200,000+ open-source PRs): Augment Code 62.8% recall, GitHub Copilot 53.3% recall, Graphite 75% precision but only 8.8% recall |
-| Cost per completed task | Token spend plus human review time per agent task that reaches a mergeable state | No industry benchmark published yet. Track manually: tokens consumed, cost per model call, and human review hours per task completion |
-| Tokens per feature | Average tokens consumed per merged feature, crossed with Jira or Linear ticket boundaries. Better signal than tokens/request because it accounts for session count variation per feature | No industry benchmark. Track via ccboard project leaderboard (tokens/session × sessions per feature). Establish a baseline before optimizing; typical range for a complete PR is 500K-2M tokens on complex codebases |
+| 规格质量分数 | 智能体执行前规格的完整性和精确性。作为输出质量的领先指标 | 尚无标准规则；内部定义。Factory.ai 的预实现验证合同是最接近的有记录代理 |
+| 验证合同通过率 | 在人工审查之前，通过预定义行为合同的智能体生成实现的百分比 | Factory.ai Missions 模式：从规格单独检测 81 个问题（Slack 克隆中），生成 34% 的实现工作作为修复功能 |
+| 智能体任务完成率 | 智能体无人工纠正完成的任务百分比 | 通过框架日志仪表盘测量。Anthropic 内部数据显示 2025 年 10 月至 2026 年 1 月间，99.9th 百分位任务持续时间从 25 分钟增长到 45 分钟，表明智能体在处理更复杂的任务 |
+| 代码审查召回率 | 智能体生成的审查评论被开发者采纳的比率 | Code Review Bench（Martian，2026 年 3 月，200,000+ 开源 PR）：Augment Code 召回率 62.8%，GitHub Copilot 53.3%，Graphite 精确率 75% 但召回率仅 8.8% |
+| 每完成任务成本 | 每个达到可合并状态的智能体任务的 Token（词元）消耗加人工审查时间 | 尚无行业基准发布。手动追踪：每次模型调用的 Token（词元）消耗、成本和每次任务完成的人工审查小时数 |
+| 每功能 Token（词元）数 | 每个合并功能平均消耗的 Token（词元），与 Jira 或 Linear 工单边界交叉。比每请求 Token（词元）数更好的信号，因为它考虑了每个功能的会话数变化 | 尚无行业基准。通过 ccboard 项目排行榜追踪（每功能会话数 × Token（词元）/会话）。优化前先建立基准；复杂代码库上完整 PR 的典型范围是 50 万-200 万 Token（词元）|
 
-### Group 3: Agent governance metrics
+### 第三组：智能体治理指标
 
-Sourced from Strata Identity Research 2026 and CSA/Zenity 2026. These reflect the state of organizational maturity rather than technical performance.
+来源：Strata Identity Research 2026 和 CSA/Zenity 2026。这些反映组织成熟度状态，而非技术绩效。
 
-| Metric | Target state | 2026 baseline for context |
+| 指标 | 目标状态 | 2026 年基准参考 |
 |--------|-------------|--------------------------|
-| Agents with named human sponsor | Every active agent has an identifiable owner | Only 28% of organizations can link agent actions to a human sponsor in all environments (Strata 2026) |
-| Real-time agent inventory coverage | All active agents appear in a central registry | 21% of organizations maintain a real-time inventory (Strata 2026) |
-| Credential rotation frequency | Agent credentials rotate at least every 90 days | 44% of organizations still use static API keys for agent authentication (Strata 2026) |
-| Permission violations detected | Violations detected as a share of estimated total violations | 53% of organizations have experienced an agent incident in the past 12 months; 58% took more than 5 hours to detect it (CSA/Zenity 2026) |
+| 有命名人类赞助者的智能体 | 每个活跃智能体都有可识别的负责人 | 只有 28% 的组织能在所有环境中将智能体操作与人类赞助者关联（Strata 2026） |
+| 实时智能体清单覆盖率 | 所有活跃智能体出现在中央注册表中 | 21% 的组织维护实时清单（Strata 2026） |
+| 凭证轮换频率 | 智能体凭证至少每 90 天轮换一次 | 44% 的组织仍为智能体认证使用静态 API 密钥（Strata 2026） |
+| 检测到的权限违规 | 占估计总违规的比率 | 53% 的组织在过去 12 个月内经历过智能体事件；58% 需要超过 5 小时才能检测到（CSA/Zenity 2026） |
 
-### The heavy-user review time contradiction
+### 重度用户审查时间的矛盾
 
-Digital Applied Q1 2026 (n=2,847 developers) found that heavy AI tool users spend 14-16 hours per week reviewing AI-generated code, compared to 11.4 hours per week for average users. This directly contradicts the narrative that AI reduces review burden. The most likely explanation: per-review unit efficiency may improve, but the volume of generated code grows faster than review capacity. Before committing to time-savings projections, measure your team's actual review time distribution across AI-generated and manually written PRs.
+Digital Applied Q1 2026（n=2,847 名开发者）发现，AI 工具重度用户每周花 14-16 小时审查 AI 生成代码，相比之下普通用户每周 11.4 小时。这直接与"AI 减少审查负担"的说法相矛盾。最可能的解释：单次审查的单位效率可能提高，但生成代码的量增长速度快于审查能力。在承诺节省时间的预测之前，测量你的团队实际在 AI 生成和手动编写 PR 上的审查时间分布。
 
-### pass^k for non-deterministic tests
+### 非确定性测试的 pass^k
 
-Standard pass@1 is insufficient for agent-generated code. A test that passes once may fail on the next run because the output is non-deterministic. Promptfoo and LangChain both document the pass^k pattern: run critical tests k times consecutively, typically 3 to 5. A test passes only if it passes all k runs. This is not flaky-test detection — it is a deliberate quality gate for probabilistic systems. Apply it specifically to agent-generated suites, not to the full regression suite where the overhead would be prohibitive.
-
----
-
-## Product Metrics (the often-missing layer)
-
-Engineering metrics measure how code gets built. Product metrics measure whether the code is actually solving the right problems. Most engineering teams track the former and leave the latter entirely to product managers. That creates a gap where a team can be shipping fast, with high DORA scores, while the product drifts away from user needs.
-
-### Time-to-Value
-
-How long does it take a new user to reach their first success with your product? Define "first success" concretely — first completed task, first saved item, first report generated, whatever makes sense in your context.
-
-Track this as a median across your user cohorts, and watch for regressions after major feature releases. AI can accelerate your feature shipping without improving, or even while degrading, the new user experience.
-
-### Feature Adoption Rate
-
-Of users who could use feature X, what percentage actually use it within 14 days of release? A feature shipped on time with clean DORA metrics that nobody uses is still a failed feature.
-
-Segment by user cohort (new vs. returning users, different pricing tiers) to distinguish adoption problems from discoverability problems.
-
-### Bug Escape Rate
-
-Bugs found in production divided by total bugs (pre-production bugs + production bugs). Formula: `bugs_in_prod / (bugs_before_prod + bugs_in_prod)`.
-
-If your Bug Escape Rate exceeds 20%, your QA and review processes are consistently failing to catch issues before they reach users. With AI-assisted development, this metric is worth watching closely: faster code generation combined with looser review can push Bug Escape Rate up even when absolute bug count stays flat.
-
-### Feature CSAT
-
-Customer satisfaction score tied to specific features, not the product as a whole. More actionable than NPS: instead of "how likely are you to recommend us," ask "how useful was feature X in completing task Y" on a 1-5 scale.
-
-NPS is useful for brand-level sentiment but too lagging and too broad to steer development priorities. Feature CSAT gives you signal within 2-4 weeks of a release rather than 6-12 months.
+对于智能体生成的代码，标准的 pass@1 不够。下次运行时可能失败的测试，因为输出是非确定性的。Promptfoo 和 LangChain 都记录了 pass^k 模式：连续 k 次运行关键测试，通常 3 到 5 次。测试只有在所有 k 次运行都通过时才算通过。这不是检测不稳定测试——而是概率性系统的刻意质量门。专门将其应用于智能体生成的套件，而非整个回归套件（那样开销会令人望而却步）。
 
 ---
 
-## By Team Size
+## 产品指标（常被忽视的层次）
 
-Different team sizes have different measurement overhead tolerances. A 5-person team that spends 20% of its time on metrics infrastructure is making a poor trade-off. A 25-person team without automated DORA tracking is flying blind. Here's a practical baseline for two common scales.
+工程指标衡量代码是如何构建的。产品指标衡量代码是否真正解决了正确的问题。大多数工程团队追踪前者，将后者完全留给产品经理。这造成了一个缺口：团队可以高速交付、DORA 分数很高，同时产品在偏离用户需求。
 
-### 5-Person Team
+### 获得价值的时间
 
-**Metrics to track:**
+新用户首次在你的产品中取得成功需要多长时间？具体定义"首次成功"——第一次完成的任务、第一个保存的项目、第一份生成的报告，在你的上下文中有意义的任何内容。
 
-| Metric | How | Frequency |
+将其作为用户群体的中位数追踪，并在主要功能发布后观察是否退化。AI 可以加速你的功能交付，同时不改善，甚至恶化新用户体验。
+
+### 功能采用率
+
+在能使用功能 X 的用户中，发布后 14 天内实际使用的百分比是多少？按时、DORA 指标干净但无人使用的功能仍然是失败的功能。
+
+按用户群体细分（新用户 vs 回访用户、不同定价级别）以区分采用问题和可发现性问题。
+
+### Bug 逃逸率
+
+在生产环境中发现的 Bug 除以总 Bug（生产前 Bug + 生产中 Bug）。公式：`bugs_in_prod / (bugs_before_prod + bugs_in_prod)`。
+
+如果你的 Bug 逃逸率超过 20%，你的 QA 和审查流程在用户收到之前持续无法捕获问题。在 AI 辅助开发中，这个指标值得密切关注：更快的代码生成加上更宽松的审查可能推高 Bug 逃逸率，即使绝对 Bug 数量保持不变。
+
+### 功能 CSAT
+
+与特定功能相关的客户满意度分数，而非整个产品。比 NPS 更可操作：不是"你有多大可能推荐我们"，而是在 1-5 分制上问"功能 X 在完成任务 Y 上有多有用"。
+
+NPS 用于品牌级情感，但作为引导开发优先级的指标太滞后、太宽泛。功能 CSAT 在发布后 2-4 周内给你信号，而不是 6-12 个月后。
+
+---
+
+## 按团队规模分类
+
+不同团队规模有不同的指标基础设施容忍度。一个 5 人团队将 20% 时间花在指标基础设施上是不好的权衡。没有自动化 DORA 追踪的 25 人团队是在摸黑飞行。以下是两种常见规模的实用基准。
+
+### 5 人团队
+
+**需要追踪的指标：**
+
+| 指标 | 如何 | 频率 |
 |--------|-----|-----------|
-| Deployment Frequency | Count deploys manually or from CI | Weekly |
-| Cycle Time (commit to prod) | Linear or GitHub timestamp diff | Per-PR, reviewed monthly |
-| Time-to-value (product north star) | Analytics tool (Mixpanel, Amplitude, PostHog) | Monthly |
-| Bugs in prod per month | Count in your issue tracker | Monthly |
-| Developer satisfaction | 5-question anonymous form | Quarterly |
+| 部署频率 | 手动统计或从 CI 获取 | 每周 |
+| 周期时间（提交到生产） | Linear 或 GitHub 时间戳差值 | 每 PR，每月审查 |
+| 获得价值的时间（产品北极星） | 分析工具（Mixpanel、Amplitude、PostHog） | 每月 |
+| 每月生产 Bug | 在 issue 跟踪器中统计 | 每月 |
+| 开发者满意度 | 5 题匿名表单 | 每季度 |
 
-**Tooling**: GitHub Insights plus a shared spreadsheet. No dedicated dashboard needed at this size — the overhead isn't worth it. What matters is having the discipline to review these numbers in a monthly retrospective, not the precision of the tooling.
+**工具**：GitHub Insights 加共享电子表格。这个规模不需要专用仪表板——开销不值得。重要的是在月度回顾中审查这些数字的规律，而非工具的精度。
 
-The instinct at this size is often to skip metrics entirely ("we're too small, we know each other, we talk daily"). Resist it. The value of metrics at 5 people isn't visibility — it's discipline. Naming a north star metric and checking it monthly forces conversations that daily standups don't.
+这个规模的冲动往往是完全跳过指标（"我们太小了，互相了解，每天都沟通"）。抵制这种冲动。5 人规模指标的价值不是可见性——而是规律。命名一个北极星指标并每月检查它，会强制引发日常站会不会有的对话。
 
-### 25-Person Team
+### 25 人团队
 
-**Metrics to track:**
+**需要追踪的指标：**
 
-| Metric | How | Frequency |
+| 指标 | 如何 | 频率 |
 |--------|-----|-----------|
-| All 4 DORA metrics | LinearB or Faros.ai automated | Weekly (automated) |
-| Cycle Time per squad (not global) | Same tooling, segmented | Weekly |
-| Bug Escape Rate | Issue tracker + deploy markers | Monthly |
-| Feature CSAT | In-app survey on key features | Per-release |
-| % AI-assisted code | Anthropic Contribution Metrics | Monthly |
-| Developer satisfaction | 8-question survey, anonymous | Quarterly |
-| PR review time | GitHub Analytics / LinearB | Weekly |
-| Time-to-value | Analytics tool | Monthly |
+| 全部 4 个 DORA 指标 | LinearB 或 Faros.ai 自动化 | 每周（自动化） |
+| 每小队周期时间（不是全局） | 相同工具，分段 | 每周 |
+| Bug 逃逸率 | Issue 跟踪器 + 部署标记 | 每月 |
+| 功能 CSAT | 关键功能的应用内调查 | 每次发布 |
+| AI 辅助代码百分比 | Anthropic 贡献指标 | 每月 |
+| 开发者满意度 | 8 题调查，匿名 | 每季度 |
+| PR 审查时间 | GitHub Analytics / LinearB | 每周 |
+| 获得价值的时间 | 分析工具 | 每月 |
 
-**Tooling**: LinearB or Faros.ai for DORA automation (connects to GitHub + your CI/CD pipeline, surfaces the four metrics without manual tracking), GitHub Analytics for AI contribution data, PostHog or Amplitude for product metrics.
+**工具**：LinearB 或 Faros.ai 用于 DORA 自动化（连接到 GitHub + 你的 CI/CD 流水线，无需手动追踪即可呈现四个指标），GitHub Analytics 用于 AI 贡献数据，PostHog 或 Amplitude 用于产品指标。
 
-At 25 people, global averages hide squad-level problems. A team with 3 squads that has 80% of its incidents originating from one squad will show a "Medium" CFR overall and miss the signal entirely. Track DORA per squad, not just per organization. Cycle time per team is especially valuable — it surfaces bottlenecks in specific parts of your codebase or process.
+25 人规模下，全局平均数掩盖了小队级别的问题。有 3 个小队、80% 的事件来自其中一个的团队，整体显示"中等" CFR，完全错过了信号。按小队追踪 DORA，而非按组织。每个团队的周期时间尤其有价值——它揭示代码库或流程特定部分的瓶颈。
 
-PR review time is a friction metric worth watching closely at this scale. When median PR review exceeds 24 hours, it creates context-switching overhead: developers move to other tasks while waiting, then need to re-load context when the review comes back. That re-loading cost doesn't appear in any standard metric, but it compounds across dozens of PRs per week.
+PR 审查时间是这个规模值得密切关注的摩擦指标。当中位数 PR 审查时间超过 24 小时，就会产生上下文切换开销：开发者在等待时转向其他任务，然后当审查回来时需要重新加载上下文。这种重新加载成本不出现在任何标准指标中，但每周跨数十个 PR 积累起来。
 
 ---
 
-## Vanity Metrics to Drop
+## 应该丢弃的虚荣指标
 
-| Drop This | Replace With | Why |
+| 丢弃这个 | 替换为 | 原因 |
 |-----------|-------------|-----|
-| Sprint velocity | Cycle Time + Deployment Frequency | Velocity is gameable within 2 sprints by changing estimation practices. Cycle time is harder to fake. |
-| Lines of code | Bug Escape Rate | LOC measures output volume. With AI, LOC goes up automatically. Bug Escape Rate measures output quality. |
-| NPS alone | CSAT + Time-to-value | NPS is a lagging brand signal, not an engineering steering metric. CSAT on specific features is actionable within weeks. |
-| Commits per day | Lead Time for Changes | Commit frequency measures activity. Lead time measures whether that activity actually ships value. |
-| Story points | Throughput (features shipped) | Points are defined relative to the team's own baseline and gameable by re-pointing. Throughput counts real deliverables. |
-| Code coverage % | Mutation testing score + Bug Escape Rate | Coverage tells you tests exist. Mutation testing tells you whether those tests would catch real bugs. |
+| Sprint 速度 | 周期时间 + 部署频率 | 速度在 2 个 Sprint 内通过改变估算方式就能操纵。周期时间更难造假。 |
+| 代码行数 | Bug 逃逸率 | LOC 衡量输出量。有了 AI，LOC 自动上升。Bug 逃逸率衡量输出质量。 |
+| 单独 NPS | CSAT + 获得价值的时间 | NPS 是滞后的品牌信号，不是工程指导指标。特定功能的 CSAT 在几周内就可操作。 |
+| 每日提交次数 | 变更前置时间 | 提交频率衡量活动。前置时间衡量那个活动是否真正交付了价值。 |
+| 故事点 | 吞吐量（交付的功能） | 点相对于团队自己的基准定义，通过重新估算可以操纵。吞吐量统计真实的可交付物。 |
+| 代码覆盖率百分比 | 变异测试分数 + Bug 逃逸率 | 覆盖率告诉你测试存在。变异测试告诉你这些测试是否能捕获真实的 Bug。 |
 
-Story points deserve a specific note in an AI context: if AI is generating boilerplate and scaffolding automatically, the effort to implement a "3-point story" has dropped significantly. Teams that haven't recalibrated their pointing will show velocity increases that reflect tool efficiency, not team capacity. Lead Time and Deployment Frequency are tool-agnostic — they measure output regardless of who or what did the work.
-
----
-
-## The 4-Question Test
-
-Before adding any metric to your tracking stack, run it through these four questions:
-
-**1. Can you act on it within 2 weeks?**
-
-If the answer is no, it's a reporting metric, not a steering metric. Reporting metrics belong in quarterly board decks, not in weekly team reviews. "Total API calls since launch" is a reporting metric. "API error rate last 7 days" is a steering metric.
-
-**2. Does it explain why, not just what?**
-
-"Churn is 5%" tells you nothing. "80% of churned users never completed their first workflow" tells you where to look. When evaluating a metric, ask: if this number moves, do I know what to investigate?
-
-**3. Is it correlated to a business outcome?**
-
-This is the tightest filter. Deployment frequency is correlated to revenue in high-iteration SaaS products. PR review time is correlated to developer satisfaction and retention. Feature CSAT is correlated to expansion revenue. Lines of code is correlated to nothing that matters.
-
-**4. Can it be measured automatically?**
-
-If collecting the metric requires manual work — someone pulling numbers from a spreadsheet, someone remembering to log an incident — it will be abandoned within 3 months when workload increases. Automate or drop.
-
-**The rule**: fewer than 3 "yes" answers, drop the metric. A measurement stack with 5 rigorous metrics is more useful than one with 20 loosely defined ones. Most teams that fail at metrics fail by tracking too many things with too little precision, not by tracking too few.
+故事点在 AI 上下文中值得特别说明：如果 AI 自动生成样板代码和脚手架，实现"3 点故事"的工作量已显著下降。没有重新校准故事估算的团队，将显示出反映工具效率而非团队能力的速度提升。前置时间和部署频率与工具无关——它们衡量输出，无论是谁或什么做了这项工作。
 
 ---
 
-## Tooling
+## 四问测试
 
-| Tool | What It Does | Best For | Notes |
+在将任何指标添加到你的追踪体系之前，通过这四个问题运行它：
+
+**1. 你能在 2 周内对它采取行动吗？**
+
+如果答案是否，它是报告指标，而非指导指标。报告指标属于季度董事会汇报，而非每周团队审查。"自启动以来的总 API 调用量"是报告指标。"最近 7 天 API 错误率"是指导指标。
+
+**2. 它解释了为什么，而不只是什么吗？**
+
+"流失率 5%"什么都告诉不了你。"80% 的流失用户从未完成他们的第一个工作流"告诉你在哪里查看。评估指标时问：如果这个数字移动，我知道该调查什么吗？
+
+**3. 它与业务结果相关吗？**
+
+这是最严格的过滤器。部署频率与高迭代 SaaS 产品的收入相关。PR 审查时间与开发者满意度和保留率相关。功能 CSAT 与扩展收入相关。代码行数与任何重要的事物无关。
+
+**4. 它能自动化测量吗？**
+
+如果收集指标需要手动工作——有人从电子表格中拉数字，有人记得记录事件——它在工作量增加后 3 个月内就会被放弃。自动化或放弃。
+
+**规则**：少于 3 个"是"的答案，放弃该指标。一个有 5 个严格指标的测量体系比一个有 20 个松散定义指标的体系更有用。大多数在指标上失败的团队，是通过追踪太多不够精确的事情而失败，而不是追踪太少。
+
+---
+
+## 工具
+
+| 工具 | 功能 | 最适合 | 备注 |
 |------|-------------|---------|-------|
-| LinearB | DORA automation + cycle time, connects to GitHub + Jira | 25+ people | Good out-of-box DORA dashboards, solid PR analytics |
-| Faros.ai | DORA + custom engineering dashboards, open-source core | 25+ people | More configurable than LinearB, steeper setup |
-| GitHub Analytics (Anthropic) | AI contribution metrics (% AI-assisted code, PR-level attribution) | Any Claude Code team | Enterprise/Team plan required |
-| Sleuth | Deploy tracking + change failure rate, DORA-focused | 10+ people | Lightweight, CI/CD focused, no bloat |
-| Axify | Full engineering metrics suite, DORA + flow + team health | 15+ people | Canadian startup, strong SPACE coverage |
-| GitHub Insights | Basic activity metrics, free, built-in | Any size | Good enough for 5-10 person teams, not sufficient at scale |
-| Spreadsheet | Manual tracking, always works, zero setup | Under 10 people | The right tool if automated setup overhead isn't justified yet |
+| LinearB | DORA 自动化 + 周期时间，连接 GitHub + Jira | 25+ 人 | 良好的开箱即用 DORA 仪表板，扎实的 PR 分析 |
+| Faros.ai | DORA + 自定义工程仪表板，开源核心 | 25+ 人 | 比 LinearB 更可配置，初始设置更陡 |
+| GitHub Analytics（Anthropic） | AI 贡献指标（AI 辅助代码百分比，PR 级别归因） | 任何 Claude Code 团队 | 需要 Enterprise/Team 计划 |
+| Sleuth | 部署追踪 + 变更失败率，以 DORA 为重点 | 10+ 人 | 轻量级，专注 CI/CD，无冗余 |
+| Axify | 完整工程指标套件，DORA + 流程 + 团队健康 | 15+ 人 | 加拿大初创公司，强大的 SPACE 覆盖 |
+| GitHub Insights | 基本活动指标，免费，内置 | 任何规模 | 5-10 人团队足够，规模化时不够用 |
+| 电子表格 | 手动追踪，始终有效，零设置 | 10 人以下 | 自动化设置开销不合理时的正确工具 |
 
-No tool automatically surfaces the AI-specific metrics described earlier (CFR by code origin, review time comparison, comprehension signals). Those require either custom dashboards built on your CI/CD data or manual tracking. GitHub Analytics covers % AI-assisted code; the rest you'll wire up yourself or instrument in your PR template process.
+没有工具自动呈现前面描述的 AI 特定指标（按代码来源的 CFR、审查时间比较、理解度信号）。这些需要基于 CI/CD 数据构建自定义仪表板或手动追踪。GitHub Analytics 覆盖 AI 辅助代码百分比；其余需要你自己连接，或在 PR 模板流程中仪表盘化。
 
-Avoid tool sprawl. A team with LinearB, Jira, GitHub Insights, and two separate analytics tools will spend more time reconciling numbers than acting on them. Pick one DORA tool, one product analytics tool, and use GitHub Analytics for AI-specific data.
-
----
-
-## Implementation Roadmap
-
-The most common failure mode in metrics programs is trying to instrument everything at once. Three phases:
-
-### Phase 1: Weeks 1-2 — Instrument DORA
-
-Connect your CI/CD pipeline to a metrics tool. For most teams this means connecting GitHub Actions (or equivalent) to LinearB, Faros, or Sleuth. Get Deployment Frequency and Lead Time automated first — they require the least manual work to configure. Change Failure Rate and MTTR require incident tracking to be in place, which takes slightly longer to set up.
-
-Output: a live dashboard showing at minimum Deployment Frequency and Lead Time for Changes. Your first baseline numbers.
-
-### Phase 2: Weeks 3-4 — Baseline and Set Targets
-
-Once you have 2-4 weeks of data, establish your actual baseline. The temptation here is to compare to industry benchmarks immediately. Resist it. Set internal improvement targets first: "reduce Lead Time by 20% over the next quarter" is more actionable than "get to High tier." Your context — tech stack, deployment environment, team size, product type — affects what's achievable more than any benchmark.
-
-Run your first developer satisfaction pulse (5 questions, anonymous, takes 10 minutes to build in Google Forms or Typeform). This is your SPACE baseline.
-
-### Phase 3: Month 2 and Beyond — Layer in Product and AI Metrics
-
-Once DORA is stable and automated, add the product metrics (time-to-value, feature CSAT) and AI-specific signals (% AI-assisted code, CFR by code origin). These require more setup — product analytics instrumentation, PR tagging conventions — but they're worth the investment once your DORA foundation is solid.
-
-Review the full metric stack quarterly and prune ruthlessly. Any metric that hasn't driven a decision in the last 3 months is a reporting metric masquerading as a steering metric. Cut it.
+避免工具蔓延。有 LinearB、Jira、GitHub Insights 和两个独立分析工具的团队，将花更多时间核对数字而非行动。选择一个 DORA 工具、一个产品分析工具，并使用 GitHub Analytics 处理 AI 特定数据。
 
 ---
 
-## See Also
+## 实施路线图
 
-- [Session Observability & Monitoring](./observability.md) — Claude Code session monitoring, cost tracking, usage patterns
-- [AI Traceability](./ai-traceability.md) — Auditing AI-generated code contributions, attribution, and compliance
-- [Learning With AI](../roles/learning-with-ai.md) — Individual developer growth in AI-augmented workflows, skill development signals
-- [Agent Evaluation](../roles/agent-evaluation.md) — Quality metrics for custom Claude Code agents and automated workflows
+指标项目最常见的失败模式是试图一次性仪表盘化所有内容。三个阶段：
+
+### 第一阶段：第 1-2 周——仪表盘化 DORA
+
+将 CI/CD 流水线连接到指标工具。对大多数团队来说，这意味着将 GitHub Actions（或同等工具）连接到 LinearB、Faros 或 Sleuth。首先自动化部署频率和前置时间——它们需要最少的手动配置。变更失败率和 MTTR 需要事件追踪到位，配置略需更长时间。
+
+产出：实时仪表板，显示至少部署频率和变更前置时间。你的第一个基准数字。
+
+### 第二阶段：第 3-4 周——建立基准并设置目标
+
+有了 2-4 周的数据后，建立你的实际基准。这里的诱惑是立即与行业基准比较。先抵制这种诱惑。先设置内部改善目标："下个季度将前置时间减少 20%"比"达到高级别"更可操作。你的上下文——技术栈、部署环境、团队规模、产品类型——对可实现目标的影响大于任何基准。
+
+运行你的第一个开发者满意度脉冲（5 题，匿名，在 Google 表单或 Typeform 中 10 分钟就能构建）。这是你的 SPACE 基准。
+
+### 第三阶段：第 2 个月及以后——添加产品和 AI 指标
+
+一旦 DORA 稳定且自动化，添加产品指标（获得价值的时间、功能 CSAT）和 AI 特定信号（AI 辅助代码百分比、按代码来源的 CFR）。这些需要更多设置——产品分析仪表盘化、PR 标记约定——但一旦 DORA 基础稳固，投入是值得的。
+
+每季度审查完整指标体系，毫不留情地剪裁。过去 3 个月内没有推动任何决策的指标是报告指标伪装成指导指标。删掉它。
+
+---
+
+## 参见
+
+- [会话可观测性与监控](./observability.md) — Claude Code 会话监控、成本追踪、使用模式
+- [AI 可追溯性](./ai-traceability.md) — 审计 AI 生成代码贡献、归因和合规
+- [AI 辅助学习](../roles/learning-with-ai.md) — AI 增强工作流中个人开发者成长、技能发展信号
+- [智能体评估](../roles/agent-evaluation.md) — 自定义 Claude Code 智能体和自动化工作流的质量指标

@@ -1,93 +1,93 @@
 > 📚 **AI Spark Wiki** · Claude Code 知识库
 
 ---
-title: "Agent Tools: Beyond Claude Code"
-description: "Comparative guide to terminal coding agents, autonomous coders, and multi-agent frameworks. Covers Hermes Agent, Codex CLI, Aider, Devin, SWE-agent, CrewAI, LangGraph, and AutoGen with a decision framework."
+title: "智能体工具：Claude Code 之外的选择"
+description: "终端编程智能体、自主编程工具与多智能体框架对比指南。涵盖 Hermes Agent、Codex CLI、Aider、Devin、SWE-agent、CrewAI、LangGraph 和 AutoGen，附决策框架。"
 tags: [agents, hermes, codex-cli, aider, devin, swe-agent, crewai, langgraph, autogen, comparison]
 ---
 
-# Agent Tools: Beyond Claude Code
+# 智能体工具：Claude Code 之外的选择
 
-Claude Code is one tool in a field that has expanded dramatically since 2024. Dozens of agent frameworks, autonomous coders, and multi-agent systems have shipped, each with different trade-offs. This page maps that field so you can decide when Claude Code is the right call, and when something else fits better.
+Claude Code 是一个工具，所属领域自 2024 年以来已大幅扩展。数十个智能体框架、自主编程工具和多智能体系统相继问世，各有不同的权衡取舍。本页梳理该领域全貌，帮助你判断何时选用 Claude Code，何时其他工具更合适。
 
-**What this page covers**: terminal coding agents, autonomous coders, multi-agent orchestration frameworks, and agent orchestration tooling. Claude Code's own multi-agent capabilities (agent teams, event-driven workflows, programmatic usage) are documented separately, linked throughout.
+**本页涵盖内容**：终端编程智能体、自主编程工具、多智能体编排框架与智能体编排工具。Claude Code 自身的多智能体能力（智能体团队、事件驱动工作流、编程式使用）另有专页记录，行文中有相关链接。
 
-**What it does not cover**: GUI-based AI coding IDEs (Cursor, Windsurf, Cline), which are covered in [AI Ecosystem §6](./ai-ecosystem.md#section-6). Multi-Claude orchestration tools (Gas Town, multiclaude, Conductor desktop app) are in [Third-Party Tools: Multi-Agent Orchestration](./third-party-tools.md#multi-agent-orchestration).
+**本页不涵盖内容**：基于图形界面的 AI 编程 IDE（Cursor、Windsurf、Cline），详见 [AI 生态系统 §6](./ai-ecosystem.md#section-6)。多 Claude 编排工具（Gas Town、multiclaude、Conductor 桌面应用）详见[第三方工具：多智能体编排](./third-party-tools.md#multi-agent-orchestration)。
 
 ---
 
-## The Spectrum
+## 能力谱系
 
-Agent tools fall on a spectrum from interactive to autonomous:
+智能体工具处于从交互式到自主式的连续谱系中：
 
 ```
-Interactive pair programmer
+交互式结对编程
   Claude Code, Codex CLI, Aider, Goose
         |
-  Hermes Agent (interactive + scheduled + messaging gateways)
+  Hermes Agent（交互 + 计划调度 + 消息网关）
         |
-Autonomous issue fixer
-  SWE-agent, Devin, claude -p in CI
+自主问题修复
+  SWE-agent, Devin, claude -p 在 CI 中运行
         |
-Multi-agent framework (build your own)
+多智能体框架（自行构建）
   CrewAI, LangGraph, AutoGen/MAF
 ```
 
-**Interactive agents**: you stay in the loop, approve actions, redirect the agent. Best for daily coding, debugging, and exploratory work where requirements shift.
+**交互式智能体**：你保持在循环中，审批操作，实时调整智能体。最适合日常编码、调试和需求频繁变化的探索性工作。
 
-**Autonomous agents**: you assign a task and come back to a result. Best for well-specified, bounded tasks: fix this bug, implement this spec, review this PR. The quality of the task description determines the quality of the output more than the agent choice.
+**自主智能体**：你指派任务，等待结果返回。最适合描述清晰、边界明确的任务：修复这个 bug、实现这个规格、审查这个 PR。任务描述的质量比工具选择对输出质量的影响更大。
 
-**Multi-agent frameworks**: libraries for building custom agent systems. Not coding tools themselves. You use LangGraph to build an agent, not to write code.
-
----
-
-## Section 1: Terminal Coding Agents
-
-These tools do what Claude Code does: sit in your terminal, read your codebase, write code, run commands. The differences are in model support, cost model, and specific capabilities.
+**多智能体框架**：用于构建自定义智能体系统的库，本身不是编程工具。你用 LangGraph 构建智能体，而非用它写代码。
 
 ---
 
-### 1.1 Codex CLI (OpenAI)
+## 第一节：终端编程智能体
 
-OpenAI's direct answer to Claude Code. Launched April 2025, built in Rust, open-sourced under Apache 2.0.
+这些工具做的事和 Claude Code 一样：运行在终端中，读取代码库，编写代码，执行命令。区别在于模型支持、计费模式和具体能力。
 
-| Attribute | Details |
+---
+
+### 1.1 Codex CLI（OpenAI）
+
+OpenAI 对 Claude Code 的直接回应。2025 年 4 月发布，用 Rust 构建，以 Apache 2.0 协议开源。
+
+| 属性 | 详情 |
 |-----------|---------|
 | **GitHub** | [openai/codex](https://github.com/openai/codex) |
-| **Stars** | 86,200+ (May 2026) |
-| **Install** | `npm install -g @openai/codex` |
-| **Language** | Rust (96%) |
-| **License** | Apache 2.0 |
-| **Version** | v0.134.0 (May 26, 2026) |
-| **Releases** | 800+ since April 2025 |
-| **Contributors** | 400+ |
+| **Stars** | 86,200+（2026 年 5 月） |
+| **安装** | `npm install -g @openai/codex` |
+| **语言** | Rust（96%） |
+| **许可证** | Apache 2.0 |
+| **版本** | v0.134.0（2026 年 5 月 26 日） |
+| **发布次数** | 2025 年 4 月以来 800+ 次 |
+| **贡献者** | 400+ |
 
-#### What Is Codex CLI?
+#### Codex CLI 是什么？
 
-A terminal AI agent for writing, editing, and running code, built on OpenAI's model family. The architecture mirrors Claude Code closely: you describe a task, the agent reads files, makes edits, runs tests, and iterates. The main difference is the model provider: Codex CLI talks to GPT-4o, o3, o4-mini, and other OpenAI models, not Claude.
+一款基于 OpenAI 模型家族的终端 AI 智能体，用于编写、编辑和运行代码。其架构与 Claude Code 高度相似：描述任务，智能体读取文件、进行修改、运行测试并迭代。主要区别在于模型提供商：Codex CLI 使用 GPT-4o、o3、o4-mini 等 OpenAI 模型，而非 Claude。
 
-ChatGPT Pro and Team subscribers get Codex CLI usage included in their plan, making it a zero-marginal-cost tool for teams already paying for OpenAI.
+ChatGPT Pro 和 Team 订阅用户可在其计划内使用 Codex CLI，对于已购买 OpenAI 订阅的团队而言是零边际成本工具。
 
-#### Claude Code vs Codex CLI
+#### Claude Code 与 Codex CLI 对比
 
-| Aspect | Claude Code | Codex CLI |
+| 方面 | Claude Code | Codex CLI |
 |--------|-------------|-----------|
-| **Models** | Claude 3.5/4 family only | GPT-4o, o3, o3-mini, o4-mini, plus future OpenAI models |
-| **Language** | TypeScript | Rust |
-| **License** | Open source | Apache 2.0 |
-| **Subscription** | Anthropic Claude Max ($20-$200/mo) | OpenAI ChatGPT Pro/Team ($20-$30/mo) |
-| **MCP Support** | Native, growing ecosystem | MCP compatible |
-| **Release cadence** | Weekly | Very high (800+ releases in 13 months) |
-| **Memory** | CLAUDE.md + Auto Memory | AGENTS.md convention |
-| **Skills/Hooks** | Full system | Compatible with agentskills.io standard |
+| **模型** | 仅限 Claude 3.5/4 系列 | GPT-4o、o3、o3-mini、o4-mini 及未来 OpenAI 模型 |
+| **语言** | TypeScript | Rust |
+| **许可证** | 开源 | Apache 2.0 |
+| **订阅** | Anthropic Claude Max（20-200 美元/月） | OpenAI ChatGPT Pro/Team（20-30 美元/月） |
+| **MCP 支持** | 原生，生态系统持续扩展 | 兼容 MCP |
+| **发布节奏** | 每周 | 非常频繁（13 个月内 800+ 次发布） |
+| **记忆** | CLAUDE.md + 自动记忆 | AGENTS.md 惯例 |
+| **Skills/Hooks** | 完整系统 | 兼容 agentskills.io 标准 |
 
-#### When to Choose Codex CLI
+#### 何时选择 Codex CLI
 
-Good fit if you are already on a ChatGPT Pro or Team plan and want to avoid a second subscription. Also the right call if you prefer GPT-4o or o3 for specific tasks (reasoning, long-context analysis) and want a terminal agent that uses those models natively.
+适合已订阅 ChatGPT Pro 或 Team 且希望避免第二份订阅的用户。如果你在特定任务（推理、长上下文分析）上偏好 GPT-4o 或 o3，并希望使用原生支持这些模型的终端智能体，也是合适的选择。
 
-Poor fit if your team has invested in Claude Code workflows, CLAUDE.md files, and Anthropic-specific patterns. The cognitive cost of context-switching between two agent environments is real.
+不适合已经在 Claude Code 工作流、CLAUDE.md 文件和 Anthropic 特定模式上有大量投入的团队。在两个智能体环境之间切换的认知成本不容忽视。
 
-#### Quick Start
+#### 快速开始
 
 ```bash
 npm install -g @openai/codex
@@ -95,67 +95,67 @@ export OPENAI_API_KEY=sk-...
 codex
 ```
 
-OpenAI's [Codex docs](https://github.com/openai/codex/blob/main/README.md) cover setup in detail.
+OpenAI 的 [Codex 文档](https://github.com/openai/codex/blob/main/README.md) 有详细安装说明。
 
 ---
 
-### 1.2 Hermes Agent (formerly OpenClaw)
+### 1.2 Hermes Agent（前身为 OpenClaw）
 
-The most starred open-source agent framework as of May 2026. Created by Nous Research, the AI lab known for its Hermes series of fine-tuned models. Was called OpenClaw until late 2025, when it rebranded on Anthropic reinstating subscription support.
+截至 2026 年 5 月，GitHub 上 stars 最多的开源智能体框架。由 Nous Research 创建，该 AI 实验室以其 Hermes 系列微调模型著称。此前名为 OpenClaw，2025 年末在 Anthropic 恢复订阅支持后更名。
 
-| Attribute | Details |
+| 属性 | 详情 |
 |-----------|---------|
 | **GitHub** | [NousResearch/hermes-agent](https://github.com/NousResearch/hermes-agent) |
-| **Stars** | 170,000+ (May 2026) |
-| **Install** | `pip install hermes-agent` or `curl -sSL install.hermes-agent.dev \| sh` |
-| **Language** | Python (89%), TypeScript (8%) |
-| **License** | MIT |
-| **Version** | v0.14.0 (May 16, 2026) |
-| **Release cadence** | Weekly (v0.10 Apr 16 → v0.14 May 16) |
-| **Contributors** | 215+ |
-| **Creator** | Nous Research (Teknium, @teknium1) |
+| **Stars** | 170,000+（2026 年 5 月） |
+| **安装** | `pip install hermes-agent` 或 `curl -sSL install.hermes-agent.dev \| sh` |
+| **语言** | Python（89%）、TypeScript（8%） |
+| **许可证** | MIT |
+| **版本** | v0.14.0（2026 年 5 月 16 日） |
+| **发布节奏** | 每周（v0.10 4 月 16 日 → v0.14 5 月 16 日） |
+| **贡献者** | 215+ |
+| **创建者** | Nous Research（Teknium，@teknium1） |
 
-#### What Is Hermes Agent?
+#### Hermes Agent 是什么？
 
-A self-improving terminal agent that works with 200+ LLM providers, runs on any platform, and connects to 22 messaging platforms (Telegram, Discord, Slack, WhatsApp, Signal, Teams, LINE, SimpleX, and more). The distinguishing feature is its learning loop: after completing tasks, Hermes analyzes what worked, extracts reusable patterns, and generates skills automatically. Each session makes the agent marginally better at your specific workflows.
+一款自我改进的终端智能体，支持 200+ 个 LLM 提供商，可在任何平台运行，并接入 22 个消息平台（Telegram、Discord、Slack、WhatsApp、Signal、Teams、LINE、SimpleX 等）。其核心特性是学习循环：完成任务后，Hermes 分析有效方法，提取可复用模式，并自动生成 Skills（技能模块）。每次会话都使智能体在特定工作流上略微提升。
 
-The OpenClaw history matters for two reasons. First, the migration path is clean: `hermes-agent` imports OpenClaw memories, skills, and settings during setup, so switching costs are low. Second, the Anthropic billing controversy from early 2026 was specifically about OpenClaw/Hermes being used on Claude Max subscriptions without proper programmatic billing attribution. Anthropic now explicitly includes Hermes in the programmatic usage bucket (see [Billing: Programmatic vs Interactive](../ultimate-guide.md#the-interactiveprogrammatic-billing-split-effective-june-15-2026)).
+OpenClaw 历史有两方面值得关注。其一，迁移路径清晰：`hermes-agent` 在设置时导入 OpenClaw 的记忆、Skills（技能模块）和配置，切换成本较低。其二，2026 年初的 Anthropic 计费争议专门针对 OpenClaw/Hermes 在 Claude Max 订阅上使用时未正确归因编程计费。Anthropic 现已明确将 Hermes 纳入编程计费范畴（参见[计费：编程式 vs 交互式](../ultimate-guide.md#the-interactiveprogrammatic-billing-split-effective-june-15-2026)）。
 
-#### Claude Code vs Hermes Agent
+#### Claude Code 与 Hermes Agent 对比
 
-| Aspect | Claude Code | Hermes Agent |
+| 方面 | Claude Code | Hermes Agent |
 |--------|-------------|--------------|
-| **Models** | Claude only | 200+ via OpenRouter, OpenAI, Anthropic, HuggingFace, local |
-| **Self-improvement** | Each session starts fresh | Skills auto-generated from recurring patterns |
-| **Messaging** | Terminal + IDE | Terminal + 22 chat platforms |
-| **Cron scheduling** | Routines (Anthropic cloud) | Built-in cron, runs locally |
-| **Billing** | Subscription or API | Pay your LLM provider directly |
-| **Agent SDK** | Anthropic-specific | `ctx.llm` plugin for any provider |
-| **Skills** | SKILL.md system | Skills Hub (agentskills.io) + auto-generated |
-| **Memory** | CLAUDE.md + Auto Memory | Cross-session persistent memory, agent-curated |
+| **模型** | 仅限 Claude | 200+ 提供商（OpenRouter、OpenAI、Anthropic、HuggingFace、本地） |
+| **自我改进** | 每次会话全新开始 | 从重复模式自动生成 Skills（技能模块） |
+| **消息接入** | 终端 + IDE | 终端 + 22 个聊天平台 |
+| **定时计划** | Routines（Anthropic 云端） | 内置 cron，本地运行 |
+| **计费** | 订阅或 API | 直接向 LLM 提供商付费 |
+| **智能体 SDK** | Anthropic 专属 | `ctx.llm` 插件支持任意提供商 |
+| **Skills（技能模块）** | SKILL.md 系统 | Skills Hub（agentskills.io）+ 自动生成 |
+| **记忆** | CLAUDE.md + 自动记忆 | 跨会话持久记忆，由智能体维护 |
 
-#### When to Choose Hermes Agent
+#### 何时选择 Hermes Agent
 
-The model-agnostic case is the strongest argument. If you want to run Claude for code generation, GPT-4o for specific reasoning tasks, and a local model (via Ollama) for offline work, Hermes handles all three in a single agent. Claude Code cannot.
+模型无关性是最有力的论据。如果你希望在代码生成时使用 Claude、在特定推理任务时使用 GPT-4o、在离线工作时使用本地模型（通过 Ollama），Hermes 可在单一智能体中处理所有情况，Claude Code 做不到这一点。
 
-The self-improving loop is genuinely differentiated. Over 30-40 sessions on the same codebase, Hermes builds a library of skills specific to your project's patterns. This compounds in a way that static CLAUDE.md files do not, though the comparison is complex because CLAUDE.md is human-authored and intentional while Hermes skills are machine-generated.
+自我改进循环是真正的差异化特性。在同一代码库上使用 30-40 次会话后，Hermes 会积累针对项目模式的 Skills（技能模块）库。这种复利效应是静态 CLAUDE.md 文件无法达到的，尽管比较并不简单——CLAUDE.md 是人工编写且有意为之的，而 Hermes Skills（技能模块）是机器生成的。
 
-The 22 messaging platform integrations are useful for teams that want to interact with their agent via Telegram or Slack rather than a terminal. Not a priority for most developers, but critical for some workflows.
+22 个消息平台集成对于希望通过 Telegram 或 Slack 而非终端与智能体交互的团队很实用，对大多数开发者而言并非优先需求，但对某些工作流至关重要。
 
-Poor fit if you are invested in Anthropic's ecosystem (Claude Max subscription, Routines, the Agent SDK). Running Hermes with Claude models hits the programmatic billing bucket, meaning your $200/mo Max subscription's $200 credit gets consumed by both interactive terminal use and Hermes API calls. Factor that in.
+不适合深度投入 Anthropic 生态系统（Claude Max 订阅、Routines、Agent SDK）的用户。使用 Claude 模型运行 Hermes 会消耗编程计费额度，意味着 200 美元/月 Max 订阅的额度同时被交互式终端使用和 Hermes API 调用消耗。请综合考量。
 
-#### Quick Start
+#### 快速开始
 
 ```bash
 pip install hermes-agent
 
-# Or one-line installer
+# 或一键安装
 curl -sSL install.hermes-agent.dev | sh
 
-# Import from OpenClaw if migrating
+# 从 OpenClaw 迁移
 hermes import --from openclaw
 
-# Start
+# 启动
 hermes
 ```
 
@@ -163,153 +163,153 @@ hermes
 
 ### 1.3 Aider
 
-The original terminal AI pair programmer. Launched in 2023 by Paul Gauthier before Claude Code existed, Aider established many of the conventions that later tools adopted: direct file editing, automatic git commits, multi-file context windows.
+原版终端 AI 结对编程工具。由 Paul Gauthier 在 Claude Code 出现之前的 2023 年发布，Aider 确立了许多后续工具沿用的惯例：直接文件编辑、自动 git 提交、多文件上下文窗口。
 
-| Attribute | Details |
+| 属性 | 详情 |
 |-----------|---------|
 | **GitHub** | [Aider-AI/aider](https://github.com/Aider-AI/aider) |
-| **Stars** | 45,400+ (May 2026) |
-| **Install** | `pip install aider-install && aider-install` |
-| **Language** | Python (80%) |
-| **License** | Apache 2.0 |
-| **Creator** | Paul Gauthier (paul-gauthier) |
-| **PyPI downloads** | 5.3M+ |
+| **Stars** | 45,400+（2026 年 5 月） |
+| **安装** | `pip install aider-install && aider-install` |
+| **语言** | Python（80%） |
+| **许可证** | Apache 2.0 |
+| **创建者** | Paul Gauthier（paul-gauthier） |
+| **PyPI 下载量** | 530 万+ |
 
-#### What Is Aider?
+#### Aider 是什么？
 
-A Python-based coding assistant that edits files in your local git repo and auto-commits with descriptive messages. Key characteristic: near-universal model support via LiteLLM, covering GPT-4o, Claude 3.5/4, Gemini, Ollama, and dozens of other providers. Aider popularized the "whole file" and "diff" editing formats that informed how later agents handle file modifications.
+一款基于 Python 的编程助手，可编辑本地 git 仓库中的文件并自动提交附带描述性信息的变更。核心特点：通过 LiteLLM 支持近乎通用的模型，涵盖 GPT-4o、Claude 3.5/4、Gemini、Ollama 及数十个其他提供商。Aider 推广了"整文件"和"差异对比（diff）"编辑格式，影响了后续智能体处理文件修改的方式。
 
-The SWE-Bench benchmark trajectory tells the story well: Aider held the top score on SWE-Bench Verified for several months in 2024-2025 before larger-context models and more capable agents surpassed it. That benchmark record established its reputation as a serious tool, not just a convenience wrapper.
+SWE-Bench 基准测试的成绩轨迹很能说明问题：Aider 在 2024-2025 年期间数月内位居 SWE-Bench Verified 榜首，后被支持更大上下文的模型和更强大的智能体超越。这一基准记录确立了其作为严肃工具而非便利封装的声誉。
 
-#### Claude Code vs Aider
+#### Claude Code 与 Aider 对比
 
-| Aspect | Claude Code | Aider |
+| 方面 | Claude Code | Aider |
 |--------|-------------|-------|
-| **Model support** | Claude only | GPT-4o, Claude, Gemini, Ollama, 50+ providers |
-| **Git integration** | Native (reads .git, runs git) | Deep (auto-commits, commit messages, blame context) |
-| **Architecture** | Anthropic proprietary | Open source, LiteLLM under the hood |
-| **File editing** | Tool-based (Edit, Write) | Whole-file or diff format sent to model |
-| **Web search** | Via MCP | Not native (requires plugin) |
-| **Agentic loop** | Full (multi-turn, tool use) | Full (auto-accepts changes in architect mode) |
-| **Release cadence** | Weekly | Monthly (last: v0.86.0, Aug 2025) |
+| **模型支持** | 仅限 Claude | GPT-4o、Claude、Gemini、Ollama、50+ 提供商 |
+| **Git 集成** | 原生（读取 .git，运行 git） | 深度集成（自动提交、提交信息、blame 上下文） |
+| **架构** | Anthropic 专有 | 开源，底层使用 LiteLLM |
+| **文件编辑** | 基于工具（编辑工具、写入工具） | 整文件或差异对比（diff）格式发送给模型 |
+| **网页搜索** | 通过 MCP | 非原生（需要插件） |
+| **智能体循环** | 完整（多轮，工具使用） | 完整（architect 模式下自动接受变更） |
+| **发布节奏** | 每周 | 每月（最近：v0.86.0，2025 年 8 月） |
 
-The last release date (August 2025) is worth noting. Aider remains maintained and functional, but the release cadence has slowed relative to Claude Code and Hermes. This is not a warning sign by itself, but worth checking if you need cutting-edge features.
+最后发布日期（2025 年 8 月）值得注意。Aider 仍在维护且功能正常，但相对于 Claude Code 和 Hermes，发布节奏有所放缓。这本身不是警示信号，但如果你需要最新特性，值得留意。
 
-#### When to Choose Aider
+#### 何时选择 Aider
 
-Best case: you need multi-model support in a mature, battle-tested tool and do not want the operational overhead of Hermes. Aider is simpler to configure than Hermes, has a smaller footprint, and has years of community documentation.
+最佳场景：你需要在成熟、经过实战检验的工具中支持多模型，且不想承担 Hermes 的运维开销。Aider 比 Hermes 配置更简单，占用资源更少，有数年积累的社区文档。
 
-Also a good fit for teams that have strong git discipline and want every AI change explicitly committed with a clear message. Aider's auto-commit behavior is more aggressive than Claude Code's (which asks before committing by default).
+也适合对 git 规范有严格要求、希望每次 AI 变更都明确提交并附清晰信息的团队。Aider 的自动提交行为比 Claude Code 更激进（Claude Code 默认在提交前询问）。
 
-#### Quick Start
+#### 快速开始
 
 ```bash
 pip install aider-install && aider-install
 
-# With Claude
+# 使用 Claude
 export ANTHROPIC_API_KEY=sk-ant-...
 aider --model claude-sonnet-4-6
 
-# With GPT-4o
+# 使用 GPT-4o
 export OPENAI_API_KEY=sk-...
 aider
 ```
 
-See [aider.chat](https://aider.chat) for the full model list and configuration options.
+完整模型列表和配置选项参见 [aider.chat](https://aider.chat)。
 
 ---
 
-### 1.4 Goose (AAIF/Block)
+### 1.4 Goose（AAIF/Block）
 
-A general-purpose agent, not just a coding tool. Originally built by Block (formerly Square), transferred to the Linux Foundation's AAIF (Agentic AI Infrastructure Foundation) for long-term governance neutrality.
+通用型智能体，不仅限于编程工具。最初由 Block（前身为 Square）构建，后转移至 Linux 基金会旗下的 AAIF（智能体 AI 基础设施基金会）以实现长期治理中立。
 
-**Full coverage in [AI Ecosystem §11.1: Goose](./ai-ecosystem.md#111-goose-open-source-alternative-block).**
+**完整介绍见 [AI 生态系统 §11.1：Goose](./ai-ecosystem.md#111-goose-open-source-alternative-block)。**
 
-Quick stats: 45,900+ stars (May 2026), Rust (63%) + TypeScript (30%), Apache 2.0, daily active development, 368+ contributors. The headline difference from Claude Code: provider-agnostic (Claude, GPT, Gemini, Ollama, 15+ providers), with recipe-based reusable workflows and heterogeneous subagent teams where each subagent can run a different model.
-
----
-
-## Section 2: Autonomous Coding Agents
-
-These tools run without you watching. You give them a task description (a GitHub issue, a spec, a bug report), and they produce a pull request. The interaction model is fundamentally different from terminal agents: less iterative, more like assigning work to a colleague.
+快速数据：45,900+ stars（2026 年 5 月），Rust（63%）+ TypeScript（30%），Apache 2.0，每日活跃开发，368+ 贡献者。与 Claude Code 的核心区别：提供商无关（Claude、GPT、Gemini、Ollama、15+ 提供商），基于 recipe 的可复用工作流，以及异构子智能体团队（每个子智能体可运行不同模型）。
 
 ---
 
-### 2.1 Devin (Cognition)
+## 第二节：自主编程智能体
 
-The first commercial fully autonomous software engineer. Closed-source, cloud-hosted, enterprise-priced.
+这些工具在你不旁观的情况下运行。你给出任务描述（GitHub issue、规格说明、bug 报告），它们产出一个 pull request。交互模式与终端智能体根本不同：迭代性更少，更像向同事分配工作。
 
-| Attribute | Details |
+---
+
+### 2.1 Devin（Cognition）
+
+第一款商业化完全自主软件工程师。闭源、云端托管、企业定价。
+
+| 属性 | 详情 |
 |-----------|---------|
-| **Website** | [devin.ai](https://devin.ai) |
-| **Type** | Cloud SaaS, proprietary |
-| **Pricing** | Core: $20/mo (pay-as-you-go ACUs), Team: $500/mo (250 ACUs), Enterprise: custom |
-| **Launched** | 2024 |
-| **Valuation** | $25B (April 2026 fundraise) |
-| **Notable acquisition** | Windsurf AI-native IDE (July 2025) |
-| **Enterprise customers** | Goldman Sachs, Microsoft, Palantir, Citi, Dell |
+| **网站** | [devin.ai](https://devin.ai) |
+| **类型** | 云端 SaaS，专有 |
+| **定价** | Core：20 美元/月（按 ACU 付费）；Team：500 美元/月（250 ACU）；Enterprise：定制 |
+| **发布时间** | 2024 年 |
+| **估值** | 250 亿美元（2026 年 4 月融资） |
+| **重要收购** | Windsurf AI 原生 IDE（2025 年 7 月） |
+| **企业客户** | 高盛、微软、Palantir、花旗、戴尔 |
 
-#### What Is Devin?
+#### Devin 是什么？
 
-An autonomous software engineer that runs in a cloud-based Linux VM with its own shell, code editor, and browser. Devin plans its approach, writes code, runs tests, reads error messages, and iterates until the task is complete or it gets stuck. The primary interface is Slack: you send a message like "fix issue #342" and Devin opens a PR when done.
+一款在云端 Linux 虚拟机中运行、配备专属 shell、代码编辑器和浏览器的自主软件工程师。Devin 规划方案、编写代码、运行测试、读取错误信息，并迭代直至任务完成或遇到阻碍。主要交互界面是 Slack：你发送消息"修复 issue #342"，Devin 完成后开 PR。
 
-Billing is in ACUs (Agent Compute Units), where 1 ACU maps to roughly 15 minutes of agent work. A complex feature might consume 10-20 ACUs; a simple bug fix might use 1-3.
+计费单位为 ACU（智能体计算单元），1 ACU 约对应 15 分钟智能体工作时长。复杂功能可能消耗 10-20 ACU，简单 bug 修复可能用 1-3 ACU。
 
-#### Claude Code vs Devin
+#### Claude Code 与 Devin 对比
 
-| Aspect | Claude Code | Devin |
+| 方面 | Claude Code | Devin |
 |--------|-------------|-------|
-| **Execution environment** | Your local machine | Cloud Linux VM (sandboxed) |
-| **Interaction model** | Interactive (you watch) | Async (assign and check back) |
-| **State** | Session-scoped | Persistent across the task |
-| **Pricing** | Subscription ($20-$200/mo) | Per-task ACU billing ($0.07-$0.15/ACU approx) |
-| **Who drives** | You (pair programming) | Agent (autonomous, you review) |
-| **Task specification** | Conversational, iterative | Upfront (better spec = better output) |
-| **Browser access** | Via MCP (Playwright) | Built-in, native |
-| **Code review integration** | You review in your IDE | Devin posts a PR, you review on GitHub |
+| **执行环境** | 你的本地机器 | 云端 Linux 虚拟机（沙盒） |
+| **交互模式** | 交互式（你在旁观察） | 异步（分配后等待结果） |
+| **状态** | 会话范围内 | 任务全程持久化 |
+| **定价** | 订阅制（20-200 美元/月） | 按任务 ACU 计费（约 0.07-0.15 美元/ACU） |
+| **谁来驱动** | 你（结对编程） | 智能体（自主运行，你审查） |
+| **任务描述** | 对话式，迭代式 | 前置（规格越清晰，输出越好） |
+| **浏览器访问** | 通过 MCP（Playwright） | 内置，原生支持 |
+| **代码审查集成** | 你在 IDE 中审查 | Devin 开 PR，你在 GitHub 上审查 |
 
-#### When to Choose Devin
+#### 何时选择 Devin
 
-Devin works best when the task is well-specified, bounded, and does not require continuous judgment calls. Refactoring a specific module, implementing a documented API endpoint, fixing a regression with a known root cause: these are Devin tasks. Designing a new system architecture, debugging an obscure production issue, or writing code that depends on implicit context in your codebase: these require a more interactive loop.
+Devin 最适合任务描述清晰、边界明确、无需持续判断的场景。重构特定模块、实现已有文档的 API 端点、修复已知根本原因的回归：这些是 Devin 的任务。设计新系统架构、调试晦涩的生产问题、编写依赖代码库隐性上下文的代码：这些需要更多交互式循环。
 
-The $500/month Team plan (250 ACUs) is substantial. At that price point, you are paying for the async value: developers not blocked waiting for agent output, agents running in parallel on multiple tasks, no context switching. If your bottleneck is developer attention rather than raw throughput, Devin is worth the calculation. If you want to stay in the loop and iterate interactively, Claude Code at $200/month delivers more value per dollar.
+500 美元/月的 Team 计划（250 ACU）成本不低。在这个价位上，你付费购买的是异步价值：开发者不必等待智能体输出而被阻塞、智能体并行处理多个任务、无需上下文切换。如果你的瓶颈是开发者注意力而非原始吞吐量，Devin 值得计算投入产出比。如果你想保持在循环中并交互式迭代，200 美元/月的 Claude Code 提供更高的性价比。
 
-The Windsurf acquisition (July 2025) signals Cognition moving toward a full developer environment, not just a background agent. Watch for integrated workflows combining interactive coding (Windsurf IDE) and autonomous task execution (Devin) in the same product.
+Windsurf 收购（2025 年 7 月）表明 Cognition 正向完整开发者环境迈进，而不仅仅是后台智能体。关注将交互式编程（Windsurf IDE）与自主任务执行（Devin）融合在同一产品中的工作流。
 
 ---
 
-### 2.2 SWE-agent (Princeton)
+### 2.2 SWE-agent（普林斯顿）
 
-An academic agent designed specifically for resolving GitHub issues from an issue description alone. NeurIPS 2024 paper, Princeton NLP Group and Stanford.
+专为从 issue 描述单独解决 GitHub issues 而设计的学术型智能体。NeurIPS 2024 论文，由普林斯顿 NLP 组和斯坦福合作发布。
 
-| Attribute | Details |
+| 属性 | 详情 |
 |-----------|---------|
 | **GitHub** | [SWE-agent/SWE-agent](https://github.com/SWE-agent/SWE-agent) |
-| **Stars** | 19,300+ (May 2026) |
-| **Paper** | NeurIPS 2024 |
-| **License** | MIT |
-| **Language** | Python (95%) |
-| **Version** | v1.1.0 (May 2025) |
-| **Maintainers** | Princeton NLP Group + Stanford |
+| **Stars** | 19,300+（2026 年 5 月） |
+| **论文** | NeurIPS 2024 |
+| **许可证** | MIT |
+| **语言** | Python（95%） |
+| **版本** | v1.1.0（2025 年 5 月） |
+| **维护者** | 普林斯顿 NLP 组 + 斯坦福 |
 
-#### What Is SWE-agent?
+#### SWE-agent 是什么？
 
-An agent pipeline that takes a GitHub issue URL and a model, then attempts to reproduce the bug, write a fix, and produce a patch. Its architecture uses an Agent-Computer Interface (ACI) layer that abstracts terminal, file editing, and test running into a consistent set of commands regardless of the underlying environment. This ACI design is the main academic contribution: it shows that agent performance correlates strongly with how well the environment exposes information, not just with the model's raw capability.
+一条智能体流水线：接收 GitHub issue URL 和模型，尝试复现 bug、编写修复方案并生成补丁。其架构使用智能体-计算机接口（ACI）层，将终端、文件编辑和测试运行抽象为一组一致的命令，无论底层环境如何。这一 ACI 设计是主要学术贡献：它表明智能体性能与环境暴露信息的质量高度相关，而非仅与模型的原始能力相关。
 
-SWE-agent + Claude 3.7 holds state-of-the-art on SWE-Bench Full (open-weights). The benchmark is the key context: SWE-Bench measures the percentage of real GitHub issues an agent can resolve end-to-end, and SWE-agent was designed with that benchmark as its optimization target.
+SWE-agent + Claude 3.7 在 SWE-Bench Full（开放权重）上保持最先进水平。这一基准是关键背景：SWE-Bench 衡量智能体端到端解决真实 GitHub issues 的百分比，SWE-agent 正是以该基准为优化目标而设计的。
 
-#### When to Choose SWE-agent
+#### 何时选择 SWE-agent
 
-Primarily academic and research use. If you want to run systematic evaluations of how different models perform on real GitHub issues, SWE-agent is the right tool because it has the reproducibility infrastructure (trajectory logging, evaluation harness, config YAML) that production tools skip.
+主要用于学术和研究场景。如果你想对不同模型在真实 GitHub issues 上的表现进行系统评估，SWE-agent 是正确工具，因为它具备生产工具所欠缺的可复现性基础设施（轨迹记录、评估框架、配置 YAML）。
 
-For production batch issue resolution, Devin's cloud sandbox and better error recovery make it more practical. SWE-agent requires you to set up the environment and handle failures manually.
+对于生产级批量 issue 解决，Devin 的云端沙盒和更好的错误恢复使其更具实用性。SWE-agent 需要你自行设置环境并手动处理失败。
 
-The research value is real: teams building agent systems can use SWE-agent's trajectory data (generated from issue resolution runs) to fine-tune models. Nous Research's SWE-agent-LM-32b (open weights, SoTA on SWE-Bench for open models) was trained on trajectories generated by SWE-agent.
+研究价值是真实的：构建智能体系统的团队可使用 SWE-agent 的轨迹数据（由 issue 解决运行生成）来微调模型。Nous Research 的 SWE-agent-LM-32b（开放权重，SWE-Bench 开放模型最先进水平）就是在 SWE-agent 生成的轨迹上训练的。
 
 ```bash
 pip install swe-agent
 
-# Run on a GitHub issue
+# 在 GitHub issue 上运行
 sweagent run \
   --agent.model.name=claude-sonnet-4-6 \
   --env.repo.github_url=https://github.com/org/repo \
@@ -318,66 +318,66 @@ sweagent run \
 
 ---
 
-### 2.3 Claude Code in Headless Mode
+### 2.3 无头模式下的 Claude Code
 
-Claude Code's own autonomous mode: `claude -p "task"` runs a single instruction non-interactively and exits. Combined with CI/CD, it becomes an autonomous agent that triggers on GitHub events, runs on schedule via Routines, or processes tasks programmatically via the Agent SDK.
+Claude Code 自身的自主模式：`claude -p "任务"` 以非交互方式运行单条指令后退出。结合 CI/CD，它成为一个自主智能体，可由 GitHub 事件触发、通过 Routines 按计划运行，或通过 Agent SDK 以编程方式处理任务。
 
-**This falls in the programmatic billing bucket since June 15, 2026.** See [Billing: Programmatic vs Interactive](../ultimate-guide.md#the-interactiveprogrammatic-billing-split-effective-june-15-2026) for the credit limits and overage rates.
+**自 2026 年 6 月 15 日起，这属于编程计费范畴。** 参见[计费：编程式 vs 交互式](../ultimate-guide.md#the-interactiveprogrammatic-billing-split-effective-june-15-2026)了解额度限制和超额费率。
 
-Patterns:
+常用模式：
 
 ```bash
-# Single task, exits when done
-claude -p "Write tests for src/auth.ts, aim for 80% coverage"
+# 单任务，完成后退出
+claude -p "为 src/auth.ts 编写测试，目标覆盖率 80%"
 
-# GitHub Actions: triggered by issue label
-# See workflows/event-driven-agents.md for the full pattern
+# GitHub Actions：由 issue 标签触发
+# 完整模式见 workflows/event-driven-agents.md
 
-# Agent SDK: programmatic with tools
-# See ai-ecosystem.md §14 (Claude Managed Agents)
+# Agent SDK：带工具的编程式使用
+# 见 ai-ecosystem.md §14（Claude 托管智能体）
 ```
 
-Cross-references:
-- **Event-driven patterns**: [workflows/event-driven-agents.md](../workflows/event-driven-agents.md)
-- **Agent teams**: [workflows/agent-teams.md](../workflows/agent-teams.md)
-- **Managed Agents (cloud)**: [ai-ecosystem.md §14](./ai-ecosystem.md#14-claude-managed-agents)
+交叉引用：
+- **事件驱动模式**：[workflows/event-driven-agents.md](../workflows/event-driven-agents.md)
+- **智能体团队**：[workflows/agent-teams.md](../workflows/agent-teams.md)
+- **托管智能体（云端）**：[ai-ecosystem.md §14](./ai-ecosystem.md#14-claude-managed-agents)
 
 ---
 
-## Section 3: Multi-Agent Frameworks
+## 第三节：多智能体框架
 
-These are not coding tools. They are libraries for building custom multi-agent applications from scratch: marketing pipelines, research automation, document processing, customer support bots. You would use them if you are building a product that has AI agents inside it, not if you are a developer wanting an agent to write code for you.
+这些不是编程工具，而是从零开始构建自定义多智能体应用的库：营销流水线、研究自动化、文档处理、客服机器人。如果你正在构建内部含有 AI 智能体的产品，而非作为开发者希望智能体为你写代码，才应使用它们。
 
-The relationship to Claude Code: Claude (the model) can be one of the LLMs powering agents built with these frameworks. The frameworks themselves do not compete with Claude Code any more than Express.js competes with a browser.
+与 Claude Code 的关系：Claude（模型）可以是这些框架所构建智能体的 LLM 之一。这些框架本身并不与 Claude Code 竞争，就像 Express.js 不与浏览器竞争一样。
 
 ---
 
 ### 3.1 CrewAI
 
-Role-based multi-agent orchestration. The dominant choice for teams that want to define agents by job function (Researcher, Writer, Editor) and let them collaborate on structured tasks.
+基于角色的多智能体编排工具。对于希望按职能（研究员、撰稿人、编辑）定义智能体并让其在结构化任务上协作的团队，是主流选择。
 
-| Attribute | Details |
+| 属性 | 详情 |
 |-----------|---------|
 | **GitHub** | [crewAIInc/crewAI](https://github.com/crewAIInc/crewAI) |
-| **Stars** | 52,300+ (May 2026) |
-| **Language** | Python (99%) |
-| **License** | MIT |
-| **Version** | v1.14.5 (May 18, 2026) |
-| **Executions** | 2B+ agent task executions reported |
-| **Downloads** | 27M+ |
-| **Enterprise customers** | 150+ |
+| **Stars** | 52,300+（2026 年 5 月） |
+| **语言** | Python（99%） |
+| **许可证** | MIT |
+| **版本** | v1.14.5（2026 年 5 月 18 日） |
+| **执行次数** | 报告显示超过 20 亿次智能体任务执行 |
+| **下载量** | 2700 万+ |
+| **企业客户** | 150+ |
 
-#### What Is CrewAI?
+#### CrewAI 是什么？
 
-You define agents with a role, a goal, and a backstory (the "crew"). You define tasks and assign them to agents. CrewAI handles routing: sequential (A finishes, then B starts), parallel (A and B run simultaneously), or hierarchical (a manager agent delegates to specialists). Each agent can use tools, including MCP servers and web search. Multiple LLM providers supported (Claude, GPT, Gemini, Ollama).
+你定义具有角色、目标和背景故事的智能体（"团队"），定义任务并分配给智能体。CrewAI 处理路由：顺序（A 完成后 B 开始）、并行（A 和 B 同时运行）或层级（管理者智能体委派给专家）。每个智能体可使用工具，包括 MCP 服务器和网页搜索，支持多个 LLM 提供商（Claude、GPT、Gemini、Ollama）。
 
-It stands apart from LangChain (the older framework it frequently gets compared to) because it does not depend on LangChain at all. Standalone Python library.
+它区别于 LangChain（通常被拿来对比的老框架）之处在于：完全不依赖 LangChain。是独立的 Python 库。
 
-#### When to Use CrewAI
+#### 何时使用 CrewAI
 
-The right level of abstraction for teams that can describe their workflow in human roles. If you can say "I want a researcher who gathers information, a writer who drafts, and an editor who refines," CrewAI handles the orchestration and inter-agent communication. You write agent definitions, not orchestration code.
+适合能够以人类角色描述工作流的团队。如果你能说出"我希望有一个研究员收集信息、一个撰稿人起草、一个编辑润色"，CrewAI 负责编排和智能体间的通信。你编写智能体定义，而非编排代码。
 
-Avoid it when your workflow has complex conditional branching, requires durable execution across failures, or needs fine-grained control over how state passes between agents. LangGraph handles those cases better.
+当工作流有复杂条件分支、需要跨故障持久执行，或需要精细控制状态在智能体间传递时，避免使用 CrewAI。LangGraph 更适合这些场景。
 
 ```python
 from crewai import Agent, Task, Crew, Process
@@ -400,7 +400,7 @@ task = Task(
     description="Research and document the new auth API endpoints",
     expected_output="Markdown documentation with examples",
     agent=writer,
-    context=[research_task]  # researcher's output feeds writer
+    context=[research_task]  # researcher 的输出喂给 writer
 )
 
 crew = Crew(agents=[researcher, writer], tasks=[task], process=Process.sequential)
@@ -411,28 +411,28 @@ result = crew.kickoff()
 
 ### 3.2 LangGraph
 
-Graph-based agent orchestration from LangChain. Lower-level than CrewAI, more flexible, better for complex stateful workflows.
+LangChain 出品的基于图的智能体编排工具。比 CrewAI 更底层，更灵活，更适合复杂的有状态工作流。
 
-| Attribute | Details |
+| 属性 | 详情 |
 |-----------|---------|
 | **GitHub** | [langchain-ai/langgraph](https://github.com/langchain-ai/langgraph) |
-| **Stars** | 33,100+ (May 2026) |
-| **Language** | Python (99%) + JS version available |
-| **License** | MIT |
-| **Version** | v1.2.2 (May 26, 2026) |
-| **Production users** | Klarna, Replit, Elastic |
+| **Stars** | 33,100+（2026 年 5 月） |
+| **语言** | Python（99%）+ JS 版本可用 |
+| **许可证** | MIT |
+| **版本** | v1.2.2（2026 年 5 月 26 日） |
+| **生产用户** | Klarna、Replit、Elastic |
 
-#### What Is LangGraph?
+#### LangGraph 是什么？
 
-An agent construction framework that models workflows as directed graphs with nodes (agent steps) and edges (transitions). The key primitives are state (a typed dict that persists across all nodes), conditional edges (branching based on state), and persistence (checkpointing so an interrupted workflow resumes from the last checkpoint, not from scratch). Human-in-the-loop is a first-class pattern: you can pause execution at any node and wait for a human decision before continuing.
+一个将工作流建模为有向图的智能体构建框架，图中有节点（智能体步骤）和边（转换）。核心原语：状态（跨所有节点持久化的类型化字典）、条件边（基于状态的分支）和持久化（检查点机制使中断的工作流从最后一个检查点恢复，而非从头开始）。人机协作是一等模式：可在任意节点暂停执行，等待人类决策后再继续。
 
-LangGraph does not bundle agents. You define the workflow logic and plug in whatever LLM you want. The framework ensures that state transitions are predictable, failures are recoverable, and the workflow can be debugged step by step.
+LangGraph 不自带智能体，你定义工作流逻辑并插入任意 LLM。框架确保状态转换可预测、故障可恢复，工作流可逐步调试。
 
-#### When to Use LangGraph
+#### 何时使用 LangGraph
 
-The right tool when your agent needs to survive failures, branch on runtime conditions, or require human approval at specific decision points. Examples: a code review pipeline that escalates to a human when the agent detects a security-relevant change; a data processing workflow that checkpoints after each expensive step so restarts do not re-process completed stages; a multi-step research agent that pauses for human guidance when it hits ambiguous source material.
+适合智能体需要在故障中存活、基于运行时条件分支，或在特定决策点需要人工审批的场景。示例：当智能体检测到安全相关变更时上报给人类的代码审查流水线；在每个耗时步骤后设置检查点的数据处理工作流（重启时不重新处理已完成阶段）；遇到模糊信源时暂停等待人工指导的多步骤研究智能体。
 
-Steeper learning curve than CrewAI. Worth it when the workflow complexity justifies the investment.
+学习曲线比 CrewAI 陡。工作流复杂度足够高时才值得投入。
 
 ```python
 from langgraph.graph import StateGraph, END
@@ -449,162 +449,162 @@ graph.add_conditional_edges("agent", should_continue, {"continue": "tools", "end
 graph.add_edge("tools", "agent")
 graph.set_entry_point("agent")
 
-app = graph.compile(checkpointer=MemorySaver())  # Durable execution
+app = graph.compile(checkpointer=MemorySaver())  # 持久执行
 ```
 
-LangSmith (LangChain's observability product) integrates natively for debugging and tracing agent runs.
+LangSmith（LangChain 的可观测性产品）原生集成，用于调试和追踪智能体运行。
 
 ---
 
 ### 3.3 AutoGen / Microsoft Agent Framework
 
-Microsoft's multi-agent framework, mid-transition from the original AutoGen library (maintenance mode since September 2025) to the Microsoft Agent Framework (MAF), which merges AutoGen and Semantic Kernel into one SDK.
+微软的多智能体框架，正处于从原始 AutoGen 库（2025 年 9 月起进入维护模式）向 Microsoft Agent Framework（MAF）的过渡期，MAF 将 AutoGen 和 Semantic Kernel 合并为一个 SDK。
 
-| Attribute | Details (MAF) |
+| 属性 | 详情（MAF） |
 |-----------|---------|
 | **GitHub** | [microsoft/agent-framework](https://github.com/microsoft/agent-framework) |
-| **Stars** | 10,800+ (MAF, active) |
-| **Legacy GitHub** | [microsoft/autogen](https://github.com/microsoft/autogen) (58,400 stars, maintenance mode since Sep 2025) |
-| **Language** | Python + C# + TypeScript |
-| **License** | MIT |
-| **Version** | python-1.6.0 (May 22, 2026) |
-| **Production release** | v1.0 (April 2026) |
+| **Stars** | 10,800+（MAF，活跃） |
+| **旧版 GitHub** | [microsoft/autogen](https://github.com/microsoft/autogen)（58,400 stars，2025 年 9 月起维护模式） |
+| **语言** | Python + C# + TypeScript |
+| **许可证** | MIT |
+| **版本** | python-1.6.0（2026 年 5 月 22 日） |
+| **生产版本** | v1.0（2026 年 4 月） |
 
-#### What Is Microsoft Agent Framework?
+#### Microsoft Agent Framework 是什么？
 
-MAF is the merge of AutoGen (Python, conversational multi-agent) and Semantic Kernel (C# + Python, function-calling abstractions). The result is a cross-runtime framework: Python agents can coordinate with .NET agents, all backed by the same messaging layer. It implements the A2A (Agent-to-Agent) protocol, Microsoft's contribution to agent interoperability, and supports MCP.
+MAF 是 AutoGen（Python，对话式多智能体）和 Semantic Kernel（C# + Python，函数调用抽象）的合并。结果是一个跨运行时框架：Python 智能体可与 .NET 智能体协调，全部由同一消息层支撑。它实现了 A2A（智能体间）协议（微软对智能体互操作性的贡献），并支持 MCP。
 
-The AutoGen star count (58,400) reflects its historical reputation. AutoGen pioneered the "conversable agent" pattern where agents talk to each other in a structured conversation loop. That pattern is still the dominant mental model in the framework even as the implementation evolved.
+AutoGen 的 star 数量（58,400）反映了其历史声誉。AutoGen 开创了"可对话智能体"模式——智能体在结构化对话循环中相互交谈。即便实现随时间演进，这一模式仍是框架中占主导地位的思维模型。
 
-#### When to Use MAF
+#### 何时使用 MAF
 
-Strong fit for Microsoft ecosystem teams: .NET + Python shops, Azure deployments, enterprise environments where Semantic Kernel is already established. The cross-runtime story is real: a Python agent can call tools implemented as .NET Semantic Kernel functions.
+非常适合微软生态系统团队：.NET + Python 混合开发、Azure 部署、已有 Semantic Kernel 的企业环境。跨运行时特性是真实的：Python 智能体可调用以 .NET Semantic Kernel 函数实现的工具。
 
-Less compelling for teams without existing .NET investment. If you are Python-only, CrewAI or LangGraph have larger communities and more tutorials.
+对于没有现有 .NET 投入的团队吸引力较弱。如果你是纯 Python 栈，CrewAI 或 LangGraph 有更大的社区和更多教程。
 
 ---
 
 ### 3.4 Anthropic Agent SDK
 
-Anthropic's own framework for building multi-agent systems programmatically, distinct from Claude Code. Covered in detail in [AI Ecosystem §14: Claude Managed Agents](./ai-ecosystem.md#14-claude-managed-agents).
+Anthropic 自家的以编程方式构建多智能体系统的框架，有别于 Claude Code。详见 [AI 生态系统 §14：Claude 托管智能体](./ai-ecosystem.md#14-claude-managed-agents)。
 
-The operative distinction: Claude Code is a finished product you use as a developer; the Agent SDK is a library you use to build products that have Claude inside them. The Agent SDK handles tool use, context management, and multi-agent coordination via the Messages API. It is also in the programmatic billing bucket (see billing cross-reference above).
-
----
-
-## Section 4: Agent Orchestration Tools
-
-Tools that sit above agent frameworks and manage how agents are deployed, routed, and operated at scale. Not to be confused with multi-Claude orchestration tools (Gas Town, multiclaude) which are covered in [Third-Party Tools](./third-party-tools.md#multi-agent-orchestration).
+操作性区别：Claude Code 是你作为开发者使用的成品；Agent SDK 是你用来构建内部含有 Claude 的产品的库。Agent SDK 通过 Messages API 处理工具使用、上下文管理和多智能体协调。它同样属于编程计费范畴（见上方计费交叉引用）。
 
 ---
 
-### 4.1 Conductor (Gemini CLI methodology)
+## 第四节：智能体编排工具
 
-A development methodology, not a product. "Conductor" started as an extension for Gemini CLI that enforces a Context, Spec, Plan, Implement workflow: before writing any code, the agent creates and commits a spec document, then a plan document, then implements against both.
+位于智能体框架之上的工具，管理智能体在规模化场景下的部署、路由和运维。不要与多 Claude 编排工具（Gas Town、multiclaude）混淆，后者在[第三方工具](./third-party-tools.md#multi-agent-orchestration)中介绍。
 
-| Attribute | Details |
+---
+
+### 4.1 Conductor（Gemini CLI 方法论）
+
+一种开发方法论，而非产品。"Conductor"最初是 Gemini CLI 的扩展，强制执行"上下文 → 规格 → 计划 → 实现"工作流：在编写任何代码之前，智能体先创建并提交规格文档，然后是计划文档，再按两者进行实现。
+
+| 属性 | 详情 |
 |-----------|---------|
 | **GitHub** | [gemini-cli-extensions/conductor](https://github.com/gemini-cli-extensions/conductor) |
-| **Stars** | 3,600+ (May 2026) |
-| **License** | Apache 2.0 |
+| **Stars** | 3,600+（2026 年 5 月） |
+| **许可证** | Apache 2.0 |
 
-The methodology has been ported to Claude Code via community repos: [lackeyjb/claude-conductor](https://github.com/lackeyjb/claude-conductor), [ryanmac/code-conductor](https://github.com/ryanmac/code-conductor), and the wshobson/agents plugin marketplace. None of these have significant traction on their own, but the pattern itself (spec-before-code, committed documentation) maps directly to Claude Code's [Spec-First Development workflow](../workflows/spec-first.md).
+该方法论已通过社区仓库移植到 Claude Code：[lackeyjb/claude-conductor](https://github.com/lackeyjb/claude-conductor)、[ryanmac/code-conductor](https://github.com/ryanmac/code-conductor) 和 wshobson/agents 插件市场。这些仓库自身没有显著吸引力，但模式本身（先写规格再写代码，提交文档）直接对应 Claude Code 的[规格优先开发工作流](../workflows/spec-first.md)。
 
 ---
 
-### 4.2 Conductor (Microsoft CLI)
+### 4.2 Conductor（Microsoft CLI）
 
-An entirely separate project from the Gemini one. A YAML-first CLI for deterministic multi-agent workflows where the routing logic is static configuration, not LLM decisions.
+与 Gemini 版本完全独立的项目。一款以 YAML 为核心的 CLI，用于确定性多智能体工作流，路由逻辑是静态配置，而非 LLM 决策。
 
-| Attribute | Details |
+| 属性 | 详情 |
 |-----------|---------|
 | **GitHub** | [microsoft/conductor](https://github.com/microsoft/conductor) |
-| **Stars** | 158 (May 2026, brand new) |
-| **License** | MIT |
-| **Launched** | May 14, 2026 (Microsoft Open Source Blog) |
+| **Stars** | 158（2026 年 5 月，全新项目） |
+| **许可证** | MIT |
+| **发布时间** | 2026 年 5 月 14 日（微软开源博客） |
 
-Core idea: define your agent workflow in YAML (which agents run in sequence, which in parallel, which model each uses, what gets passed between stages) and execute it deterministically. No LLM in the orchestration loop, only in the agent steps. Supports both GitHub Copilot SDK and Anthropic Agent SDK as providers. Very early stage (158 stars, days old at time of writing), but backed by Microsoft's open-source team.
+核心理念：在 YAML 中定义智能体工作流（哪些智能体顺序运行、哪些并行、每个使用什么模型、各阶段之间传递什么），以确定性方式执行。编排循环中无 LLM，只有智能体步骤中有。支持 GitHub Copilot SDK 和 Anthropic Agent SDK 作为提供商。仍处于极早期阶段（158 stars，撰写时刚发布数天），但由微软开源团队支持。
 
 ---
 
 ### 4.3 Hermes Control Room
 
-A community template by Shann (@shannhk, Lisbon) for managing a fleet of Hermes agents on a VPS. Not a Nous Research project.
+社区模板，作者为 Shann（@shannhk，里斯本），用于在 VPS 上管理 Hermes 智能体集群。非 Nous Research 项目。
 
-| Attribute | Details |
+| 属性 | 详情 |
 |-----------|---------|
 | **GitHub** | [shannhk/hermes-agent-control-room](https://github.com/shannhk/hermes-agent-control-room) |
-| **Stars** | 474 (May 2026) |
-| **Age** | 12 days (as of May 27, 2026) |
-| **Type** | Template/documentation, not executable software |
+| **Stars** | 474（2026 年 5 月） |
+| **时间** | 12 天（截至 2026 年 5 月 27 日） |
+| **类型** | 模板/文档，非可执行软件 |
 
-The concept: a folder structure with governance docs, a registry of deployed agents, runbooks for common operations, and 8 bundled Hermes skills for VPS provisioning, task routing, backup, security auditing, and cron planning. Agents share a filesystem-based task bus (inbox/working/outbox/archive per specialty). The orchestrator reads the control room docs to know agent capabilities, routes tasks via the bus, and synthesizes results.
+概念：包含治理文档、已部署智能体注册表、常见操作 runbook 和 8 个内置 Hermes Skills（技能模块）的文件夹结构，Skills（技能模块）涵盖 VPS 配置、任务路由、备份、安全审计和 cron 规划。智能体共享基于文件系统的任务总线（每个专业领域有 inbox/working/outbox/archive）。编排者读取 control room 文档了解智能体能力，通过总线路由任务，并综合结果。
 
-The pattern is sound for anyone running 3+ Hermes agents. The specific repo is too new (7 commits) to recommend as a production dependency. Watch for a v1.0 with more operational hardening.
+对于运行 3 个以上 Hermes 智能体的任何人，这一模式都是合理的。但该仓库太新（7 次提交），不建议作为生产依赖。关注 v1.0 版本的运维强化。
 
 ---
 
-## Section 5: Decision Framework
+## 第五节：决策框架
 
-### Full Comparison Matrix
+### 完整对比矩阵
 
-| Tool | Open Source | Stars | Model Support | Mode | Language | Cost |
+| 工具 | 开源 | Stars | 模型支持 | 模式 | 语言 | 费用 |
 |------|------------|-------|---------------|------|----------|------|
-| **Claude Code** | Yes (TS) | 112K | Claude only | Interactive + headless | TypeScript | $20-$200/mo |
-| **Codex CLI** | Yes | 86K | GPT-4o, o3, o4-mini | Interactive + headless | Rust | Included in ChatGPT Pro/Team |
-| **Hermes Agent** | Yes (MIT) | 170K | 200+ providers | Interactive + cron + messaging | Python | Pay-per-LLM-call |
-| **Aider** | Yes | 45K | 50+ providers | Interactive | Python | Pay-per-LLM-call |
-| **Goose** | Yes | 46K | 15+ providers | Interactive + subagents | Rust | Pay-per-LLM-call |
-| **Devin** | No | N/A | Proprietary | Fully autonomous | Proprietary | $20-$500/mo |
-| **SWE-agent** | Yes (MIT) | 19K | Any (Claude, GPT...) | Autonomous (issue → PR) | Python | Pay-per-LLM-call |
-| **CrewAI** | Yes (MIT) | 52K | 50+ providers | Framework (build your own) | Python | Framework is free |
-| **LangGraph** | Yes (MIT) | 33K | Any | Framework | Python/JS | Framework is free |
-| **AutoGen/MAF** | Yes (MIT) | 58K/11K | Any | Framework | Python/C#/TS | Framework is free |
+| **Claude Code** | 是（TS） | 112K | 仅限 Claude | 交互式 + 无头模式 | TypeScript | 20-200 美元/月 |
+| **Codex CLI** | 是 | 86K | GPT-4o、o3、o4-mini | 交互式 + 无头模式 | Rust | 含在 ChatGPT Pro/Team 中 |
+| **Hermes Agent** | 是（MIT） | 170K | 200+ 提供商 | 交互式 + cron + 消息 | Python | 按 LLM 调用付费 |
+| **Aider** | 是 | 45K | 50+ 提供商 | 交互式 | Python | 按 LLM 调用付费 |
+| **Goose** | 是 | 46K | 15+ 提供商 | 交互式 + 子智能体 | Rust | 按 LLM 调用付费 |
+| **Devin** | 否 | N/A | 专有 | 完全自主 | 专有 | 20-500 美元/月 |
+| **SWE-agent** | 是（MIT） | 19K | 任意（Claude、GPT...） | 自主（issue → PR） | Python | 按 LLM 调用付费 |
+| **CrewAI** | 是（MIT） | 52K | 50+ 提供商 | 框架（自行构建） | Python | 框架免费 |
+| **LangGraph** | 是（MIT） | 33K | 任意 | 框架 | Python/JS | 框架免费 |
+| **AutoGen/MAF** | 是（MIT） | 58K/11K | 任意 | 框架 | Python/C#/TS | 框架免费 |
 
-### Situation to Tool Guide
+### 情境工具选择指南
 
-| Situation | Recommended |
+| 情境 | 推荐 |
 |-----------|-------------|
-| Daily coding, already on Claude Max | Claude Code |
-| Daily coding, already on ChatGPT Pro | Codex CLI |
-| Daily coding, want any model | Hermes Agent or Aider |
-| Daily coding, general-purpose agent | Goose |
-| Assign a task, come back to a PR | Devin ($500/mo) or `claude -p` in CI |
-| Fix GitHub issues autonomously, research/benchmark | SWE-agent |
-| Orchestrate multiple Claude Code instances | Gas Town, multiclaude, Ruflo (see [Third-Party Tools](./third-party-tools.md#multi-agent-orchestration)) |
-| Build a multi-agent product with roles | CrewAI |
-| Build a stateful, recoverable workflow | LangGraph |
-| Build in .NET + Python with Microsoft stack | AutoGen/MAF |
-| Anthropic ecosystem, cloud-hosted agents | Anthropic Agent SDK (see [ai-ecosystem.md §14](./ai-ecosystem.md#14-claude-managed-agents)) |
-| Manage a fleet of Hermes agents on VPS | Hermes Control Room pattern |
+| 日常编码，已订阅 Claude Max | Claude Code |
+| 日常编码，已订阅 ChatGPT Pro | Codex CLI |
+| 日常编码，希望用任意模型 | Hermes Agent 或 Aider |
+| 日常编码，通用型智能体 | Goose |
+| 分配任务，等待 PR 结果 | Devin（500 美元/月）或 CI 中的 `claude -p` |
+| 自主修复 GitHub issues，研究/基准测试 | SWE-agent |
+| 编排多个 Claude Code 实例 | Gas Town、multiclaude、Ruflo（见[第三方工具](./third-party-tools.md#multi-agent-orchestration)） |
+| 构建基于角色的多智能体产品 | CrewAI |
+| 构建有状态、可恢复的工作流 | LangGraph |
+| 在 .NET + Python 的微软技术栈中构建 | AutoGen/MAF |
+| Anthropic 生态系统，云端托管智能体 | Anthropic Agent SDK（见 [ai-ecosystem.md §14](./ai-ecosystem.md#14-claude-managed-agents)） |
+| 在 VPS 上管理 Hermes 智能体集群 | Hermes Control Room 模式 |
 
-### The Model Lock-In Question
+### 模型锁定问题
 
-The single most clarifying question for choosing between Claude Code, Codex CLI, Hermes, Aider, and Goose: does the tool need to work with exactly one model provider, or multiple?
+在 Claude Code、Codex CLI、Hermes、Aider 和 Goose 之间做选择时，最核心的澄清问题是：工具是否需要与唯一一个模型提供商绑定，还是支持多个？
 
-If you are committed to Claude and the Anthropic ecosystem (subscription, Routines, Agent SDK, CLAUDE.md tooling), Claude Code is unambiguously the right choice. The integration is native and the feature velocity from Anthropic is high.
+如果你致力于 Claude 和 Anthropic 生态系统（订阅、Routines、Agent SDK、CLAUDE.md 工具链），Claude Code 毫无疑问是正确选择。集成原生且来自 Anthropic 的功能迭代速度很快。
 
-If you need model flexibility (local models for sensitive code, cheaper models for routine tasks, specific models for benchmarking), Hermes Agent handles the broadest range with the most automation. Aider and Goose are simpler alternatives with smaller footprints.
+如果你需要模型灵活性（本地模型处理敏感代码、更便宜的模型处理常规任务、特定模型用于基准测试），Hermes Agent 支持最广泛的范围且自动化程度最高。Aider 和 Goose 是体量更小的简单替代方案。
 
-If your team is OpenAI-first and already paying for ChatGPT Pro, Codex CLI costs nothing incremental.
+如果你的团队以 OpenAI 为主且已为 ChatGPT Pro 付费，Codex CLI 无需额外增量成本。
 
-### The Autonomy vs Control Trade-off
+### 自主性与控制的权衡
 
-Higher autonomy means the agent can complete more work without you watching, but also means more ways to go off track on ambiguous tasks. The right autonomy level depends on how well-specified your tasks are, not on which tool is "more powerful."
+更高的自主性意味着智能体可以在你不旁观的情况下完成更多工作，但也意味着在模糊任务上更容易偏离方向。合适的自主性级别取决于任务的描述清晰程度，而非工具的"能力强弱"。
 
-Claude Code headless (`claude -p`) and SWE-agent give you controlled autonomy: you set the task, the agent runs, you review the output. Devin gives you maximal autonomy with a cloud sandbox: the agent has a full Linux environment and can take actions you did not anticipate. More power, more review required before merging.
+Claude Code 无头模式（`claude -p`）和 SWE-agent 给你受控的自主性：你设置任务，智能体运行，你审查输出。Devin 给你最大化的自主性，配备云端沙盒：智能体拥有完整的 Linux 环境，可以采取你未预料到的行动。权力越大，合并前所需的审查越多。
 
-Interactive agents (Claude Code terminal, Hermes, Aider, Goose) give you real-time control. You watch the agent think, redirect it when it goes wrong, and approve destructive actions. For exploratory work where requirements shift mid-session, interactive is faster than autonomous despite appearing more manual.
+交互式智能体（Claude Code 终端、Hermes、Aider、Goose）给你实时控制权。你旁观智能体思考，在它走偏时及时纠正，并批准破坏性操作。对于需求在会话中途变化的探索性工作，交互式方式尽管看起来更费力，实际上往往比自主方式更快。
 
 ---
 
-## Cross-References
+## 交叉引用
 
-- **Multi-Claude orchestration** (Gas Town, multiclaude, Ruflo, Conductor desktop): [Third-Party Tools: Multi-Agent Orchestration](./third-party-tools.md#multi-agent-orchestration)
-- **Goose deep dive**: [AI Ecosystem §11.1](./ai-ecosystem.md#111-goose-open-source-alternative-block)
-- **Building custom agents with Anthropic SDK**: [AI Ecosystem §14](./ai-ecosystem.md#14-claude-managed-agents)
-- **Claude Code's own agent team patterns**: [workflows/agent-teams.md](../workflows/agent-teams.md)
-- **Event-driven autonomous patterns**: [workflows/event-driven-agents.md](../workflows/event-driven-agents.md)
-- **Programmatic billing (Hermes, Codex CLI, third-party harnesses)**: [Ultimate Guide: Billing Split](../ultimate-guide.md#the-interactiveprogrammatic-billing-split-effective-june-15-2026)
-- **Agent harness engineering (theoretical framework)**: [core/agent-harness.md](../core/agent-harness.md)
-- **Coding agents comparison matrix** (23 tools, 11 criteria): [coding-agents-matrix.dev](https://coding-agents-matrix.dev)
+- **多 Claude 编排**（Gas Town、multiclaude、Ruflo、Conductor 桌面应用）：[第三方工具：多智能体编排](./third-party-tools.md#multi-agent-orchestration)
+- **Goose 深度解析**：[AI 生态系统 §11.1](./ai-ecosystem.md#111-goose-open-source-alternative-block)
+- **使用 Anthropic SDK 构建自定义智能体**：[AI 生态系统 §14](./ai-ecosystem.md#14-claude-managed-agents)
+- **Claude Code 自身的智能体团队模式**：[workflows/agent-teams.md](../workflows/agent-teams.md)
+- **事件驱动自主模式**：[workflows/event-driven-agents.md](../workflows/event-driven-agents.md)
+- **编程计费（Hermes、Codex CLI、第三方框架）**：[终极指南：计费分类](../ultimate-guide.md#the-interactiveprogrammatic-billing-split-effective-june-15-2026)
+- **智能体框架工程（理论框架）**：[core/agent-harness.md](../core/agent-harness.md)
+- **编程智能体对比矩阵**（23 款工具，11 项标准）：[coding-agents-matrix.dev](https://coding-agents-matrix.dev)

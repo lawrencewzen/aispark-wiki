@@ -1,239 +1,239 @@
 > 📚 **AI Spark Wiki** · Claude Code 知识库
 
 ---
-title: "Data Privacy & Retention Guide"
-description: "What data Claude Code sends to Anthropic servers and how to protect sensitive information"
+title: "数据隐私与保留指南"
+description: "Claude Code 向 Anthropic 服务器发送哪些数据，以及如何保护敏感信息"
 tags: [privacy, security, guide]
 ---
 
-# Data Privacy & Retention Guide
+# 数据隐私与保留指南
 
-> **Critical**: Everything you share with Claude Code is sent to Anthropic servers. This guide explains what data leaves your machine and how to protect sensitive information.
+> **重要提示**：您与 Claude Code 共享的所有内容都会发送至 Anthropic 服务器。本指南说明哪些数据会离开您的机器，以及如何保护敏感信息。
 
-## TL;DR - Retention Summary
+## 速览——保留策略摘要
 
-| Configuration | Retention Period | Training | How to Enable |
+| 配置 | 保留期限 | 用于训练 | 启用方式 |
 |---------------|------------------|----------|---------------|
-| **Consumer (default)** | 5 years | Yes | (default state) |
-| **Consumer (opt-out)** | 30 days | No | [claude.ai/settings](https://claude.ai/settings/data-privacy-controls) |
-| **Team / Enterprise / API** | 30 days | No (default) | Use Team, Enterprise plan, or API keys |
-| **ZDR (Zero Data Retention)** | 0 days server-side | No | Appropriately configured API keys |
+| **消费者版（默认）** | 5 年 | 是 | （默认状态） |
+| **消费者版（退出训练）** | 30 天 | 否 | [claude.ai/settings](https://claude.ai/settings/data-privacy-controls) |
+| **团队版 / 企业版 / API** | 30 天 | 否（默认） | 使用团队版、企业版计划或 API 密钥 |
+| **ZDR（零数据保留）** | 服务器端 0 天 | 否 | 相应配置的 API 密钥 |
 
-**Immediate action**: [Disable training data usage](https://claude.ai/settings/data-privacy-controls) to reduce retention from 5 years to 30 days.
+**立即行动**：[关闭训练数据使用](https://claude.ai/settings/data-privacy-controls)，将保留期从 5 年缩短至 30 天。
 
 ---
 
-## 1. Understanding the Data Flow
+## 1. 理解数据流
 
-### What Leaves Your Machine
+### 哪些数据会离开您的机器
 
-When you use Claude Code, the following data is sent to Anthropic:
+使用 Claude Code 时，以下数据会发送至 Anthropic：
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                    YOUR LOCAL MACHINE                       │
+│                    您的本地机器                              │
 ├─────────────────────────────────────────────────────────────┤
-│  • Prompts you type                                         │
-│  • Files Claude reads (including .env if not excluded!)     │
-│  • MCP server results (SQL queries, API responses)          │
-│  • Bash command outputs                                     │
-│  • Error messages and stack traces                          │
+│  • 您输入的提示词                                            │
+│  • Claude 读取的文件（包括未排除的 .env 文件！）             │
+│  • MCP 服务器返回结果（SQL 查询、API 响应）                  │
+│  • Bash 命令输出                                             │
+│  • 错误信息和堆栈跟踪                                        │
 └───────────┬──────────────────┬──────────────┬───────────────┘
             │                  │              │
             ▼ HTTPS/TLS       ▼ HTTPS        ▼ HTTPS
 ┌───────────────────┐ ┌──────────────┐ ┌─────────────────────┐
 │   ANTHROPIC API   │ │   STATSIG    │ │       SENTRY        │
 ├───────────────────┤ ├──────────────┤ ├─────────────────────┤
-│ • Your prompts    │ │ • Latency,   │ │ • Error logs        │
-│ • Model responses │ │   reliability│ │ • No code or        │
-│ • Retention per   │ │ • No code or │ │   file paths        │
-│   your tier       │ │   file paths │ │                     │
+│ • 您的提示词      │ │ • 延迟、      │ │ • 错误日志          │
+│ • 模型响应        │ │   可靠性      │ │ • 不含代码或        │
+│ • 按套餐保留      │ │ • 不含代码或  │ │   文件路径          │
+│                   │ │   文件路径    │ │                     │
 └───────────────────┘ └──────────────┘ └─────────────────────┘
-                       (opt-out:        (opt-out:
-                       DISABLE_         DISABLE_ERROR_
-                       TELEMETRY=1)     REPORTING=1)
+                       （退出方式：         （退出方式：
+                       DISABLE_            DISABLE_ERROR_
+                       TELEMETRY=1）       REPORTING=1）
 ```
 
-### What This Means in Practice
+### 实际含义
 
-| Scenario | Data Sent to Anthropic |
+| 场景 | 发送至 Anthropic 的数据 |
 |----------|------------------------|
-| You ask Claude to read `src/app.ts` | Full file contents |
-| You run `git status` via Claude | Command output |
-| MCP executes `SELECT * FROM users` | Query results with user data |
-| Claude reads `.env` file | API keys, passwords, secrets |
-| Error occurs in your code | Full stack trace with paths |
+| 请求 Claude 读取 `src/app.ts` | 完整文件内容 |
+| 通过 Claude 运行 `git status` | 命令输出 |
+| MCP 执行 `SELECT * FROM users` | 包含用户数据的查询结果 |
+| Claude 读取 `.env` 文件 | API 密钥、密码、密钥 |
+| 代码出现错误 | 带路径的完整堆栈跟踪 |
 
 ---
 
-## 2. Anthropic Retention Policies
+## 2. Anthropic 保留策略
 
-### Tier 1: Consumer Default (Training Enabled)
+### 第一级：消费者默认（训练启用）
 
-- **Retention**: 5 years
-- **Usage**: Model improvement, training data
-- **Applies to**: Free, Pro, Max plans with training setting ON
+- **保留期**：5 年
+- **用途**：模型改进、训练数据
+- **适用范围**：训练设置为开启的免费版、Pro 版、Max 版
 
-### Tier 2: Consumer Opt-Out (Training Disabled)
+### 第二级：消费者退出训练（训练禁用）
 
-- **Retention**: 30 days
-- **Usage**: Safety monitoring, abuse prevention only
-- **How to enable**:
-  1. Go to https://claude.ai/settings/data-privacy-controls
-  2. Disable "Allow model training on your conversations"
-  3. Changes apply immediately
+- **保留期**：30 天
+- **用途**：仅用于安全监控、滥用预防
+- **启用方式**：
+  1. 访问 https://claude.ai/settings/data-privacy-controls
+  2. 关闭"允许模型根据您的对话进行训练"
+  3. 变更即时生效
 
-### Tier 3: Commercial (Team / Enterprise / API)
+### 第三级：商业版（团队版 / 企业版 / API）
 
-- **Retention**: 30 days
-- **Usage**: Safety monitoring, abuse prevention only
-- **Training**: Not used for training by default (no opt-out needed)
-- **Applies to**: Team plans, Enterprise plans, API users, third-party platforms, Claude Gov
+- **保留期**：30 天
+- **用途**：仅用于安全监控、滥用预防
+- **训练**：默认不用于训练（无需退出）
+- **适用范围**：团队版、企业版、API 用户、第三方平台、Claude Gov
 
-### Tier 4: Zero Data Retention (ZDR)
+### 第四级：零数据保留（ZDR）
 
-- **Retention**: 0 days server-side (local client cache may persist up to 30 days)
-- **Usage**: None retained on Anthropic servers
-- **Requires**: Appropriately configured API keys (see [Anthropic documentation](https://www.anthropic.com/enterprise))
-- **Use cases**: HIPAA (requires separate BAA), GDPR, PCI-DSS compliance, government contracts
+- **保留期**：服务器端 0 天（本地客户端缓存最长保留 30 天）
+- **用途**：Anthropic 服务器不保留任何数据
+- **要求**：相应配置的 API 密钥（参见 [Anthropic 文档](https://www.anthropic.com/enterprise)）
+- **适用场景**：HIPAA（需单独签署 BAA）、GDPR、PCI-DSS 合规、政府合同
 
-> **Important**: Data is encrypted in transit via TLS but is **not encrypted at rest** on Anthropic servers. Factor this into your security assessments.
+> **重要**：数据在传输中通过 TLS 加密，但**在 Anthropic 服务器上并未静态加密**。在进行安全评估时请将此纳入考量。
 
 ---
 
-## 3. Known Risks
+## 3. 已知风险
 
-### Risk 1: Automatic File Reading
+### 风险 1：自动文件读取
 
-Claude Code reads files to understand context. By default, this includes:
+Claude Code 会读取文件以理解上下文。默认情况下包括：
 
-- `.env` and `.env.local` files (API keys, passwords)
-- `credentials.json`, `secrets.yaml` (service accounts)
-- SSH keys if in workspace scope
-- Database connection strings
+- `.env` 和 `.env.local` 文件（API 密钥、密码）
+- `credentials.json`、`secrets.yaml`（服务账户）
+- 工作区范围内的 SSH 密钥
+- 数据库连接字符串
 
-**Mitigation**: Configure `excludePatterns` (see Section 4).
+**缓解措施**：配置 `excludePatterns`（参见第 4 节）。
 
-### Risk 2: MCP Database Access
+### 风险 2：MCP 数据库访问
 
-When you configure database MCP servers (Neon, Supabase, PlanetScale):
+当您配置数据库 MCP 服务器（Neon、Supabase、PlanetScale）时：
 
 ```
-Your Query: "Show me recent orders"
+您的查询："显示最近的订单"
             ↓
-MCP Executes: SELECT * FROM orders LIMIT 100
+MCP 执行：SELECT * FROM orders LIMIT 100
             ↓
-Results Sent: 100 rows with customer names, emails, addresses
+返回结果：包含客户姓名、邮箱、地址的 100 行数据
             ↓
-Stored at Anthropic: According to your retention tier
+存储于 Anthropic：按您的保留级别处理
 ```
 
-**Mitigation**: Never connect production databases. Use dev/staging with anonymized data.
+**缓解措施**：切勿连接生产数据库，使用包含匿名化数据的开发/测试环境。
 
-### Risk 3: Shell Command Output
+### 风险 3：Shell 命令输出
 
-Bash commands and their output are included in context:
+Bash 命令及其输出会包含在上下文中：
 
 ```bash
-# This output goes to Anthropic:
+# 以下输出会发送至 Anthropic：
 $ env | grep API
 OPENAI_API_KEY=sk-abc123...
 STRIPE_SECRET_KEY=sk_live_...
 ```
 
-**Mitigation**: Use hooks to filter sensitive command outputs.
+**缓解措施**：使用 Hooks（钩子）过滤敏感命令输出。
 
-### Risk 4: The `/bug` Command Sends Everything (Retained 5 Years)
+### 风险 4：`/bug` 命令会发送所有内容（保留 5 年）
 
-When you run `/bug` in Claude Code, your **full conversation history** (including all code, file contents, and potentially secrets) is sent to Anthropic for bug triage. This data is retained for **5 years**, regardless of your training opt-out setting.
+在 Claude Code 中运行 `/bug` 时，您的**完整对话历史**（包括所有代码、文件内容，以及可能的密钥）会发送至 Anthropic 用于问题分类。该数据**保留 5 年**，不受您的训练退出设置影响。
 
-This is independent of your privacy preferences: even with training disabled and 30-day retention, bug reports follow their own 5-year retention policy.
+这与您的隐私偏好无关：即使已禁用训练且保留期为 30 天，错误报告仍遵循其独立的 5 年保留策略。
 
-**Mitigation**: Disable the command entirely if you work with sensitive codebases:
+**缓解措施**：如果您处理敏感代码库，可完全禁用该命令：
 
 ```bash
 export DISABLE_BUG_COMMAND=1
 ```
 
-Or add it to your shell profile (`~/.zshrc`, `~/.bashrc`) to make it permanent.
+或将其添加至 shell 配置（`~/.zshrc`、`~/.bashrc`）以永久生效。
 
-### Risk 5: Documented Community Incidents
+### 风险 5：已记录的社区事件
 
-| Incident | Source |
+| 事件 | 来源 |
 |----------|--------|
-| Claude reads `.env` by default | r/ClaudeAI, GitHub issues |
-| DROP TABLE attempts on poorly configured MCP | r/ClaudeAI |
-| Credentials exposed via environment variables | GitHub issues |
-| Prompt injection via malicious MCP servers | r/programming |
+| Claude 默认读取 `.env` 文件 | r/ClaudeAI、GitHub Issues |
+| 配置不当的 MCP 尝试执行 DROP TABLE | r/ClaudeAI |
+| 通过环境变量泄露凭证 | GitHub Issues |
+| 恶意 MCP 服务器导致提示注入 | r/programming |
 
-### Risk 6: Claude Desktop Browser Integration — Silent Native Messaging Host Installation
+### 风险 6：Claude Desktop 浏览器集成——静默安装原生消息宿主
 
-Claude Desktop installs native messaging host manifest files into browsers' `NativeMessagingHosts` directories to enable its "Claude in Chrome" feature. As of April 2026, this happens without an explicit opt-in prompt from the user.
+Claude Desktop 会向浏览器的 `NativeMessagingHosts` 目录安装原生消息宿主清单文件，以启用"Claude in Chrome"功能。截至 2026 年 4 月，此安装不会向用户弹出明确的选择提示。
 
-**What gets installed:**
+**安装内容：**
 
 ```
 ~/Library/Application Support/Google/Chrome/NativeMessagingHosts/
   com.anthropic.claude_browser_extension.json
 
 /Applications/Claude.app/Contents/MacOS/
-  claude_browser_native_host  (helper binary)
+  claude_browser_native_host  （辅助程序二进制文件）
 ```
 
-Claude Desktop writes these files to **all Chromium-based browsers found on the system** — Chrome, Brave, Edge, Arc, Vivaldi, Opera, Chromium — including browsers not installed at the time of Claude Desktop's installation. The "Don't ask" opt-out in Claude Desktop's preferences does not reliably prevent this ([GitHub #53864](https://github.com/anthropics/claude-code/issues/53864), April 2026).
+Claude Desktop 会将这些文件写入系统中**所有基于 Chromium 的浏览器**——Chrome、Brave、Edge、Arc、Vivaldi、Opera、Chromium——包括安装 Claude Desktop 时尚未安装的浏览器。Claude Desktop 偏好设置中的"不再询问"退出选项并不能可靠地阻止此安装（[GitHub #53864](https://github.com/anthropics/claude-code/issues/53864)，2026 年 4 月）。
 
-**What native messaging actually does (and doesn't do):**
+**原生消息实际上能做什么（和不能做什么）：**
 
-Native messaging is a standard Chrome mechanism used by password managers, VPNs, and many other legitimate apps. The native host can only receive messages sent by a Chrome extension that explicitly targets it. It cannot initiate connections to the browser, read tabs, or access browser data unsolicited. This is architecturally different from spyware.
+原生消息是 Chrome 的标准机制，被密码管理器、VPN 等众多合法应用使用。原生宿主只能接收明确指向它的 Chrome 扩展程序发送的消息，无法主动向浏览器发起连接、读取标签页或在未经请求的情况下访问浏览器数据。这与间谍软件在架构上有本质区别。
 
-The real issue is the **consent failure**, not the mechanism itself. An application silently modifying another vendor's application directories violates the principle of least surprise, regardless of intent.
+真正的问题是**知情同意的缺失**，而非机制本身。一个应用程序静默修改其他厂商应用程序目录的行为违反了最小惊讶原则，无论其意图如何。
 
-**What to check if you're concerned:**
+**如有顾虑，可检查：**
 
 ```bash
-# List all native messaging hosts installed for Chrome
+# 列出为 Chrome 安装的所有原生消息宿主
 ls ~/Library/Application\ Support/Google/Chrome/NativeMessagingHosts/
 
-# Check if Anthropic's host is present
+# 检查 Anthropic 的宿主是否存在
 cat ~/Library/Application\ Support/Google/Chrome/NativeMessagingHosts/com.anthropic.claude_browser_extension.json
 
-# Check other browsers
+# 检查其他浏览器
 ls ~/Library/Application\ Support/BraveSoftware/Brave-Browser/NativeMessagingHosts/
 ls ~/Library/Application\ Support/Microsoft\ Edge/NativeMessagingHosts/
 ```
 
-**To remove:**
+**删除方式：**
 
 ```bash
-# Remove from Chrome (repeat for each browser as needed)
+# 从 Chrome 中删除（根据需要对每个浏览器重复操作）
 rm ~/Library/Application\ Support/Google/Chrome/NativeMessagingHosts/com.anthropic.claude_browser_extension.json
 
-# Restart Chrome after deletion
+# 删除后重启 Chrome
 ```
 
-Uninstalling Claude Desktop removes the helper binary but may leave stale manifest files in some browser directories. Restart the affected browsers after cleanup.
+卸载 Claude Desktop 会删除辅助程序二进制文件，但可能在某些浏览器目录中留下残余清单文件。清理后请重启相关浏览器。
 
-**Conflict with Claude Code:** When both Claude Desktop and Claude Code CLI are installed, the Chrome extension always binds to Claude Desktop's native host, making Claude Code's `claude-in-chrome` MCP tools unreachable ([GitHub #51949](https://github.com/anthropics/claude-code/issues/51949)). This is a known bug with no workaround as of April 2026 other than uninstalling Claude Desktop.
+**与 Claude Code 的冲突：** 同时安装 Claude Desktop 和 Claude Code CLI 时，Chrome 扩展程序始终会绑定到 Claude Desktop 的原生宿主，导致 Claude Code 的 `claude-in-chrome` MCP 工具无法访问（[GitHub #51949](https://github.com/anthropics/claude-code/issues/51949)）。截至 2026 年 4 月，此已知问题没有除卸载 Claude Desktop 以外的解决方法。
 
-**Mitigation:**
+**缓解措施：**
 
-If you don't use the browser integration feature, you can safely delete the manifest files. Anthropic has not yet provided an official opt-out mechanism that reliably prevents installation. Monitor [GitHub #53864](https://github.com/anthropics/claude-code/issues/53864) for updates.
+如果您不使用浏览器集成功能，可以安全地删除清单文件。Anthropic 尚未提供能可靠阻止安装的官方退出机制。请关注 [GitHub #53864](https://github.com/anthropics/claude-code/issues/53864) 获取最新进展。
 
 ---
 
-## 4. Protective Measures
+## 4. 保护措施
 
-### Immediate Actions
+### 立即行动
 
-#### 4.1 Opt-Out of Training
+#### 4.1 退出训练
 
-1. Visit https://claude.ai/settings/data-privacy-controls
-2. Toggle OFF "Allow model training"
-3. Retention reduces from 5 years to 30 days
+1. 访问 https://claude.ai/settings/data-privacy-controls
+2. 关闭"允许模型训练"
+3. 保留期从 5 年缩短至 30 天
 
-#### 4.2 Configure File Exclusions
+#### 4.2 配置文件排除
 
-In `.claude/settings.json`, use `permissions.deny` to block access to sensitive files:
+在 `.claude/settings.json` 中，使用 `permissions.deny` 阻止访问敏感文件：
 
 ```json
 {
@@ -254,13 +254,13 @@ In `.claude/settings.json`, use `permissions.deny` to block access to sensitive 
 }
 ```
 
-> **Note**: The old `excludePatterns` and `ignorePatterns` settings were deprecated in October 2025. Use `permissions.deny` instead.
+> **注意**：旧版 `excludePatterns` 和 `ignorePatterns` 设置已于 2025 年 10 月废弃，请改用 `permissions.deny`。
 
-> **Warning**: `permissions.deny` has [known limitations](./security-hardening.md#known-limitations-of-permissionsdeny). For defense-in-depth, combine with security hooks and external secrets management.
+> **警告**：`permissions.deny` 存在[已知局限性](./security-hardening.md#known-limitations-of-permissionsdeny)。为实现纵深防御，请与安全 Hooks（钩子）和外部密钥管理方案结合使用。
 
-#### 4.3 Use Security Hooks
+#### 4.3 使用安全 Hooks（钩子）
 
-Create `.claude/hooks/PreToolUse.sh`:
+创建 `.claude/hooks/PreToolUse.sh`：
 
 ```bash
 #!/bin/bash
@@ -270,181 +270,181 @@ TOOL_NAME=$(echo "$INPUT" | jq -r '.tool.name')
 if [[ "$TOOL_NAME" == "Read" ]]; then
     FILE_PATH=$(echo "$INPUT" | jq -r '.tool.input.file_path')
 
-    # Block reading sensitive files
+    # 阻止读取敏感文件
     if [[ "$FILE_PATH" =~ \.env|credentials|secrets|\.pem|\.key ]]; then
-        echo "BLOCKED: Attempted to read sensitive file: $FILE_PATH" >&2
-        exit 2  # Block the operation
+        echo "已阻止：尝试读取敏感文件：$FILE_PATH" >&2
+        exit 2  # 阻止操作
     fi
 fi
 ```
 
-#### 4.4 Opt-Out of Telemetry and Error Reporting
+#### 4.4 退出遥测和错误报告
 
-Claude Code connects to third-party services for operational metrics (Statsig) and error logging (Sentry). These do not include your code or file paths, but you can disable them entirely:
+Claude Code 会连接第三方服务进行运营指标统计（Statsig）和错误日志记录（Sentry）。这些服务不包含您的代码或文件路径，但您可以完全禁用它们：
 
-| Variable | What it Disables |
+| 变量 | 禁用的内容 |
 |----------|-----------------|
-| `DISABLE_TELEMETRY=1` | Statsig operational metrics (latency, reliability, usage patterns) |
-| `DISABLE_ERROR_REPORTING=1` | Sentry error logging |
-| `DISABLE_BUG_COMMAND=1` | The `/bug` command (prevents sending full conversation history) |
-| `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1` | All non-essential network traffic at once |
-| `CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY=1` | Session quality surveys (note: surveys only send your numeric rating, never transcripts) |
+| `DISABLE_TELEMETRY=1` | Statsig 运营指标（延迟、可靠性、使用模式） |
+| `DISABLE_ERROR_REPORTING=1` | Sentry 错误日志 |
+| `DISABLE_BUG_COMMAND=1` | `/bug` 命令（防止发送完整对话历史） |
+| `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1` | 一次性关闭所有非必要网络流量 |
+| `CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY=1` | 会话质量调查（注：调查仅发送您的数字评分，从不发送对话记录） |
 
-Add these to your shell profile for permanent effect:
+将以下内容添加至 shell 配置以永久生效：
 
 ```bash
-# In ~/.zshrc or ~/.bashrc
+# 在 ~/.zshrc 或 ~/.bashrc 中添加
 export DISABLE_TELEMETRY=1
 export DISABLE_ERROR_REPORTING=1
 export DISABLE_BUG_COMMAND=1
 ```
 
-> **Note**: When using Bedrock, Vertex, or Foundry providers, all non-essential traffic (telemetry, error reporting, bug command, surveys) is disabled by default.
+> **注意**：使用 Bedrock、Vertex 或 Foundry 提供商时，所有非必要流量（遥测、错误报告、bug 命令、调查）默认禁用。
 
-### MCP Best Practices
+### MCP 最佳实践
 
-| Rule | Rationale |
+| 规则 | 理由 |
 |------|-----------|
-| **Never connect production databases** | All query results sent to Anthropic |
-| **Use read-only database users** | Prevents DROP/DELETE/UPDATE accidents |
-| **Anonymize development data** | Reduces PII exposure risk |
-| **Create minimal test datasets** | Less data = less risk |
-| **Audit MCP server sources** | Third-party MCPs may have vulnerabilities |
+| **切勿连接生产数据库** | 所有查询结果都会发送至 Anthropic |
+| **使用只读数据库用户** | 防止意外执行 DROP/DELETE/UPDATE |
+| **匿名化开发数据** | 降低个人身份信息（PII）暴露风险 |
+| **创建最小测试数据集** | 数据越少，风险越小 |
+| **审查 MCP 服务器来源** | 第三方 MCP 可能存在漏洞 |
 
-### For Teams
+### 团队建议
 
-| Environment | Recommendation |
+| 环境 | 建议 |
 |-------------|----------------|
-| **Development** | Opt-out + exclusions + anonymized data |
-| **Staging** | Consider Enterprise API if handling real data |
-| **Production** | NEVER connect Claude Code directly |
+| **开发环境** | 退出训练 + 文件排除 + 匿名化数据 |
+| **测试环境** | 处理真实数据时考虑使用企业版 API |
+| **生产环境** | **切勿**直接连接 Claude Code |
 
 ---
 
-## 5. Comparison with Other Tools
+## 5. 与其他工具的对比
 
-| Feature | Claude Code + MCP | Cursor | GitHub Copilot |
+| 功能 | Claude Code + MCP | Cursor | GitHub Copilot |
 |---------|-------------------|--------|----------------|
-| Data scope sent | Full SQL results, files | Code snippets | Code snippets |
-| Production DB access | Yes (via MCP) | Limited | Not designed for |
-| Default retention | 5 years | Variable | 30 days |
-| Training by default | Yes | Opt-in | Opt-in |
+| 发送的数据范围 | 完整 SQL 结果、文件 | 代码片段 | 代码片段 |
+| 生产数据库访问 | 支持（通过 MCP） | 有限 | 非设计目标 |
+| 默认保留期 | 5 年 | 不定 | 30 天 |
+| 默认训练 | 是 | 需选择加入 | 需选择加入 |
 
-**Key difference**: MCP creates a unique attack surface because MCP servers are separate processes with independent network/filesystem access.
-
----
-
-## 6. Enterprise Considerations
-
-### When to Use Enterprise API (ZDR)
-
-- Handling PII (names, emails, addresses)
-- Regulated industries (HIPAA, GDPR, PCI-DSS)
-- Client data processing
-- Government contracts
-- Financial services
-
-### Evaluation Checklist
-
-- [ ] Data classification policy exists for your organization
-- [ ] API tier matches data sensitivity requirements
-- [ ] Team trained on privacy controls
-- [ ] Incident response plan for potential data exposure
-- [ ] Legal/compliance review completed
+**关键区别**：MCP 创造了独特的攻击面，因为 MCP 服务器是拥有独立网络/文件系统访问权限的独立进程。
 
 ---
 
-## 7. Quick Reference
+## 6. 企业注意事项
 
-### Links
+### 何时使用企业版 API（ZDR）
 
-| Resource | URL |
+- 处理个人身份信息（PII）（姓名、邮箱、地址）
+- 受监管行业（HIPAA、GDPR、PCI-DSS）
+- 客户数据处理
+- 政府合同
+- 金融服务
+
+### 评估清单
+
+- [ ] 组织已制定数据分类策略
+- [ ] API 级别与数据敏感性要求匹配
+- [ ] 团队已接受隐私控制培训
+- [ ] 已制定潜在数据泄露的应急响应计划
+- [ ] 已完成法律/合规审查
+
+---
+
+## 7. 快速参考
+
+### 链接
+
+| 资源 | URL |
 |----------|-----|
-| Privacy settings | https://claude.ai/settings/data-privacy-controls |
-| Anthropic usage policy | https://www.anthropic.com/policies |
-| Enterprise information | https://www.anthropic.com/enterprise |
-| Terms of service | https://www.anthropic.com/legal/consumer-terms |
+| 隐私设置 | https://claude.ai/settings/data-privacy-controls |
+| Anthropic 使用政策 | https://www.anthropic.com/policies |
+| 企业信息 | https://www.anthropic.com/enterprise |
+| 服务条款 | https://www.anthropic.com/legal/consumer-terms |
 
-### Commands
+### 命令
 
 ```bash
-# Check current Claude config
+# 查看当前 Claude 配置
 claude /config
 
-# Verify exclusions are loaded
+# 验证排除规则已加载
 claude /status
 
-# Run privacy audit
+# 运行隐私审查
 ./examples/scripts/audit-scan.sh
 ```
 
-### Quick Checklist
+### 快速检查清单
 
-- [ ] Training opt-out enabled at claude.ai/settings
-- [ ] `.env*` files blocked via `permissions.deny` in settings.json
-- [ ] No production database connections via MCP
-- [ ] Security hooks installed for sensitive file access
-- [ ] Team aware of data flow to Anthropic
+- [ ] 在 claude.ai/settings 启用训练退出
+- [ ] 通过 settings.json 中的 `permissions.deny` 阻止 `.env*` 文件
+- [ ] 未通过 MCP 连接生产数据库
+- [ ] 已为敏感文件访问安装安全 Hooks（钩子）
+- [ ] 团队已了解数据流向 Anthropic 的情况
 
 ---
 
-## 8. Intellectual Property Considerations
+## 8. 知识产权注意事项
 
-> **Disclaimer**: This is not legal advice. Consult a qualified attorney for your specific situation.
+> **免责声明**：本文不构成法律建议。请咨询有资质的律师以了解您的具体情况。
 
-When using AI code generation tools, discuss these points with your legal team:
+使用 AI 代码生成工具时，请与您的法律团队讨论以下要点：
 
-| Consideration | What to Discuss |
+| 注意事项 | 讨论内容 |
 |---------------|-----------------|
-| **Ownership** | Copyright status of AI-generated code remains legally unsettled in most jurisdictions |
-| **License contamination** | Training data may include open-source code with copyleft licenses (GPL, AGPL) that could affect your codebase |
-| **Vendor indemnification** | Some enterprise plans offer legal protection (e.g., Microsoft Copilot Enterprise includes IP indemnification) |
-| **Sector compliance** | Regulated industries (healthcare, finance, government) may have additional IP requirements |
+| **所有权** | AI 生成代码的版权状态在大多数司法管辖区尚无定论 |
+| **许可证污染** | 训练数据可能包含带有 Copyleft 许可证（GPL、AGPL）的开源代码，可能影响您的代码库 |
+| **供应商赔偿** | 部分企业计划提供法律保护（例如 Microsoft Copilot Enterprise 包含 IP 赔偿） |
+| **行业合规** | 受监管行业（医疗、金融、政府）可能有额外的 IP 要求 |
 
-This guide focuses on Claude Code usage—not legal strategy. For IP guidance, consult specialized legal resources or your organization's legal counsel.
+本指南专注于 Claude Code 的使用，而非法律策略。如需 IP 指导，请咨询专业法律资源或您所在组织的法律顾问。
 
 ---
 
-## 9. Claude's Governance & Values
+## 9. Claude 的治理与价值观
 
-### Constitutional AI Framework
+### 宪法式 AI 框架
 
-Anthropic published Claude's constitution in January 2026 (CC0 license - public domain). This document defines the value hierarchy that guides Claude's behavior:
+Anthropic 于 2026 年 1 月发布了 Claude 的宪法（CC0 许可证——公共领域）。该文件定义了指导 Claude 行为的价值层级：
 
-**Priority Order** (used to resolve conflicts):
+**优先顺序**（用于解决冲突）：
 
-1. **Broadly safe** - Never compromise human supervision and control
-2. **Broadly ethical** - Honesty, harm avoidance, good conduct
-3. **Anthropic compliance** - Internal guidelines and policies
-4. **Genuinely helpful** - Real utility for users and society
+1. **广泛安全** ——绝不危害人类的监督与控制
+2. **广泛道德** ——诚实、避免伤害、良好行为
+3. **Anthropic 合规** ——内部准则和政策
+4. **真正有益** ——为用户和社会提供真实价值
 
-### What This Means for Claude Code Users
+### 这对 Claude Code 用户意味着什么
 
-| Scenario | Expected Behavior |
+| 场景 | 预期行为 |
 |----------|-------------------|
-| Security-sensitive requests | Claude prioritizes safety over helpfulness (may be more conservative) |
-| Borderline biology/chemistry | May decline or ask for context to assess safety implications |
-| Ethical conflicts | Will follow hierarchy: safety > ethics > compliance > utility |
+| 涉及安全的请求 | Claude 优先考虑安全而非帮助（可能更为保守） |
+| 生物/化学边界问题 | 可能拒绝或要求提供上下文以评估安全影响 |
+| 道德冲突 | 遵循层级：安全 > 道德 > 合规 > 效用 |
 
-### Why This Matters
+### 为什么这很重要
 
-- **Training data source**: Constitution is used to generate synthetic training examples
-- **Behavior specification**: Reference document explaining intended vs. accidental outputs
-- **Audit & governance**: Provides legal/ethical foundation for compliance reviews
-- **Your own agents**: CC0 license allows reuse/adaptation for custom models
+- **训练数据来源**：宪法用于生成合成训练示例
+- **行为规范**：解释预期输出与意外输出的参考文件
+- **审计与治理**：为合规审查提供法律/道德基础
+- **您自己的智能体**：CC0 许可证允许为自定义模型复用/改编
 
-### Resources
+### 资源
 
-- Constitution full text: https://www.anthropic.com/constitution
-- PDF version: https://www-cdn.anthropic.com/.../claudes-constitution.pdf
-- Announcement: https://www.anthropic.com/news/claude-new-constitution
-- Alignment research: https://alignment.anthropic.com/
+- 宪法全文：https://www.anthropic.com/constitution
+- PDF 版本：https://www-cdn.anthropic.com/.../claudes-constitution.pdf
+- 公告：https://www.anthropic.com/news/claude-new-constitution
+- 对齐研究：https://alignment.anthropic.com/
 
 ---
 
-## Changelog
+## 变更日志
 
-- 2026-02: Fixed retention model (3 tiers to 4 tiers), added /bug command warning, telemetry opt-out variables, encryption-at-rest disclosure, updated ZDR conditions
-- 2026-01: Added Claude's governance & constitutional AI framework section
-- 2026-01: Added intellectual property considerations section
-- 2026-01: Initial version - documenting retention policies and protective measures
+- 2026-02：修正保留模型（从 3 级改为 4 级），新增 /bug 命令警告、遥测退出变量、静态加密说明，更新 ZDR 条件
+- 2026-01：新增 Claude 治理与宪法式 AI 框架章节
+- 2026-01：新增知识产权注意事项章节
+- 2026-01：初始版本——记录保留策略和保护措施

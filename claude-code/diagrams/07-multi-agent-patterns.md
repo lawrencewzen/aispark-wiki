@@ -1,41 +1,41 @@
 > 📚 **AI Spark Wiki** · Claude Code 知识库
 
 ---
-title: "Claude Code — Multi-Agent Patterns Diagrams"
-description: "Agent topologies, worktrees, dual-instance planning, horizontal scaling, decision matrix"
-tags: [multi-agent, patterns, worktrees, orchestration, scaling]
+title: "Claude Code — 多智能体模式图表"
+description: "智能体拓扑结构、工作树、双实例规划、水平扩展、决策矩阵"
+tags: [多智能体, 模式, 工作树, 编排, 扩展]
 ---
 
-# Multi-Agent Patterns
+# 多智能体模式
 
-Patterns for coordinating multiple Claude instances for parallel and complex work.
+协调多个 Claude 实例进行并行和复杂工作的模式。
 
 ---
 
-### Agent Teams — 3 Orchestration Topologies
+### 智能体团队 — 3 种编排拓扑
 
-Three proven topologies for multi-agent coordination. Choose based on task independence, ordering requirements, and specialization needs.
+三种经过验证的多智能体协调拓扑结构。根据任务独立性、顺序要求和专业化需求来选择。
 
 ```mermaid
 flowchart TD
-    subgraph ORCH["Pattern 1: Orchestrator + Workers"]
-        OL[Lead Orchestrator] --> OW1[Worker 1<br/>Frontend]
-        OL --> OW2[Worker 2<br/>Backend]
-        OL --> OW3[Worker 3<br/>Tests]
-        OW1 & OW2 & OW3 --> OR([Results aggregated])
+    subgraph ORCH["模式 1：编排器 + 工作者"]
+        OL[主控智能体] --> OW1[工作者 1<br/>前端]
+        OL --> OW2[工作者 2<br/>后端]
+        OL --> OW3[工作者 3<br/>测试]
+        OW1 & OW2 & OW3 --> OR([结果汇总])
     end
 
-    subgraph PIPE["Pattern 2: Pipeline"]
-        PA[Agent A<br/>Requirements] --> PB[Agent B<br/>Implementation]
-        PB --> PC[Agent C<br/>Review]
-        PC --> PD([Final output])
+    subgraph PIPE["模式 2：流水线"]
+        PA[智能体 A<br/>需求] --> PB[智能体 B<br/>实现]
+        PB --> PC[智能体 C<br/>审查]
+        PC --> PD([最终输出])
     end
 
-    subgraph ROUTE["Pattern 3: Specialist Router"]
-        RR{Router Agent<br/>analyzes task} --> RC[Code Agent]
-        RR --> RT[Test Agent]
-        RR --> RD[Docs Agent]
-        RC & RT & RD --> RO([Specialized result])
+    subgraph ROUTE["模式 3：专家路由器"]
+        RR{路由器智能体<br/>分析任务} --> RC[代码智能体]
+        RR --> RT[测试智能体]
+        RR --> RD[文档智能体]
+        RC & RT & RD --> RO([专业化结果])
     end
 
     style OL fill:#E87E2F,color:#fff
@@ -53,62 +53,62 @@ flowchart TD
     style RD fill:#6DB3F2,color:#fff
     style RO fill:#7BC47F,color:#333
 
-    click OL href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/agent-teams.md" "Lead Orchestrator"
-    click OW1 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/agent-teams.md" "Worker: Frontend"
-    click OW2 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/agent-teams.md" "Worker: Backend"
-    click OW3 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/agent-teams.md" "Worker: Tests"
-    click OR href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/agent-teams.md" "Results aggregated"
-    click PA href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/agent-teams.md" "Agent A: Requirements"
-    click PB href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/agent-teams.md" "Agent B: Implementation"
-    click PC href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/agent-teams.md" "Agent C: Review"
-    click PD href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/agent-teams.md" "Final output"
-    click RR href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/agent-teams.md" "Router Agent"
-    click RC href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/agent-teams.md" "Code Agent"
-    click RT href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/agent-teams.md" "Test Agent"
-    click RD href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/agent-teams.md" "Docs Agent"
-    click RO href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/agent-teams.md" "Specialized result"
+    click OL href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/agent-teams.md" "主控智能体"
+    click OW1 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/agent-teams.md" "工作者：前端"
+    click OW2 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/agent-teams.md" "工作者：后端"
+    click OW3 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/agent-teams.md" "工作者：测试"
+    click OR href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/agent-teams.md" "结果汇总"
+    click PA href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/agent-teams.md" "智能体 A：需求"
+    click PB href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/agent-teams.md" "智能体 B：实现"
+    click PC href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/agent-teams.md" "智能体 C：审查"
+    click PD href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/agent-teams.md" "最终输出"
+    click RR href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/agent-teams.md" "路由器智能体"
+    click RC href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/agent-teams.md" "代码智能体"
+    click RT href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/agent-teams.md" "测试智能体"
+    click RD href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/agent-teams.md" "文档智能体"
+    click RO href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/agent-teams.md" "专业化结果"
 ```
 
 <details>
-<summary>ASCII version</summary>
+<summary>ASCII 版本</summary>
 
 ```
-ORCHESTRATOR + WORKERS:      PIPELINE:               ROUTER:
+编排器 + 工作者：         流水线：                路由器：
 
-   Lead Agent                Agent A (requirements)   Router
-  /    |     \                    │                  /  |  \
-W1    W2     W3              Agent B (implement)   Code Test Docs
-  \   |     /                    │                  \  |  /
-   Aggregate                Agent C (review)        Result
-                                 │
-                             Final output
+   主控智能体            智能体 A（需求）          路由器
+  /    |     \                │                  /  |  \
+W1    W2     W3          智能体 B（实现）       代码 测试 文档
+  \   |     /                 │                  \  |  /
+   汇总                  智能体 C（审查）          结果
+                               │
+                           最终输出
 ```
 
 </details>
 
-> **Source**: [Agent Teams](../workflows/agent-teams.md) — Line ~59
+> **来源**：[智能体团队](../workflows/agent-teams.md) — 第 ~59 行
 
 ---
 
-### Git Worktree Multi-Instance Pattern
+### Git 工作树多实例模式
 
-Git worktrees enable true parallel development: each Claude instance works in an isolated branch with its own working tree. No conflicts, no context mixing.
+Git 工作树实现真正的并行开发：每个 Claude 实例在独立分支的独立工作目录中工作。无冲突，无上下文混淆。
 
 ```mermaid
 flowchart LR
-    MB[(Main Branch<br/>git repository)] --> WA[git worktree add<br/>feature-A]
+    MB[(主分支<br/>git 仓库)] --> WA[git worktree add<br/>feature-A]
     MB --> WB[git worktree add<br/>feature-B]
     MB --> WC[git worktree add<br/>bugfix-C]
 
-    WA --> CA[Claude Instance 1<br/>/worktrees/feature-A]
-    WB --> CB[Claude Instance 2<br/>/worktrees/feature-B]
-    WC --> CC[Claude Instance 3<br/>/worktrees/bugfix-C]
+    WA --> CA[Claude 实例 1<br/>/worktrees/feature-A]
+    WB --> CB[Claude 实例 2<br/>/worktrees/feature-B]
+    WC --> CC[Claude 实例 3<br/>/worktrees/bugfix-C]
 
-    CA --> CA1([Commits to feature-A])
-    CB --> CB1([Commits to feature-B])
-    CC --> CC1([Commits to bugfix-C])
+    CA --> CA1([提交到 feature-A])
+    CB --> CB1([提交到 feature-B])
+    CC --> CC1([提交到 bugfix-C])
 
-    CA1 & CB1 & CC1 --> MERGE([Merge to main<br/>when ready])
+    CA1 & CB1 & CC1 --> MERGE([就绪后合并到主分支])
 
     style MB fill:#E87E2F,color:#fff
     style CA fill:#6DB3F2,color:#fff
@@ -122,108 +122,108 @@ flowchart LR
     style WB fill:#F5E6D3,color:#333
     style WC fill:#F5E6D3,color:#333
 
-    click MB href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#912-git-best-practices--workflows" "Main Branch"
-    click WA href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#912-git-best-practices--workflows" "Worktree: feature-A"
-    click WB href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#912-git-best-practices--workflows" "Worktree: feature-B"
-    click WC href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#912-git-best-practices--workflows" "Worktree: bugfix-C"
-    click CA href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#912-git-best-practices--workflows" "Claude Instance 1"
-    click CB href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#912-git-best-practices--workflows" "Claude Instance 2"
-    click CC href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#912-git-best-practices--workflows" "Claude Instance 3"
-    click CA1 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#912-git-best-practices--workflows" "Commits to feature-A"
-    click CB1 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#912-git-best-practices--workflows" "Commits to feature-B"
-    click CC1 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#912-git-best-practices--workflows" "Commits to bugfix-C"
-    click MERGE href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#912-git-best-practices--workflows" "Merge to main"
+    click MB href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#912-git-best-practices--workflows" "主分支"
+    click WA href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#912-git-best-practices--workflows" "工作树：feature-A"
+    click WB href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#912-git-best-practices--workflows" "工作树：feature-B"
+    click WC href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#912-git-best-practices--workflows" "工作树：bugfix-C"
+    click CA href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#912-git-best-practices--workflows" "Claude 实例 1"
+    click CB href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#912-git-best-practices--workflows" "Claude 实例 2"
+    click CC href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#912-git-best-practices--workflows" "Claude 实例 3"
+    click CA1 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#912-git-best-practices--workflows" "提交到 feature-A"
+    click CB1 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#912-git-best-practices--workflows" "提交到 feature-B"
+    click CC1 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#912-git-best-practices--workflows" "提交到 bugfix-C"
+    click MERGE href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#912-git-best-practices--workflows" "合并到主分支"
 ```
 
 <details>
-<summary>ASCII version</summary>
+<summary>ASCII 版本</summary>
 
 ```
-Main repo
-├── git worktree add feature-A → Claude 1 → commits to feature-A
-├── git worktree add feature-B → Claude 2 → commits to feature-B
-└── git worktree add bugfix-C  → Claude 3 → commits to bugfix-C
+主仓库
+├── git worktree add feature-A → Claude 1 → 提交到 feature-A
+├── git worktree add feature-B → Claude 2 → 提交到 feature-B
+└── git worktree add bugfix-C  → Claude 3 → 提交到 bugfix-C
 
-No conflicts: separate working trees, separate branches
-All merge back to main when done
+无冲突：独立工作目录，独立分支
+全部完成后合并回主分支
 ```
 
 </details>
 
-> **Source**: [Git Worktrees](../ultimate-guide.md#git-worktrees) — Line ~10634
+> **来源**：[Git 工作树](../ultimate-guide.md#git-worktrees) — 第 ~10634 行
 
 ---
 
-### Dual-Instance Planning Pattern (Jon Williams)
+### 双实例规划模式（Jon Williams）
 
-Separating planning from execution using two Claude instances prevents costly mistakes: the planner Claude has no tools, so it can't accidentally execute anything during analysis.
+使用两个 Claude 实例将规划与执行分离，可以防止代价高昂的错误：规划器 Claude 没有工具，所以在分析期间不会意外执行任何操作。
 
 ```mermaid
 sequenceDiagram
-    participant U as User
-    participant PL as Planner Claude<br/>(no tools)
-    participant EX as Executor Claude<br/>(full tools)
+    participant U as 用户
+    participant PL as 规划器 Claude<br/>（无工具）
+    participant EX as 执行器 Claude<br/>（完整工具）
 
-    U->>PL: "Plan how to refactor auth module"
-    Note over PL: Reads docs, analyzes requirements<br/>No execution risk — no tools
+    U->>PL: 「规划如何重构认证模块」
+    Note over PL: 阅读文档，分析需求<br/>无执行风险 — 没有工具
 
-    PL->>U: Detailed plan:<br/>1. Files to change<br/>2. Order of operations<br/>3. Risk points<br/>4. Rollback strategy
+    PL->>U: 详细计划：<br/>1. 需要修改的文件<br/>2. 操作顺序<br/>3. 风险点<br/>4. 回滚策略
 
-    U->>U: Review plan carefully
-    Note over U: Human checkpoint:<br/>approve or adjust
+    U->>U: 仔细审查计划
+    Note over U: 人类检查点：<br/>批准或调整
 
-    U->>EX: "Execute this plan: [plan text]"
-    EX->>EX: Implements step by step
-    EX->>U: Progress updates + results
+    U->>EX: 「执行这个计划：[计划文本]」
+    EX->>EX: 逐步实现
+    EX->>U: 进度更新 + 结果
 
-    Note over PL,EX: Key insight: planner can be<br/>more thorough without execution anxiety
+    Note over PL,EX: 关键洞察：规划器可以<br/>更彻底，无需担心执行风险
 ```
 
 <details>
-<summary>ASCII version</summary>
+<summary>ASCII 版本</summary>
 
 ```
-User → Planner (no tools): "Plan X"
+用户 → 规划器（无工具）：「规划 X」
          │
-    [safe analysis, no execution risk]
+    [安全分析，无执行风险]
          │
-Planner → User: detailed plan
+规划器 → 用户：详细计划
          │
-User reviews + approves
+用户审查 + 批准
          │
-User → Executor (full tools): "Execute: [plan]"
+用户 → 执行器（完整工具）：「执行：[计划]」
          │
-    [implements with full context]
+    [带完整上下文地实现]
          │
-Executor → User: results
+执行器 → 用户：结果
 ```
 
 </details>
 
-> **Source**: [Dual-Instance Planning](../workflows/dual-instance-planning.md)
+> **来源**：[双实例规划](../workflows/dual-instance-planning.md)
 
 ---
 
-### Boris Cherny Horizontal Scaling Pattern
+### Boris Cherny 水平扩展模式
 
-When tasks can be parallelized, spawn N Claude instances simultaneously instead of running them sequentially. The speedup is proportional to task independence.
+当任务可以并行化时，同时派生 N 个 Claude 实例，而不是顺序运行。加速比与任务独立性成正比。
 
 ```mermaid
 flowchart LR
-    BT([Large Task:<br/>Refactor 50 files]) --> DEC{Decompose<br/>into N subtasks}
+    BT([大型任务：<br/>重构 50 个文件]) --> DEC{分解<br/>为 N 个子任务}
 
-    DEC --> T1["Subtask 1<br/>Files 1-10"]
-    DEC --> T2["Subtask 2<br/>Files 11-20"]
-    DEC --> T3["Subtask 3<br/>Files 21-30"]
-    DEC --> TN["Subtask N<br/>..."]
+    DEC --> T1["子任务 1<br/>文件 1-10"]
+    DEC --> T2["子任务 2<br/>文件 11-20"]
+    DEC --> T3["子任务 3<br/>文件 21-30"]
+    DEC --> TN["子任务 N<br/>……"]
 
-    T1 --> CI1[Claude<br/>Instance 1]
-    T2 --> CI2[Claude<br/>Instance 2]
-    T3 --> CI3[Claude<br/>Instance 3]
-    TN --> CIN[Claude<br/>Instance N]
+    T1 --> CI1[Claude<br/>实例 1]
+    T2 --> CI2[Claude<br/>实例 2]
+    T3 --> CI3[Claude<br/>实例 3]
+    TN --> CIN[Claude<br/>实例 N]
 
-    CI1 & CI2 & CI3 & CIN --> AGG(Aggregate<br/>results)
-    AGG --> REV([Integration review<br/>~10x faster than sequential])
+    CI1 & CI2 & CI3 & CIN --> AGG(汇总<br/>结果)
+    AGG --> REV([集成审查<br/>~比顺序快 10 倍])
 
     style BT fill:#F5E6D3,color:#333
     style DEC fill:#E87E2F,color:#fff
@@ -234,65 +234,65 @@ flowchart LR
     style AGG fill:#B8B8B8,color:#333
     style REV fill:#7BC47F,color:#333
 
-    click BT href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#917-scaling-patterns-multi-instance-workflows" "Large Task"
-    click DEC href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#917-scaling-patterns-multi-instance-workflows" "Decompose into subtasks"
-    click T1 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#917-scaling-patterns-multi-instance-workflows" "Subtask 1"
-    click T2 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#917-scaling-patterns-multi-instance-workflows" "Subtask 2"
-    click T3 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#917-scaling-patterns-multi-instance-workflows" "Subtask 3"
-    click TN href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#917-scaling-patterns-multi-instance-workflows" "Subtask N"
-    click CI1 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#917-scaling-patterns-multi-instance-workflows" "Claude Instance 1"
-    click CI2 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#917-scaling-patterns-multi-instance-workflows" "Claude Instance 2"
-    click CI3 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#917-scaling-patterns-multi-instance-workflows" "Claude Instance 3"
-    click CIN href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#917-scaling-patterns-multi-instance-workflows" "Claude Instance N"
-    click AGG href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#917-scaling-patterns-multi-instance-workflows" "Aggregate results"
-    click REV href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#917-scaling-patterns-multi-instance-workflows" "Integration review"
+    click BT href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#917-scaling-patterns-multi-instance-workflows" "大型任务"
+    click DEC href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#917-scaling-patterns-multi-instance-workflows" "分解为子任务"
+    click T1 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#917-scaling-patterns-multi-instance-workflows" "子任务 1"
+    click T2 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#917-scaling-patterns-multi-instance-workflows" "子任务 2"
+    click T3 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#917-scaling-patterns-multi-instance-workflows" "子任务 3"
+    click TN href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#917-scaling-patterns-multi-instance-workflows" "子任务 N"
+    click CI1 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#917-scaling-patterns-multi-instance-workflows" "Claude 实例 1"
+    click CI2 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#917-scaling-patterns-multi-instance-workflows" "Claude 实例 2"
+    click CI3 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#917-scaling-patterns-multi-instance-workflows" "Claude 实例 3"
+    click CIN href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#917-scaling-patterns-multi-instance-workflows" "Claude 实例 N"
+    click AGG href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#917-scaling-patterns-multi-instance-workflows" "汇总结果"
+    click REV href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#917-scaling-patterns-multi-instance-workflows" "集成审查"
 ```
 
 <details>
-<summary>ASCII version</summary>
+<summary>ASCII 版本</summary>
 
 ```
-Large task
+大型任务
      │
-Decompose into N independent subtasks
+分解为 N 个独立子任务
      │
 ┌────┼────┐
 │    │    │
-I1  I2  I3... (parallel)
+I1  I2  I3……（并行）
 │    │    │
 └────┼────┘
      │
-Aggregate → Integration review
-(~10x faster than sequential)
+汇总 → 集成审查
+（~比顺序快 10 倍）
 ```
 
 </details>
 
-> **Source**: [Horizontal Scaling](../ultimate-guide.md#horizontal-scaling) — Line ~9617
+> **来源**：[水平扩展](../ultimate-guide.md#horizontal-scaling) — 第 ~9617 行
 
 ---
 
-### Multi-Instance Decision Matrix
+### 多实例决策矩阵
 
-Not every task needs multiple instances. This decision tree guides you to the right pattern based on task characteristics.
+并非每个任务都需要多个实例。这个决策树根据任务特征引导你选择正确的模式。
 
 ```mermaid
 flowchart TD
-    A([Task to complete]) --> B{Need multiple<br/>Claude instances?}
-    B -->|No| C([Single session<br/>Standard usage])
-    B -->|Yes| D{How many<br/>instances?}
-    B -->|"Planning separation?"| B2{Need planning<br/>separation?}
+    A([待完成的任务]) --> B{需要多个<br/>Claude 实例？}
+    B -->|否| C([单个会话<br/>标准用法])
+    B -->|是| D{需要几个<br/>实例？}
+    B -->|"需要规划分离？"| B2{需要规划<br/>分离？}
 
-    D -->|2-3| E{Need branch<br/>isolation?}
-    E -->|Yes| F([Git worktrees<br/>Separate branches])
-    E -->|No| G([Multiple terminals<br/>Same repo])
+    D -->|2-3 个| E{需要分支<br/>隔离？}
+    E -->|是| F([Git 工作树<br/>独立分支])
+    E -->|否| G([多个终端<br/>同一仓库])
 
-    D -->|4+| H{Task structure?}
-    H -->|Independent tasks| I([Task tool<br/>Sub-agents in parallel])
-    H -->|Sequential pipeline| J([Agent pipeline<br/>A → B → C])
-    H -->|Mixed expertise| K([Specialist router<br/>Route by task type])
+    D -->|4 个以上| H{任务结构？}
+    H -->|独立任务| I([任务工具<br/>并行子智能体])
+    H -->|顺序流水线| J([智能体流水线<br/>A → B → C])
+    H -->|混合专业| K([专家路由器<br/>按任务类型路由])
 
-    B2 --> L([Dual-instance<br/>Planner + Executor])
+    B2 --> L([双实例<br/>规划器 + 执行器])
 
     style A fill:#F5E6D3,color:#333
     style B fill:#E87E2F,color:#fff
@@ -308,38 +308,38 @@ flowchart TD
     style K fill:#7BC47F,color:#333
     style L fill:#6DB3F2,color:#fff
 
-    click A href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#917-scaling-patterns-multi-instance-workflows" "Task to complete"
-    click B href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#917-scaling-patterns-multi-instance-workflows" "Need multiple instances?"
-    click C href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#917-scaling-patterns-multi-instance-workflows" "Single session"
-    click D href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#917-scaling-patterns-multi-instance-workflows" "How many instances?"
-    click E href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#912-git-best-practices--workflows" "Need branch isolation?"
-    click F href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#912-git-best-practices--workflows" "Git worktrees"
-    click G href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#917-scaling-patterns-multi-instance-workflows" "Multiple terminals"
-    click H href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#917-scaling-patterns-multi-instance-workflows" "Task structure?"
-    click I href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/agent-teams.md" "Task tool sub-agents"
-    click J href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/agent-teams.md" "Agent pipeline"
-    click K href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/agent-teams.md" "Specialist router"
-    click B2 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/dual-instance-planning.md" "Need planning separation?"
-    click L href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/dual-instance-planning.md" "Dual-instance: Planner + Executor"
+    click A href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#917-scaling-patterns-multi-instance-workflows" "待完成的任务"
+    click B href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#917-scaling-patterns-multi-instance-workflows" "需要多个实例？"
+    click C href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#917-scaling-patterns-multi-instance-workflows" "单个会话"
+    click D href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#917-scaling-patterns-multi-instance-workflows" "需要几个实例？"
+    click E href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#912-git-best-practices--workflows" "需要分支隔离？"
+    click F href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#912-git-best-practices--workflows" "Git 工作树"
+    click G href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#917-scaling-patterns-multi-instance-workflows" "多个终端"
+    click H href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#917-scaling-patterns-multi-instance-workflows" "任务结构？"
+    click I href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/agent-teams.md" "任务工具子智能体"
+    click J href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/agent-teams.md" "智能体流水线"
+    click K href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/agent-teams.md" "专家路由器"
+    click B2 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/dual-instance-planning.md" "需要规划分离？"
+    click L href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/dual-instance-planning.md" "双实例：规划器 + 执行器"
 ```
 
 <details>
-<summary>ASCII version</summary>
+<summary>ASCII 版本</summary>
 
 ```
-Need multiple instances?
-├─ No → Single session
-├─ Yes → How many?
-│        ├─ 2-3 → Need branch isolation?
-│        │        ├─ Yes → Git worktrees
-│        │        └─ No  → Multiple terminals
-│        └─ 4+  → Task structure?
-│                 ├─ Independent → Task tool (parallel sub-agents)
-│                 ├─ Sequential  → Agent pipeline A→B→C
-│                 └─ Mixed       → Specialist router
-└─ Planning separation? → Dual-instance (Planner + Executor)
+需要多个实例？
+├─ 否 → 单个会话
+├─ 是 → 需要几个？
+│        ├─ 2-3 个 → 需要分支隔离？
+│        │        ├─ 是 → Git 工作树
+│        │        └─ 否  → 多个终端
+│        └─ 4 个以上 → 任务结构？
+│                 ├─ 独立 → 任务工具（并行子智能体）
+│                 ├─ 顺序  → 智能体流水线 A→B→C
+│                 └─ 混合  → 专家路由器
+└─ 需要规划分离？ → 双实例（规划器 + 执行器）
 ```
 
 </details>
 
-> **Source**: [Multi-Instance Patterns](../ultimate-guide.md#multi-instance-patterns) — Line ~11176
+> **来源**：[多实例模式](../ultimate-guide.md#multi-instance-patterns) — 第 ~11176 行

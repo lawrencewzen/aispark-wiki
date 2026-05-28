@@ -1,315 +1,315 @@
 > 📚 **AI Spark Wiki** · Claude Code 知识库
 
 ---
-title: "Agent Teams Workflow"
-description: "Multi-agent parallel coordination for complex tasks with autonomous team lead"
+title: "智能体团队工作流"
+description: "面向复杂任务的多智能体并行协调，配备自主主控智能体"
 tags: [workflow, agents, architecture]
 ---
 
-# Agent Teams Workflow
+# 智能体团队工作流
 
-> **Multi-agent parallel coordination for complex tasks**
-> **Status**: Experimental (v2.1.32+) | **Model**: Opus 4.6+ required | **Flag**: `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1`
+> **面向复杂任务的多智能体并行协调**
+> **状态**：实验性（v2.1.32+）| **模型**：需 Opus 4.6+ | **标志位**：`CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1`
 
-**What**: Multiple Claude instances work in parallel on a shared codebase, coordinating autonomously without active human intervention. One session acts as team lead to break down tasks and synthesize findings from teammates.
+**是什么**：多个 Claude 实例在共享代码库上并行工作，无需人工主动干预即可自主协调。其中一个会话作为主控智能体，负责拆解任务并整合队友的成果。
 
-**When introduced**: v2.1.32 (2026-02-05) as research preview
-**Reading time**: ~30 min
-**Prerequisites**: Opus 4.6 model, understanding of [Sub-Agents](#split-role-sub-agents), familiarity with Task Tool
+**引入版本**：v2.1.32（2026-02-05），以研究预览形式发布
+**阅读时间**：约 30 分钟
+**前提条件**：Opus 4.6 模型，理解[子智能体](#split-role-sub-agents)，熟悉任务工具
 
-**🚀 Want to get started fast?** See **[Agent Teams Quick Start Guide](./agent-teams-quick-start.md)** (8-10 min, copy-paste patterns for your projects)
-
----
-
-## Table of Contents
-
-1. [Overview](#1-overview)
-2. [Architecture Deep-Dive](#2-architecture-deep-dive)
-3. [Setup & Configuration](#3-setup--configuration)
-4. [Production Use Cases](#4-production-use-cases)
-5. [Workflow Impact Analysis](#5-workflow-impact-analysis)
-6. [Limitations & Gotchas](#6-limitations--gotchas)
-7. [Decision Framework](#7-decision-framework)
-8. [Best Practices](#8-best-practices)
-9. [Troubleshooting](#9-troubleshooting)
-10. [Sources](#10-sources)
+**快速上手？** 请参阅 **[智能体团队快速入门指南](./agent-teams-quick-start.md)**（8-10 分钟，可直接复制粘贴到你的项目中）
 
 ---
 
-## 1. Overview
+## 目录
 
-### What Are Agent Teams?
-
-Agent teams enable **multiple Claude instances to work in parallel** on different subtasks while coordinating through a git-based system. Unlike manual multi-instance workflows where you orchestrate separate Claude sessions yourself, agent teams provide built-in coordination where agents claim tasks, merge changes continuously, and resolve conflicts automatically.
-
-**Key characteristics**:
-- ✅ **Autonomous coordination** — Team lead delegates, teammates communicate via mailbox
-- ✅ **Peer-to-peer messaging** — Direct communication between agents (not just hierarchical)
-- ✅ **Git-based locking** — Agents claim tasks by writing to shared directory
-- ✅ **Continuous merge** — Changes pulled/pushed without manual intervention
-- ✅ **Independent context** — Each agent has own 1M token context window (isolated)
-- ⚠️ **Experimental** — Research preview, stability not guaranteed
-- ⚠️ **Token-intensive** — Multiple simultaneous model calls = high cost
-
-### When Introduced
-
-**Version**: v2.1.32 (2026-02-05)
-**Model**: Opus 4.6 minimum
-**Status**: Research preview (experimental feature flag required)
-
-**Official announcement**:
-> "We've introduced agent teams in Claude Code as a research preview. You can now spin up multiple agents that work in parallel as a team and coordinate autonomously on shared codebases."
-> — [Anthropic, Introducing Claude Opus 4.6](https://www.anthropic.com/news/claude-opus-4-6)
-
-> **📝 Documentation Update (2026-02-09)**: Architecture section corrected based on [Addy Osmani's research](https://addyosmani.com/blog/claude-code-agent-teams/). Key clarification: Agents communicate via **peer-to-peer messaging** through a mailbox system, not only through team lead synthesis. Context windows remain isolated (1M tokens per agent), but explicit messaging enables direct coordination between teammates.
-
-### Agent Teams vs Other Patterns
-
-| Pattern | Coordination | Setup | Best For |
-|---------|--------------|-------|----------|
-| **Agent Teams** | Automatic (built-in) | Experimental flag | Complex read-heavy tasks requiring coordination |
-| **Multi-Instance** | Manual (human orchestration) | Multiple terminals | Independent parallel tasks, no coordination needed |
-| **Dual-Instance** | Manual (human oversight) | 2 terminals | Quality assurance, plan-execute separation |
-| **Task Tool** | Automatic (sub-agents) | Native feature | Single-agent task delegation, sequential work |
-
-**Key distinction**:
-- **Multi-Instance** = You manage coordination (separate projects, no shared state)
-- **Agent Teams** = Claude manages coordination (shared codebase, git-based communication)
+1. [概述](#1-概述)
+2. [架构深度解析](#2-架构深度解析)
+3. [配置与设置](#3-配置与设置)
+4. [生产用例](#4-生产用例)
+5. [工作流影响分析](#5-工作流影响分析)
+6. [局限性与注意事项](#6-局限性与注意事项)
+7. [决策框架](#7-决策框架)
+8. [最佳实践](#8-最佳实践)
+9. [问题排查](#9-问题排查)
+10. [参考资料](#10-参考资料)
 
 ---
 
-## 📊 Industry Adoption Data (Anthropic 2026)
+## 1. 概述
 
-> **Source**: [2026 Agentic Coding Trends Report](https://resources.anthropic.com/hubfs/2026%20Agentic%20Coding%20Trends%20Report.pdf)
+### 什么是智能体团队？
 
-### Enterprise Adoption Timeline
+智能体团队让**多个 Claude 实例能够并行处理不同子任务**，并通过基于 Git 的系统进行协调。不同于需要你手动协调多个 Claude 会话的多实例工作流，智能体团队内置了协调机制——智能体会认领任务、持续合并变更，并自动解决冲突。
 
-Agent teams represent the evolution from "single agent" to "coordinated teams" pattern documented by Anthropic across 5000+ organizations:
+**核心特性**：
+- ✅ **自主协调** — 主控智能体进行委派，队友通过邮箱系统通信
+- ✅ **点对点消息** — 智能体间可直接通信（不仅限于层级汇报）
+- ✅ **基于 Git 的锁定** — 智能体通过写入共享目录来认领任务
+- ✅ **持续合并** — 无需人工干预，自动拉取/推送变更
+- ✅ **独立上下文** — 每个智能体拥有独立的 1M Token（词元）上下文窗口
+- ⚠️ **实验性** — 研究预览阶段，不保证稳定性
+- ⚠️ **Token（词元）密集** — 多个模型同时推理 = 成本较高
 
-| Adoption Phase | Timeline | Characteristics | Success Rate |
-|---------------|----------|-----------------|--------------|
-| **Pilot** | Month 1-2 | 1-2 teams, experimental flag | 60-70% |
-| **Expansion** | Month 3-4 | 3-5 teams, process refinement | 75-85% |
-| **Production** | Month 5-6 | Team-wide, integrated CI/CD | 85-90% |
+### 引入时间
 
-**Critical success factors**:
-- ✅ Modular architecture (enables parallel work without conflicts)
-- ✅ Comprehensive tests (agents verify changes autonomously)
-- ✅ Clear task decomposition (well-defined subtask boundaries)
-- ❌ **Blocker**: Monolithic codebase, weak test coverage
+**版本**：v2.1.32（2026-02-05）
+**模型**：最低需要 Opus 4.6
+**状态**：研究预览（需启用实验性功能标志位）
 
-### Real-World Performance
+**官方公告**：
+> "我们在 Claude Code 中以研究预览的形式引入了智能体团队功能。现在你可以启动多个智能体，让它们作为团队并行工作，并在共享代码库上自主协调。"
+> — [Anthropic，Claude Opus 4.6 介绍](https://www.anthropic.com/news/claude-opus-4-6)
 
-**Fountain** (frontline workforce platform):
-- **50% faster screening** via hierarchical multi-agent orchestration
-- **40% faster onboarding** for new fulfillment centers
-- **2x candidate conversions** through automated workflows
-- **Timeline compression**: Staffing new center from 1+ week → 72 hours
+> **📝 文档更新（2026-02-09）**：根据 [Addy Osmani 的研究](https://addyosmani.com/blog/claude-code-agent-teams/)，架构章节已修正。重要澄清：智能体通过邮箱系统实现**点对点消息通信**，而不仅仅依赖主控智能体的汇总。上下文窗口保持相互隔离（每个智能体 1M Token（词元）），但通过显式消息机制，队友之间可以直接协调。
 
-**Anthropic Internal** (from research team):
-- **67% more PRs merged** per engineer per day
-- **0-20% "fully delegated"** tasks (collaboration remains central)
-- **27% new work** (tasks wouldn't be done without AI)
+### 智能体团队 vs 其他模式
 
-### Anti-Patterns Observed
+| 模式 | 协调方式 | 配置难度 | 最适合 |
+|------|----------|---------|--------|
+| **智能体团队** | 自动（内置） | 需实验性标志位 | 需要协调的复杂读密集型任务 |
+| **多实例** | 手动（人工编排） | 多个终端 | 独立并行任务，无需协调 |
+| **双实例** | 手动（人工监督） | 2 个终端 | 质量保证，计划-执行分离 |
+| **任务工具** | 自动（子智能体） | 原生功能 | 单智能体任务委派、顺序工作 |
 
-| Anti-Pattern | Symptom | Fix |
-|-------------|---------|-----|
-| **Too many agents** | >5 agents = coordination overhead > productivity | Start 2-3, scale progressively |
-| **Over-delegation** | Context switching cost exceeds gains | Active human oversight on critical decisions |
-| **Premature automation** | Automating workflow not mastered manually | Manual → Semi-auto → Full-auto (progressive) |
-
-### When Large Teams ARE Justified
-
-The ">5 agents" rule above is a sensible default, but it breaks down in specific scenarios where the math favors larger teams. The real question is not "how many agents?" but "is the coordination overhead less costly than the context overflow?"
-
-**Context window as the deciding factor**: A single Claude Code agent on a 50K+ line codebase fills 80-90% of its context window just loading the relevant files (source: atcyrus.com). At that point, the agent has almost no room left for reasoning. Splitting across multiple agents keeps each one at ~40% context usage, which leaves headroom for actual problem-solving.
-
-| Scenario | Single Agent | 3-Agent Team | 5-Agent Team |
-|----------|-------------|--------------|--------------|
-| 10K line codebase | ~30% context, comfortable | Overkill | Overkill |
-| 50K line codebase | 80-90% context, degraded reasoning | Ideal split | Justified if truly parallel modules |
-| 100K+ line codebase | Context overflow, agent misses files | May still overflow per agent | Justified, consider even more |
-
-**When more agents make sense**:
-- Independent modules with zero shared state (no coordination overhead to pay)
-- Parallel refactoring across isolated file trees (frontend vs backend vs infra)
-- Read-heavy analysis where each agent covers a different subsystem
-- The codebase physically cannot fit in one agent's context with room to spare
-
-**When more agents hurt**: If agents constantly need to read each other's output or modify shared files, adding agents adds merge conflicts and coordination messages that eat into the very context you were trying to save.
-
-> **Note on model selection per role**: As of March 2026, all agents in a team run the same model (Opus 4.6, required for Agent Teams). The community has requested role-based model selection where the team lead runs Opus for planning, implementation agents run Sonnet for speed, and test agents run Haiku for cost efficiency. This is not yet supported. The current workaround is spawning separate Claude Code processes with explicit `--model` flags, but you lose the built-in coordination and shared task list. Track this as a community feature request.
-
-For broader industry context: Gartner predicts 40% of enterprise applications will incorporate task-specific agents by end of 2026. The team coordination patterns being established now in Claude Code and similar tools will likely become standard practice.
-
-### Cost-Benefit Analysis
-
-**Agent Teams** vs **Multi-Instance Manual**:
-
-| Aspect | Agent Teams | Multi-Instance (Manual) |
-|--------|-------------|------------------------|
-| **Setup time** | 30-60 min (flag + git config) | 5-10 min (new terminals) |
-| **Coordination** | Automatic (git-based) | Manual (human orchestration) |
-| **Token cost** | High (continuous messaging) | Medium (isolated sessions) |
-| **Best for** | Complex read-heavy tasks | Independent parallel features |
-| **Adoption timeline** | 3-6 months to production | 1-2 months to proficiency |
-
-**When Agent Teams win**: Complex refactoring, large-scale analysis, coordinated multi-file changes
-**When Multi-Instance wins**: Independent features, prototype exploration, simple parallelization
+**关键区别**：
+- **多实例** = 你管理协调（独立项目，无共享状态）
+- **智能体团队** = Claude 管理协调（共享代码库，基于 Git 的通信）
 
 ---
 
-## 2. Architecture Deep-Dive
+## 📊 行业采用数据（Anthropic 2026）
 
-### Lead-Teammate Architecture
+> **来源**：[2026 年智能体编码趋势报告](https://resources.anthropic.com/hubfs/2026%20Agentic%20Coding%20Trends%20Report.pdf)
+
+### 企业采用时间线
+
+智能体团队代表了 Anthropic 在 5000+ 家组织中记录的从"单智能体"到"协调团队"模式的演进：
+
+| 采用阶段 | 时间线 | 特征 | 成功率 |
+|---------|-------|------|-------|
+| **试点** | 第 1-2 个月 | 1-2 个团队，实验性标志位 | 60-70% |
+| **扩展** | 第 3-4 个月 | 3-5 个团队，流程优化 | 75-85% |
+| **生产** | 第 5-6 个月 | 全团队，集成 CI/CD | 85-90% |
+
+**关键成功因素**：
+- ✅ 模块化架构（支持并行工作，减少冲突）
+- ✅ 完善的测试（智能体自主验证变更）
+- ✅ 清晰的任务分解（明确定义子任务边界）
+- ❌ **阻碍因素**：单体代码库、测试覆盖薄弱
+
+### 真实案例性能
+
+**Fountain**（一线劳动力平台）：
+- **筛选速度提升 50%**，通过层级多智能体编排实现
+- **新履约中心入职速度提升 40%**
+- **候选人转化率翻倍**，通过自动化工作流实现
+- **时间压缩**：新中心人员配置从 1 周以上缩短至 72 小时
+
+**Anthropic 内部**（来自研究团队）：
+- **每位工程师每天合并的 PR 数量增加 67%**
+- **0-20% 为"完全委托"**任务（协作仍是核心）
+- **27% 属于新增工作**（没有 AI 这些任务不会被完成）
+
+### 反模式观察
+
+| 反模式 | 症状 | 解决方案 |
+|-------|------|---------|
+| **智能体过多** | 超过 5 个智能体时，协调开销 > 效率收益 | 从 2-3 个开始，逐步扩展 |
+| **过度委托** | 上下文切换成本超过收益 | 对关键决策保持主动的人工监督 |
+| **过早自动化** | 将尚未手动掌握的工作流自动化 | 手动 → 半自动 → 全自动（循序渐进） |
+
+### 何时适合使用大型团队
+
+上述">5 个智能体"规则是一个合理的默认值，但在某些特定场景下规模更大的团队更合适。真正的问题不是"几个智能体？"而是"协调开销是否低于上下文溢出的代价？"
+
+**上下文窗口是决定因素**：在一个 50K+ 行代码库上，单个 Claude Code 智能体仅加载相关文件就会占用 80-90% 的上下文窗口（来源：atcyrus.com）。此时，智能体几乎没有空间进行推理。将任务分散给多个智能体，可使每个智能体的上下文占用率保持在约 40%，从而为实际的问题解决留出余地。
+
+| 场景 | 单智能体 | 3 智能体团队 | 5 智能体团队 |
+|------|---------|------------|------------|
+| 10K 行代码库 | ~30% 上下文，轻松应对 | 过度配置 | 过度配置 |
+| 50K 行代码库 | 80-90% 上下文，推理受损 | 理想分配 | 若模块真正并行则合理 |
+| 100K+ 行代码库 | 上下文溢出，智能体遗漏文件 | 每个智能体可能仍会溢出 | 合理，甚至考虑更多 |
+
+**适合更多智能体的情况**：
+- 零共享状态的独立模块（无需支付协调开销）
+- 跨隔离文件树的并行重构（前端 vs 后端 vs 基础设施）
+- 读密集型分析，每个智能体负责不同子系统
+- 代码库在物理上无法放入单个智能体的上下文并留有足够余量
+
+**适合更少智能体的情况**：如果智能体需要频繁读取彼此的输出或修改共享文件，增加智能体反而会产生合并冲突和协调消息，消耗掉原本想要节省的上下文空间。
+
+> **关于按角色选择模型的说明**：截至 2026 年 3 月，团队中所有智能体运行相同的模型（Opus 4.6，智能体团队必需）。社区已要求支持基于角色的模型选择——主控智能体用 Opus 负责规划，实现智能体用 Sonnet 提升速度，测试智能体用 Haiku 降低成本。目前尚不支持此功能。现有的变通方案是使用显式 `--model` 标志启动独立的 Claude Code 进程，但这样会失去内置协调和共享任务列表。请将此作为社区功能请求跟踪。
+
+从更广泛的行业背景来看：Gartner 预测，到 2026 年底，40% 的企业应用将整合特定任务的智能体。目前在 Claude Code 及类似工具中建立的团队协调模式，很可能会成为行业标准实践。
+
+### 成本收益分析
+
+**智能体团队** vs **多实例手动**：
+
+| 维度 | 智能体团队 | 多实例（手动） |
+|------|----------|-------------|
+| **配置时间** | 30-60 分钟（标志位 + Git 配置） | 5-10 分钟（新终端） |
+| **协调方式** | 自动（基于 Git） | 手动（人工编排） |
+| **Token（词元）成本** | 高（持续消息通信） | 中（隔离会话） |
+| **最适合** | 复杂读密集型任务 | 独立并行功能 |
+| **采用周期** | 3-6 个月达到生产就绪 | 1-2 个月达到熟练 |
+
+**智能体团队胜出场景**：复杂重构、大规模分析、协调性多文件变更
+**多实例胜出场景**：独立功能开发、原型探索、简单并行化
+
+---
+
+## 2. 架构深度解析
+
+### 主控-队友架构
 
 ```
 ┌─────────────────────────────────────────────────┐
-│         Team Lead (Main Session)                │
-│  - Breaks tasks into subtasks                   │
-│  - Spawns teammate sessions                     │
-│  - Synthesizes findings from all agents         │
-│  - Coordinates via shared task list + mailbox   │
+│         主控智能体（主会话）                      │
+│  - 将任务拆分为子任务                             │
+│  - 派生队友会话                                   │
+│  - 整合所有智能体的成果                           │
+│  - 通过共享任务列表 + 邮箱协调                    │
 └─────────────────┬───────────────────────────────┘
                   │
         ┌─────────┴─────────┐
         │                   │
 ┌───────▼────────┐  ┌───────▼────────┐
-│  Teammate 1    │◄─┼────────────────►│  Teammate 2    │
-│                │  │ Peer-to-peer    │                │
-│ - Own context  │  │ messaging via   │ - Own context  │
-│   (1M tokens)  │  │ mailbox system  │   (1M tokens)  │
-│ - Claims tasks │  │                 │ - Claims tasks │
-│ - Messages     │  │                 │ - Messages     │
-│   team/peers   │  │                 │   team/peers   │
+│  队友 1        │◄─┼────────────────►│  队友 2        │
+│                │  │ 通过邮箱系统    │                │
+│ - 独立上下文   │  │ 的点对点消息    │ - 独立上下文   │
+│  （1M Token）  │  │                 │  （1M Token）  │
+│ - 认领任务     │  │                 │ - 认领任务     │
+│ - 向团队/      │  │                 │ - 向团队/      │
+│   队友发消息   │  │                 │   队友发消息   │
 └────────────────┘  └─────────────────┘────────────────┘
 ```
 
-### Git-Based Coordination
+### 基于 Git 的协调
 
-**How it works**:
+**工作原理**：
 
-1. **Task claiming**: Agents write lock files to shared directory (`.claude/tasks/`)
-2. **Work execution**: Each agent works independently in its context
-3. **Continuous merge**: Agents pull/push changes to shared git repository
-4. **Conflict resolution**: Automatic merge (with limitations, see [§6](#6-limitations--gotchas))
-5. **Result synthesis**: Team lead collects findings and presents unified response
+1. **任务认领**：智能体向共享目录（`.claude/tasks/`）写入锁文件
+2. **任务执行**：每个智能体在自己的上下文中独立工作
+3. **持续合并**：智能体拉取/推送变更到共享 Git 仓库
+4. **冲突解决**：自动合并（有局限性，详见[第 6 节](#6-局限性与注意事项)）
+5. **结果整合**：主控智能体收集成果并呈现统一响应
 
-**Example lock file structure**:
+**锁文件结构示例**：
 ```
 .claude/tasks/
-├── task-1.lock        # Agent A claimed
-├── task-2.lock        # Agent B claimed
-└── task-3.pending     # Not yet claimed
+├── task-1.lock        # 智能体 A 已认领
+├── task-2.lock        # 智能体 B 已认领
+└── task-3.pending     # 尚未认领
 ```
 
-### Communication Architecture
+### 通信架构
 
-**Key distinction from sub-agents**: Agent teams implement **true peer-to-peer messaging** via a mailbox system, not just hierarchical reporting.
+**与子智能体的关键区别**：智能体团队通过邮箱系统实现**真正的点对点消息通信**，而不仅仅是层级汇报。
 
-**Architecture components** (Source: [Addy Osmani](https://addyosmani.com/blog/claude-code-agent-teams/), Feb 2026):
+**架构组件**（来源：[Addy Osmani](https://addyosmani.com/blog/claude-code-agent-teams/)，2026 年 2 月）：
 
-1. **Team lead**: Creates team, spawns teammates, coordinates work
-2. **Teammates**: Independent Claude Code instances with own context (1M tokens each)
-3. **Task list**: Shared work items with dependency tracking and auto-unblocking
-4. **Mailbox**: Inbox-based messaging system enabling direct communication between agents
+1. **主控智能体**：创建团队，派生队友，协调工作
+2. **队友**：独立的 Claude Code 实例，各自拥有上下文（每人 1M Token（词元））
+3. **任务列表**：含依赖追踪和自动解锁的共享工作项
+4. **邮箱**：基于收件箱的消息系统，支持智能体间直接通信
 
-**Communication patterns**:
-- **Lead → Teammate**: Direct messages or broadcasts to all
-- **Teammate → Lead**: Progress updates, questions, findings
-- **Teammate ↔ Teammate**: Direct peer-to-peer messaging (challenge approaches, debate solutions)
-- **Final synthesis**: Team lead aggregates all findings for user
+**通信模式**：
+- **主控 → 队友**：直接消息或广播给所有人
+- **队友 → 主控**：进度更新、问题反馈、成果汇报
+- **队友 ↔ 队友**：直接点对点消息（挑战方案、讨论解决方案）
+- **最终整合**：主控智能体汇聚所有成果后呈现给用户
 
-**Example messaging flow**:
+**消息流示例**：
 ```
-Team Lead: "Review this PR for security issues"
-├─ Teammate 1 (Security): Analyzes → Messages Teammate 2: "Found auth issue in line 45"
-├─ Teammate 2 (Code Quality): Reviews → Messages back: "Confirmed, also see OWASP violation"
-└─ Team Lead: Synthesizes findings → Presents unified response to user
+主控智能体："审查这个 PR 的安全问题"
+├─ 队友 1（安全）：分析 → 向队友 2 发消息："第 45 行发现认证问题"
+├─ 队友 2（代码质量）：审查 → 回复："已确认，还存在 OWASP 违规"
+└─ 主控智能体：整合成果 → 向用户呈现统一响应
 ```
 
-**What this enables**:
-- ✅ Agents actively challenge each other's approaches
-- ✅ Debate solutions without human intervention
-- ✅ Coordinate independently (self-organization)
-- ✅ Share discoveries mid-workflow (via messages, not context)
+**这带来的能力**：
+- ✅ 智能体可主动挑战彼此的方案
+- ✅ 无需人工干预即可辩论解决方案
+- ✅ 独立协调（自组织）
+- ✅ 工作流中途共享发现（通过消息，而非上下文）
 
-**Limitation**: Context isolation remains—agents don't share their full context window, only explicit messages.
+**局限性**：上下文隔离依然存在——智能体不共享完整的上下文窗口，只传递显式消息。
 
-### Navigation Between Agents
+### 智能体间导航
 
-**Built-in navigation**:
-- **Shift+Down**: Cycle through teammates in in-process mode
-- **tmux/iTerm2**: Split pane mode with `teammateMode: "tmux"` (requires tmux or iTerm2 with `it2` CLI)
-- **Direct takeover**: You can take control of any agent's work when needed
+**内置导航**：
+- **Shift+Down**：在进程内模式下循环切换队友
+- **tmux/iTerm2**：分屏模式，配置 `teammateMode: "tmux"`（需要 tmux 或带 `it2` CLI 的 iTerm2）
+- **直接接管**：需要时可接管任意智能体的工作
 
-**Example**:
+**示例**：
 ```bash
-# Terminal 1: Team lead (with env var set)
+# 终端 1：主控智能体（设置环境变量后启动）
 export CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1
 claude
 
-# Claude spawns teammates automatically
-# You can navigate with Shift+Down to cycle through teammates (in-process mode)
+# Claude 自动派生队友
+# 可用 Shift+Down 循环切换队友（进程内模式）
 ```
 
-### Context Management
+### 上下文管理
 
-**Per-agent context**:
-- Each agent has **1M token context window** (Opus 4.6)
-- ~30,000 lines of code per session
-- **Context isolation**: Agents don't share their full context window
-- **Communication**: Via mailbox system (peer-to-peer + team lead synthesis)
+**每个智能体的上下文**：
+- 每个智能体拥有 **1M Token（词元）上下文窗口**（Opus 4.6）
+- 每会话约 30,000 行代码
+- **上下文隔离**：智能体不共享完整上下文窗口
+- **通信**：通过邮箱系统（点对点 + 主控整合）
 
-**Total context capacity** (3 agents example):
-- Team lead: 1M tokens
-- Teammate 1: 1M tokens
-- Teammate 2: 1M tokens
-- **Total**: 3M tokens across team (context isolated, but communicating via messages)
+**总上下文容量**（3 个智能体为例）：
+- 主控智能体：1M Token（词元）
+- 队友 1：1M Token（词元）
+- 队友 2：1M Token（词元）
+- **合计**：团队总计 3M Token（词元）（上下文隔离，但通过消息通信）
 
-**Important distinction**:
-- ❌ **Context NOT shared**: Agent 1's full 1M token context invisible to Agent 2
-- ✅ **Messages ARE shared**: Agents send explicit messages via mailbox (findings, questions, debates)
+**重要区分**：
+- ❌ **上下文不共享**：智能体 1 的完整 1M Token（词元）上下文对智能体 2 不可见
+- ✅ **消息可共享**：智能体通过邮箱发送显式消息（成果、问题、讨论）
 
 ---
 
-## 3. Setup & Configuration
+## 3. 配置与设置
 
-### Prerequisites
+### 前提条件
 
-**Required**:
-- ✅ Claude Code v2.1.32 or later
-- ✅ Opus 4.6 model (`/model opus`)
-- ✅ Git repository (for coordination)
+**必须满足**：
+- ✅ Claude Code v2.1.32 或更高版本
+- ✅ Opus 4.6 模型（`/model opus`）
+- ✅ Git 仓库（用于协调）
 
-**Recommended**:
-- ✅ Understanding of [Sub-Agents](#split-role-sub-agents)
-- ✅ Familiarity with git workflows
-- ✅ Budget awareness (token-intensive feature)
+**推荐满足**：
+- ✅ 理解[子智能体](#split-role-sub-agents)
+- ✅ 熟悉 Git 工作流
+- ✅ 了解预算影响（此功能 Token（词元）消耗较高）
 
-### Method 1: Environment Variable
+### 方式一：环境变量
 
-**Simplest approach** — Set env var before starting Claude Code:
+**最简单的方式** — 启动 Claude Code 前设置环境变量：
 
 ```bash
-# Enable agent teams for this session
+# 为本次会话启用智能体团队
 export CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1
 
-# Start Claude Code
+# 启动 Claude Code
 claude
 ```
 
-**Persistent setup** (bash/zsh):
+**持久化配置**（bash/zsh）：
 ```bash
-# Add to ~/.bashrc or ~/.zshrc
+# 添加到 ~/.bashrc 或 ~/.zshrc
 echo 'export CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1' >> ~/.bashrc
 source ~/.bashrc
 ```
 
-### Method 2: Settings File
+### 方式二：配置文件
 
-**Persistent configuration** — Edit `~/.claude/settings.json`:
+**持久化配置** — 编辑 `~/.claude/settings.json`：
 
 ```json
 {
@@ -319,1201 +319,1201 @@ source ~/.bashrc
 }
 ```
 
-**Advantages**:
-- ✅ Persistent across sessions
-- ✅ No need to remember env var
-- ✅ Can be version-controlled in dotfiles
+**优势**：
+- ✅ 跨会话持久有效
+- ✅ 无需记住环境变量
+- ✅ 可纳入 dotfiles 进行版本控制
 
-**After editing**, restart Claude Code for changes to take effect.
+**编辑后**，重启 Claude Code 使配置生效。
 
-### Verification
+### 验证
 
-**Check if enabled**:
+**确认是否启用**：
 
 ```bash
-# In Claude Code session
-> Are agent teams enabled?
+# 在 Claude Code 会话中
+> 智能体团队功能是否已启用？
 ```
 
-Claude should confirm:
-> "Yes, agent teams are enabled (experimental feature). I can spawn multiple agents to work in parallel when appropriate."
+Claude 应确认：
+> "是的，智能体团队已启用（实验性功能）。在适当时候，我可以派生多个智能体并行工作。"
 
-**Alternative verification** (check env var):
+**替代验证方式**（检查环境变量）：
 ```bash
 echo $CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS
-# Should output: 1
+# 应输出：1
 ```
 
-### Multi-Terminal Setup
+### 多终端配置
 
-**Pattern** (from practitioner reports):
+**模式**（来自实践者报告）：
 
 ```bash
-# Terminal 1: Research + bugfix
+# 终端 1：研究 + 修复 bug
 export CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1
 claude
 
-# Terminal 2: Business ops
+# 终端 2：业务运营
 export CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1
 claude
 
-# Terminal 3: Infrastructure
+# 终端 3：基础设施
 export CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1
 claude
 ```
 
-**Benefits**:
-- Isolation of contexts (research vs execution vs setup)
-- Parallel progress on independent workstreams
-- Reduced context switching cognitive load
+**优势**：
+- 隔离不同上下文（研究 vs 执行 vs 配置）
+- 独立工作流并行推进
+- 降低上下文切换的认知负担
 
-**Note**: This is different from automatic teammate spawning — here you're manually creating multiple team lead sessions. Each can spawn its own teammates.
-
----
-
-## 4. Production Use Cases
-
-### Overview of Validated Cases
-
-| Use Case | Source | Metrics | Best For |
-|----------|--------|---------|----------|
-| **Multi-layer code review** | Fountain (Anthropic Report) | 50% faster screening | Security + API + Frontend simultaneous review |
-| **Full dev lifecycle** | CRED (Anthropic Report) | 2x execution speed | 15M users, financial services compliance |
-| **Autonomous C compiler** | Anthropic Research | Project completion | Complex multi-phase projects |
-| **Job search app** | Paul Rayner (LinkedIn) | "Pretty impressive" | Design research + bug fixing |
-| **Business ops automation** | Paul Rayner (LinkedIn) | N/A | Operating system + conference planning |
-
-### 4.1 Multi-Layer Code Review (Fountain)
-
-**Organization**: Fountain (frontline workforce management platform)
-**Challenge**: Comprehensive codebase review across multiple concerns (security, API design, frontend)
-**Solution**: Deployed hierarchical multi-agent orchestration with scope-focused sub-agents
-
-**Agent scopes** (Fountain's approach):
-- **Scope 1 (Security)**: Scan for vulnerabilities, auth issues, data exposure
-- **Scope 2 (API)**: Review endpoint design, request/response validation, error handling
-- **Scope 3 (Frontend)**: Check UI patterns, accessibility, performance
-
-**Results**:
-- ✅ **50% faster** candidate screening
-- ✅ **40% quicker** onboarding
-- ✅ **2x candidate conversions**
-
-**Why it worked**:
-- **Read-heavy task**: Code review = primarily reading/analyzing (no write conflicts)
-- **Clear domain separation**: Security, API, Frontend have minimal overlap
-- **Independent analysis**: Each agent can work without waiting for others
-
-**Example prompt** (team lead):
-```
-Review this PR comprehensively with scope-focused analysis:
-- Security Scope: Check for vulnerabilities and auth issues (context: auth code, input validation)
-- API Design Scope: Review endpoint design and error handling (context: API routes, controllers)
-- Frontend Scope: Check UI patterns and accessibility (context: components, styles)
-
-PR: https://github.com/company/repo/pull/123
-```
-
-**Source**: [2026 Agentic Coding Trends Report](https://resources.anthropic.com/hubfs/2026%20Agentic%20Coding%20Trends%20Report.pdf), Anthropic, Jan 2026
-
-### 4.2 Full Development Lifecycle (CRED)
-
-**Organization**: CRED (15M+ users, financial services, India)
-**Challenge**: Accelerate delivery while maintaining quality standards essential for financial services
-**Solution**: Implemented Claude Code across entire development lifecycle with agent teams for complex tasks
-
-**Results**:
-- ✅ **2x execution speed** across development lifecycle
-- ✅ Maintained compliance (financial services standards)
-- ✅ Quality assurance preserved
-
-**Why it worked**:
-- **Large codebase**: 15M users = complex system requiring parallel analysis
-- **Quality critical**: Financial services = need multiple validation layers
-- **Tight deadlines**: Speed requirement justified token cost
-
-**Workflow pattern**:
-1. **Planning phase**: Team lead breaks down feature
-2. **Implementation**: Teammate 1 = backend, Teammate 2 = frontend, Teammate 3 = tests
-3. **Quality assurance**: Team lead synthesizes + runs validation
-4. **Compliance check**: Final review against financial standards
-
-**Source**: [2026 Agentic Coding Trends Report](https://resources.anthropic.com/hubfs/2026%20Agentic%20Coding%20Trends%20Report.pdf), Anthropic, Jan 2026
-
-### 4.3 Autonomous C Compiler (Anthropic Research)
-
-**Project**: Build an entire C compiler autonomously
-**Challenge**: Multi-phase project (lexer, parser, AST, code generation, optimization) requiring coordination
-**Solution**: Agent teams with task decomposition and progress tracking
-
-**Phases completed**:
-1. **Lexer**: Tokenization logic
-2. **Parser**: Syntax tree construction
-3. **AST**: Abstract syntax tree implementation
-4. **Code generation**: Assembly output
-5. **Optimization**: Performance improvements
-6. **Testing**: Compiler test suite
-
-**Results**:
-- ✅ **Project completed** without human intervention
-- ✅ All phases coordinated successfully
-- ✅ Tests passing at completion
-
-**Why it worked**:
-- **Clear phases**: Each compiler phase is well-defined (lexer → parser → codegen)
-- **Minimal dependencies**: Phases have clear interfaces (tokens → AST → assembly)
-- **Testable milestones**: Each phase verifiable independently
-
-**Architecture insight**:
-> "Individual agents break the project into small pieces, track progress, and determine next steps until completion."
-> — [Building a C compiler with agent teams](https://www.anthropic.com/engineering/building-c-compiler), Anthropic Engineering, Feb 2026
-
-**Key learnings**:
-- ⚠️ **Tests passing ≠ correctness**: Human oversight still important for quality assurance
-- ⚠️ **Verification required**: Automated success doesn't guarantee error-free code
-- ✅ **Feasibility proven**: Complex multi-phase projects achievable with agent teams
-
-**Source**: [Building a C compiler with agent teams](https://www.anthropic.com/engineering/building-c-compiler), Anthropic Engineering, Feb 2026
-
-### 4.4 Job Search App Development (Paul Rayner)
-
-**Practitioner**: Paul Rayner (CEO Virtual Genius, EventStorming Handbook author, Explore DDD founder)
-**Setup**: 3 concurrent agent team sessions across separate terminals
-**Date**: Feb 2026 (v2.1.32 release day)
-
-**Workflow 1 - Job Search App**:
-- **Context**: Custom job search application development
-- **Tasks**:
-  - Design options research (explore UI/UX patterns)
-  - Bug fixing in existing codebase
-- **Pattern**: Research + execution in same workflow
-
-**Workflow 2 - Business Operations**:
-- **Context**: Operating system development + conference planning
-- **Tasks**:
-  - Business operating system automation
-  - Conference planning resources (Explore DDD)
-- **Pattern**: Multi-domain business tooling
-
-**Workflow 3 - Infrastructure + Framework**:
-- **Context**: Testing infrastructure + framework integration
-- **Tasks**:
-  - Playwright MCP instances setup
-  - Beads framework management (Steve Yegge)
-- **Pattern**: Infrastructure + framework coordination
-
-**Results**:
-- ✅ "Pretty impressive" (subjective, no metrics)
-- ✅ Better than previous multi-terminal workflows without coordination
-- ✅ 3 independent contexts running simultaneously
-
-**Why notable**:
-- **Real-world validation**: Production usage by experienced practitioner
-- **Multi-context**: 3 different domains (product, business, infra) simultaneously
-- **Early adoption**: Posted same day as v2.1.32 release (early adopter signal)
-
-**Open question raised**:
-> "I'm not sure about Claude's guidance on when to use beads versus agent team sessions. Any thoughts?"
-> — Paul Rayner, LinkedIn, Feb 2026
-
-**Source**: [Paul Rayner LinkedIn](https://www.linkedin.com/posts/thepaulrayner_this-is-wild-i-just-upgraded-claude-code-activity-7425635159678414850-MNyv), Feb 2026
-
-### 4.5 Parallel Hypothesis Testing (Pattern)
-
-**Scenario**: Debugging a complex production issue with multiple potential root causes
-
-**Setup**:
-```
-Team lead prompt:
-"Production API is slow. Test these hypotheses in parallel:
-- Hypothesis 1 (DB): Query performance issue
-- Hypothesis 2 (Network): Latency spikes
-- Hypothesis 3 (Cache): Invalidation problem
-Each agent: profile, reproduce, report findings"
-```
-
-**Agent assignments**:
-- **Agent 1**: Database profiling (slow query log, explain plans)
-- **Agent 2**: Network analysis (latency metrics, trace routes)
-- **Agent 3**: Cache behavior (hit rates, invalidation patterns)
-
-**Benefits**:
-- ✅ **Parallel investigation**: 3 hypotheses tested simultaneously (vs sequential)
-- ✅ **Time savings**: 1/3 of sequential debugging time
-- ✅ **Comprehensive**: No hypothesis ignored due to time constraints
-
-**When to use**:
-- Multiple plausible explanations for observed behavior
-- Each hypothesis testable independently
-- Time-critical debugging (production issues)
-
-### 4.6 Large-Scale Refactoring (Pattern)
-
-**Scenario**: Refactor authentication system across 47 files (frontend + backend + tests)
-
-**Setup**:
-```
-Team lead prompt:
-"Refactor auth system from JWT to OAuth2:
-- Agent 1: Backend endpoints (/api/auth/*)
-- Agent 2: Frontend components (src/components/auth/*)
-- Agent 3: Integration tests (tests/auth/)
-Coordinate changes via shared interfaces"
-```
-
-**Agent assignments**:
-- **Agent 1**: Backend implementation (15 files)
-- **Agent 2**: Frontend UI update (20 files)
-- **Agent 3**: Test suite update (12 files)
-
-**Benefits**:
-- ✅ **Context preservation**: All 47 files in one coordinated session (vs losing context after ~15)
-- ✅ **Interface consistency**: Shared contracts enforced across agents
-- ✅ **Atomic migration**: All layers updated in coordination
-
-**Gotcha**:
-- ⚠️ **Merge conflicts**: If agents modify same files (e.g., shared types)
-- ⚠️ **Mitigation**: Clear interface boundaries, minimize shared file modifications
+**说明**：这与自动派生队友不同——这里是手动创建多个主控智能体会话，每个会话可以派生自己的队友。
 
 ---
 
-## 5. Workflow Impact Analysis
+## 4. 生产用例
 
-### Before/After Comparison
+### 已验证用例概览
 
-**Context**: What changes when using agent teams vs single-agent sessions?
+| 用例 | 来源 | 指标 | 最适合 |
+|------|------|------|-------|
+| **多层代码审查** | Fountain（Anthropic 报告） | 筛选速度提升 50% | 安全 + API + 前端同步审查 |
+| **完整开发生命周期** | CRED（Anthropic 报告） | 执行速度翻倍 | 1500 万用户，金融服务合规 |
+| **自主 C 编译器** | Anthropic 研究 | 项目完成 | 复杂多阶段项目 |
+| **求职应用** | Paul Rayner（LinkedIn） | "相当令人印象深刻" | 设计研究 + 修复 bug |
+| **业务运营自动化** | Paul Rayner（LinkedIn） | 不适用 | 操作系统 + 会议规划 |
 
-| Task | Single Agent (Before) | Agent Teams (After) |
-|------|-----------------------|---------------------|
-| **Bug tracing** | Feed files one by one, re-explain architecture each time | See entire codebase at once, trace full data flow across all layers |
-| **Code review** | Manually summarize PR yourself, explain context in prompt | Feed entire diff + surrounding code, agents read directly |
-| **New feature** | Describe codebase structure in prompt (limited by your understanding) | Let agents read codebase directly, discover patterns themselves |
-| **Refactoring** | Lose context after ~15 files, split into multiple sessions | All 47+ files live in one coordinated session |
-| **Multi-service debugging** | Debug one service at a time, manually track cross-service flows | Parallel investigation across all involved services |
+### 4.1 多层代码审查（Fountain）
 
-**Source**: [Claude Opus 4.6 for Developers](https://dev.to/thegdsks/claude-opus-46-for-developers-agent-teams-1m-context-and-what-actually-matters-4h8c), dev.to, Feb 2026
+**组织**：Fountain（一线劳动力管理平台）
+**挑战**：跨多个维度（安全、API 设计、前端）进行全面代码库审查
+**解决方案**：部署层级多智能体编排，每个子智能体专注特定审查范围
 
-### Context Management Improvements
+**智能体范围**（Fountain 的方案）：
+- **范围 1（安全）**：扫描漏洞、认证问题、数据暴露
+- **范围 2（API）**：审查端点设计、请求/响应验证、错误处理
+- **范围 3（前端）**：检查 UI 模式、可访问性、性能
 
-**Single agent limitations**:
-- ~15 files before context management becomes challenging
-- Manual summarization required for large codebases
-- Sequential analysis of independent components
+**成果**：
+- ✅ 候选人筛选速度**提升 50%**
+- ✅ 入职速度**提升 40%**
+- ✅ 候选人转化率**翻倍**
 
-**Agent teams capabilities**:
-- **1M tokens per agent** = ~30,000 lines of code
-- **3 agents** = effectively 90,000 lines across team (isolated contexts)
-- **Parallel reading**: Agents consume codebase sections simultaneously
-- **Synthesis**: Team lead combines findings without context loss
+**成功原因**：
+- **读密集型任务**：代码审查主要是读取/分析（无写入冲突）
+- **领域清晰划分**：安全、API、前端之间重叠极少
+- **独立分析**：每个智能体无需等待其他智能体即可工作
 
-**Example**:
+**提示词示例**（主控智能体）：
 ```
-Scenario: Analyze 28,000-line TypeScript service
+对此 PR 进行全面审查，分范围聚焦分析：
+- 安全范围：检查漏洞和认证问题（上下文：认证代码、输入验证）
+- API 设计范围：审查端点设计和错误处理（上下文：API 路由、控制器）
+- 前端范围：检查 UI 模式和可访问性（上下文：组件、样式）
 
-Single agent:
-- Read files sequentially
-- Context pressure at ~15 files
-- Manual summarization
-- ~2-3 hours
-
-Agent teams:
-- Agent 1: Controllers layer (10K lines)
-- Agent 2: Services layer (10K lines)
-- Agent 3: Data layer (8K lines)
-- Team lead: Synthesize architecture
-- ~45 minutes
+PR：https://github.com/company/repo/pull/123
 ```
 
-### Coordination Benefits
+**来源**：[2026 年智能体编码趋势报告](https://resources.anthropic.com/hubfs/2026%20Agentic%20Coding%20Trends%20Report.pdf)，Anthropic，2026 年 1 月
 
-**Built-in vs manual coordination**:
+### 4.2 完整开发生命周期（CRED）
 
-| Aspect | Manual Multi-Instance | Agent Teams |
-|--------|----------------------|-------------|
-| **Task delegation** | You decide splits | Team lead decides |
-| **Progress tracking** | Manual check-ins | Automatic reporting |
-| **Merge conflicts** | You resolve | Automatic (with limitations) |
-| **Context sharing** | Copy-paste findings | Git-based coordination |
-| **Cognitive load** | High (orchestrator role) | Low (observer role) |
+**组织**：CRED（印度，1500 万+ 用户，金融服务）
+**挑战**：在保持金融服务必要质量标准的前提下加速交付
+**解决方案**：在整个开发生命周期中应用 Claude Code，对复杂任务使用智能体团队
 
-**When coordination matters**:
-- ✅ Tasks with dependencies (Feature A needs API from Feature B)
-- ✅ Shared interfaces (multiple agents modify same contract)
-- ✅ Quality gates (all agents must pass before merge)
+**成果**：
+- ✅ 开发生命周期**执行速度翻倍**
+- ✅ 保持合规性（金融服务标准）
+- ✅ 质量保证得以维持
 
-**When coordination unnecessary**:
-- ❌ Completely independent tasks (separate projects)
-- ❌ No shared state (different repositories)
-- ❌ Simple parallelization (run same script on different data)
+**成功原因**：
+- **大型代码库**：1500 万用户 = 需要并行分析的复杂系统
+- **质量至关重要**：金融服务 = 需要多层验证
+- **紧迫截止日期**：速度需求证明 Token（词元）成本合理
 
-### Cost Trade-offs
+**工作流模式**：
+1. **规划阶段**：主控智能体拆解功能
+2. **实现**：队友 1 = 后端，队友 2 = 前端，队友 3 = 测试
+3. **质量保证**：主控智能体整合 + 运行验证
+4. **合规检查**：对照金融标准进行最终审查
 
-**Token consumption comparison** (estimated):
+**来源**：[2026 年智能体编码趋势报告](https://resources.anthropic.com/hubfs/2026%20Agentic%20Coding%20Trends%20Report.pdf)，Anthropic，2026 年 1 月
 
-| Workflow | Single Agent | Agent Teams (3) | Multiplier |
-|----------|-------------|-----------------|------------|
-| **Code review (small PR)** | 10K tokens | 25K tokens | 2.5x |
-| **Code review (large PR)** | 50K tokens | 90K tokens | 1.8x |
-| **Bug investigation** | 30K tokens | 70K tokens | 2.3x |
-| **Feature implementation** | 100K tokens | 200K tokens | 2x |
-| **Refactoring (large)** | 150K tokens | 250K tokens | 1.7x |
+### 4.3 自主 C 编译器（Anthropic 研究）
 
-**Cost justification scenarios**:
-- ✅ **Time-critical**: Production issues requiring fast resolution
-- ✅ **Complexity**: Multi-layer analysis (security + performance + architecture)
-- ✅ **Quality**: High-stakes changes requiring multiple verification layers
-- ❌ **Simple tasks**: Straightforward implementations (overkill)
-- ❌ **Budget-constrained**: Personal projects with tight token limits
+**项目**：自主构建完整的 C 编译器
+**挑战**：多阶段项目（词法分析、语法分析、AST、代码生成、优化）需要协调
+**解决方案**：带任务分解和进度追踪的智能体团队
 
-**Rule of thumb**: Agent teams justified when time saved > 2x token cost increase.
+**完成的阶段**：
+1. **词法分析器**：Token（词元）化逻辑
+2. **语法分析器**：语法树构建
+3. **AST**：抽象语法树实现
+4. **代码生成**：汇编输出
+5. **优化**：性能改进
+6. **测试**：编译器测试套件
+
+**成果**：
+- ✅ **项目完成**，无需人工干预
+- ✅ 所有阶段协调顺利
+- ✅ 完成时测试全部通过
+
+**成功原因**：
+- **阶段清晰**：每个编译器阶段定义明确（词法 → 语法 → 代码生成）
+- **依赖较少**：各阶段接口清晰（Token（词元）流 → AST → 汇编）
+- **可测试里程碑**：每个阶段可独立验证
+
+**架构洞见**：
+> "各智能体将项目分解为小块，追踪进度，并确定下一步操作，直到完成。"
+> — [用智能体团队构建 C 编译器](https://www.anthropic.com/engineering/building-c-compiler)，Anthropic Engineering，2026 年 2 月
+
+**关键经验**：
+- ⚠️ **测试通过 ≠ 正确性**：质量保证仍需人工监督
+- ⚠️ **需要验证**：自动化成功不代表代码无误
+- ✅ **可行性已证明**：复杂多阶段项目可用智能体团队实现
+
+**来源**：[用智能体团队构建 C 编译器](https://www.anthropic.com/engineering/building-c-compiler)，Anthropic Engineering，2026 年 2 月
+
+### 4.4 求职应用开发（Paul Rayner）
+
+**实践者**：Paul Rayner（Virtual Genius CEO，《EventStorming 手册》作者，Explore DDD 创始人）
+**配置**：跨独立终端同时运行 3 个智能体团队会话
+**日期**：2026 年 2 月（v2.1.32 发布当天）
+
+**工作流 1 - 求职应用**：
+- **背景**：自定义求职应用开发
+- **任务**：
+  - 设计方案调研（探索 UI/UX 模式）
+  - 修复现有代码库中的 bug
+- **模式**：在同一工作流中进行研究 + 执行
+
+**工作流 2 - 业务运营**：
+- **背景**：操作系统开发 + 会议规划
+- **任务**：
+  - 业务操作系统自动化
+  - 会议规划资源（Explore DDD）
+- **模式**：多领域业务工具
+
+**工作流 3 - 基础设施 + 框架**：
+- **背景**：测试基础设施 + 框架集成
+- **任务**：
+  - Playwright MCP 实例配置
+  - Beads 框架管理（Steve Yegge）
+- **模式**：基础设施 + 框架协调
+
+**成果**：
+- ✅ "相当令人印象深刻"（主观评价，无具体指标）
+- ✅ 优于之前无协调机制的多终端工作流
+- ✅ 3 个独立上下文同步运行
+
+**值得关注的原因**：
+- **真实验证**：有经验的实践者在生产中使用
+- **多上下文**：3 个不同领域（产品、业务、基础设施）同时推进
+- **早期采用**：v2.1.32 发布当天即发布（早期采用信号）
+
+**提出的开放性问题**：
+> "我不太确定 Claude 关于何时使用 beads 与何时使用智能体团队会话的指导。有什么想法吗？"
+> — Paul Rayner，LinkedIn，2026 年 2 月
+
+**来源**：[Paul Rayner LinkedIn](https://www.linkedin.com/posts/thepaulrayner_this-is-wild-i-just-upgraded-claude-code-activity-7425635159678414850-MNyv)，2026 年 2 月
+
+### 4.5 并行假设检验（模式）
+
+**场景**：调试具有多个潜在根因的复杂生产问题
+
+**配置**：
+```
+主控智能体提示词：
+"生产 API 响应缓慢。并行检验以下假设：
+- 假设 1（数据库）：查询性能问题
+- 假设 2（网络）：延迟峰值
+- 假设 3（缓存）：缓存失效问题
+每个智能体：进行性能分析、复现问题、汇报发现"
+```
+
+**智能体分工**：
+- **智能体 1**：数据库性能分析（慢查询日志、执行计划）
+- **智能体 2**：网络分析（延迟指标、路由追踪）
+- **智能体 3**：缓存行为（命中率、失效模式）
+
+**优势**：
+- ✅ **并行调查**：3 个假设同时检验（vs 顺序检验）
+- ✅ **节省时间**：顺序调试时间的 1/3
+- ✅ **全面覆盖**：不因时间限制忽略任何假设
+
+**适用场景**：
+- 观察到的行为有多个合理解释
+- 每个假设可独立检验
+- 时间紧迫的调试（生产问题）
+
+### 4.6 大规模重构（模式）
+
+**场景**：跨 47 个文件（前端 + 后端 + 测试）重构认证系统
+
+**配置**：
+```
+主控智能体提示词：
+"将认证系统从 JWT 迁移至 OAuth2：
+- 智能体 1：后端端点（/api/auth/*）
+- 智能体 2：前端组件（src/components/auth/*）
+- 智能体 3：集成测试（tests/auth/）
+通过共享接口协调变更"
+```
+
+**智能体分工**：
+- **智能体 1**：后端实现（15 个文件）
+- **智能体 2**：前端 UI 更新（20 个文件）
+- **智能体 3**：测试套件更新（12 个文件）
+
+**优势**：
+- ✅ **上下文完整性**：47 个文件在一个协调会话中处理（vs 约 15 个文件后丢失上下文）
+- ✅ **接口一致性**：跨智能体强制共享契约
+- ✅ **原子迁移**：所有层级协调同步更新
+
+**注意事项**：
+- ⚠️ **合并冲突**：若智能体修改同一文件（如共享类型）
+- ⚠️ **缓解措施**：明确接口边界，减少对共享文件的修改
 
 ---
 
-## 6. Limitations & Gotchas
+## 5. 工作流影响分析
 
-### Read-Heavy vs Write-Heavy Trade-off
+### 前后对比
 
-**Core limitation**: Agent teams excel at read-heavy tasks but struggle with write-heavy tasks where multiple agents modify the same files.
+**背景**：使用智能体团队 vs 单智能体会话，有什么变化？
 
-**Why this matters**:
+| 任务 | 单智能体（之前） | 智能体团队（之后） |
+|------|---------------|----------------|
+| **Bug 追踪** | 逐个提供文件，每次重新解释架构 | 一次看到完整代码库，跨所有层追踪完整数据流 |
+| **代码审查** | 自己手动总结 PR，在提示词中解释背景 | 直接提供完整 diff + 周边代码，智能体直接阅读 |
+| **新功能** | 在提示词中描述代码库结构（受限于你的理解） | 让智能体直接读取代码库，自行发现模式 |
+| **重构** | 约 15 个文件后丢失上下文，拆分为多个会话 | 47+ 个文件在一个协调会话中处理 |
+| **多服务调试** | 一次只调试一个服务，手动追踪跨服务流 | 跨所有相关服务并行调查 |
+
+**来源**：[面向开发者的 Claude Opus 4.6](https://dev.to/thegdsks/claude-opus-46-for-developers-agent-teams-1m-context-and-what-actually-matters-4h8c)，dev.to，2026 年 2 月
+
+### 上下文管理改进
+
+**单智能体的局限**：
+- 约 15 个文件后上下文管理开始变得困难
+- 大型代码库需要手动总结
+- 独立组件只能顺序分析
+
+**智能体团队的能力**：
+- **每个智能体 1M Token（词元）** = 约 30,000 行代码
+- **3 个智能体** = 团队有效覆盖 90,000 行（隔离上下文）
+- **并行读取**：智能体同时消化代码库的不同部分
+- **整合**：主控智能体无损合并成果
+
+**示例**：
 ```
-Read-heavy (✅ Good for teams):
-- Code review: Agents read code, provide analysis
-- Bug tracing: Agents read logs, trace execution
-- Architecture analysis: Agents read structure, identify patterns
+场景：分析一个 28,000 行的 TypeScript 服务
 
-Write-heavy (⚠️ Risky for teams):
-- Refactoring shared types: Multiple agents modify same file → merge conflicts
-- Database schema changes: Coordinated migrations across files
-- API contract updates: Interface changes require synchronization
+单智能体：
+- 顺序读取文件
+- 约 15 个文件后上下文压力增大
+- 需要手动总结
+- 约 2-3 小时
+
+智能体团队：
+- 智能体 1：控制器层（10K 行）
+- 智能体 2：服务层（10K 行）
+- 智能体 3：数据层（8K 行）
+- 主控智能体：整合架构
+- 约 45 分钟
 ```
 
-**Mitigation strategies**:
-1. **Clear boundaries**: Assign non-overlapping file sets to agents
-2. **Interface-first**: Define contracts before parallel implementation
-3. **Single-writer pattern**: One agent writes shared files, others read only
-4. **Human review**: Manually resolve merge conflicts when they occur
+### 协调优势
 
-### Merge Conflict Scenarios
+**内置 vs 手动协调**：
 
-**Automatic resolution works**:
-- ✅ Different files modified by different agents
-- ✅ Different functions in same file (clean git merges)
-- ✅ Additive changes (new functions, no edits)
+| 维度 | 手动多实例 | 智能体团队 |
+|------|----------|----------|
+| **任务委派** | 你决定分工 | 主控智能体决定 |
+| **进度追踪** | 手动检查 | 自动汇报 |
+| **合并冲突** | 你来解决 | 自动处理（有限制） |
+| **上下文共享** | 复制粘贴成果 | 基于 Git 协调 |
+| **认知负担** | 高（编排者角色） | 低（观察者角色） |
 
-**Automatic resolution struggles**:
-- ❌ Same lines modified (classic merge conflict)
-- ❌ Conflicting logic (Agent A removes validation, Agent B adds it)
-- ❌ Circular dependencies (Agent A needs Agent B's output, vice versa)
+**协调有价值的情况**：
+- ✅ 有依赖关系的任务（功能 A 需要功能 B 的 API）
+- ✅ 共享接口（多个智能体修改同一契约）
+- ✅ 质量门控（所有智能体通过后才合并）
 
-**Example conflict**:
+**协调无必要的情况**：
+- ❌ 完全独立的任务（独立项目）
+- ❌ 无共享状态（不同代码库）
+- ❌ 简单并行化（对不同数据运行相同脚本）
+
+### 成本权衡
+
+**Token（词元）消耗对比**（估算）：
+
+| 工作流 | 单智能体 | 智能体团队（3 个） | 倍数 |
+|-------|---------|---------------|-----|
+| **代码审查（小 PR）** | 10K Token（词元） | 25K Token（词元） | 2.5x |
+| **代码审查（大 PR）** | 50K Token（词元） | 90K Token（词元） | 1.8x |
+| **Bug 调查** | 30K Token（词元） | 70K Token（词元） | 2.3x |
+| **功能实现** | 100K Token（词元） | 200K Token（词元） | 2x |
+| **大规模重构** | 150K Token（词元） | 250K Token（词元） | 1.7x |
+
+**成本合理性场景**：
+- ✅ **时间紧迫**：需要快速解决的生产问题
+- ✅ **高复杂性**：多层分析（安全 + 性能 + 架构）
+- ✅ **高质量要求**：需要多层验证的高风险变更
+- ❌ **简单任务**：简单实现（用智能体团队是大材小用）
+- ❌ **预算受限**：Token（词元）配额有限的个人项目
+
+**经验法则**：当节省的时间 > Token（词元）成本增量的 2 倍时，智能体团队才合算。
+
+---
+
+## 6. 局限性与注意事项
+
+### 读密集型 vs 写密集型的权衡
+
+**核心局限**：智能体团队在读密集型任务上表现出色，但在多个智能体修改同一文件的写密集型任务上表现欠佳。
+
+**为何重要**：
+```
+读密集型（✅ 适合团队）：
+- 代码审查：智能体读取代码，提供分析
+- Bug 追踪：智能体读取日志，追踪执行
+- 架构分析：智能体读取结构，识别模式
+
+写密集型（⚠️ 团队风险较高）：
+- 重构共享类型：多个智能体修改同一文件 → 合并冲突
+- 数据库 Schema 变更：跨文件协调迁移
+- API 契约更新：接口变更需要同步
+```
+
+**缓解策略**：
+1. **明确边界**：为智能体分配互不重叠的文件集
+2. **接口优先**：在并行实现前定义契约
+3. **单写者模式**：一个智能体写共享文件，其他只读
+4. **人工审查**：出现合并冲突时手动解决
+
+### 合并冲突场景
+
+**自动解决有效的情况**：
+- ✅ 不同智能体修改不同文件
+- ✅ 同一文件中的不同函数（干净的 Git 合并）
+- ✅ 新增变更（新函数，无编辑）
+
+**自动解决困难的情况**：
+- ❌ 修改同一行（经典合并冲突）
+- ❌ 逻辑冲突（智能体 A 删除验证，智能体 B 添加验证）
+- ❌ 循环依赖（智能体 A 需要智能体 B 的输出，反之亦然）
+
+**冲突示例**：
 ```typescript
-// Agent 1 changes:
+// 智能体 1 的修改：
 function processUser(user: User) {
-  validateEmail(user.email); // Added validation
+  validateEmail(user.email); // 添加了验证
   return save(user);
 }
 
-// Agent 2 changes (same time):
+// 智能体 2 的修改（同时进行）：
 function processUser(user: User) {
-  return save(sanitize(user)); // Added sanitization
+  return save(sanitize(user)); // 添加了净化
 }
 
-// Conflict: Both modified same function
-// Resolution: Human decides order (validate → sanitize → save)
+// 冲突：两者修改了同一函数
+// 解决：人工决定顺序（验证 → 净化 → 保存）
 ```
 
-### Token Intensity Implications
+### Token（词元）密集型的影响
 
-**Why token-intensive**:
-- Each agent runs **separate model inference** (3 agents = 3x base cost)
-- Context loading for each agent (1M tokens × 3 = 3M token capacity)
-- Coordination overhead (team lead synthesis)
+**为何 Token（词元）消耗高**：
+- 每个智能体运行**独立的模型推理**（3 个智能体 = 3 倍基础成本）
+- 每个智能体的上下文加载（1M Token（词元）× 3 = 3M Token（词元）容量）
+- 协调开销（主控智能体整合）
 
-**Budget impact example** (Opus 4.6 pricing):
+**预算影响示例**（Opus 4.6 定价）：
 ```
-Single agent session:
-- Input: 50K tokens @ $15/M = $0.75
-- Output: 5K tokens @ $75/M = $0.38
-- Total: $1.13
+单智能体会话：
+- 输入：50K Token（词元）@ $15/M = $0.75
+- 输出：5K Token（词元）@ $75/M = $0.38
+- 合计：$1.13
 
-Agent teams (3 agents):
-- Input: 150K tokens @ $15/M = $2.25
-- Output: 15K tokens @ $75/M = $1.13
-- Total: $3.38
+智能体团队（3 个智能体）：
+- 输入：150K Token（词元）@ $15/M = $2.25
+- 输出：15K Token（词元）@ $75/M = $1.13
+- 合计：$3.38
 
-Cost multiplier: 3x
-```
-
-**Justification required**:
-- ✅ Time saved > cost increase (production issues)
-- ✅ Quality critical (financial services, healthcare)
-- ✅ Complexity justifies parallelization (multi-layer analysis)
-- ❌ Simple tasks (use single agent)
-- ❌ Personal learning projects (budget-constrained)
-
-### Experimental Status Caveats
-
-**What "experimental" means**:
-- ⚠️ **No stability guarantee**: Feature may change or be removed
-- ⚠️ **Bugs expected**: Report issues to Anthropic (GitHub Issues)
-- ⚠️ **Performance variability**: Coordination speed may fluctuate
-- ⚠️ **Documentation evolving**: Official docs still minimal
-
-**Production usage considerations**:
-1. **Fallback plan**: Be ready to revert to single-agent if issues arise
-2. **Monitoring**: Track token costs carefully (can escalate quickly)
-3. **Validation**: Human review of agent team outputs (don't trust blindly)
-4. **Feedback**: Report bugs/experiences to help Anthropic improve feature
-
-**Practitioner reports** (as of Feb 2026):
-- ✅ Paul Rayner: "Pretty impressive" (production usage validated)
-- ✅ Fountain: 50% faster (deployed in production)
-- ✅ CRED: 2x speed (15M users, financial services)
-- ⚠️ Community: Mixed reports (some merge conflict issues)
-
-### Context Isolation
-
-**What agents can't do**:
-- ❌ **Share context windows**: Agent 1's full context (1M tokens) not visible to Agent 2
-- ❌ **Auto-sync discoveries**: Agent 2 won't see Agent 1's findings unless explicitly messaged
-- ❌ **Coordinate timing**: Agents work independently, may finish at different times
-
-**What agents CAN do**:
-- ✅ **Send messages**: Via mailbox system (peer-to-peer or via team lead)
-- ✅ **Challenge approaches**: Debate solutions, ask questions to each other
-- ✅ **Share findings**: Explicit messaging (not automatic context sharing)
-
-**Implications**:
-```
-Scenario: Agent 1 discovers critical bug that affects Agent 2's work
-
-Without messaging:
-- Agent 2 doesn't see Agent 1's discovery automatically
-- Agent 2 may continue with flawed assumption
-
-With messaging (built-in):
-- Agent 1 messages Agent 2: "Found auth issue in line 45"
-- Agent 2 adjusts approach based on message
-- Team lead synthesizes all findings at end
-
-Mitigation:
-- Agents can message each other via mailbox system
-- Team lead synthesizes findings after all agents complete
-- Human can interrupt and redirect agents mid-workflow (Shift+Down to cycle teammates)
-- Design tasks with minimal inter-agent dependencies
+成本倍数：3x
 ```
 
-### When NOT to Use Agent Teams
+**何时合理**：
+- ✅ 节省的时间 > 成本增加（生产问题）
+- ✅ 质量至关重要（金融服务、医疗）
+- ✅ 复杂性证明并行化合理（多层分析）
+- ❌ 简单任务（用单智能体）
+- ❌ 个人学习项目（预算受限）
 
-**Single agent is better for**:
-- ❌ **Simple tasks**: Straightforward implementations (overkill)
-- ❌ **Small codebases**: <5 files affected (coordination overhead not justified)
-- ❌ **Write-heavy tasks**: Lots of shared file modifications (merge conflict risk)
-- ❌ **Sequential dependencies**: Task B requires Task A completion (no parallelization benefit)
-- ❌ **Budget constraints**: Personal projects, learning (token cost multiplier)
-- ❌ **Tight interdependencies**: Circular dependencies between tasks
+### 实验性状态的注意事项
 
-**Example of poor fit**:
+**"实验性"意味着**：
+- ⚠️ **不保证稳定性**：功能可能变更或移除
+- ⚠️ **预期存在 bug**：请向 Anthropic 反馈（GitHub Issues）
+- ⚠️ **性能可能波动**：协调速度可能不稳定
+- ⚠️ **文档仍在完善**：官方文档仍然较少
+
+**生产使用注意事项**：
+1. **备用方案**：准备好在出现问题时回退到单智能体
+2. **监控**：仔细追踪 Token（词元）成本（可能迅速攀升）
+3. **验证**：人工审查智能体团队输出（不要盲目信任）
+4. **反馈**：报告 bug/经验以帮助 Anthropic 改进功能
+
+**实践者报告**（截至 2026 年 2 月）：
+- ✅ Paul Rayner："相当令人印象深刻"（生产使用已验证）
+- ✅ Fountain：速度提升 50%（已在生产环境部署）
+- ✅ CRED：速度翻倍（1500 万用户，金融服务）
+- ⚠️ 社区：反馈不一（部分合并冲突问题）
+
+### 上下文隔离
+
+**智能体不能做的事**：
+- ❌ **共享上下文窗口**：智能体 1 的完整上下文（1M Token（词元））对智能体 2 不可见
+- ❌ **自动同步发现**：智能体 2 不会自动看到智能体 1 的发现，除非显式发送消息
+- ❌ **协调时序**：智能体独立工作，可能在不同时间完成
+
+**智能体能做的事**：
+- ✅ **发送消息**：通过邮箱系统（点对点或经由主控智能体）
+- ✅ **挑战方案**：讨论解决方案，互相提问
+- ✅ **共享发现**：显式消息传递（非自动上下文共享）
+
+**影响**：
 ```
-Task: Update authentication logic in shared auth.ts file
+场景：智能体 1 发现影响智能体 2 工作的关键 bug
 
-Why single agent better:
-- One file modified (no parallelization benefit)
-- Write-heavy (multiple changes to same file)
-- No clear subtask boundaries (logic intertwined)
-- Sequential flow (test after each change)
+无消息机制：
+- 智能体 2 不会自动看到智能体 1 的发现
+- 智能体 2 可能继续基于错误假设工作
 
-Result: Agent teams would create merge conflicts, no time savings
+有消息机制（内置）：
+- 智能体 1 向智能体 2 发消息："第 45 行发现认证问题"
+- 智能体 2 根据消息调整方案
+- 主控智能体在最后整合所有发现
+
+缓解措施：
+- 智能体可通过邮箱系统互发消息
+- 所有智能体完成后，主控智能体整合发现
+- 人工可随时中断并重新引导智能体（用 Shift+Down 循环切换队友）
+- 设计任务时尽量减少智能体间的依赖
+```
+
+### 何时不应使用智能体团队
+
+**以下情况用单智能体更好**：
+- ❌ **简单任务**：直接的实现（用智能体团队是大材小用）
+- ❌ **小型代码库**：受影响文件少于 5 个（协调开销不合算）
+- ❌ **写密集型任务**：大量共享文件修改（合并冲突风险高）
+- ❌ **顺序依赖**：任务 B 必须等待任务 A 完成（无并行化收益）
+- ❌ **预算受限**：个人项目、学习用途（Token（词元）成本倍增）
+- ❌ **强相互依赖**：任务间存在循环依赖
+
+**不适合的例子**：
+```
+任务：更新共享 auth.ts 文件中的认证逻辑
+
+为何单智能体更好：
+- 只修改一个文件（无并行化收益）
+- 写密集型（对同一文件多次修改）
+- 无清晰的子任务边界（逻辑相互交织）
+- 顺序流程（每次修改后测试）
+
+结果：智能体团队会产生合并冲突，节省不了时间
 ```
 
 ---
 
-## 7. Decision Framework
+## 7. 决策框架
 
-### Teams vs Multi-Instance vs Dual-Instance
+### 团队 vs 多实例 vs 双实例
 
-**Comparison table**:
+**对比表**：
 
-| Criterion | Agent Teams | Multi-Instance | Dual-Instance |
-|-----------|-------------|----------------|---------------|
-| **Coordination** | Automatic (git-based + mailbox) | Manual (human) | Manual (human) |
-| **Setup** | Experimental flag | Multiple terminals | 2 terminals |
-| **Best for** | Read-heavy tasks needing coordination | Independent parallel tasks | Quality assurance (plan-execute split) |
-| **Communication** | Peer-to-peer messaging + team lead synthesis | Manual copy-paste | Manual synchronization |
-| **Context sharing** | Isolated (1M per agent, no auto-sync) | Isolated (separate sessions) | Isolated (2 sessions) |
-| **Cost** | High (3x+ tokens) | Medium (2x tokens) | Medium (2x tokens) |
-| **Cognitive load** | Low (observer) | High (orchestrator) | Medium (reviewer) |
-| **Merge conflicts** | Automatic resolution (limited) | N/A (separate repos) | Manual resolution |
-| **Maturity** | Experimental (v2.1.32+) | Stable | Stable |
+| 标准 | 智能体团队 | 多实例 | 双实例 |
+|------|----------|-------|-------|
+| **协调** | 自动（基于 Git + 邮箱） | 手动（人工） | 手动（人工） |
+| **配置** | 实验性标志位 | 多个终端 | 2 个终端 |
+| **最适合** | 需要协调的读密集型任务 | 独立并行任务 | 质量保证（计划-执行分离） |
+| **通信** | 点对点消息 + 主控整合 | 手动复制粘贴 | 手动同步 |
+| **上下文共享** | 隔离（每人 1M，无自动同步） | 隔离（独立会话） | 隔离（2 个会话） |
+| **成本** | 高（3x+ Token（词元）） | 中（2x Token（词元）） | 中（2x Token（词元）） |
+| **认知负担** | 低（观察者） | 高（编排者） | 中（审查者） |
+| **合并冲突** | 自动解决（有限） | 不适用（独立代码库） | 手动解决 |
+| **成熟度** | 实验性（v2.1.32+） | 稳定 | 稳定 |
 
-### Decision Tree: When to Use Agent Teams
+### 决策树：何时使用智能体团队
 
 ```
-Start
+开始
   │
-  ├─ Task is simple (<5 files)? ──YES──> Single agent
+  ├─ 任务简单（<5 个文件）？──是──> 单智能体
   │
-  ├─ NO
+  ├─ 否
   │
-  ├─ Tasks completely independent? ──YES──> Multi-Instance
+  ├─ 任务完全独立？──是──> 多实例
   │
-  ├─ NO
+  ├─ 否
   │
-  ├─ Need quality assurance split? ──YES──> Dual-Instance
+  ├─ 需要质量保证分离？──是──> 双实例
   │
-  ├─ NO
+  ├─ 否
   │
-  ├─ Read-heavy (analysis, review)? ──YES──> Agent Teams ✓
+  ├─ 读密集型（分析、审查）？──是──> 智能体团队 ✓
   │
-  ├─ NO
+  ├─ 否
   │
-  ├─ Write-heavy (many file mods)? ──YES──> Single agent
+  ├─ 写密集型（大量文件修改）？──是──> 单智能体
   │
-  ├─ NO
+  ├─ 否
   │
-  ├─ Budget-constrained? ──YES──> Single agent
+  ├─ 预算受限？──是──> 单智能体
   │
-  ├─ NO
+  ├─ 否
   │
-  └─ Complex coordination needed? ──YES──> Agent Teams ✓
-                                   ──NO──> Single agent
+  └─ 需要复杂协调？──是──> 智能体团队 ✓
+                    ──否──> 单智能体
 ```
 
-### Use Case Mapping
+### 用例映射
 
-**Agent Teams (✅ Use)**:
-- Multi-layer code review (security + API + frontend)
-- Parallel hypothesis testing (debugging)
-- Large-scale refactoring (clear boundaries)
-- Full codebase analysis (architecture review)
-- Complex feature research (explore multiple approaches)
+**智能体团队（✅ 使用）**：
+- 多层代码审查（安全 + API + 前端）
+- 并行假设检验（调试）
+- 大规模重构（边界清晰）
+- 全代码库分析（架构审查）
+- 复杂功能调研（探索多种方案）
 
-**Multi-Instance (✅ Use)**:
-- Separate projects (frontend repo + backend repo)
-- Independent features (no shared state)
-- Different technologies (Python microservice + React app)
-- Parallel experimentation (try 3 different architectures)
+**多实例（✅ 使用）**：
+- 独立项目（前端代码库 + 后端代码库）
+- 独立功能（无共享状态）
+- 不同技术栈（Python 微服务 + React 应用）
+- 并行实验（尝试 3 种不同架构）
 
-**Dual-Instance (✅ Use)**:
-- Plan-execute pattern (planning session + execution session)
-- Quality review (implementation + code review)
-- Test-first development (write tests + implement)
+**双实例（✅ 使用）**：
+- 计划-执行模式（规划会话 + 执行会话）
+- 质量审查（实现 + 代码审查）
+- 测试优先开发（先写测试 + 再实现）
 
-**Single Agent (✅ Use)**:
-- Simple implementations (<5 files)
-- Write-heavy tasks (shared file modifications)
-- Sequential workflows (step-by-step tutorials)
-- Budget-constrained projects
+**单智能体（✅ 使用）**：
+- 简单实现（<5 个文件）
+- 写密集型任务（共享文件修改）
+- 顺序工作流（逐步教程）
+- 预算受限项目
 
-### Teams vs Beads Framework
+### 团队 vs Beads 框架
 
-**Beads Framework** (Steve Yegge):
-- **Architecture**: Event-sourced MCP server (Gas Town) + SQLite database (beads.db)
-- **Coordination**: Persistent message storage, historical replay
-- **Maturity**: Community-maintained, experimental
-- **Setup**: Requires Gas Town installation + agent-chat UI
-- **Use case**: On-prem/airgap environments, full control over orchestration
+**Beads 框架**（Steve Yegge）：
+- **架构**：事件溯源 MCP 服务器（Gas Town）+ SQLite 数据库（beads.db）
+- **协调**：持久化消息存储，支持历史回放
+- **成熟度**：社区维护，实验性
+- **配置**：需要安装 Gas Town + agent-chat UI
+- **用例**：本地/离网环境，完全掌控编排逻辑
 
-**Agent Teams** (Anthropic):
-- **Architecture**: Native Claude Code feature, git-based coordination
-- **Coordination**: Real-time git locking, automatic merge
-- **Maturity**: Official Anthropic feature (experimental)
-- **Setup**: Feature flag only (`CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1`)
-- **Use case**: Rapid prototyping, cloud-based development
+**智能体团队**（Anthropic）：
+- **架构**：Claude Code 原生功能，基于 Git 协调
+- **协调**：实时 Git 锁定，自动合并
+- **成熟度**：Anthropic 官方功能（实验性）
+- **配置**：仅需功能标志位（`CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1`）
+- **用例**：快速原型开发，云端开发
 
-**Comparison**:
+**对比**：
 
-| Aspect | Beads Framework | Agent Teams |
-|--------|----------------|-------------|
-| **Control** | Full (event sourcing, replay) | Limited (black-box coordination) |
-| **Setup** | Complex (Gas Town + agent-chat) | Simple (feature flag) |
-| **Persistence** | SQLite (beads.db) | Git commits |
-| **Visibility** | agent-chat UI (Slack-like) | Native Claude Code interface |
-| **Environment** | On-prem friendly | Cloud-first |
-| **Maturity** | Community-driven | Anthropic official |
+| 维度 | Beads 框架 | 智能体团队 |
+|------|-----------|----------|
+| **控制力** | 完全（事件溯源，可回放） | 有限（黑盒协调） |
+| **配置** | 复杂（Gas Town + agent-chat） | 简单（功能标志位） |
+| **持久化** | SQLite（beads.db） | Git 提交 |
+| **可视化** | agent-chat UI（类 Slack） | Claude Code 原生界面 |
+| **环境** | 适合本地部署 | 云优先 |
+| **成熟度** | 社区驱动 | Anthropic 官方 |
 
-**When to use Beads**:
-- ✅ On-prem/airgap requirements (no cloud API calls)
-- ✅ Need event replay (debugging orchestration)
-- ✅ Custom orchestration logic (beyond git-based)
-- ✅ Persistent agent communications (audit trail)
+**适合使用 Beads 的情况**：
+- ✅ 本地/离网要求（不调用云端 API）
+- ✅ 需要事件回放（调试编排过程）
+- ✅ 自定义编排逻辑（超出基于 Git 的范围）
+- ✅ 持久化智能体通信（审计追踪）
 
-**When to use Agent Teams**:
-- ✅ Cloud development (Anthropic API access)
-- ✅ Rapid setup (no infrastructure required)
-- ✅ Git-native workflows (already using git)
-- ✅ Official support path (Anthropic-maintained)
+**适合使用智能体团队的情况**：
+- ✅ 云端开发（可访问 Anthropic API）
+- ✅ 快速配置（无需基础设施）
+- ✅ Git 原生工作流（已在使用 Git）
+- ✅ 官方支持路径（Anthropic 维护）
 
-**Open question** (as of Feb 2026):
-> "I'm not sure about Claude's guidance on when to use beads versus agent team sessions."
-> — Paul Rayner, Feb 2026
+**开放问题**（截至 2026 年 2 月）：
+> "我不太确定 Claude 关于何时使用 beads 与何时使用智能体团队会话的指导。"
+> — Paul Rayner，2026 年 2 月
 
-**Community feedback needed**: Anthropic has not published official guidance on this choice. Practitioners are invited to share experiences in [GitHub Discussions](https://github.com/anthropics/claude-code/discussions).
+**需要社区反馈**：Anthropic 尚未发布关于此选择的官方指导。欢迎实践者在 [GitHub Discussions](https://github.com/anthropics/claude-code/discussions) 中分享经验。
 
 ---
 
-## 8. Best Practices
+## 8. 最佳实践
 
-### Task Decomposition Strategies
+### 任务分解策略
 
-**Clear boundaries principle**:
+**清晰边界原则**：
 ```
-Good decomposition:
-- Agent 1: Backend API endpoints (/api/users/*)
-- Agent 2: Frontend components (src/components/users/*)
-- Agent 3: Database migrations (db/migrations/users/)
+好的分解：
+- 智能体 1：后端 API 端点（/api/users/*）
+- 智能体 2：前端组件（src/components/users/*）
+- 智能体 3：数据库迁移（db/migrations/users/）
 
-Why good:
-- Non-overlapping file sets (no merge conflicts)
-- Clear interfaces (API contracts)
-- Independent testing (each layer testable)
-```
-
-```
-Bad decomposition:
-- Agent 1: User authentication
-- Agent 2: User authorization
-- Agent 3: User session management
-
-Why bad:
-- Overlapping files (auth.ts touched by all 3)
-- Interdependencies (auth needs sessions, sessions need auth)
-- Sequential coupling (can't parallelize effectively)
+为何好：
+- 文件集互不重叠（无合并冲突）
+- 接口清晰（API 契约）
+- 可独立测试（每层可单独验证）
 ```
 
-**Interface-first approach**:
-1. **Define contracts**: Agree on function signatures, API schemas before parallel work
-2. **Type stubs**: Create TypeScript types/interfaces first, implement separately
-3. **Mock boundaries**: Each agent works with mocked dependencies initially
-4. **Integration phase**: Team lead coordinates final integration
+```
+差的分解：
+- 智能体 1：用户认证
+- 智能体 2：用户授权
+- 智能体 3：用户会话管理
 
-**Example**:
+为何差：
+- 文件重叠（auth.ts 被 3 个智能体都会触及）
+- 相互依赖（认证需要会话，会话需要认证）
+- 顺序耦合（无法有效并行化）
+```
+
+**接口优先方法**：
+1. **定义契约**：在并行工作前就函数签名、API Schema 达成一致
+2. **类型存根**：先创建 TypeScript 类型/接口，再分别实现
+3. **模拟边界**：每个智能体初始时使用模拟依赖工作
+4. **集成阶段**：主控智能体协调最终集成
+
+**示例**：
 ```typescript
-// Team lead defines interface first
+// 主控智能体首先定义接口
 interface UserService {
   authenticate(email: string, password: string): Promise<User>;
   authorize(user: User, resource: string): Promise<boolean>;
 }
 
-// Agent 1 implements authenticate
-// Agent 2 implements authorize
-// No merge conflicts (different functions)
+// 智能体 1 实现 authenticate
+// 智能体 2 实现 authorize
+// 不会产生合并冲突（不同函数）
 ```
 
-### Coordination Patterns
+### 协调模式
 
-**Fan-out, fan-in**:
+**扇出-扇入**：
 ```
-Team lead
+主控智能体
   │
-  ├─ Agent 1: Task A ──┐
-  ├─ Agent 2: Task B ──┼──> Team lead synthesizes
-  └─ Agent 3: Task C ──┘
+  ├─ 智能体 1：任务 A ──┐
+  ├─ 智能体 2：任务 B ──┼──> 主控智能体整合
+  └─ 智能体 3：任务 C ──┘
 ```
 
-**Sequential phases with parallelization**:
+**含并行化的顺序阶段**：
 ```
-Phase 1 (Sequential):
-  Team lead: Define architecture
+阶段 1（顺序）：
+  主控智能体：定义架构
 
-Phase 2 (Parallel):
-  ├─ Agent 1: Implement backend
-  ├─ Agent 2: Implement frontend
-  └─ Agent 3: Write tests
+阶段 2（并行）：
+  ├─ 智能体 1：实现后端
+  ├─ 智能体 2：实现前端
+  └─ 智能体 3：编写测试
 
-Phase 3 (Sequential):
-  Team lead: Integration + validation
+阶段 3（顺序）：
+  主控智能体：集成 + 验证
 ```
 
-**Hierarchical delegation**:
+**层级委派**：
 ```
-Team lead
+主控智能体
   │
-  ├─ Agent 1 (Backend lead)
-  │   ├─ Agent 1a: Controllers
-  │   └─ Agent 1b: Services
+  ├─ 智能体 1（后端主管）
+  │   ├─ 智能体 1a：控制器
+  │   └─ 智能体 1b：服务
   │
-  └─ Agent 2 (Frontend lead)
-      ├─ Agent 2a: Components
-      └─ Agent 2b: State management
+  └─ 智能体 2（前端主管）
+      ├─ 智能体 2a：组件
+      └─ 智能体 2b：状态管理
 ```
 
-### AGENTS.md for Compound Learning
+### AGENTS.md 的复合式学习
 
-Agent teams benefit from a shared context file that accumulates cross-session learnings — patterns that worked, pitfalls to avoid, codebase-specific gotchas. This file is called `AGENTS.md` (analogous to `CLAUDE.md` but scoped to agentic workflows).
+智能体团队受益于一个共享上下文文件，用于积累跨会话学到的经验——哪些模式有效、哪些坑要避免、代码库特有的注意事项。这个文件叫 `AGENTS.md`（类似于 `CLAUDE.md`，但专门面向智能体工作流）。
 
-**What to put in AGENTS.md**:
+**AGENTS.md 应该写什么**：
 ```markdown
-## Proven Patterns
-- Use Interface-First decomposition for this codebase (see src/types/)
-- Backend agent must run `db:migrate` before tests — env is not auto-seeded
+## 已验证的模式
+- 本代码库使用接口优先分解方案（参见 src/types/）
+- 后端智能体测试前必须运行 `db:migrate` —— 环境不会自动初始化数据
 
-## Pitfalls
-- Do NOT modify auth.ts and session.ts in parallel — circular imports cause test failures
-- Linter runs on save; do not commit with lint errors, the CI gate is strict
+## 注意事项
+- 不要并行修改 auth.ts 和 session.ts —— 循环引入会导致测试失败
+- Linter 在保存时运行；不要带 lint 错误提交，CI 关卡很严格
 
-## Style
-- All API responses must follow the ApiResponse<T> wrapper type
-- Error codes live in src/constants/errors.ts — always reuse, never hardcode strings
+## 风格
+- 所有 API 响应必须遵循 ApiResponse<T> 包装类型
+- 错误码位于 src/constants/errors.ts —— 始终复用，绝不硬编码字符串
 ```
 
-**Critical rule — never let agents write AGENTS.md directly**. ETH Zürich research (Gloaguen et al., 2026) confirms that LLM-generated context files reduce task success by ~3% and increase inference costs by 20%+, compared to a ~4% improvement from developer-written files. The mechanism: agents generate generic, bloated context that creates cognitive overhead for every subsequent agent reading it.
+**关键规则——绝不让智能体直接写 AGENTS.md**。ETH 苏黎世的研究（Gloaguen 等，2026）证实，LLM 生成的上下文文件与开发者编写的文件相比，任务成功率下降约 3%，推理成本增加 20% 以上。原因在于：智能体会生成泛化、臃肿的上下文，给每个后续读取它的智能体造成认知负担。
 
-Every line in AGENTS.md should be approved by a human. If a teammate identifies a new pattern worth documenting, it sends a suggestion to the team lead — the lead decides whether to add it.
+AGENTS.md 中的每一行都应经过人工审批。如果某个队友识别出值得记录的新模式，它会向主控智能体发送建议——由主控智能体决定是否添加。
 
-**Maintenance**: Review AGENTS.md after each team session (Retro step of the Factory Model). Remove entries that are no longer relevant — stale instructions are actively harmful, not neutral.
+**维护**：每次团队会话后审查 AGENTS.md（工厂模式的复盘步骤）。删除不再相关的条目——过时的指令不是中性的，而是有害的。
 
-### Git Worktree Management
+### Git 工作树管理
 
-**Why worktrees matter**:
-- Each agent works in separate git worktree (isolated file system)
-- Prevents file locking conflicts
-- Enables parallel file modifications
+**为何工作树重要**：
+- 每个智能体在独立的 Git 工作树中工作（隔离的文件系统）
+- 防止文件锁定冲突
+- 支持并行文件修改
 
-**Setup**:
+**配置**：
 ```bash
-# Main repository
+# 主仓库
 git worktree add ../project-agent1 main
 
-# Agent 1 works in project-agent1/
-# Agent 2 works in project-agent2/
-# Team lead works in project/
+# 智能体 1 在 project-agent1/ 中工作
+# 智能体 2 在 project-agent2/ 中工作
+# 主控智能体在 project/ 中工作
 
-# All sync via git commits
+# 所有人通过 git 提交同步
 ```
 
-**Best practices**:
-- ✅ One worktree per agent
-- ✅ Frequent commits (continuous merge)
-- ✅ Descriptive branch names (`agent1-backend-api`, `agent2-frontend-ui`)
-- ❌ Don't modify same files across worktrees without coordination
+**最佳实践**：
+- ✅ 每个智能体一个工作树
+- ✅ 频繁提交（持续合并）
+- ✅ 有描述性的分支名（`agent1-backend-api`、`agent2-frontend-ui`）
+- ❌ 不要在不同工作树中修改同一文件（除非有协调）
 
-### Cost Optimization
+### 成本优化
 
-**Token-saving strategies**:
+**节省 Token（词元）的策略**：
 
-1. **Lazy spawning**: Only spawn agents when parallelization clearly benefits
+1. **懒加载派生**：仅在并行化明显有益时才派生智能体
    ```
-   Bad: "Spawn 3 agents to implement this button"
-   Good: "Spawn agents for multi-layer security review"
-   ```
-
-2. **Context pruning**: Remove irrelevant files from agent context
-   ```
-   # Tell agent what to ignore
-   "Review backend API, ignore frontend files"
+   差：" 派生 3 个智能体来实现这个按钮"
+   好："派生智能体进行多层安全审查"
    ```
 
-3. **Progressive escalation**: Start with single agent, escalate to teams if needed
+2. **上下文裁剪**：从智能体上下文中移除无关文件
    ```
-   Step 1: Single agent attempts task
-   Step 2: If complexity high, spawn team
-   ```
-
-4. **Result caching**: Reuse agent findings across similar tasks
-   ```
-   "Agent 1 found security issues in auth.ts.
-   Agent 2, check if user.ts has same patterns."
+   # 告诉智能体忽略什么
+   "审查后端 API，忽略前端文件"
    ```
 
-5. **Hard token budgets per agent**: Assign domain-specific limits to prevent runaway consumption
+3. **渐进升级**：先用单智能体，必要时升级为团队
+   ```
+   步骤 1：单智能体尝试任务
+   步骤 2：若复杂度高，再派生团队
+   ```
+
+4. **结果缓存**：在类似任务中复用智能体发现
+   ```
+   "智能体 1 在 auth.ts 中发现了安全问题。
+   智能体 2，检查 user.ts 是否存在相同模式。"
+   ```
+
+5. **为每个智能体设置硬性 Token（词元）预算**：为每个智能体分配特定领域的限额，防止失控消耗
    ```bash
-   # In task brief to each teammate
-   "Frontend agent: stay under 180k tokens total.
-   Backend agent: stay under 280k tokens total.
-   Auto-pause and report status at 85% of your budget."
+   # 在给每个队友的任务说明中
+   "前端智能体：总计不超过 180k Token（词元）。
+   后端智能体：总计不超过 280k Token（词元）。
+   在预算用完 85% 时自动暂停并汇报状态。"
    ```
-   Token costs scale linearly with team size — a 5-agent team can consume 5× the tokens of a single session. Caps prevent one agent's rabbit hole from blowing the entire session budget.
+   Token（词元）成本随团队规模线性增长——5 个智能体的团队可能消耗单会话的 5 倍。设置上限可防止一个智能体的兔子洞耗尽整个会话的预算。
 
-### Quality Assurance
+### 质量保证
 
-**Validation checklist**:
-- [ ] **All agents completed**: No hanging tasks
-- [ ] **Merge conflicts resolved**: Clean git history
-- [ ] **Tests passing**: Automated test suite green
-- [ ] **Human review**: Code inspection (don't trust blindly)
-- [ ] **Cross-agent consistency**: Naming, patterns aligned
+**验证清单**：
+- [ ] **所有智能体已完成**：无悬挂任务
+- [ ] **合并冲突已解决**：干净的 Git 历史
+- [ ] **测试通过**：自动化测试套件全绿
+- [ ] **人工审查**：代码检查（不要盲目信任）
+- [ ] **跨智能体一致性**：命名、模式已对齐
 
-**Red flags**:
-- ⚠️ Agents finished at very different times (imbalanced load)
-- ⚠️ Many merge conflicts (poor task decomposition)
-- ⚠️ Tests failing after merge (integration issues)
-- ⚠️ Inconsistent code style (agents didn't follow shared standards)
+**红色警报**：
+- ⚠️ 不同智能体完成时间差异过大（负载不均衡）
+- ⚠️ 合并冲突过多（任务分解不当）
+- ⚠️ 合并后测试失败（集成问题）
+- ⚠️ 代码风格不一致（智能体未遵循共享标准）
 
-**Mitigation**:
+**缓解措施**：
 ```bash
-# After agent teams complete
-git diff main..agent-teams-branch  # Review all changes
-npm test                           # Run full test suite
-npm run lint                       # Check code style
+# 智能体团队完成后
+git diff main..agent-teams-branch  # 审查所有变更
+npm test                           # 运行完整测试套件
+npm run lint                       # 检查代码风格
 ```
 
-### Loop Guardrails
+### 循环保护措施
 
-Agent teams can get stuck in unproductive retry cycles without hard iteration limits. Two mechanisms prevent this:
+智能体团队可能在没有硬性迭代限制的情况下陷入无效的重试循环。两种机制可以防止这种情况：
 
-**MAX_ITERATIONS per teammate**:
+**每个队友的 MAX_ITERATIONS**：
 
-Set a hard cap in the task brief for each teammate:
+在给每个队友的任务说明中设置硬性上限：
 ```
-"Maximum 8 attempts on any single failing task.
-Before retrying, answer: What specifically failed? What one change would fix it?
-If still blocked after 8 attempts, stop and report to team lead."
-```
-
-The mandatory reflection prompt ("What failed? What specific change would fix it?") reduces stuck agents substantially — it forces the agent to change approach rather than repeat the same failing action with minor variations.
-
-**Kill and reassign criteria**:
-- Stuck 3+ iterations on the same blocker → kill the task, reassign with more specific context
-- Task consumed >85% of its token budget with no commit → pause and report
-- No progress after 2 reflection cycles → escalate to team lead
-
-### Dedicated Reviewer Teammate
-
-For production agent teams, adding a read-only reviewer agent improves output quality without slowing throughput:
-
-**Setup**:
-```
-Reviewer brief:
-- Model: Claude Opus 4.6 (for thoroughness)
-- Tools available: lint, run tests, security-scan only — no file writes
-- Trigger: automatically review on every TaskCompleted event
-- Scope: the specific files changed in that task, not the full codebase
-- Output: structured findings (blocking / non-blocking) added to shared task list
+"对任何单个失败任务最多重试 8 次。
+重试前先回答：具体是什么失败了？什么单一变更能修复它？
+如果 8 次后仍然卡住，停下来向主控智能体汇报。"
 ```
 
-**Ratio**: 1 reviewer per 3-4 builders. With fewer builders, the reviewer becomes a bottleneck; with more, the review queue backs up.
+强制反思提示（"失败了什么？什么具体变更能修复它？"）显著减少了卡住的智能体——它强制智能体改变方法，而不是带着微小变化重复同样的失败操作。
 
-**Why read-only matters**: a reviewer with write access will start fixing issues itself, which creates merge conflicts and defeats the purpose of parallel isolation.
+**终止并重新分配的标准**：
+- 在同一阻碍上卡住 3+ 次迭代 → 终止任务，带更具体的上下文重新分配
+- 任务消耗超过 85% 的 Token（词元）预算但无提交 → 暂停并汇报
+- 2 次反思循环后仍无进展 → 升级给主控智能体
+
+### 专职审查者队友
+
+对于生产级智能体团队，添加一个只读审查者智能体可以在不降低吞吐量的前提下提升输出质量：
+
+**配置**：
+```
+审查者任务说明：
+- 模型：Claude Opus 4.6（为保证彻底性）
+- 可用工具：仅 lint、运行测试、security-scan —— 不允许写文件
+- 触发：在每个 TaskCompleted 事件后自动审查
+- 范围：该任务变更的具体文件，而非整个代码库
+- 输出：结构化发现（阻塞/非阻塞）添加到共享任务列表
+```
+
+**比例**：每 3-4 个构建者配 1 个审查者。构建者更少时，审查者会成为瓶颈；构建者更多时，审查队列会积压。
+
+**只读的重要性**：有写权限的审查者会开始自己修复问题，这会产生合并冲突，违背并行隔离的初衷。
 
 ---
 
-## 9. Troubleshooting
+## 9. 问题排查
 
-### Common Issues
+### 常见问题
 
-#### Issue: Agents not spawning
+#### 问题：智能体未被派生
 
-**Symptoms**:
-- Agent teams prompt accepted but no teammates created
-- Only team lead session running
+**症状**：
+- 接受了智能体团队提示词，但未创建任何队友
+- 只有主控智能体会话在运行
 
-**Causes**:
-1. Feature flag not set correctly
-2. Model not Opus 4.6 (teams require Opus)
-3. Task not complex enough (Claude decided single agent sufficient)
+**原因**：
+1. 功能标志位未正确设置
+2. 模型不是 Opus 4.6（团队需要 Opus）
+3. 任务不够复杂（Claude 判断单智能体足够）
 
-**Solutions**:
+**解决方案**：
 ```bash
-# Verify flag
-echo $CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS  # Should output "1" or "true"
+# 验证标志位
+echo $CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS  # 应输出 "1" 或 "true"
 
-# Check settings
-cat ~/.claude/settings.json | grep agentTeams  # Should be true
+# 检查配置
+cat ~/.claude/settings.json | grep agentTeams  # 应为 true
 
-# Force model
+# 强制指定模型
 /model opus
 
-# Explicit request
-"Spawn 3 agents for this task (team lead + 2 teammates)"
+# 明确请求
+"为此任务派生 3 个智能体（主控 + 2 个队友）"
 ```
 
-#### Issue: Merge conflicts overwhelming
+#### 问题：合并冲突过多
 
-**Symptoms**:
-- Many git conflicts after agents complete
-- Manual resolution required frequently
+**症状**：
+- 智能体完成后出现大量 Git 冲突
+- 频繁需要手动解决
 
-**Causes**:
-- Poor task decomposition (overlapping file sets)
-- Write-heavy task (multiple agents modifying shared files)
+**原因**：
+- 任务分解不当（文件集重叠）
+- 写密集型任务（多个智能体修改共享文件）
 
-**Solutions**:
+**解决方案**：
 ```
-Prevention:
-1. Clear boundaries: Non-overlapping file assignments
-2. Interface-first: Define contracts before implementation
-3. Single-writer: One agent writes shared files, others read
+预防：
+1. 明确边界：分配互不重叠的文件集
+2. 接口优先：实现前定义契约
+3. 单写者：一个智能体写共享文件，其他只读
 
-Recovery:
-1. Revert: git reset --hard before-agent-teams
-2. Sequential: Re-implement with single agent
-3. Human merge: Manually resolve conflicts (git mergetool)
-```
-
-#### Issue: High token costs
-
-**Symptoms**:
-- Token usage 3x+ higher than expected
-- Budget exhausted quickly
-
-**Causes**:
-- Over-spawning agents (3+ agents for simple tasks)
-- Long-running sessions (agents idle)
-- Large context per agent (1M tokens × 3)
-
-**Solutions**:
-```
-Immediate:
-1. Kill extra agents: Shift+Down, exit agent session
-2. Reduce scope: Narrow task boundaries
-3. Switch to single agent: /model sonnet (cheaper)
-
-Long-term:
-1. Cost monitoring: Track token usage per session
-2. Lazy spawning: Only spawn when needed
-3. Progressive escalation: Start small, scale up if needed
+恢复：
+1. 回滚：git reset --hard before-agent-teams
+2. 顺序执行：用单智能体重新实现
+3. 手动合并：手动解决冲突（git mergetool）
 ```
 
-#### Issue: Agents stuck/hanging
+#### 问题：Token（词元）成本过高
 
-**Symptoms**:
-- One agent finishes, others still processing for long time
-- No progress updates
+**症状**：
+- Token（词元）使用量比预期高 3x+
+- 预算很快耗尽
 
-**Causes**:
-- Imbalanced task distribution (one agent has 80% of work)
-- Agent waiting for dependency (sequential coupling)
-- Bug in git coordination (rare)
+**原因**：
+- 过多派生智能体（对简单任务使用 3+ 个智能体）
+- 长时间运行的会话（智能体空闲）
+- 每个智能体上下文过大（1M Token（词元）× 3）
 
-**Solutions**:
+**解决方案**：
+```
+立即处理：
+1. 终止多余智能体：Shift+Down，退出智能体会话
+2. 缩小范围：收窄任务边界
+3. 切换到单智能体：/model sonnet（更便宜）
+
+长期改进：
+1. 成本监控：每会话追踪 Token（词元）使用量
+2. 懒加载派生：仅在需要时派生
+3. 渐进升级：从小规模开始，按需扩展
+```
+
+#### 问题：智能体卡住/挂起
+
+**症状**：
+- 一个智能体完成了，其他智能体还在长时间处理
+- 没有进度更新
+
+**原因**：
+- 任务分配不均（一个智能体承担 80% 的工作）
+- 智能体等待依赖（顺序耦合）
+- Git 协调的 bug（罕见）
+
+**解决方案**：
 ```bash
-# Navigate to stuck agent
-Shift+Down  # Switch to agent
+# 导航到卡住的智能体
+Shift+Down  # 切换到该智能体
 
-# Check status
-"What are you working on? Progress update?"
+# 检查状态
+"你在做什么？进度更新？"
 
-# Manual takeover if needed
-"Stop current task, report findings so far"
+# 必要时手动接管
+"停止当前任务，汇报迄今的发现"
 
-# Kill and redistribute
-Exit agent → Team lead redistributes task
+# 终止并重新分配
+退出智能体 → 主控智能体重新分配任务
 ```
 
-#### Issue: Inconsistent results across agents
+#### 问题：智能体间结果不一致
 
-**Symptoms**:
-- Agent 1 says "No issues", Agent 2 finds 10 bugs (same codebase)
-- Conflicting recommendations
+**症状**：
+- 智能体 1 说"没有问题"，智能体 2 在同一代码库中发现 10 个 bug
+- 相互矛盾的建议
 
-**Causes**:
-- Different context windows (agents saw different files)
-- Ambiguous instructions (agents interpreted differently)
-- Model variability (stochastic outputs)
+**原因**：
+- 不同的上下文窗口（智能体看到了不同的文件）
+- 模糊的指令（智能体理解不同）
+- 模型随机性（随机输出）
 
-**Solutions**:
+**解决方案**：
 ```
-Prevention:
-1. Explicit instructions: "All agents: Check for SQL injection"
-2. Shared context: Point all agents to same reference docs
-3. Validation: Human reviews all agent outputs
+预防：
+1. 明确指令："所有智能体：检查 SQL 注入"
+2. 共享上下文：让所有智能体指向相同的参考文档
+3. 验证：人工审查所有智能体输出
 
-Recovery:
-1. Reconciliation: "Compare Agent 1 and Agent 2 findings, resolve conflicts"
-2. Third opinion: Spawn Agent 3 to arbitrate
-3. Human decision: You choose which agent's recommendation to follow
+恢复：
+1. 对账："比较智能体 1 和智能体 2 的发现，解决矛盾"
+2. 第三方意见：派生智能体 3 进行仲裁
+3. 人工决策：你选择遵循哪个智能体的建议
 ```
 
-### Navigation Problems
+### 导航问题
 
-**Can't find agent sessions**:
+**找不到智能体会话**：
 ```bash
-# List all sessions
+# 列出所有会话
 claude --list
 
-# Filter for agent sessions
+# 过滤智能体会话
 claude --list | grep agent
 
-# Resume specific agent
+# 恢复特定智能体
 claude --resume <session-id>
 ```
 
-**Lost track of which agent is which**:
+**弄不清哪个智能体是哪个**：
 ```
-Solution: Name agents explicitly in team lead prompt
+解决方案：在主控智能体提示词中明确命名智能体
 
-Good:
-"Spawn 3 agents:
-- Agent Security: Check vulnerabilities
-- Agent Performance: Profile bottlenecks
-- Agent Tests: Write test suite"
+好：
+"派生 3 个智能体：
+- 安全智能体：检查漏洞
+- 性能智能体：分析瓶颈
+- 测试智能体：编写测试套件"
 
-Bad:
-"Spawn 3 agents for this codebase review"
+差：
+"为这个代码库审查派生 3 个智能体"
 ```
 
-**tmux navigation not working**:
+**tmux 导航不工作**：
 ```bash
-# Verify tmux session
+# 验证 tmux 会话
 tmux list-sessions
 
-# Attach to session
+# 附加到会话
 tmux attach -t claude-agents
 
-# Navigate
-Ctrl+b, n  # Next window
-Ctrl+b, p  # Previous window
+# 导航
+Ctrl+b, n  # 下一个窗口
+Ctrl+b, p  # 上一个窗口
 ```
 
-### Performance Optimization
+### 性能优化
 
-**Slow coordination**:
+**协调缓慢**：
 ```bash
-# Check git repo size
-du -sh .git/  # If >1GB, consider cleanup
+# 检查 git 仓库大小
+du -sh .git/  # 若 >1GB，考虑清理
 
-# Clean up git objects
+# 清理 git 对象
 git gc --aggressive --prune=now
 
-# Use shallow clone for agents
+# 为智能体使用浅克隆
 git clone --depth 1 <repo>
 ```
 
-**Context loading delays**:
+**上下文加载延迟**：
 ```
-# Reduce context per agent
-"Agent 1: Only load src/backend/* files"
-"Agent 2: Only load src/frontend/* files"
+# 减少每个智能体的上下文
+"智能体 1：只加载 src/backend/* 文件"
+"智能体 2：只加载 src/frontend/* 文件"
 
-# Prune irrelevant files
+# 裁剪无关文件
 echo "node_modules/" >> .gitignore
 echo "dist/" >> .gitignore
 ```
 
 ---
 
-## 9. Iterative Retrieval for Sub-Agents
+## 9. 子智能体的迭代检索
 
-When a sub-agent lacks context to complete its task accurately, the default failure mode is: it makes assumptions and generates plausible-but-wrong output. The output looks reasonable enough to pass a quick review, but breaks downstream.
+当子智能体缺乏准确完成任务所需的上下文时，默认的失败模式是：它会做出假设，生成看似合理但实际有误的输出。这些输出看起来足够合理，可以通过快速审查，但在下游会出问题。
 
-**The pattern**: give sub-agents a retrieval budget — they can request more context up to N cycles before committing to a response. Three cycles covers most cases while bounding cost and latency.
+**解决方案**：给子智能体一个检索预算——在提交响应前，它可以最多请求 N 轮额外上下文。3 轮通常能覆盖大多数情况，同时控制成本和延迟。
 
-### Structure
+### 结构
 
 ```
-Cycle 1: Agent receives task + initial context
-         → If confident: produce output
-         → If uncertain: identify what's missing, request specific files or symbols
+轮次 1：智能体接收任务 + 初始上下文
+         → 若有信心：输出结果
+         → 若不确定：识别缺失内容，请求具体文件或符号
 
-Cycle 2: Agent receives requested context
-         → If confident: produce output
-         → If still uncertain: one final targeted request
+轮次 2：智能体接收请求的上下文
+         → 若有信心：输出结果
+         → 若仍不确定：一次最终的有针对性请求
 
-Cycle 3: Agent receives final context
-         → Produce best output regardless of remaining uncertainty
-         → Flag explicit assumptions made
+轮次 3：智能体接收最终上下文
+         → 无论是否还有不确定性，输出最佳结果
+         → 明确标注所做的假设
 ```
 
-### What to Pass Sub-Agents
+### 传给子智能体的内容
 
-The most common mistake: giving a sub-agent the WHAT without the WHY. An agent that knows it's "implementing a retry mechanism for the payment service" has context that saves correction cycles:
+最常见的错误：给子智能体"是什么"而没有给"为什么"。一个知道自己在"为支付服务实现重试机制"的智能体，拥有的上下文可以节省修正轮次：
 
 ```markdown
-## Objective
-[WHY this task exists — the problem being solved, the constraint being met]
+## 目标
+[这个任务存在的原因 —— 要解决的问题，要满足的约束]
 
-## Task
-[WHAT to do, specifically]
+## 任务
+[具体要做什么]
 
-## Context
-Files you have access to: [...]
-Known constraints: [...]
-What NOT to touch: [...]
+## 上下文
+你可以访问的文件：[...]
+已知约束：[...]
+不要触碰的内容：[...]
 
-## If you need more information
-You may request up to 2 additional context cycles. Be specific:
-- Name the exact files or symbols you need
-- Explain why they're required to complete the task accurately
-State explicitly: "I need [X] because [Y]" — not "I might need more context"
+## 如果你需要更多信息
+你最多可以请求 2 次额外的上下文轮次。请明确说明：
+- 你需要的具体文件或符号名称
+- 为何它们对准确完成任务是必要的
+明确表述："我需要 [X]，因为 [Y]" —— 而不是"我可能需要更多上下文"
 
-## Output format
+## 输出格式
 [...]
 ```
 
-### When to Apply This
+### 何时使用
 
-| Situation | Use iterative retrieval? |
-|-----------|------------------------|
-| Sub-agent modifies 1–2 known files | No — provide the files directly |
-| Sub-agent needs to understand system behavior | Yes — it may need to trace call graphs |
-| Sub-agent makes architectural decisions | Yes — always |
-| Sub-agent writes tests for existing code | Often — it needs to read what it's testing |
+| 情况 | 使用迭代检索？ |
+|------|-------------|
+| 子智能体修改 1-2 个已知文件 | 否 —— 直接提供文件 |
+| 子智能体需要理解系统行为 | 是 —— 它可能需要追踪调用图 |
+| 子智能体做出架构决策 | 是 —— 始终 |
+| 子智能体为现有代码编写测试 | 通常是 —— 它需要读取被测代码 |
 
-The overhead is real (each cycle costs tokens and latency). Apply it to tasks where wrong assumptions would cost more than the retrieval — typically anything touching interfaces, contracts, or public APIs.
+这里有实际的开销（每轮都消耗 Token（词元）和延迟）。将其应用于错误假设的代价高于检索成本的任务——通常是任何涉及接口、契约或公共 API 的任务。
 
-> **Credit**: Iterative retrieval pattern for sub-agents from [Everything Claude Code](https://github.com/affaan-m/everything-claude-code) (Affaan Mustafa). The max-3-cycles bound and the WHY/WHAT separation are documented in their longform guide.
-
----
-
-## 10. Sources
-
-### Official Anthropic Sources
-
-1. **[Introducing Claude Opus 4.6](https://www.anthropic.com/news/claude-opus-4-6)**
-   Anthropic, Feb 2026
-   Official announcement of Opus 4.6 and agent teams research preview
-
-2. **[Building a C compiler with agent teams](https://www.anthropic.com/engineering/building-c-compiler)**
-   Anthropic Engineering, Feb 2026
-   Technical deep-dive: git-based coordination, autonomous C compiler case study
-
-3. **[2026 Agentic Coding Trends Report](https://resources.anthropic.com/hubfs/2026%20Agentic%20Coding%20Trends%20Report.pdf)**
-   Anthropic, Jan 2026
-   Production metrics: Fountain (50% faster), CRED (2x speed)
-
-### Community Sources
-
-4. **[Claude Opus 4.6 for Developers: Agent Teams, 1M Context](https://dev.to/thegdsks/claude-opus-46-for-developers-agent-teams-1m-context-and-what-actually-matters-4h8c)**
-   dev.to, Feb 2026
-   Setup instructions, workflow impact table, read/write trade-offs
-
-5. **[The best way to do agentic development in 2026](https://dev.to/chand1012/the-best-way-to-do-agentic-development-in-2026-14mn)**
-   dev.to, Jan 2026
-   Integration patterns: Claude Code + plugins (Conductor, Superpowers, Context7)
-
-### Community Tools
-
-6. **[Claude Agent Teams UI](https://github.com/777genius/claude_agent_teams_ui)**
-   Open-source desktop app (Electron + React + TypeScript) for managing Claude Code agent teams.
-   Kanban board with real-time task tracking, code review diffs, cross-team communication, deep session analysis, and context monitoring. 100% free, runs locally.
-
-### Practitioner Testimonials
-
-7. **[Paul Rayner LinkedIn Post](https://www.linkedin.com/posts/thepaulrayner_this-is-wild-i-just-upgraded-claude-code-activity-7425635159678414850-MNyv)**
-   Paul Rayner (CEO Virtual Genius, EventStorming Handbook author), Feb 2026
-   Production usage: 3 concurrent workflows (job search app, business ops, infrastructure)
-
-### Related Documentation
-
-- [Claude Code Releases](../core/claude-code-releases.md) — v2.1.32, v2.1.33 release notes
-- [Sub-Agents](#split-role-sub-agents) — Single-agent task delegation
-- [Multi-Instance Workflows](#917-scaling-patterns-multi-instance-workflows) — Manual parallel coordination
-- [Dual-Instance Pattern](#alternative-pattern-dual-instance-planning-vertical-separation) — Plan-execute split
-- [AI Ecosystem: Beads Framework](../ecosystem/ai-ecosystem.md#beads-framework) — Alternative orchestration (Gas Town)
+> **致谢**：子智能体迭代检索模式来自 [Everything Claude Code](https://github.com/affaan-m/everything-claude-code)（Affaan Mustafa）。最多 3 轮的限制和"为什么/是什么"分离记录在他们的长篇指南中。
 
 ---
 
-## Feedback & Contributions
+## 10. 参考资料
 
-**Experiencing issues?** Report to [Anthropic GitHub Issues](https://github.com/anthropics/claude-code/issues)
+### Anthropic 官方资料
 
-**Production learnings?** Share in [GitHub Discussions](https://github.com/anthropics/claude-code/discussions)
+1. **[Claude Opus 4.6 介绍](https://www.anthropic.com/news/claude-opus-4-6)**
+   Anthropic，2026 年 2 月
+   Opus 4.6 和智能体团队研究预览的官方公告
 
-**Questions?** Ask in [Dev With AI Community](https://www.devw.ai/) (1500+ devs, Slack)
+2. **[用智能体团队构建 C 编译器](https://www.anthropic.com/engineering/building-c-compiler)**
+   Anthropic Engineering，2026 年 2 月
+   技术深度解析：基于 Git 的协调，自主 C 编译器案例研究
+
+3. **[2026 年智能体编码趋势报告](https://resources.anthropic.com/hubfs/2026%20Agentic%20Coding%20Trends%20Report.pdf)**
+   Anthropic，2026 年 1 月
+   生产指标：Fountain（快 50%）、CRED（速度翻倍）
+
+### 社区资料
+
+4. **[面向开发者的 Claude Opus 4.6：智能体团队，1M 上下文](https://dev.to/thegdsks/claude-opus-46-for-developers-agent-teams-1m-context-and-what-actually-matters-4h8c)**
+   dev.to，2026 年 2 月
+   配置说明、工作流影响表、读/写权衡
+
+5. **[2026 年智能体开发的最佳方式](https://dev.to/chand1012/the-best-way-to-do-agentic-development-in-2026-14mn)**
+   dev.to，2026 年 1 月
+   集成模式：Claude Code + 插件（Conductor、Superpowers、Context7）
+
+### 社区工具
+
+6. **[Claude 智能体团队 UI](https://github.com/777genius/claude_agent_teams_ui)**
+   开源桌面应用（Electron + React + TypeScript），用于管理 Claude Code 智能体团队。
+   提供实时任务追踪看板、代码审查差异对比（diff）、跨团队通信、深度会话分析和上下文监控。100% 免费，本地运行。
+
+### 实践者证言
+
+7. **[Paul Rayner LinkedIn 帖子](https://www.linkedin.com/posts/thepaulrayner_this-is-wild-i-just-upgraded-claude-code-activity-7425635159678414850-MNyv)**
+   Paul Rayner（Virtual Genius CEO，《EventStorming 手册》作者），2026 年 2 月
+   生产使用：3 个并行工作流（求职应用、业务运营、基础设施）
+
+### 相关文档
+
+- [Claude Code 版本发布记录](../core/claude-code-releases.md) — v2.1.32、v2.1.33 发布说明
+- [子智能体](#split-role-sub-agents) — 单智能体任务委派
+- [多实例工作流](#917-scaling-patterns-multi-instance-workflows) — 手动并行协调
+- [双实例模式](#alternative-pattern-dual-instance-planning-vertical-separation) — 计划-执行分离
+- [AI 生态系统：Beads 框架](../ecosystem/ai-ecosystem.md#beads-framework) — 替代编排方案（Gas Town）
 
 ---
 
-## Advanced Orchestration Patterns
+## 反馈与贡献
 
-These patterns address the failure modes that emerge at scale in multi-agent pipelines: coordinators that do too much work themselves, agents that proceed without prerequisites, and pipelines that cannot recover from mid-run failures.
+**遇到问题？** 请在 [Anthropic GitHub Issues](https://github.com/anthropics/claude-code/issues) 反馈
+
+**有生产经验？** 请在 [GitHub Discussions](https://github.com/anthropics/claude-code/discussions) 分享
+
+**有问题？** 欢迎加入 [Dev With AI 社区](https://www.devw.ai/)（1500+ 开发者，Slack）
 
 ---
 
-### Hub-and-Spoke Coordinator
+## 高级编排模式
 
-The hub-and-spoke pattern separates coordination from execution. The coordinator agent decomposes the task, selects subagents, dispatches work, monitors results, and aggregates outputs. It does no domain work itself — no research, no analysis, no generation. This separation is what makes the coordinator reusable across different task types.
+这些模式解决了多智能体流水线在规模化时出现的失败模式：协调者自己做了太多工作、智能体在前置条件未满足时推进任务，以及流水线无法从中途故障中恢复。
+
+---
+
+### 轮辐式协调者（Hub-and-Spoke Coordinator）
+
+轮辐模式将协调与执行分离。协调者智能体负责分解任务、选择子智能体、分发工作、监控结果并汇总输出。它自己不做任何领域工作——不做研究、不做分析、不做生成。这种分离使协调者可以跨不同任务类型复用。
 
 ```python
 from dataclasses import dataclass
@@ -1529,13 +1529,13 @@ class SubagentResult:
 
 class ResearchCoordinator:
     def __init__(self, subagents: dict[str, Callable]):
-        self.subagents = subagents  # name -> callable
+        self.subagents = subagents  # 名称 -> 可调用对象
 
     def run(self, research_question: str) -> dict:
-        # Decompose into parallel subtasks
+        # 分解为并行子任务
         subtasks = self.decompose(research_question)
 
-        # Dispatch to appropriate subagents
+        # 分发给合适的子智能体
         results = []
         for subtask in subtasks:
             agent_name = self.select_agent(subtask)
@@ -1559,15 +1559,15 @@ class ResearchCoordinator:
                     result=None, success=False, error=str(e)
                 ))
 
-        # Aggregate — coordinator's only domain responsibility
+        # 汇总 —— 协调者唯一的领域责任
         return self.aggregate(research_question, results)
 
     def decompose(self, question: str) -> list[str]:
-        # Returns subtasks — coordinator decides structure, not domain content
+        # 返回子任务 —— 协调者决定结构，不决定领域内容
         raise NotImplementedError
 
     def select_agent(self, subtask: str) -> str:
-        # Routing logic — pattern matching or LLM-based selection
+        # 路由逻辑 —— 模式匹配或基于 LLM 的选择
         raise NotImplementedError
 
     def aggregate(self, original_question: str, results: list[SubagentResult]) -> dict:
@@ -1582,15 +1582,15 @@ class ResearchCoordinator:
         }
 ```
 
-The coordinator never touches the content of results, only routes them, counts them, and passes them to an aggregation step. If you find coordinator code that contains analysis logic, business rules, or domain-specific processing, that logic belongs in a subagent.
+协调者永远不触碰结果的内容，只是路由、计数，并将其传递给汇总步骤。如果你在协调者代码中发现了分析逻辑、业务规则或特定领域的处理，那些逻辑应该放在子智能体中。
 
 ---
 
-### Programmatic Prerequisites
+### 程序化前置条件
 
-Prerequisite checks should be deterministic gates, not prompt instructions. Telling a model "make sure the data is ready before proceeding" is not a prerequisite, it is a suggestion. A programmatic prerequisite is a state check that either allows execution to continue or returns a structured error.
+前置条件检查应该是确定性的关卡，而不是提示词指令。告诉模型"确保数据准备好了再继续"不是前置条件，而是建议。程序化前置条件是一个状态检查——要么允许执行继续，要么返回一个结构化错误。
 
-**Pattern 1: State-flag gate**
+**模式 1：状态标志关卡**
 
 ```python
 @dataclass
@@ -1618,13 +1618,13 @@ def run_analysis_phase(state: PipelineState, data: dict) -> dict:
             "required": missing
         }
 
-    # Proceed with analysis — all prerequisites confirmed
+    # 继续分析 —— 所有前置条件已确认
     return perform_analysis(data)
 ```
 
-**Pattern 2: Phase-based dispatch**
+**模式 2：基于阶段的调度**
 
-For pipelines with sequential phases, the orchestrator dispatches based on completed phases rather than on elapsed time or turn count:
+对于有顺序阶段的流水线，编排者基于已完成的阶段进行调度，而不是基于经过的时间或轮次数：
 
 ```python
 from enum import Enum
@@ -1676,17 +1676,17 @@ def dispatch_next_phase(context: PipelineContext, agents: dict) -> PipelineConte
 
 ---
 
-### Dynamic Subagent Selection
+### 动态子智能体选择
 
-Instead of hardcoding which agent handles which task, a coordinator can select subagents dynamically based on task characteristics. This allows the same coordinator to handle new task types without code changes.
+协调者可以根据任务特征动态选择子智能体，而不是硬编码哪个智能体处理哪类任务。这使同一个协调者无需修改代码即可处理新的任务类型。
 
 ```python
 @dataclass
 class AgentCapability:
     name: str
-    handles: list[str]  # task type keywords
-    cost: float          # relative cost (1.0 = baseline)
-    latency: float       # expected seconds
+    handles: list[str]  # 任务类型关键词
+    cost: float          # 相对成本（1.0 = 基准）
+    latency: float       # 预期耗时（秒）
 
 class DynamicSelector:
     def __init__(self, agents: list[AgentCapability]):
@@ -1699,16 +1699,16 @@ class DynamicSelector:
         ]
 
         if not candidates:
-            return "general"  # fallback agent
+            return "general"  # 兜底智能体
 
         if budget_tier == "economy":
-            # Cheapest capable agent
+            # 最便宜的胜任智能体
             return min(candidates, key=lambda a: a.cost).name
         elif budget_tier == "performance":
-            # Fastest capable agent
+            # 最快的胜任智能体
             return min(candidates, key=lambda a: a.latency).name
         else:
-            # Balanced: cheapest among the fast agents
+            # 均衡：最快智能体中最便宜的
             fast = [a for a in candidates if a.latency < 10.0]
             pool = fast if fast else candidates
             return min(pool, key=lambda a: a.cost).name
@@ -1716,9 +1716,9 @@ class DynamicSelector:
 
 ---
 
-### Research Space Partitioning
+### 研究空间分区
 
-When multiple agents research the same broad topic, they will return overlapping results unless the coordinator explicitly partitions the search space. Overlap wastes budget and makes aggregation harder.
+当多个智能体研究同一广泛主题时，除非协调者明确划分搜索空间，否则它们会返回重叠的结果。重叠会浪费预算并使汇总变得更难。
 
 ```python
 def partition_research_space(
@@ -1727,13 +1727,13 @@ def partition_research_space(
     partition_dimensions: list[str]
 ) -> list[dict]:
     """
-    Divide a research topic into non-overlapping partitions.
-    Each agent receives a partition with explicit scope boundaries.
+    将研究主题划分为互不重叠的分区。
+    每个智能体接收一个带有明确范围边界的分区。
     """
     if len(partition_dimensions) >= num_agents:
         dimensions = partition_dimensions[:num_agents]
     else:
-        # Create additional partitions if not enough thematic dimensions
+        # 若主题维度不够，创建额外分区
         dimensions = partition_dimensions + [
             f"recent_{i}" for i in range(num_agents - len(partition_dimensions))
         ]
@@ -1753,7 +1753,7 @@ def partition_research_space(
         for i, dimension in enumerate(dimensions)
     ]
 
-# Example: 3-agent research on "vector database performance"
+# 示例：3 个智能体研究"向量数据库性能"
 partitions = partition_research_space(
     topic="vector database performance",
     num_agents=3,
@@ -1763,9 +1763,9 @@ partitions = partition_research_space(
 
 ---
 
-### Crash Recovery Manifest
+### 崩溃恢复清单
 
-Long-running agent pipelines (hours, overnight jobs) need crash recovery. A manifest records completed work at phase boundaries so that a restart can continue from the last checkpoint rather than starting over.
+长时间运行的智能体流水线（数小时、通宵作业）需要崩溃恢复能力。清单在阶段边界记录已完成的工作，使重启时可以从最后一个检查点继续，而不是从头开始。
 
 ```python
 import json
@@ -1803,17 +1803,17 @@ class PipelineManifest:
 
     def mark_item_complete(self, item_id: str, manifest_path: str):
         self.completed_items.append(item_id)
-        self.save(manifest_path)  # write after every item
+        self.save(manifest_path)  # 每个条目完成后写入
 
 class RecoverableOrchestrator:
     def __init__(self, manifest_path: str):
         self.manifest_path = manifest_path
 
     def run(self, pipeline_id: str, items: list[str], processor) -> PipelineManifest:
-        # Load or create manifest
+        # 加载或创建清单
         if os.path.exists(self.manifest_path):
             manifest = PipelineManifest.load(self.manifest_path)
-            print(f"Resuming: {len(manifest.completed_items)}/{manifest.total_items} done")
+            print(f"恢复中：{len(manifest.completed_items)}/{manifest.total_items} 已完成")
         else:
             manifest = PipelineManifest(
                 pipeline_id=pipeline_id,
@@ -1824,7 +1824,7 @@ class RecoverableOrchestrator:
 
         for item_id in items:
             if item_id in manifest.completed_items:
-                continue  # skip completed items
+                continue  # 跳过已完成的条目
 
             try:
                 processor(item_id)
@@ -1838,13 +1838,13 @@ class RecoverableOrchestrator:
         return manifest
 ```
 
-Checkpoint at phase boundaries, not just at task completion. For a 3-phase pipeline (ingest, analyze, report), a crash mid-analysis should resume from the start of analysis, not from the start of ingest.
+在阶段边界设置检查点，而不仅仅在任务完成时。对于 3 阶段流水线（摄入、分析、报告），在分析中途崩溃应该从分析开始恢复，而不是从摄入开始。
 
 ---
 
-### Iterative Refinement Loop
+### 迭代精化循环
 
-Some tasks require multiple passes to reach acceptable quality. The coordinator drives iteration, not the subagent. This separation means the subagent stays stateless and the coordinator controls stopping criteria.
+某些任务需要多轮才能达到可接受的质量。协调者驱动迭代，而不是子智能体。这种分离意味着子智能体保持无状态，协调者控制停止条件。
 
 ```python
 @dataclass
@@ -1877,7 +1877,7 @@ def iterative_refine(
     )
 
     while True:
-        # Generate (or refine based on feedback)
+        # 生成（或基于反馈精化）
         if state.iteration == 0:
             state.current_output = generator_fn(initial_task)
         else:
@@ -1886,7 +1886,7 @@ def iterative_refine(
                 f"Feedback to address:\n{state.feedback}"
             )
 
-        # Evaluate — separate pass with fresh context
+        # 评估 —— 以新鲜上下文独立进行
         evaluation = evaluator_fn(state.current_output, initial_task)
         state.quality_score = evaluation["score"]
         state.feedback = evaluation["feedback"]
@@ -1898,33 +1898,33 @@ def iterative_refine(
     return state
 ```
 
-Stopping criteria matter. "Keep going until it's perfect" is not a stopping criterion. Define `target_quality` as a numeric threshold based on a validation set, and `max_iterations` as a hard budget. Without both, the loop either terminates too early or runs indefinitely.
+停止条件很重要。"一直做到完美"不是停止条件。基于验证集将 `target_quality` 定义为数值阈值，将 `max_iterations` 定义为硬性预算。两者缺一不可，否则循环要么过早终止，要么无限运行。
 
 ---
 
-### Narrow Task Decomposition
+### 精确任务分解
 
-Broad task decomposition produces subagents with unclear success criteria. Use the SPEC test to validate each subtask before dispatching:
+宽泛的任务分解会产生成功标准不清晰的子智能体。在分发前使用 SPEC 测试验证每个子任务：
 
-**SPEC test for subtasks:**
-- **S**pecific: the task description leaves no ambiguity about what to produce
-- **P**rogrammatically evaluable: success or failure can be checked without human judgment
-- **E**xplicit scope: what is in and out of scope is stated, not implied
-- **C**onstrained: the task has a defined output format, length, or schema
+**子任务的 SPEC 测试：**
+- **S**（Specific，具体）：任务描述对要生产的内容没有歧义
+- **P**（Programmatically evaluable，可程序化评估）：成功或失败无需人工判断即可检查
+- **E**（Explicit scope，明确范围）：范围内和范围外的内容有明确说明，而非隐含
+- **C**（Constrained，有约束）：任务有明确的输出格式、长度或 Schema
 
-A subtask that fails the SPEC test should be decomposed further or clarified before dispatch.
+未通过 SPEC 测试的子任务应该在分发前进一步分解或澄清。
 
-| Subtask | SPEC pass? | Issue |
-|---|---|---|
-| "Research the topic" | No | Not specific, not programmatically evaluable |
-| "Find 3 peer-reviewed papers on vector indexing published 2022-2024" | Yes | Specific, countable, scoped, constrained format |
-| "Analyze the data" | No | Not specific, no output schema |
-| "Extract vendor names from invoices 001-050, output as JSON array" | Yes | Specific, schema-constrained, scoped |
-| "Write something good" | No | No quality criteria, not evaluable |
-| "Write a 150-word executive summary with: problem, approach, outcome" | Yes | Word count, structure, and content all specified |
+| 子任务 | SPEC 通过？ | 问题 |
+|-------|-----------|------|
+| "研究该主题" | 否 | 不具体，无法程序化评估 |
+| "找出 2022-2024 年发表的 3 篇关于向量索引的同行评审论文" | 是 | 具体、可计数、有范围、格式约束 |
+| "分析数据" | 否 | 不具体，无输出 Schema |
+| "从发票 001-050 中提取供应商名称，输出为 JSON 数组" | 是 | 具体、Schema 约束、有范围 |
+| "写一些好的内容" | 否 | 无质量标准，无法评估 |
+| "写一段 150 字的执行摘要，包含：问题、方案、结果" | 是 | 字数、结构和内容均已明确 |
 
-When a subtask cannot be expressed in a way that passes the SPEC test, that is usually a signal that the coordinator does not yet have enough information to decompose that portion of the work. Gather more context before decomposing further.
+当一个子任务无法以通过 SPEC 测试的方式表达时，这通常是一个信号：协调者尚未获得足够的信息来分解那部分工作。在进一步分解前，先收集更多上下文。
 
 ---
 
-*Version 1.0.0 | Created: 2026-02-07 | Agent Teams (v2.1.32+, Experimental)*
+*版本 1.0.0 | 创建于：2026-02-07 | 智能体团队（v2.1.32+，实验性）*

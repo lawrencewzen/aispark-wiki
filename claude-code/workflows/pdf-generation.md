@@ -1,271 +1,271 @@
 > 📚 **AI Spark Wiki** · Claude Code 知识库
 
 ---
-title: "PDF Generation with Claude Code"
-description: "Generate professional PDFs using Claude Code with Quarto and Typst stack"
+title: "使用 Claude Code 生成 PDF"
+description: "使用 Quarto 和 Typst 技术栈，通过 Claude Code 生成专业 PDF"
 tags: [workflow, guide, integration]
 ---
 
-# PDF Generation with Claude Code
+# 使用 Claude Code 生成 PDF
 
-> **Confidence**: Tier 2 — Based on production-tested workflow with Quarto/Typst stack.
+> **可信度**：Tier 2 — 基于经过生产验证的 Quarto/Typst 技术栈工作流。
 
-Generate professional PDFs (documentation, whitepapers, reports) using Claude Code with modern typography and design.
+使用具有现代排版和设计的 Claude Code，生成专业 PDF（文档、白皮书、报告）。
 
 ---
 
-## Table of Contents
+## 目录
 
 1. [TL;DR](#tldr)
-2. [When to Use](#when-to-use)
-3. [Stack Overview](#stack-overview)
-4. [Setup](#setup)
-5. [Workflow](#workflow)
-6. [Integration with Claude Code](#integration-with-claude-code)
-7. [Customization](#customization)
-8. [Troubleshooting](#troubleshooting)
-9. [See Also](#see-also)
+2. [适用场景](#适用场景)
+3. [技术栈概览](#技术栈概览)
+4. [配置](#配置)
+5. [工作流](#工作流)
+6. [与 Claude Code 集成](#与-claude-code-集成)
+7. [自定义](#自定义)
+8. [故障排查](#故障排查)
+9. [延伸阅读](#延伸阅读)
 
 ---
 
 ## TL;DR
 
 ```bash
-# Install
+# 安装
 brew install quarto  # macOS
 
-# Generate
+# 生成
 quarto render document.qmd  # → document.pdf
 
-# Preview
-quarto preview document.qmd  # Hot-reload
+# 预览
+quarto preview document.qmd  # 热重载
 ```
 
-**Stack**: Quarto (orchestration) + Typst (typography) + Pandoc (markdown)
+**技术栈**：Quarto（编排）+ Typst（排版）+ Pandoc（Markdown）
 
 ---
 
-## When to Use
+## 适用场景
 
-| Use Case | Good Fit | Alternative |
+| 使用场景 | 适合度 | 替代方案 |
 |----------|----------|-------------|
-| Technical documentation | ✅ | — |
-| Whitepapers / Reports | ✅ | — |
-| API documentation | ⚠️ | OpenAPI + Redoc |
-| Slides / Presentations | ⚠️ | Quarto Revealjs |
-| Quick notes | ❌ | Plain Markdown |
-| Collaborative editing | ❌ | Google Docs, Notion |
+| 技术文档 | ✅ | — |
+| 白皮书 / 报告 | ✅ | — |
+| API 文档 | ⚠️ | OpenAPI + Redoc |
+| 幻灯片 / 演示文稿 | ⚠️ | Quarto Revealjs |
+| 快速笔记 | ❌ | 纯 Markdown |
+| 协作编辑 | ❌ | Google Docs、Notion |
 
-**Best for**: Long-form technical content requiring professional layout, version control, and reproducibility.
+**最适合**：需要专业排版、版本控制和可复现性的长篇技术内容。
 
 ---
 
-## Stack Overview
+## 技术栈概览
 
 ```
 ┌─────────────────────────────────────────────────┐
-│                  Your .qmd File                 │
-│         (Markdown + YAML frontmatter)           │
+│               你的 .qmd 文件                    │
+│       （Markdown + YAML 前置元数据）            │
 └─────────────────────────────────────────────────┘
                         │
                         ▼
 ┌─────────────────────────────────────────────────┐
-│                    Quarto                       │
-│           (Document rendering engine)           │
-│         • Processes YAML metadata               │
-│         • Handles extensions                    │
-│         • Manages output formats                │
+│                   Quarto                        │
+│             （文档渲染引擎）                    │
+│         • 处理 YAML 元数据                      │
+│         • 管理扩展                              │
+│         • 管理输出格式                          │
 └─────────────────────────────────────────────────┘
                         │
           ┌─────────────┴─────────────┐
           ▼                           ▼
 ┌─────────────────────┐    ┌─────────────────────┐
 │       Pandoc        │    │       Typst         │
-│   (MD → AST → ?)    │    │  (Typography/PDF)   │
-│  • Markdown parser  │    │  • Modern engine    │
-│  • AST transforms   │    │  • Fast compilation │
-│  • Format bridges   │    │  • No LaTeX needed  │
+│   （MD → AST → ?）  │    │  （排版/PDF）       │
+│  • Markdown 解析器  │    │  • 现代引擎         │
+│  • AST 转换         │    │  • 快速编译         │
+│  • 格式桥接         │    │  • 无需 LaTeX       │
 └─────────────────────┘    └─────────────────────┘
                         │
                         ▼
 ┌─────────────────────────────────────────────────┐
-│                  document.pdf                   │
-│        (Professional typography output)         │
+│                 document.pdf                    │
+│          （专业排版输出）                       │
 └─────────────────────────────────────────────────┘
 ```
 
-### Output Formats & Commands
+### 输出格式与命令
 
 ```
-  FORMAT                COMMANDE                      SORTIE
+  格式                  命令                          输出
   ──────                ────────                      ──────
 
-  PDF standard    →  quarto render doc.qmd            doc.pdf
-                     --to typst                       (sans template custom)
+  标准 PDF        →  quarto render doc.qmd            doc.pdf
+                     --to typst                       （无自定义模板）
 
-  PDF stylé ✅    →  quarto render doc.qmd            doc.pdf
+  样式化 PDF ✅   →  quarto render doc.qmd            doc.pdf
                      --to whitepaper-typst            (~270K–1.7M, Bold Guy)
-                     (format custom via _extensions/)
+                     （通过 _extensions/ 自定义格式）
 
   EPUB            →  quarto render doc.qmd            doc.epub
                      --to epub
 
-  Preview         →  quarto preview doc.qmd           hot-reload navigateur
+  预览            →  quarto preview doc.qmd           浏览器热重载
 ```
 
-### Extension Structure
+### 扩展结构
 
 ```
   _extensions/
   └── whitepaper/
-      ├── _extension.yml       ← déclare le format "whitepaper-typst"
-      ├── typst-template.typ   ← design system (couleurs, typo, callouts)
-      └── typst-show.typ       ← bridge Quarto → Typst
+      ├── _extension.yml       ← 声明 "whitepaper-typst" 格式
+      ├── typst-template.typ   ← 设计系统（颜色、字体、标注框）
+      └── typst-show.typ       ← Quarto → Typst 桥接
 
-  ⚠️  Si tu maintiens des copies dans fr/ en/ et racine :
-      garder les 3 fichiers typst-template.typ synchronisés
+  ⚠️  若在 fr/ en/ 和根目录维护多份副本：
+      保持 3 个 typst-template.typ 文件同步
 ```
 
-### Troubleshooting Rapide
+### 快速故障排查
 
 ```
-  SYMPTÔME                        CAUSE                    FIX
-  ────────                        ─────                    ───
-  PDF petit (~80-190K), non stylé  --to pdf au lieu de      Utiliser --to whitepaper-typst
-                                   --to whitepaper-typst
+  现象                              原因                     修复
+  ────────                          ─────                    ───
+  PDF 很小 (~80-190K)，无样式       使用了 --to pdf          改用 --to whitepaper-typst
+                                    而非 --to whitepaper-typst
 
-  Erreur "bibliography"            @ref dans titre callout   Supprimer le @ du titre
-                                   → interprété comme cit.
+  "bibliography" 报错               标注框标题中有 @ref       删除标题中的 @
+                                    → 被解释为引用
 
-  Table rendue comme code          Backtick ``` non fermé    Compter les ``` (doit être pair)
+  表格被渲染为代码                  反引号 ``` 未关闭         检查 ``` 数量（必须成对）
 
-  "Extension not found"            Mauvais répertoire        Vérifier _extensions/ path
+  "Extension not found"             目录错误                  检查 _extensions/ 路径
 ```
 
-| Component | Version | Role |
+| 组件 | 版本 | 作用 |
 |-----------|---------|------|
-| **Quarto** | ≥1.4.0 | Orchestration, extensions, multi-format |
-| **Typst** | 0.13.0 | Modern typography (replaces LaTeX) |
-| **Pandoc** | 3.x | Markdown parsing (bundled with Quarto) |
+| **Quarto** | ≥1.4.0 | 编排、扩展、多格式输出 |
+| **Typst** | 0.13.0 | 现代排版（替代 LaTeX） |
+| **Pandoc** | 3.x | Markdown 解析（随 Quarto 捆绑） |
 
 ---
 
-## Setup
+## 配置
 
-### Installation
+### 安装
 
-**macOS**:
+**macOS**：
 ```bash
 brew install quarto
 ```
 
-**Linux (Debian/Ubuntu)**:
+**Linux（Debian/Ubuntu）**：
 ```bash
 wget https://github.com/quarto-dev/quarto-cli/releases/download/v1.4.555/quarto-1.4.555-linux-amd64.deb
 sudo dpkg -i quarto-1.4.555-linux-amd64.deb
 ```
 
-**Windows**:
+**Windows**：
 ```powershell
 winget install Posit.Quarto
 ```
 
-**Verify**:
+**验证**：
 ```bash
-quarto --version  # Should be ≥1.4.0
+quarto --version  # 应为 ≥1.4.0
 ```
 
-### Project Structure
+### 项目结构
 
 ```
 project/
-├── _extensions/           # Quarto extensions (templates)
+├── _extensions/           # Quarto 扩展（模板）
 │   └── custom-template/
 │       ├── _extension.yml
 │       ├── typst-template.typ
 │       └── typst-show.typ
 ├── documents/
-│   ├── guide.qmd          # Source file
-│   └── guide.pdf          # Generated output
+│   ├── guide.qmd          # 源文件
+│   └── guide.pdf          # 生成的输出
 └── assets/
-    └── logo.png           # Shared assets
+    └── logo.png           # 共享资源
 ```
 
-### Minimal Document
+### 最小文档
 
-Create `document.qmd`:
+创建 `document.qmd`：
 
 ```yaml
 ---
-title: "My Document"
-author: "Author Name"
+title: "我的文档"
+author: "作者姓名"
 date: 2026-01-17
 format:
   typst:
     toc: true
-lang: en
+lang: zh
 ---
 
-# Introduction
+# 介绍
 
-Your content here...
+在此处填写你的内容……
 
-## Section 1
+## 第 1 节
 
-More content with **bold** and `code`.
+更多内容，包含**粗体**和 `代码`。
 
 ```bash
-echo "Code blocks work!"
+echo "代码块正常工作！"
 ```
 
-## Section 2
+## 第 2 节
 
-| Column A | Column B |
+| 列 A | 列 B |
 |----------|----------|
-| Data 1   | Data 2   |
+| 数据 1   | 数据 2   |
 ```
 
-Generate:
+生成：
 ```bash
-quarto render document.qmd  # Creates document.pdf
+quarto render document.qmd  # 创建 document.pdf
 ```
 
 ---
 
-## Workflow
+## 工作流
 
-### 1. Content-First Approach
+### 1. 内容优先方法
 
 ```
-1. Write content in Markdown (.qmd)
-2. Add YAML frontmatter for metadata
-3. Preview with hot-reload
-4. Generate final PDF
-5. Version control both source and PDF
+1. 在 Markdown（.qmd）中编写内容
+2. 添加 YAML 前置元数据
+3. 使用热重载预览
+4. 生成最终 PDF
+5. 对源文件和 PDF 进行版本控制
 ```
 
-### 2. Available YAML Parameters
+### 2. 可用的 YAML 参数
 
-| Parameter | Type | Description | Example |
+| 参数 | 类型 | 描述 | 示例 |
 |-----------|------|-------------|---------|
-| `title` | string | Main title | `"Technical Guide"` |
-| `subtitle` | string | Secondary title | `"v2.0 Edition"` |
-| `author` | string/array | Author(s) | `"John Doe"` |
-| `date` | date | Document date | `2026-01-17` |
-| `date-format` | string | Display format | `"MMMM YYYY"` |
-| `toc` | boolean | Table of contents | `true` |
-| `toc-depth` | number | TOC levels (1-3) | `2` |
-| `lang` | string | Language | `fr` or `en` |
-| `section-numbering` | string | Number format | `"1.1"` |
+| `title` | 字符串 | 主标题 | `"技术指南"` |
+| `subtitle` | 字符串 | 副标题 | `"v2.0 版"` |
+| `author` | 字符串/数组 | 作者 | `"张三"` |
+| `date` | 日期 | 文档日期 | `2026-01-17` |
+| `date-format` | 字符串 | 显示格式 | `"MMMM YYYY"` |
+| `toc` | 布尔值 | 目录 | `true` |
+| `toc-depth` | 数字 | 目录层级（1-3） | `2` |
+| `lang` | 字符串 | 语言 | `zh` 或 `en` |
+| `section-numbering` | 字符串 | 编号格式 | `"1.1"` |
 
-### 3. Markdown Features
+### 3. Markdown 功能
 
-**Page Breaks**:
+**分页符**：
 ```markdown
 {{< pagebreak >}}
 ```
 
-**Code Blocks** (with syntax highlighting):
+**代码块**（带语法高亮）：
 ````markdown
 ```typescript
 function hello(): string {
@@ -274,82 +274,82 @@ function hello(): string {
 ```
 ````
 
-**Tables**:
+**表格**：
 ```markdown
-| Feature | Supported |
+| 功能 | 支持 |
 |---------|-----------|
-| Tables  | ✅        |
-| Images  | ✅        |
-| Links   | ✅        |
+| 表格  | ✅        |
+| 图片  | ✅        |
+| 链接  | ✅        |
 ```
 
-**Images**:
+**图片**：
 ```markdown
-![Alt text](path/to/image.png){width=50%}
+![替代文本](path/to/image.png){width=50%}
 ```
 
 ---
 
-## Integration with Claude Code
+## 与 Claude Code 集成
 
-### Using the pdf-generator Skill
+### 使用 pdf-generator Skills（技能模块）
 
-Invoke the skill for guided PDF generation:
+调用 Skills（技能模块）进行引导式 PDF 生成：
 
 ```
 /pdf-generator
 ```
 
-The skill provides:
-- Template with YAML frontmatter
-- Design system configuration
-- Common troubleshooting fixes
-- Generation commands
+该 Skills（技能模块）提供：
+- 带 YAML 前置元数据的模板
+- 设计系统配置
+- 常见故障排查修复
+- 生成命令
 
-### Prompt Examples
+### 提示词示例
 
-**Generate documentation**:
+**生成文档**：
 ```
-Create a technical guide for our API as a Quarto document.
-Use the Typst format with a table of contents.
-Include sections for: Authentication, Endpoints, Error Codes.
-```
-
-**Convert existing Markdown**:
-```
-Convert README.md to a professional PDF.
-Add a cover page with title and date.
-Use Quarto/Typst format.
+将我们的 API 创建为 Quarto 文档形式的技术指南。
+使用带目录的 Typst 格式。
+包含以下章节：认证、端点、错误代码。
 ```
 
-**Create template**:
+**转换现有 Markdown**：
 ```
-Create a Quarto extension for our company's document style:
-- Logo in header
-- Custom colors: primary #0f172a, accent #6366f1
-- Inter font for body, JetBrains Mono for code
-```
-
-### With Plan Mode
-
-For complex documents:
-```
-[Press Shift+Tab to enter Plan Mode]
-
-I need to create a series of 5 technical whitepapers.
-Plan the structure:
-1. Common template/extension
-2. Shared assets
-3. Build automation
-4. Version management
+将 README.md 转换为专业 PDF。
+添加带标题和日期的封面页。
+使用 Quarto/Typst 格式。
 ```
 
-### With Hooks
+**创建模板**：
+```
+为我们公司的文档样式创建一个 Quarto 扩展：
+- 页眉中的 Logo
+- 自定义颜色：主色 #0f172a，强调色 #6366f1
+- 正文使用 Inter 字体，代码使用 JetBrains Mono
+```
 
-Auto-generate PDF after edits using a PostToolUse hook:
+### 配合计划模式
+
+用于复杂文档：
+```
+[按 Shift+Tab 进入计划模式]
+
+我需要创建一系列 5 份技术白皮书。
+规划结构：
+1. 通用模板/扩展
+2. 共享资源
+3. 构建自动化
+4. 版本管理
+```
+
+### 配合 Hooks（钩子）
+
+使用工具后钩子在编辑后自动生成 PDF：
 
 ```json
-// In .claude/settings.json
+// 在 .claude/settings.json 中
 {
   "hooks": {
     "PostToolUse": [
@@ -364,15 +364,15 @@ Auto-generate PDF after edits using a PostToolUse hook:
 
 ---
 
-## Customization
+## 自定义
 
-### Custom Template Extension
+### 自定义模板扩展
 
-Create `_extensions/mytemplate/_extension.yml`:
+创建 `_extensions/mytemplate/_extension.yml`：
 
 ```yaml
-title: My Template
-author: Your Name
+title: 我的模板
+author: 你的名字
 version: 1.0.0
 contributes:
   formats:
@@ -382,28 +382,28 @@ contributes:
         - typst-show.typ
 ```
 
-### Typst Template Variables
+### Typst 模板变量
 
-In `typst-template.typ`:
+在 `typst-template.typ` 中：
 
 ```typst
-// Colors
-#let primary = rgb("#0f172a")      // Dark text
-#let secondary = rgb("#334155")    // Lighter text
-#let accent = rgb("#6366f1")       // Highlights
+// 颜色
+#let primary = rgb("#0f172a")      // 深色文字
+#let secondary = rgb("#334155")    // 浅色文字
+#let accent = rgb("#6366f1")       // 高亮
 
-// Typography
+// 排版
 #set text(
   font: ("Inter", "Helvetica Neue", "Arial"),
   size: 11pt,
 )
 
 #set par(
-  leading: 0.75em,  // Line height
+  leading: 0.75em,  // 行高
   justify: true,
 )
 
-// Code blocks
+// 代码块
 #show raw.where(block: true): it => {
   block(
     fill: rgb("#f8fafc"),
@@ -415,12 +415,12 @@ In `typst-template.typ`:
 }
 ```
 
-### Callout Boxes
+### 标注框
 
-Define in template:
+在模板中定义：
 
 ```typst
-#let info(title: "Note", body) = {
+#let info(title: "注意", body) = {
   block(
     fill: rgb("#E0F2FE"),
     stroke: (left: 3pt + rgb("#0284C7")),
@@ -430,66 +430,66 @@ Define in template:
   )
 }
 
-#let warning(title: "Warning", body) = { ... }
-#let success(title: "Success", body) = { ... }
-#let danger(title: "Danger", body) = { ... }
+#let warning(title: "警告", body) = { ... }
+#let success(title: "成功", body) = { ... }
+#let danger(title: "危险", body) = { ... }
 ```
 
-Use in document:
+在文档中使用：
 ```typst
-#info[This is an informational note.]
-#warning(title: "Attention")[Check your configuration.]
+#info[这是一条信息提示。]
+#warning(title: "注意")[请检查你的配置。]
 ```
 
 ---
 
-## Troubleshooting
+## 故障排查
 
-### Quick Checks
+### 快速检查
 
 ```bash
-# Verify Quarto
+# 验证 Quarto
 quarto --version
 
-# Check extension exists
+# 检查扩展是否存在
 ls _extensions/*/
 
-# Validate code block pairs (must be even)
+# 验证代码块是否成对（必须为偶数）
 grep -c '^```' document.qmd
 
-# Check encoding
-file -i document.qmd  # Should show utf-8
+# 检查编码
+file -i document.qmd  # 应显示 utf-8
 ```
 
-### Common Issues
+### 常见问题
 
-| Issue | Symptom | Fix |
+| 问题 | 现象 | 修复 |
 |-------|---------|-----|
-| Nested code blocks | Content escapes block | Use 4+ backticks for outer block |
-| Tables as code | Grey background | Check unmatched ` ``` ` above |
-| Missing extension | "Extension not found" | Verify `_extensions/` path |
-| Font warnings | "unknown font family" | Normal; uses fallbacks |
-| Special chars broken | `?` or garbled | Convert to UTF-8 |
+| 嵌套代码块 | 内容从块中逃逸 | 外层块使用 4+ 个反引号 |
+| 表格变成代码 | 灰色背景 | 检查上方未匹配的 ` ``` ` |
+| 扩展缺失 | "Extension not found" | 验证 `_extensions/` 路径 |
+| 字体警告 | "unknown font family" | 正常；使用备用字体 |
+| 特殊字符乱码 | `?` 或乱码 | 转换为 UTF-8 |
 
-### Nested Code Blocks
+### 嵌套代码块
 
-**Problem**: Inner code block closes outer block prematurely.
+**问题**：内层代码块提前关闭外层块。
 
-**Solution**: Use more backticks for outer block:
+**解决方案**：外层块使用更多反引号：
 
 `````markdown
 ````markdown
-# Outer block with 4 backticks
+# 外层块使用 4 个反引号
 
 ```bash
-echo "Inner block with 3 backticks"
+echo "内层块使用 3 个反引号"
 ```
 
-Outer block continues...
+外层块继续……
 ````
 `````
 
-### Validation Script
+### 验证脚本
 
 ```bash
 #!/bin/bash
@@ -498,17 +498,17 @@ Outer block continues...
 for f in *.qmd; do
   count=$(grep -c '^```' "$f")
   if [ $((count % 2)) -ne 0 ]; then
-    echo "ERROR: $f has odd code block count ($count)"
+    echo "错误：$f 的代码块数量为奇数 ($count)"
   fi
 done
 ```
 
 ---
 
-## See Also
+## 延伸阅读
 
-- [Quarto Documentation](https://quarto.org/docs/guide/)
-- [Typst Documentation](https://typst.app/docs/)
-- [Quarto + Typst Guide](https://quarto.org/docs/output-formats/typst.html)
-- [examples/skills/pdf-generator.md](../../examples/skills/pdf-generator.md) — Skill template
-- [whitepapers/README.md](../../whitepapers/README.md) — Production example
+- [Quarto 文档](https://quarto.org/docs/guide/)
+- [Typst 文档](https://typst.app/docs/)
+- [Quarto + Typst 指南](https://quarto.org/docs/output-formats/typst.html)
+- [examples/skills/pdf-generator.md](../../examples/skills/pdf-generator.md) — Skills（技能模块）模板
+- [whitepapers/README.md](../../whitepapers/README.md) — 生产示例

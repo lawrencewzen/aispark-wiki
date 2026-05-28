@@ -1,41 +1,41 @@
 > 📚 **AI Spark Wiki** · Claude Code 知识库
 
 ---
-title: "Claude Code — Development Workflows Diagrams"
-description: "TDD cycle, spec-first pipeline, plan-driven workflow, iterative refinement loop"
-tags: [workflows, tdd, spec-first, plan-driven, iterative]
+title: "Claude Code — 开发工作流图表"
+description: "TDD 循环、规范优先流水线、计划驱动工作流、迭代优化循环"
+tags: [工作流, TDD, 规范优先, 计划驱动, 迭代]
 ---
 
-# Development Workflows
+# 开发工作流
 
-Proven patterns for structuring AI-assisted development sessions.
+构建 AI 辅助开发会话的经过验证的模式。
 
 ---
 
-### TDD Red-Green-Refactor with Claude
+### TDD 红-绿-重构与 Claude 配合
 
-Test-Driven Development adapted for Claude Code: write the failing test first, then ask Claude to implement only what's needed to pass it. This prevents over-engineering and ensures tests actually verify behavior.
+适配 Claude Code 的测试驱动开发（TDD）：先写失败的测试，再让 Claude 仅实现使其通过所需的最少代码。这可以防止过度工程化，并确保测试真正验证行为。
 
 ```mermaid
 flowchart TD
-    A([Start: New feature needed]) --> B(Write failing test<br/>with human)
-    B --> C(Run tests)
-    C --> D{Tests fail<br/>as expected?}
-    D -->|No: tests pass<br/>before impl!| E(Fix test — it's too weak)
+    A([开始：需要新功能]) --> B(与人类协作<br/>编写失败的测试)
+    B --> C(运行测试)
+    C --> D{测试是否<br/>如预期失败？}
+    D -->|否：测试在实现前通过了！| E(修复测试 — 测试太弱)
     E --> B
-    D -->|Yes: RED ✓| F(Ask Claude to implement<br/>minimal code to pass)
-    F --> G(Run tests again)
-    G --> H{Tests pass?}
-    H -->|No| I(Diagnose with Claude<br/>fix implementation)
+    D -->|是：红色 ✓| F(让 Claude 实现<br/>使其通过的最少代码)
+    F --> G(再次运行测试)
+    G --> H{测试通过了？}
+    H -->|否| I(与 Claude 诊断<br/>修复实现)
     I --> G
-    H -->|Yes: GREEN ✓| J{Code needs<br/>refactoring?}
-    J -->|Yes| K(Refactor with Claude)
-    K --> L(Run tests: still green?)
-    L -->|No| I
-    L -->|Yes: REFACTOR ✓| M{More features<br/>needed?}
-    J -->|No| M
-    M -->|Yes| B
-    M -->|No| N([Feature complete ✓])
+    H -->|是：绿色 ✓| J{代码需要<br/>重构？}
+    J -->|是| K(与 Claude 重构)
+    K --> L(运行测试：仍为绿色？)
+    L -->|否| I
+    L -->|是：重构 ✓| M{还需要更多<br/>功能？}
+    J -->|否| M
+    M -->|是| B
+    M -->|否| N([功能完成 ✓])
 
     style B fill:#E85D5D,color:#fff
     style F fill:#E85D5D,color:#fff
@@ -46,71 +46,71 @@ flowchart TD
     style K fill:#6DB3F2,color:#fff
     style N fill:#7BC47F,color:#333
 
-    click A href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/tdd-with-claude.md" "TDD — New feature"
-    click B href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/tdd-with-claude.md" "Write failing test (RED)"
-    click C href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/tdd-with-claude.md" "Run tests"
-    click D href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/tdd-with-claude.md" "Tests fail as expected?"
-    click E href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/tdd-with-claude.md" "Fix test — too weak"
-    click F href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/tdd-with-claude.md" "Claude implements minimal code"
-    click G href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/tdd-with-claude.md" "Run tests again"
-    click H href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/tdd-with-claude.md" "Tests pass? (GREEN)"
-    click I href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/tdd-with-claude.md" "Diagnose with Claude"
-    click J href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/tdd-with-claude.md" "Code needs refactoring?"
-    click K href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/tdd-with-claude.md" "Refactor with Claude"
-    click L href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/tdd-with-claude.md" "Run tests: still green?"
-    click M href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/tdd-with-claude.md" "More features needed?"
-    click N href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/tdd-with-claude.md" "Feature complete ✓"
+    click A href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/tdd-with-claude.md" "TDD — 新功能"
+    click B href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/tdd-with-claude.md" "编写失败的测试（红色）"
+    click C href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/tdd-with-claude.md" "运行测试"
+    click D href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/tdd-with-claude.md" "测试如预期失败？"
+    click E href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/tdd-with-claude.md" "修复测试 — 太弱"
+    click F href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/tdd-with-claude.md" "Claude 实现最少代码"
+    click G href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/tdd-with-claude.md" "再次运行测试"
+    click H href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/tdd-with-claude.md" "测试通过？（绿色）"
+    click I href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/tdd-with-claude.md" "与 Claude 诊断"
+    click J href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/tdd-with-claude.md" "代码需要重构？"
+    click K href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/tdd-with-claude.md" "与 Claude 重构"
+    click L href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/tdd-with-claude.md" "运行测试：仍为绿色？"
+    click M href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/tdd-with-claude.md" "还需要更多功能？"
+    click N href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/tdd-with-claude.md" "功能完成 ✓"
 ```
 
 <details>
-<summary>ASCII version</summary>
+<summary>ASCII 版本</summary>
 
 ```
-Write failing test (RED)
+编写失败的测试（红色）
         │
-    Run tests
+    运行测试
         │
-  Fail as expected?
-  ├─ No  → Fix test (too weak)
-  └─ Yes → Ask Claude: implement minimal code
+  如预期失败？
+  ├─ 否  → 修复测试（太弱）
+  └─ 是 → 让 Claude：实现最少代码
                 │
-           Run tests
+           运行测试
                 │
-           Pass? (GREEN)
-           ├─ No  → Diagnose + fix
-           └─ Yes → Refactor?
-                    ├─ Yes → Refactor (REFACTOR) → re-run tests
-                    └─ No  → Next feature
+           通过？（绿色）
+           ├─ 否  → 诊断 + 修复
+           └─ 是 → 需要重构？
+                    ├─ 是 → 重构（重构）→ 重新运行测试
+                    └─ 否  → 下一个功能
 ```
 
 </details>
 
-> **Source**: [TDD with Claude](../workflows/tdd-with-claude.md)
+> **来源**：[TDD 与 Claude](../workflows/tdd-with-claude.md)
 
 ---
 
-### Spec-First Development Pipeline
+### 规范优先开发流水线
 
-Write the specification before the code. Claude uses the spec as the single source of truth — preventing drift between what was planned and what was built.
+在写代码之前先写规范。Claude 将规范作为单一可信来源——防止计划与实际构建之间产生偏差。
 
 ```mermaid
 flowchart LR
-    A([Idea / Requirement]) --> B(Write spec.md<br/>in natural language)
-    B --> C(Claude reviews spec<br/>for clarity + completeness)
-    C --> D{Spec approved<br/> by human?}
-    D -->|No: gaps found| E(Refine spec<br/>address gaps)
+    A([想法 / 需求]) --> B(用自然语言<br/>编写 spec.md)
+    B --> C(Claude 审查规范<br/>检查清晰度和完整性)
+    C --> D{规范是否已<br/>获人类批准？}
+    D -->|否：发现缺陷| E(完善规范<br/>弥补缺陷)
     E --> C
-    D -->|Yes| F(Generate tests<br/>from spec)
-    F --> G(Generate implementation<br/>from spec + tests)
-    G --> H(Run test suite)
-    H --> I{All tests<br/>pass?}
-    I -->|No| J(Claude fixes<br/>implementation)
+    D -->|是| F(根据规范<br/>生成测试)
+    F --> G(根据规范 + 测试<br/>生成实现)
+    G --> H(运行测试套件)
+    H --> I{所有测试<br/>通过？}
+    I -->|否| J(Claude 修复<br/>实现)
     J --> H
-    I -->|Yes| K(Human review<br/>spec vs output)
-    K --> L{Matches<br/>spec?}
-    L -->|No| M(Update spec<br/>or implementation)
+    I -->|是| K(人类审查<br/>规范 vs 输出)
+    K --> L{与规范<br/>匹配？}
+    L -->|否| M(更新规范<br/>或实现)
     M --> K
-    L -->|Yes| N([Merge ✓])
+    L -->|是| N([合并 ✓])
 
     style A fill:#F5E6D3,color:#333
     style B fill:#6DB3F2,color:#fff
@@ -119,70 +119,70 @@ flowchart LR
     style L fill:#E87E2F,color:#fff
     style N fill:#7BC47F,color:#333
 
-    click A href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/spec-first.md" "Idea / Requirement"
-    click B href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/spec-first.md" "Write spec.md"
-    click C href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/spec-first.md" "Claude reviews spec"
-    click D href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/spec-first.md" "Spec approved by human?"
-    click E href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/spec-first.md" "Refine spec"
-    click F href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/spec-first.md" "Generate tests from spec"
-    click G href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/spec-first.md" "Generate implementation"
-    click H href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/spec-first.md" "Run test suite"
-    click I href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/spec-first.md" "All tests pass?"
-    click J href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/spec-first.md" "Claude fixes implementation"
-    click K href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/spec-first.md" "Human review"
-    click L href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/spec-first.md" "Matches spec?"
-    click M href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/spec-first.md" "Update spec or implementation"
-    click N href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/spec-first.md" "Merge ✓"
+    click A href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/spec-first.md" "想法 / 需求"
+    click B href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/spec-first.md" "编写 spec.md"
+    click C href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/spec-first.md" "Claude 审查规范"
+    click D href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/spec-first.md" "规范获人类批准？"
+    click E href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/spec-first.md" "完善规范"
+    click F href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/spec-first.md" "根据规范生成测试"
+    click G href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/spec-first.md" "生成实现"
+    click H href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/spec-first.md" "运行测试套件"
+    click I href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/spec-first.md" "所有测试通过？"
+    click J href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/spec-first.md" "Claude 修复实现"
+    click K href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/spec-first.md" "人类审查"
+    click L href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/spec-first.md" "与规范匹配？"
+    click M href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/spec-first.md" "更新规范或实现"
+    click N href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/spec-first.md" "合并 ✓"
 ```
 
 <details>
-<summary>ASCII version</summary>
+<summary>ASCII 版本</summary>
 
 ```
-Idea → Write spec.md → Claude reviews
+想法 → 编写 spec.md → Claude 审查
                              │
-                       Approved? ─No→ Refine spec
-                             │ Yes
-                       Generate tests from spec
+                       通过？─否→ 完善规范
+                             │ 是
+                       根据规范生成测试
                              │
-                       Generate implementation
+                       生成实现
                              │
-                       Run tests → Pass? ─No→ Claude fixes
-                             │ Yes
-                       Human review → Matches spec? ─No→ Fix
-                             │ Yes
-                           Merge ✓
+                       运行测试 → 通过？─否→ Claude 修复
+                             │ 是
+                       人类审查 → 与规范匹配？─否→ 修复
+                             │ 是
+                           合并 ✓
 ```
 
 </details>
 
-> **Source**: [Spec-First Development](../workflows/spec-first.md)
+> **来源**：[规范优先开发](../workflows/spec-first.md)
 
 ---
 
-### Plan-Driven Workflow with Annotation
+### 带注释的计划驱动工作流
 
-Complex tasks benefit from plan mode: Claude explores the codebase, proposes a plan, you annotate it, then Claude executes only what was approved. Prevents surprises on large refactors.
+复杂任务受益于计划模式：Claude 探索代码库，提出计划，你进行注释，然后 Claude 只执行已批准的内容。防止大规模重构时出现意外。
 
 ```mermaid
 flowchart TD
-    A([Complex task given]) --> B(Enter Plan Mode<br/>Shift+Tab × 2)
-    B --> C(Claude explores<br/>codebase structure)
-    C --> D(Claude proposes plan<br/>with file list)
-    D --> E(Human reviews plan)
-    E --> F{Plan<br/>acceptable?}
-    F -->|No: issues found| G(Human annotates plan<br/>marks corrections)
-    G --> H(Claude revises plan)
+    A([收到复杂任务]) --> B(进入计划模式<br/>Shift+Tab × 2)
+    B --> C(Claude 探索<br/>代码库结构)
+    C --> D(Claude 提出计划<br/>含文件列表)
+    D --> E(人类审查计划)
+    E --> F{计划<br/>可接受？}
+    F -->|否：发现问题| G(人类注释计划<br/>标记修正意见)
+    G --> H(Claude 修改计划)
     H --> E
-    F -->|Yes| I(Approve plan<br/>Exit Plan Mode)
-    I --> J(Claude executes<br/>step by step)
-    J --> K(Claude reports<br/>progress)
-    K --> L{Unexpected<br/>issue?}
-    L -->|Yes| M(Claude flags issue<br/>asks for guidance)
+    F -->|是| I(批准计划<br/>退出计划模式)
+    I --> J(Claude 逐步<br/>执行)
+    J --> K(Claude 报告<br/>进度)
+    K --> L{出现意外<br/>问题？}
+    L -->|是| M(Claude 标记问题<br/>请求指导)
     M --> F
-    L -->|No| N{All steps<br/>complete?}
-    N -->|No| J
-    N -->|Yes| O([Task done ✓])
+    L -->|否| N{所有步骤<br/>完成？}
+    N -->|否| J
+    N -->|是| O([任务完成 ✓])
 
     style A fill:#F5E6D3,color:#333
     style B fill:#6DB3F2,color:#fff
@@ -192,79 +192,79 @@ flowchart TD
     style G fill:#F5E6D3,color:#333
     style O fill:#7BC47F,color:#333
 
-    click A href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/plan-driven.md" "Complex task given"
-    click B href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#23-plan-mode" "Enter Plan Mode"
-    click C href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/plan-driven.md" "Claude explores codebase"
-    click D href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/plan-driven.md" "Claude proposes plan"
-    click E href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/plan-driven.md" "Human reviews plan"
-    click F href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/plan-driven.md" "Plan acceptable?"
-    click G href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/plan-driven.md" "Human annotates plan"
-    click H href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/plan-driven.md" "Claude revises plan"
-    click I href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#23-plan-mode" "Approve plan — Exit Plan Mode"
-    click J href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/plan-driven.md" "Claude executes step by step"
-    click K href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/plan-driven.md" "Claude reports progress"
-    click L href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/plan-driven.md" "Unexpected issue?"
-    click M href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/plan-driven.md" "Claude flags issue"
-    click N href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/plan-driven.md" "All steps complete?"
-    click O href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/plan-driven.md" "Task done ✓"
+    click A href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/plan-driven.md" "收到复杂任务"
+    click B href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#23-plan-mode" "进入计划模式"
+    click C href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/plan-driven.md" "Claude 探索代码库"
+    click D href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/plan-driven.md" "Claude 提出计划"
+    click E href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/plan-driven.md" "人类审查计划"
+    click F href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/plan-driven.md" "计划可接受？"
+    click G href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/plan-driven.md" "人类注释计划"
+    click H href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/plan-driven.md" "Claude 修改计划"
+    click I href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#23-plan-mode" "批准计划 — 退出计划模式"
+    click J href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/plan-driven.md" "Claude 逐步执行"
+    click K href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/plan-driven.md" "Claude 报告进度"
+    click L href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/plan-driven.md" "出现意外问题？"
+    click M href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/plan-driven.md" "Claude 标记问题"
+    click N href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/plan-driven.md" "所有步骤完成？"
+    click O href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/plan-driven.md" "任务完成 ✓"
 ```
 
 <details>
-<summary>ASCII version</summary>
+<summary>ASCII 版本</summary>
 
 ```
-Complex task
+复杂任务
      │
-Plan Mode (Shift+Tab×2)
+计划模式（Shift+Tab×2）
      │
-Claude explores codebase
+Claude 探索代码库
      │
-Claude proposes plan
+Claude 提出计划
      │
-Human reviews ──No──► Annotate + Claude revises ──► re-review
-     │ Yes
-Approve + exit plan mode
+人类审查 ──否──► 注释 + Claude 修改 ──► 重新审查
+     │ 是
+批准 + 退出计划模式
      │
-Claude executes step by step
+Claude 逐步执行
      │
-Unexpected? ──Yes──► Flag + ask guidance
-     │ No
-Done? ──No──► continue
-     │ Yes
-Complete ✓
+意外？──是──► 标记 + 请求指导
+     │ 否
+完成？──否──► 继续
+     │ 是
+完成 ✓
 ```
 
 </details>
 
-> **Source**: [Plan-Driven Workflow](../workflows/plan-driven.md)
+> **来源**：[计划驱动工作流](../workflows/plan-driven.md)
 
 ---
 
-### Iterative Refinement Loop
+### 迭代优化循环
 
-Output rarely hits the mark on the first try. This loop gives you a systematic way to improve results through targeted feedback rather than "make it better" vague instructions.
+输出很少在第一次就完全达到预期。这个循环为你提供了一种系统化的方式，通过有针对性的反馈来改进结果，而不是给出「让它更好」这样模糊的指令。
 
 ```mermaid
 flowchart TD
-    A([Initial prompt]) --> B(Claude generates output)
-    B --> C(Evaluate output quality)
-    C --> D{Good<br/>enough?}
-    D -->|Yes| E([Done ✓])
-    D -->|No| F(Identify specific issue<br/>What exactly is wrong?)
-    F --> G{Issue type?}
-    G -->|Style/tone| H(Add: style constraints)
-    G -->|Missing info| I(Add: provide missing context)
-    G -->|Wrong approach| J(Add: redirect approach)
-    G -->|Too verbose/brief| K(Add: length constraint)
-    H --> L(Refine instruction)
+    A([初始提示词]) --> B(Claude 生成输出)
+    B --> C(评估输出质量)
+    C --> D{足够好？}
+    D -->|是| E([完成 ✓])
+    D -->|否| F(找出具体问题<br/>哪里不对？)
+    F --> G{问题类型？}
+    G -->|风格/语气| H(添加：风格约束)
+    G -->|缺失信息| I(添加：提供缺失的上下文)
+    G -->|方向错误| J(添加：重定向方法)
+    G -->|太冗长/简短| K(添加：长度约束)
+    H --> L(细化指令)
     I --> L
     J --> L
     K --> L
-    L --> M(Claude refines output)
-    M --> N(Compare before/after)
-    N --> O{Improvement<br/>detected?}
-    O -->|Yes| C
-    O -->|No| P(Different<br/>approach needed)
+    L --> M(Claude 细化输出)
+    M --> N(比较前后差异)
+    N --> O{检测到<br/>改进？}
+    O -->|是| C
+    O -->|否| P(需要换一种<br/>方法)
     P --> F
 
     style A fill:#F5E6D3,color:#333
@@ -275,72 +275,72 @@ flowchart TD
     style L fill:#6DB3F2,color:#fff
     style P fill:#E85D5D,color:#fff
 
-    click A href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/iterative-refinement.md" "Initial prompt"
-    click B href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/iterative-refinement.md" "Claude generates output"
-    click C href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/iterative-refinement.md" "Evaluate output quality"
-    click D href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/iterative-refinement.md" "Good enough?"
-    click E href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/iterative-refinement.md" "Done ✓"
-    click F href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/iterative-refinement.md" "Identify specific issue"
-    click G href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/iterative-refinement.md" "Issue type?"
-    click H href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/iterative-refinement.md" "Add style constraints"
-    click I href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/iterative-refinement.md" "Provide missing context"
-    click J href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/iterative-refinement.md" "Redirect approach"
-    click K href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/iterative-refinement.md" "Add length constraint"
-    click L href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/iterative-refinement.md" "Refine instruction"
-    click M href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/iterative-refinement.md" "Claude refines output"
-    click N href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/iterative-refinement.md" "Compare before/after"
-    click O href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/iterative-refinement.md" "Improvement detected?"
-    click P href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/iterative-refinement.md" "Different approach needed"
+    click A href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/iterative-refinement.md" "初始提示词"
+    click B href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/iterative-refinement.md" "Claude 生成输出"
+    click C href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/iterative-refinement.md" "评估输出质量"
+    click D href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/iterative-refinement.md" "足够好？"
+    click E href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/iterative-refinement.md" "完成 ✓"
+    click F href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/iterative-refinement.md" "找出具体问题"
+    click G href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/iterative-refinement.md" "问题类型？"
+    click H href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/iterative-refinement.md" "添加风格约束"
+    click I href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/iterative-refinement.md" "提供缺失上下文"
+    click J href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/iterative-refinement.md" "重定向方法"
+    click K href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/iterative-refinement.md" "添加长度约束"
+    click L href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/iterative-refinement.md" "细化指令"
+    click M href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/iterative-refinement.md" "Claude 细化输出"
+    click N href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/iterative-refinement.md" "比较前后差异"
+    click O href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/iterative-refinement.md" "检测到改进？"
+    click P href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/iterative-refinement.md" "需要换一种方法"
 ```
 
 <details>
-<summary>ASCII version</summary>
+<summary>ASCII 版本</summary>
 
 ```
-Prompt → Output → Evaluate → Good? ──Yes──► Done
-                                 │ No
-                          Identify specific issue
-                                 │
-                          ┌──────┴──────────────┐
-                         Style  Missing  Wrong  Length
-                          └──────┬──────────────┘
-                          Refine instruction
-                                 │
-                          Claude refines
-                                 │
-                          Better? ──Yes──► Evaluate again
-                                 │ No
-                          Different approach
+提示词 → 输出 → 评估 → 足够好？──是──► 完成
+                             │ 否
+                      找出具体问题
+                             │
+                      ┌──────┴──────────────┐
+                     风格  缺失  方向  长度
+                      └──────┬──────────────┘
+                      细化指令
+                             │
+                      Claude 细化
+                             │
+                      更好了？──是──► 再次评估
+                             │ 否
+                      换一种方法
 ```
 
 </details>
 
-> **Source**: [Iterative Refinement](../workflows/iterative-refinement.md) — Line ~347
+> **来源**：[迭代优化](../workflows/iterative-refinement.md) — 第 ~347 行
 
 ---
 
-### AI Fluency — High vs Low Fluency Paths
+### AI 流利度 — 高流利度 vs 低流利度路径
 
-When Claude produces a polished-looking output, a cognitive bias kicks in: the more complete the output appears, the less critically most users evaluate it. This is the Artifact Paradox, documented by Anthropic across 9,830 conversations. The diagram shows what separates the 30% of high-fluency users from the 70% who accept first outputs — and the measurable difference in outcome quality.
+当 Claude 生成看起来精良的输出时，一种认知偏差会被触发：输出看起来越完整，大多数用户对其批判性评估就越少。这就是「Artifact 悖论」，Anthropic 在 9,830 次对话中记录了这一现象。此图展示了区分高流利度用户（30%）和接受首次输出的用户（70%）的因素，以及可衡量的输出质量差异。
 
 ```mermaid
 flowchart TD
-    A([User sends request to Claude]) --> B(Claude generates output<br/>code · file · config · plan)
-    B --> C["⚠️ Artifact Paradox<br/>Polished output triggers<br/>cognitive acceptance bias"]
+    A([用户向 Claude 发送请求]) --> B(Claude 生成输出<br/>代码 · 文件 · 配置 · 计划)
+    B --> C["⚠️ Artifact 悖论<br/>精良的输出触发<br/>认知接受偏差"]
 
-    C -->|"70% of users"| D(Accept first output<br/>without critical review)
-    C -->|"30% of users"| E(Iterate + question<br/>define collaboration scope)
+    C -->|"70% 的用户"| D(未经批判性审查<br/>接受首次输出)
+    C -->|"30% 的用户"| E(迭代 + 质疑<br/>明确协作范围)
 
-    D --> D1["Fluency behaviors drop:<br/>−5.2pp gap identification<br/>−3.7pp fact-checking<br/>−3.1pp reasoning challenge"]
-    D1 --> D2([Silent defects · missed requirements])
+    D --> D1["流利度行为下降：<br/>-5.2pp 差距识别<br/>-3.7pp 事实核查<br/>-3.1pp 推理挑战"]
+    D1 --> D2([隐性缺陷 · 遗漏需求])
 
-    E --> E1("Challenge the output:<br/>'What did you miss?<br/>What assumptions made?'")
-    E1 --> E2(Identify gaps<br/>Refine with full context)
-    E2 --> E3{Satisfied?}
-    E3 -->|No — iterate again| E1
-    E3 -->|Yes| E4([Verified, robust output ✓])
+    E --> E1("质疑输出：<br/>「你遗漏了什么？<br/>做了哪些假设？」")
+    E1 --> E2(发现差距<br/>结合完整上下文细化)
+    E2 --> E3{满意了？}
+    E3 -->|否 — 再次迭代| E1
+    E3 -->|是| E4([经过验证的可靠输出 ✓])
 
-    E4 --> G["Measured impact:<br/>5.6× more issue catches<br/>2.67 vs 1.33 avg behaviors<br/>Source: Anthropic AI Fluency Index, 2026"]
+    E4 --> G["可衡量的影响：<br/>5.6× 更多问题被发现<br/>平均 2.67 vs 1.33 个行为<br/>来源：Anthropic AI 流利度指数，2026"]
 
     style A fill:#F5E6D3,color:#333
     style B fill:#E87E2F,color:#fff
@@ -355,46 +355,46 @@ flowchart TD
     style E4 fill:#7BC47F,color:#333
     style G fill:#7BC47F,color:#333
 
-    click A href "https://www.anthropic.com/research/AI-fluency-index" "AI Fluency Index — Anthropic 2026"
-    click B href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#common-pitfalls--best-practices" "Claude generates output"
-    click C href "https://www.anthropic.com/research/AI-fluency-index" "Artifact Paradox — Anthropic AI Fluency Index"
-    click D href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#common-pitfalls--best-practices" "Accept without review"
-    click D1 href "https://www.anthropic.com/research/AI-fluency-index" "Fluency behaviors drop"
-    click D2 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#common-pitfalls--best-practices" "Silent defects"
-    click E href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#23-plan-mode" "Iterate and question"
-    click E1 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#rev-the-engine" "Challenge the output"
-    click E2 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/iterative-refinement.md" "Identify gaps and refine"
-    click E3 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/iterative-refinement.md" "Satisfied?"
-    click E4 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/iterative-refinement.md" "Verified output"
-    click G href "https://www.anthropic.com/research/AI-fluency-index" "Measured impact — AI Fluency Index"
+    click A href "https://www.anthropic.com/research/AI-fluency-index" "AI 流利度指数 — Anthropic 2026"
+    click B href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#common-pitfalls--best-practices" "Claude 生成输出"
+    click C href "https://www.anthropic.com/research/AI-fluency-index" "Artifact 悖论 — Anthropic AI 流利度指数"
+    click D href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#common-pitfalls--best-practices" "未经审查接受"
+    click D1 href "https://www.anthropic.com/research/AI-fluency-index" "流利度行为下降"
+    click D2 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#common-pitfalls--best-practices" "隐性缺陷"
+    click E href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#23-plan-mode" "迭代并质疑"
+    click E1 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#rev-the-engine" "质疑输出"
+    click E2 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/iterative-refinement.md" "发现差距并细化"
+    click E3 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/iterative-refinement.md" "满意了？"
+    click E4 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/workflows/iterative-refinement.md" "经过验证的输出"
+    click G href "https://www.anthropic.com/research/AI-fluency-index" "可衡量的影响 — AI 流利度指数"
 ```
 
 <details>
-<summary>ASCII version</summary>
+<summary>ASCII 版本</summary>
 
 ```
-User request → Claude output (code · file · config · plan)
+用户请求 → Claude 输出（代码 · 文件 · 配置 · 计划）
                         ↓
-              ⚠️ Artifact Paradox
-          Polished output → cognitive bias
+              ⚠️ Artifact 悖论
+          精良的输出 → 认知偏差
                         ↓
     ┌───────────────────┴──────────────────────┐
-70% of users                            30% of users
-Accept without review               Iterate + question
+70% 的用户                            30% 的用户
+未经审查接受                          迭代 + 质疑
         ↓                                     ↓
-Fluency behaviors drop:         Challenge: "What did you miss?
-−5.2pp gap identification                What assumptions made?"
-−3.7pp fact-checking                          ↓
-−3.1pp reasoning challenge      Identify gaps → refine
+流利度行为下降：              质疑：「你遗漏了什么？
+-5.2pp 差距识别                        做了哪些假设？」
+-3.7pp 事实核查                               ↓
+-3.1pp 推理挑战               发现差距 → 细化
         ↓                                     ↓
-Silent defects                  Satisfied? ──No──► iterate
-                                            ↓ Yes
-                                Verified output ✓
-                                            ↓
-                               5.6× more issue catches
-                               2.67 vs 1.33 avg behaviors
+隐性缺陷                    满意了？──否──► 迭代
+                                        ↓ 是
+                            经过验证的输出 ✓
+                                        ↓
+                           5.6× 更多问题被发现
+                           平均 2.67 vs 1.33 个行为
 ```
 
 </details>
 
-> **Source**: [Anthropic AI Fluency Index](https://www.anthropic.com/research/AI-fluency-index) (Swanson et al., 2026-02-23) — [Guide section: Common Pitfalls](../ultimate-guide.md#common-pitfalls--best-practices)
+> **来源**：[Anthropic AI 流利度指数](https://www.anthropic.com/research/AI-fluency-index)（Swanson 等，2026-02-23）— [指南章节：常见陷阱](../ultimate-guide.md#common-pitfalls--best-practices)

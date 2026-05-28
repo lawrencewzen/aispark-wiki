@@ -1,2088 +1,2087 @@
 > 📚 **AI Spark Wiki** · Claude Code 知识库
 
 ---
-title: "Claude Code Release History"
-description: "Condensed changelog of official Claude Code releases with highlights and breaking changes"
+title: "Claude Code 版本发布历史"
+description: "Claude Code 官方版本的精简变更日志，包含重要功能亮点与破坏性变更说明"
 tags: [reference, release]
 ---
 
-# Claude Code Release History
+# Claude Code 版本发布历史
 
-> Condensed changelog of Claude Code official releases.
-> **Full details**: [github.com/anthropics/claude-code/CHANGELOG.md](https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md)
-> **Machine-readable**: [claude-code-releases.yaml](../../machine-readable/claude-code-releases.yaml)
+> Claude Code 官方版本精简变更日志。
+> **完整详情**：[github.com/anthropics/claude-code/CHANGELOG.md](https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md)
+> **机器可读格式**：[claude-code-releases.yaml](../../machine-readable/claude-code-releases.yaml)
 
-**Latest**: v2.1.152 | **Updated**: 2026-05-27
-
----
-
-## Quick Jump
-
-- [2.1.x Series (January-May 2026)](#21x-series-january-may-2026): code-review fix applies to working tree, disallowed-tools frontmatter, MessageDisplay hook, auto mode opt-in removed, 35+ bug fixes (2.1.152), internal infra (2.1.150), /usage per-category breakdown (skills/subagents/plugins/MCP), GFM task list checkboxes, PowerShell permission bypass security fix, sandbox worktree write allowlist fix, allowAllClaudeAiMcps enterprise setting, 20+ bug fixes, pinned background sessions (Ctrl+T), /code-review --comment for inline GitHub PR comments, auto-updater improvements, Bash exit-127 hotfix, /code-review command (renamed from /simplify) with effort level, AskUserQuestion restored in auto mode, agents --json, /plugin previews before install, permission-prompt bypass security fix, /resume lists background sessions, /model session-only (d for default), usage credits rename, 75s startup hang fix, plugin dependency enforcement, projected context cost in /plugin, worktree.bgIsolation: "none", fast mode Opus 4.7 default, new claude agents dispatch flags, SKILL.md root-level plugin surfacing, hook terminalSequence, claude agents --cwd, Rewind summarize, subagent_type case-insensitive, plugin folder warnings, agent view (Research Preview), /goal command, hook args exec form + continueOnBlock, settings.autoMode.hard_deny, CLAUDE_CODE_ENABLE_FEEDBACK_SURVEY_FOR_OTEL, MCP /clear disappear fix, 40+ UI fixes, worktree.baseRef setting, effort level in hooks, CLAUDE_CODE_SESSION_ID in Bash env, CLAUDE_CODE_DISABLE_ALTERNATE_SCREEN, MCP memory fix (10GB+ RSS), subagent skills fix, 40+ bug fixes, Worktree isolation, background agents, ConfigChange hook, Fast mode Opus 4.6, 1M context, claude.ai MCP connectors, remote-control, auto-memory, /copy command, HTTP hooks, worktree config sharing, ultrathink re-introduced, InstructionsLoaded hook, 4 security fixes, Agent model override restored, 12x SDK token cost reduction, /context actionable suggestions, modelOverrides setting, 1M context Opus 4.6 default for Max/Team/Enterprise, MCP elicitation, PostCompact hook, /effort command, Opus 4.6 64k/128k output tokens, allowRead sandbox setting, /branch command, StopFailure hook, streaming line-by-line, --console auth flag, SessionEnd fix, enterprise retry fix, rate_limits statusline field, effort frontmatter for skills, --channels MCP research preview, --bare flag, worktree session resume fix, MCP query collapsing, managed-settings.d/ drop-in, CwdChanged/FileChanged hooks, transcript search, credential scrubbing, PowerShell tool Windows preview, conditional hooks if field, MCP headersHelper multi-server env vars, headless AskUserQuestion hooks, X-Claude-Code-Session-Id header, Jujutsu/Sapling VCS exclusions, @ mention token reduction, Read tool compact format, Cowork Dispatch fix, PermissionDenied hook, thinking summaries off by default, "defer" PreToolUse permission, CLAUDE_CODE_NO_FLICKER, /powerup interactive lessons, PowerShell hardened permissions, SSE linear-time performance, MCP 500K result override, disableSkillShellExecution, plugin bin/ executables, Edit tool shorter anchors, interactive Bedrock wizard, forceRemoteSettingsRefresh, /cost per-model breakdown, interactive /release-notes, Linux sandbox apply-seccomp fix, Bedrock Mantle support, high effort default for API/enterprise users, Bedrock auth fix, NO_FLICKER focus view (Ctrl+O), refreshInterval status line, 30+ bug fixes, Vertex AI wizard, Monitor tool, CLAUDE_CODE_PERFORCE_MODE, Bash security hardening, subprocess PID namespace sandboxing, /team-onboarding command, OS CA cert store trust by default, /ultraplan auto-cloud-environment, 40+ bug fixes, PreCompact hook blocking, EnterWorktree path param, plugin monitors, /proactive alias, WebFetch CSS/JS stripping, /doctor status icons, thinking hints sooner, ENABLE_PROMPT_CACHING_1H, /recap session context, built-in slash commands via Skill tool, /undo alias, rotating extended-thinking indicator, /tui fullscreen command, push notification tool, --resume resurrects scheduled tasks, /focus command, autoScrollEnabled config, session recap for telemetry-disabled, 30+ bug fixes, Opus 4.7 xhigh effort, /ultrareview cloud code review, /less-permission-prompts skill, Auto mode for Max subscribers, plan files named after prompts, read-only bash glob patterns no prompt, interactive /effort slider, many bug fixes, native binary spawning, sandbox.network.deniedDomains, security hardening exec wrappers, crash fix permission dialog, /resume 67% faster, inline thinking progress, sandbox dangerous-path security fix, agent frontmatter hooks via --agent, many terminal and UI bug fixes, default effort high for Pro/Max on Opus 4.6+Sonnet 4.6, native bfs/ugrep on macOS/Linux, /model persistence across restarts, Opus 4.7 1M context fix, 15+ bug fixes, vim visual mode, /usage merged from /cost+/stats, custom named themes, hooks invoke MCP tools, DISABLE_UPDATES env var, wslInheritsWindowsSettings, 15+ bug fixes, /config settings persist to settings.json, --from-pr multi-platform support, agent frontmatter honors tools+permissionMode, blockedMarketplaces security fix, TaskList ordering fix, 30+ bug fixes, Windows no longer requires Git Bash (PowerShell fallback), claude ultrareview CI subcommand, ${CLAUDE_EFFORT} in skills, alwaysLoad MCP option, plugin prune, PostToolUse output replacement for all tools, ANTHROPIC_BEDROCK_SERVICE_TIER, PR URL in /resume search, OAuth 401 hotfix, gateway /v1/models listing in /model picker, claude project purge, OAuth paste code for WSL2/SSH/containers, security fix allowManagedDomainsOnly/allowManagedReadPathsOnly, Windows PowerShell 7 as primary shell, 40+ bug fixes, EnterWorktree branch from local HEAD fix, --plugin-dir .zip support, --channels console auth, /mcp tool count per server, parallel bash tool call fix, sub-agent prompt cache fix, 35+ bug fixes, --plugin-url flag, CLAUDE_CODE_PACKAGE_MANAGER_AUTO_UPDATE, Ctrl+R all-projects history restored, skillOverrides fix, 1h cache TTL fix, OAuth refresh race fix, 20+ bug fixes, VS Code Windows activation fix, Mantle auth fix
-- [2.0.x Series (Nov 2025 - Jan 2026)](#20x-series-november-2025---january-2026) — Opus 4.5, Claude in Chrome, Background agents
-- [Breaking Changes Summary](#breaking-changes-summary)
-- [Milestone Features](#milestone-features)
+**最新版本**：v2.1.152 | **更新时间**：2026-05-27
 
 ---
 
-## 2.1.x Series (January-May 2026)
+## 快速跳转
+
+- [2.1.x 系列（2026 年 1–5 月）](#21x-系列2026-年-1-5-月)：代码审查修复应用至工作树、技能 frontmatter 中的 `disallowed-tools`、`MessageDisplay` 钩子、自动模式无需再单独确认、35+ 项错误修复（2.1.152），内部基础设施改进（2.1.150），`/usage` 按类别分项显示（技能/子智能体/插件/MCP），GFM 任务列表复选框，PowerShell 权限绕过安全修复，沙盒工作树写入白名单修复，企业设置 `allowAllClaudeAiMcps`，20+ 项错误修复，后台会话固定（Ctrl+T），`/code-review --comment` 支持 GitHub PR 行内注释，自动更新器改进，Bash exit-127 紧急修复，`/code-review` 命令（从 `/simplify` 更名）支持努力等级，`AskUserQuestion` 在自动模式下恢复，`agents --json`，`/plugin` 安装前预览，权限提示绕过安全修复，`/resume` 列出后台会话，`/model` 仅限当前会话（`d` 键设为默认），用量积分重命名，75 秒启动卡死修复，插件依赖强制检查，`/plugin` 中显示预估上下文成本，`worktree.bgIsolation: "none"`，快速模式默认使用 Opus 4.7，新增 `claude agents` 调度标志，根级 SKILL.md 插件自动识别，钩子 `terminalSequence`，`claude agents --cwd`，Rewind 摘要功能，`subagent_type` 大小写不敏感，插件目录警告，智能体视图（研究预览），`/goal` 命令，钩子参数 exec 形式 + `continueOnBlock`，`settings.autoMode.hard_deny`，`CLAUDE_CODE_ENABLE_FEEDBACK_SURVEY_FOR_OTEL`，MCP `/clear` 后消失修复，40+ 项 UI 修复，`worktree.baseRef` 设置，钩子中的努力等级，Bash 环境中的 `CLAUDE_CODE_SESSION_ID`，`CLAUDE_CODE_DISABLE_ALTERNATE_SCREEN`，MCP 内存泄漏修复（RSS 超 10GB），子智能体技能修复，40+ 项错误修复，工作树隔离，后台智能体，`ConfigChange` 钩子，快速模式 Opus 4.6，1M 上下文，claude.ai MCP 连接器，远程控制，自动记忆，`/copy` 命令，HTTP 钩子，工作树配置共享，重新引入 ultrathink，`InstructionsLoaded` 钩子，4 项安全修复，智能体模型覆盖恢复，SDK Token 成本降低 12 倍，`/context` 可操作建议，`modelOverrides` 设置，Max/Team/Enterprise 用户 Opus 4.6 默认 1M 上下文，MCP elicitation，`PostCompact` 钩子，`/effort` 命令，Opus 4.6 支持 64k/128k 输出 Token，`allowRead` 沙盒设置，`/branch` 命令，`StopFailure` 钩子，逐行流式输出，`--console` 认证标志，`SessionEnd` 修复，企业重试修复，状态栏 `rate_limits` 字段，技能 frontmatter 中的 `effort`，`--channels` MCP 研究预览，`--bare` 标志，工作树会话恢复修复，MCP 查询折叠，`managed-settings.d/` 插件目录，`CwdChanged`/`FileChanged` 钩子，对话记录搜索，凭证脱敏，PowerShell 工具 Windows 预览，条件钩子 `if` 字段，MCP `headersHelper` 多服务器环境变量，无界面 `AskUserQuestion` 钩子，`X-Claude-Code-Session-Id` 请求头，Jujutsu/Sapling VCS 排除，@ 提及 Token 减少，Read 工具紧凑格式，Cowork Dispatch 修复，`PermissionDenied` 钩子，默认关闭思考摘要，`PreToolUse` 的 `"defer"` 权限，`CLAUDE_CODE_NO_FLICKER`，`/powerup` 交互式课程，PowerShell 权限加固，SSE 线性时间性能，MCP 500K 结果覆盖，`disableSkillShellExecution`，插件 `bin/` 可执行文件，Edit 工具更短的锚点，交互式 Bedrock 向导，`forceRemoteSettingsRefresh`，`/cost` 按模型分项显示，交互式 `/release-notes`，Linux 沙盒 apply-seccomp 修复，Bedrock Mantle 支持，API/企业用户默认高努力等级，Bedrock 认证修复，`NO_FLICKER` 焦点视图（Ctrl+O），状态栏 `refreshInterval`，30+ 项错误修复，Vertex AI 向导，Monitor 工具，`CLAUDE_CODE_PERFORCE_MODE`，Bash 安全加固，子进程 PID 命名空间沙盒，`/team-onboarding` 命令，默认信任系统 CA 证书，`/ultraplan` 自动云环境，40+ 项错误修复，`PreCompact` 钩子阻塞，`EnterWorktree` 路径参数，插件监视器，`/proactive` 别名，WebFetch CSS/JS 过滤，`/doctor` 状态图标，更快显示思考提示，`ENABLE_PROMPT_CACHING_1H`，`/recap` 会话上下文，通过 Skill 工具使用内置斜杠命令，`/undo` 别名，旋转扩展思考指示器，`/tui` 全屏命令，推送通知工具，`--resume` 恢复定时任务，`/focus` 命令，`autoScrollEnabled` 配置，遥测禁用时的会话摘要，30+ 项错误修复，Opus 4.7 超高努力等级，`/ultrareview` 云端代码审查，`/less-permission-prompts` 技能，Max 订阅者自动模式，计划文件以提示命名，只读 bash glob 模式无需提示，交互式 `/effort` 滑块，多项错误修复，原生二进制启动，`sandbox.network.deniedDomains`，安全加固 exec 包装器，崩溃修复权限对话框，`/resume` 提速 67%，内联思考进度，沙盒危险路径安全修复，通过 `--agent` 支持智能体 frontmatter 钩子，多项终端和 UI 错误修复，Pro/Max 用户在 Opus 4.6+Sonnet 4.6 上默认高努力等级，macOS/Linux 原生 bfs/ugrep，`/model` 跨重启持久化，Opus 4.7 1M 上下文修复，15+ 项错误修复，vim 可视模式，`/usage` 合并自 `/cost`+`/stats`，自定义命名主题，钩子调用 MCP 工具，`DISABLE_UPDATES` 环境变量，`wslInheritsWindowsSettings`，15+ 项错误修复，`/config` 设置持久化到 settings.json，`--from-pr` 多平台支持，智能体 frontmatter 遵循 `tools`+`permissionMode`，`blockedMarketplaces` 安全修复，`TaskList` 排序修复，30+ 项错误修复，Windows 不再强制要求 Git Bash（PowerShell 回退），`claude ultrareview` CI 子命令，技能中的 `${CLAUDE_EFFORT}`，`alwaysLoad` MCP 选项，插件清理，`PostToolUse` 对所有工具的输出替换，`ANTHROPIC_BEDROCK_SERVICE_TIER`，`/resume` 搜索 PR URL，OAuth 401 紧急修复，`/model` 选择器中的网关 `/v1/models` 列表，`claude project purge`，WSL2/SSH/容器中 OAuth 粘贴代码，安全修复 `allowManagedDomainsOnly`/`allowManagedReadPathsOnly`，Windows PowerShell 7 作为主 Shell，40+ 项错误修复，`EnterWorktree` 从本地 HEAD 创建分支修复，`--plugin-dir` 支持 `.zip`，`--channels` console 认证，`/mcp` 每服务器工具数，并行 bash 工具调用修复，子智能体提示缓存修复，35+ 项错误修复，`--plugin-url` 标志，`CLAUDE_CODE_PACKAGE_MANAGER_AUTO_UPDATE`，Ctrl+R 全项目历史恢复，`skillOverrides` 修复，1h 缓存 TTL 修复，OAuth 刷新竞态修复，20+ 项错误修复，VS Code Windows 激活修复，Mantle 认证修复
+- [2.0.x 系列（2025 年 11 月 – 2026 年 1 月）](#20x-系列2025-年-11-月--2026-年-1-月) — Opus 4.5、Chrome 中的 Claude、后台智能体
+- [破坏性变更汇总](#破坏性变更汇总)
+- [里程碑功能](#里程碑功能)
+
+---
+
+## 2.1.x 系列（2026 年 1–5 月）
 
 ### v2.1.152 (2026-05-27)
 
-> `/code-review --fix`, `disallowed-tools` frontmatter for skills, `MessageDisplay` hook, auto mode opt-in removed, 35+ bug fixes.
+> `/code-review --fix`、技能 frontmatter 中的 `disallowed-tools`、`MessageDisplay` 钩子、自动模式无需再单独确认、35+ 项错误修复。
 
-- **New**: `/code-review --fix` now applies review findings to your working tree after the review; `/simplify` now invokes `/code-review --fix`
-- **New**: Skills and slash commands can set `disallowed-tools` in frontmatter to remove tools from the model while the skill is active
-- **New**: `/reload-skills` command re-scans skill directories without restarting the session
-- **New**: `SessionStart` hooks can return `reloadSkills: true` to make newly installed skills available in the same session, and can set the session title via `hookSpecificOutput.sessionTitle` on startup and resume
-- **New**: `MessageDisplay` hook event lets hooks transform or hide assistant message text as it is displayed
-- **New**: `pluginSuggestionMarketplaces` managed setting so admins can allowlist org marketplaces whose plugins may be suggested via context-aware tips
-- **New**: `--fallback-model` switches to a configured fallback for the rest of the session when the primary model is not found, instead of failing every request
-- **New (Vim)**: `/` in NORMAL mode opens reverse history search (like Ctrl+R), matching bash/zsh vi-mode behavior
-- **Improved**: `/usage` breakdown now includes large session files; files scanned with a streaming read so memory usage stays flat
-- **Improved**: Thinking summaries in the collapsed group stay readable for at least 3 seconds, render as markdown, and cap at 10 lines (Ctrl+O shows full thinking)
-- **Improved**: Fullscreen mode "Thinking for Ns" indicator counts up live while the model is thinking
-- **Changed**: Auto mode no longer requires opt-in consent
-- **Fixed**: 35+ fixes including terminal styling degrading in long sessions, sandbox warning missing in condensed startup, loading spinner state across tool calls, focus mode spurious hidden-message count, link click inside tool result collapsing the section, markdown table cell border color bleeding from inline code, plugin MCP servers with same command but different env vars being deduplicated, `/doctor` errors for stale `enabledPlugins` entries, plugin git-branch updates silently stopping, remote MCP servers failing with egress proxy, effort-change dialog appearing with no messages or same effective effort, Agent tool description with `--bare`, background worker crash after stale permission prompt cancellation, `cache_creation_input_tokens` reporting as 0 when API uses nested breakdown, `PushNotification` false negative in SDK-hosted sessions, sessions stuck after model/login switch left stale thinking-block signatures in history
+- **新增**：`/code-review --fix` 现可在审查完成后将修复结果应用到工作树；`/simplify` 现在会调用 `/code-review --fix`
+- **新增**：技能和斜杠命令可在 frontmatter 中设置 `disallowed-tools`，在技能激活期间从模型中移除指定工具
+- **新增**：`/reload-skills` 命令可在不重启会话的情况下重新扫描技能目录
+- **新增**：`SessionStart` 钩子可返回 `reloadSkills: true` 以使新安装的技能在当前会话中立即可用，并可在启动和恢复时通过 `hookSpecificOutput.sessionTitle` 设置会话标题
+- **新增**：`MessageDisplay` 钩子事件允许钩子在助手消息文本显示时对其进行转换或隐藏
+- **新增**：`pluginSuggestionMarketplaces` 托管设置，管理员可将组织市场加入白名单，允许通过上下文感知提示推荐其插件
+- **新增**：`--fallback-model` 在主模型未找到时切换到已配置的备用模型，而非每次请求都失败
+- **新增（Vim）**：在 NORMAL 模式下按 `/` 打开反向历史搜索（类似 Ctrl+R），与 bash/zsh vi 模式行为一致
+- **改进**：`/usage` 分项统计现包含大型会话文件；文件使用流式读取扫描，内存占用保持平稳
+- **改进**：折叠分组中的思考摘要可读时间至少保持 3 秒，以 Markdown 格式渲染，最多显示 10 行（Ctrl+O 可查看完整思考内容）
+- **改进**：全屏模式"正在思考 Ns"指示器在模型思考时实时计数
+- **变更**：自动模式不再需要单独确认同意
+- **修复**：35+ 项修复，包括长时间使用后终端样式退化、压缩启动时沙盒警告缺失、工具调用间加载动画状态、焦点模式误计隐藏消息数、点击工具结果中的链接折叠整个区块、Markdown 表格单元格边框颜色被行内代码污染、相同命令但不同环境变量的插件 MCP 服务器被错误去重、`/doctor` 对过期 `enabledPlugins` 条目报错、插件 git 分支更新静默停止、远程 MCP 服务器在出口代理下失败、无消息或相同有效努力等级时弹出努力更改对话框、`--bare` 模式下 Agent 工具描述问题、后台工作器在过期权限提示取消后崩溃、`cache_creation_input_tokens` 在 API 使用嵌套计数时报告为 0、SDK 托管会话中 `PushNotification` 误报、模型/登录切换后会话因历史中残留的 thinking block 签名而卡住
 
 ---
 
 ### v2.1.150 (2026-05-23)
 
-> Internal infrastructure improvements — no user-facing changes.
+> 内部基础设施改进 — 无用户可见变化。
 
 ---
 
 ### v2.1.149 (2026-05-23)
 
-> `/usage` per-category breakdown, GFM task list checkboxes, two security fixes, 20+ bug fixes.
+> `/usage` 按类别分项统计，GFM 任务列表复选框，两项安全修复，20+ 项错误修复。
 
-- **New**: `/usage` now shows a per-category breakdown of what drives your limits usage — skills, subagents, plugins, and per-MCP-server cost
-- **New**: Markdown output renders GFM task list checkboxes (`- [ ] todo` / `- [x] done`) natively instead of plain bullets
-- **New (Enterprise)**: `allowAllClaudeAiMcps` managed setting to load claude.ai cloud MCP connectors alongside `managed-mcp.json`
-- **Security**: PowerShell permission bypass fixed — built-in `cd` functions (`cd..`, `cd\`, `cd~`, `X:`) changed the working directory undetected, letting later commands read outside the workspace
-- **Security**: Sandbox write allowlist in git worktrees was covering the entire main repository root instead of only the shared `.git` directory (with `hooks/` and `config` denied)
-- **Fixed**: `/diff` detail view can now be scrolled with keyboard (arrows, `j`/`k`, `PgUp`/`PgDn`, `Space`, `Home`/`End`)
-- **Fixed**: PowerShell prefix/wildcard allow rules (e.g. `PowerShell(dotnet.exe build *)`) now pre-approve native executables and scripts
-- **Fixed**: Permission-analysis gap where parser trusted stale variable-tracking values for `PWD`/`OLDPWD`/`DIRSTACK` across `cd`/`pushd`/`popd`
-- **Fixed**: `find` in Bash tool exhausting the macOS system file/vnode table on large directory trees
-- **Fixed**: Managed-settings approval dialog leaving the terminal frozen after accepting at startup
-- **Fixed**: `/ultraplan` and remote session creation failing with "Could not capture uncommitted changes" when the working tree has no real changes
-- **Fixed**: `otelHeadersHelper` failing silently when the script path contains spaces; failures now reported in `/doctor` and debug log
-- **Fixed**: Thinking spinner staying amber across tool calls and onto fresh thinking bursts
-- **Fixed**: Collapsed Bash output reporting the wrong hidden-line count for outputs with many short lines
-- **Fixed**: Slash-command argument-hint clipping trailing typed characters when the hint overflows the input box
-- **Fixed**: Argument-hint and progressive arg suggestions not appearing after Tab-completing a skill whose frontmatter `name:` differs from its directory basename
-- **Fixed**: Status bar showing the user's baseline `/effort` setting instead of the effort level applied by skill/agent `effort:` frontmatter
-- **Fixed**: Ctrl+O transcript view freezing at the moment it was opened instead of tailing new messages
-- **Fixed**: Editing a recalled prompt-history entry losing the edit when navigating further up/down
-- **Fixed**: `/config` exit summary reporting phantom changes to auto-compact and theme when toggling unrelated settings
-- **Fixed**: `/insights` crashing when cached session-meta files are missing optional fields
-- **Fixed**: Renaming a Remote Control session from claude.ai or the Claude mobile app not updating the local session name for `claude --resume`
-- **Fixed**: Race where a just-submitted prompt could appear twice in up-arrow history
-- **Fixed**: "Jump to bottom" pill in fullscreen mode not dismissing immediately after tap
-- **Improved**: `/feedback` reports now include the conversation before context compaction, making issues from earlier in long sessions easier to triage
+- **新增**：`/usage` 现在显示驱动用量限额的分类明细 — 技能、子智能体、插件及每个 MCP 服务器的成本
+- **新增**：Markdown 输出原生渲染 GFM 任务列表复选框（`- [ ] 待办` / `- [x] 已完成`），而非普通列表符号
+- **新增（企业版）**：`allowAllClaudeAiMcps` 托管设置，用于在 `managed-mcp.json` 的基础上同时加载 claude.ai 云端 MCP 连接器
+- **安全**：修复 PowerShell 权限绕过 — 内置 `cd` 函数（`cd..`、`cd\`、`cd~`、`X:`）在未被检测到的情况下改变工作目录，使后续命令可读取工作区外的内容
+- **安全**：git 工作树中沙盒写入白名单覆盖了整个主仓库根目录，而非仅限共享的 `.git` 目录（`hooks/` 和 `config` 已拒绝访问）
+- **修复**：`/diff` 详情视图现在支持键盘滚动（方向键、`j`/`k`、`PgUp`/`PgDn`、空格键、`Home`/`End`）
+- **修复**：PowerShell 前缀/通配符允许规则（如 `PowerShell(dotnet.exe build *)`）现在可预先批准原生可执行文件和脚本
+- **修复**：权限分析漏洞 — 解析器在 `cd`/`pushd`/`popd` 跨命令时信任 `PWD`/`OLDPWD`/`DIRSTACK` 的过期变量追踪值
+- **修复**：Bash 工具中 `find` 命令在大型目录树上耗尽 macOS 系统文件/vnode 表
+- **修复**：托管设置审批对话框在启动时接受后导致终端冻结
+- **修复**：工作树没有实际变更时，`/ultraplan` 和远程会话创建失败并显示"无法捕获未提交的更改"
+- **修复**：`otelHeadersHelper` 在脚本路径包含空格时静默失败；失败信息现已在 `/doctor` 和调试日志中报告
+- **修复**：思考动画在工具调用间及新的思考阶段开始时持续显示琥珀色
+- **修复**：折叠的 Bash 输出在包含大量短行时报告错误的隐藏行数
+- **修复**：当提示词溢出输入框时，斜杠命令参数提示裁剪末尾已输入字符
+- **修复**：Tab 补全一个 frontmatter `name:` 与目录名不同的技能后，参数提示和渐进式参数建议不出现
+- **修复**：状态栏显示用户基础 `/effort` 设置，而非技能/智能体 `effort:` frontmatter 实际应用的努力等级
+- **修复**：Ctrl+O 对话记录视图在打开时冻结，而非追踪新消息
+- **修复**：编辑已召回的提示历史条目后，在继续上下翻页时丢失编辑内容
+- **修复**：切换无关设置时，`/config` 退出摘要虚报对自动压缩和主题的更改
+- **修复**：缓存会话元数据文件缺少可选字段时 `/insights` 崩溃
+- **修复**：从 claude.ai 或 Claude 移动端重命名远程控制会话后，本地 `claude --resume` 中的会话名称未同步更新
+- **修复**：刚提交的提示可能在上箭头历史中重复出现的竞态条件
+- **修复**：全屏模式下"跳转到底部"胶囊按钮点击后不立即消失
+- **改进**：`/feedback` 反馈报告现在包含上下文压缩之前的对话内容，便于排查长对话早期阶段的问题
 
 ---
 
 ### v2.1.148 (2026-05-22)
 
-> Hotfix: Bash tool exit code 127 regression from 2.1.147.
+> 紧急修复：2.1.147 引入的 Bash 工具 exit code 127 回归问题。
 
-- **Fixed**: Bash tool returning exit code 127 on every command (regression introduced in 2.1.147)
+- **修复**：Bash 工具在每条命令上返回 exit code 127（2.1.147 引入的回归）
 
 ---
 
 ### v2.1.147 (2026-05-22)
 
-> Pinned background sessions (Ctrl+T), /code-review --comment for inline GitHub PR comments, improved auto-updater, 30+ bug fixes.
+> 后台会话固定（Ctrl+T），`/code-review --comment` 支持 GitHub PR 行内注释，改进自动更新器，30+ 项错误修复。
 
-- **New**: Pinned background sessions — `Ctrl+T` in `claude agents` pins a session so it stays alive when idle, auto-restarts in place to apply CC updates, and is shed under memory pressure only after non-pinned sessions
-- **New**: `/code-review --comment` — post findings as inline GitHub PR comments
-- **Improved**: Auto-updater now retries transient network failures, reports specific error categories and OS error codes on failure, and shows the current version when an update fails
-- **Fixed**: Prompt history no longer records consecutive duplicate entries
-- **Fixed**: Hook `if` conditions like `PowerShell(git push*)` now match correctly (only `PowerShell(*)` worked before)
-- **Fixed**: Pasted text now delivered as actual content instead of `[Pasted text #N]` placeholder
-- **Fixed**: Plugin component counts in `claude plugin details` and `/plugin` were doubled when paths overlapped default directories
-- **Fixed**: Slash commands followed by a tab or newline no longer treated as unknown commands
-- **Fixed**: Shell snapshot no longer drops user functions whose names start with a single underscore
-- **Fixed**: Plugin agents declaring multiple `Agent(...)` types in `tools:` frontmatter now retain all entries
-- **Fixed**: PowerShell tool no longer drops output for commands relying on the default formatter
-- **Fixed**: Windows "Yes, and don't ask again" for PowerShell script invocations now writes a rule that matches on subsequent runs
-- **Fixed**: Full-screen strobing in attached background sessions on Windows Terminal while streaming
-- **Fixed**: On Windows, removing a background-job worktree no longer follows NTFS junctions into the main repo
-- **Fixed**: `/effort` slider now opens at the current effort level (was always starting at wrong level)
-- **Fixed**: Several spacing and layout glitches in `/plugin`, `/status`, `/mobile`, `/sandbox`, `/permissions` menus
-- **Fixed**: 10+ additional fixes: stale/doubled rows in agent view with CJK on Windows, stripped images prompting repeated re-reads, rare scroll-settle hang on Windows, `&amp;` in `!` command output, unknown slash commands now show an error in headless/SDK mode, `/help` rendering on small terminals
+- **新增**：固定后台会话 — 在 `claude agents` 中按 `Ctrl+T` 固定会话，使其在空闲时保持存活，自动原地重启以应用 CC 更新，仅在内存压力下晚于非固定会话被释放
+- **新增**：`/code-review --comment` — 将审查结果作为行内注释发布到 GitHub PR
+- **改进**：自动更新器现在会重试临时网络故障，在失败时报告具体错误类别和操作系统错误码，并在更新失败时显示当前版本
+- **修复**：提示历史不再记录连续的重复条目
+- **修复**：钩子 `if` 条件（如 `PowerShell(git push*)`）现在可正确匹配（此前仅 `PowerShell(*)` 有效）
+- **修复**：粘贴的文本现在以实际内容形式传递，而非 `[Pasted text #N]` 占位符
+- **修复**：`claude plugin details` 和 `/plugin` 中插件组件数量在路径与默认目录重叠时被重复计算
+- **修复**：斜杠命令后跟 Tab 或换行不再被识别为未知命令
+- **修复**：Shell 快照不再丢弃名称以单下划线开头的用户函数
+- **修复**：在 `tools:` frontmatter 中声明多个 `Agent(...)` 类型的插件智能体现在保留所有条目
+- **修复**：PowerShell 工具不再丢弃依赖默认格式化器的命令输出
+- **修复**：Windows 上 PowerShell 脚本调用时的"是，且不再询问"现在写入一条规则，在后续运行时生效
+- **修复**：在 Windows Terminal 中，附加的后台会话在流式传输时全屏闪烁
+- **修复**：Windows 上删除后台任务工作树时不再沿 NTFS 联接点进入主仓库
+- **修复**：`/effort` 滑块现在以当前努力等级打开（之前总是从错误等级开始）
+- **修复**：`/plugin`、`/status`、`/mobile`、`/sandbox`、`/permissions` 菜单中多处间距和布局问题
+- **修复**：10+ 项额外修复：Windows CJK 智能体视图中出现过期/重复行，被清除的图片反复触发重新读取，Windows 偶发滚动卡顿，`!` 命令输出中的 `&amp;`，未知斜杠命令在无界面/SDK 模式下现在显示错误，小终端下 `/help` 渲染问题
 
 ---
 
 ### v2.1.146 (2026-05-21)
 
-> /code-review command (renamed from /simplify), AskUserQuestion restored in auto mode, 15+ bug fixes.
+> `/code-review` 命令（从 `/simplify` 更名），自动模式中恢复 `AskUserQuestion`，15+ 项错误修复。
 
-- **Changed**: `/simplify` renamed to `/code-review` with optional effort level (e.g. `/code-review high`)
-- **Fixed**: Auto mode no longer suppresses `AskUserQuestion` when the user or a skill explicitly relies on it
-- **Fixed**: Windows PowerShell tool failing with "command line is invalid" when `pwsh` is installed via winget or Microsoft Store (regression in v2.1.124)
-- **Fixed**: MCP `resources/list`, `resources/templates/list`, and `prompts/list` now return all pages on paginating servers
-- **Fixed**: `/background` no longer refuses sessions whose only typed input was a skill or custom slash command
-- **Fixed**: Backgrounded sessions no longer re-prompt for tool permissions already granted with "don't ask again"
-- **Fixed**: `/theme` color editor and "New custom theme" dialogs now respond to Esc
-- **Fixed**: `CLAUDE_CODE_SUBAGENT_MODEL` now forwarded to child processes in multi-agent sessions
-- **Fixed**: `forceLoginOrgUUID` and `forceLoginMethod` managed-settings policies enforced against third-party-provider and API-key sessions
-- **Fixed**: 10+ additional fixes: Windows GNOME Terminal paste, background daemon spawn fallback, Windows background session worktree removal, Agent SDK uncaught exception at end of streaming, diff rendering performance for large file edits
+- **变更**：`/simplify` 更名为 `/code-review`，支持可选努力等级（如 `/code-review high`）
+- **修复**：自动模式不再在用户或技能明确依赖 `AskUserQuestion` 时将其抑制
+- **修复**：通过 winget 或 Microsoft Store 安装 `pwsh` 时，Windows PowerShell 工具失败并显示"command line is invalid"（v2.1.124 引入的回归）
+- **修复**：MCP 的 `resources/list`、`resources/templates/list` 和 `prompts/list` 现在在分页服务器上返回所有页面
+- **修复**：`/background` 不再拒绝唯一输入为技能或自定义斜杠命令的会话
+- **修复**：后台会话不再对已通过"不再询问"授权的工具权限重复提示
+- **修复**：`/theme` 颜色编辑器和"新建自定义主题"对话框现在响应 Esc
+- **修复**：`CLAUDE_CODE_SUBAGENT_MODEL` 现在在多智能体会话中转发给子进程
+- **修复**：`forceLoginOrgUUID` 和 `forceLoginMethod` 托管设置策略现在对第三方提供商和 API key 会话强制执行
+- **修复**：10+ 项额外修复：Windows GNOME Terminal 粘贴、后台守护进程启动回退、Windows 后台会话工作树删除、智能体 SDK 在流式结束时的未捕获异常、大文件编辑时 diff 渲染性能
 
 ---
 
 ### v2.1.145 (2026-05-20)
 
-> claude agents --json for scripting, /plugin previews before install, tab title shows awaiting-input count, security fix for Bash permission-prompt bypass, 20+ bug fixes.
+> `claude agents --json` 用于脚本编写，安装前 `/plugin` 预览，终端标签标题显示等待输入数量，Bash 权限提示绕过安全修复，20+ 项错误修复。
 
-- **New**: `claude agents --json` — list all live Claude sessions as JSON for scripting (tmux-resurrect, status bars, session pickers)
-- **New**: `agent_id` and `parent_agent_id` attributes added to `claude_code.tool` OTEL spans; background subagent spans now nest under dispatching Agent tool span
-- **New**: `/plugin` Discover and Browse screens now preview a plugin's commands, agents, skills, hooks, and MCP/LSP servers before installation
-- **New**: `claude agents` terminal tab title shows awaiting-input count so an alt-tabbed window indicates when an agent needs attention
-- **New**: Slash command and @-mention suggestion list supports mouse hover and click in fullscreen mode
-- **New**: Stop and SubagentStop hook input now includes `background_tasks` and `session_crons` fields
-- **New**: Status line JSON input now includes GitHub repo and PR information when detected
-- **Security**: Fixed permission-prompt bypass where bare variable assignments to non-allowlisted environment variables in Bash commands were auto-approved
-- **Fixed**: MCP paginated `resources/list`, `resources/templates/list`, and `prompts/list` dropping items past page 1
-- **Fixed**: MCP prompt slash commands now show the missing argument name and expected usage instead of raw server validation errors
-- **Fixed**: Read tool now returns a truncated first page with "PARTIAL view" notice instead of a hard error when whole-file read exceeds token limit
-- **Fixed**: Task lists no longer rendered in random order when several tasks are created at once
-- **Fixed**: Agent Teams teammates with non-ASCII names no longer fail every API call (invalid header encoding)
-- **Fixed**: `/review` no longer errors on repos with Classic Projects (deprecated `projectCards` GraphQL query removed)
-- **Fixed**: `claude plugin validate` now flags `skills:` entries pointing at a file instead of a directory
-- **Fixed**: Skill with `context: fork` no longer repeatedly re-invokes itself in an infinite loop
+- **新增**：`claude agents --json` — 以 JSON 格式列出所有活跃 Claude 会话，用于脚本编写（tmux 恢复、状态栏、会话选择器）
+- **新增**：`agent_id` 和 `parent_agent_id` 属性添加到 `claude_code.tool` OTEL spans；后台子智能体 span 现在嵌套在调度 Agent 工具 span 下
+- **新增**：`/plugin` 发现和浏览界面现在在安装前预览插件的命令、智能体、技能、钩子及 MCP/LSP 服务器
+- **新增**：`claude agents` 终端标签标题显示等待输入数量，便于在切换窗口时了解智能体是否需要关注
+- **新增**：全屏模式下斜杠命令和 @ 提及建议列表支持鼠标悬停和点击
+- **新增**：Stop 和 SubagentStop 钩子输入现在包含 `background_tasks` 和 `session_crons` 字段
+- **新增**：状态栏 JSON 输入在检测到 GitHub 仓库和 PR 信息时将其包含进来
+- **安全**：修复权限提示绕过 — Bash 命令中对非白名单环境变量的裸变量赋值被自动批准
+- **修复**：MCP 分页的 `resources/list`、`resources/templates/list` 和 `prompts/list` 丢弃第 1 页之后的条目
+- **修复**：MCP 提示斜杠命令现在显示缺失参数名称和预期用法，而非原始服务器校验错误
+- **修复**：整文件读取超出 Token 限制时，Read 工具现在返回带"PARTIAL view"提示的截断第一页，而非直接报错
+- **修复**：同时创建多个任务时，任务列表不再以随机顺序渲染
+- **修复**：Agent Teams 中名称含非 ASCII 字符的队友不再导致每次 API 调用失败（无效请求头编码）
+- **修复**：`/review` 在包含 Classic Projects 的仓库上不再报错（已移除已废弃的 `projectCards` GraphQL 查询）
+- **修复**：`claude plugin validate` 现在标记指向文件而非目录的 `skills:` 条目
+- **修复**：`context: fork` 的技能不再在无限循环中反复调用自身
 
 ---
 
 ### v2.1.144 (2026-05-19)
 
-> /resume lists background sessions, /model session-only (d for default), usage credits rename, fixed 75s startup hang, terminal rendering fixes, 40+ bug fixes.
+> `/resume` 列出后台会话，`/model` 仅限当前会话（`d` 键设为默认），用量积分重命名，修复 75 秒启动卡死，终端渲染修复，40+ 项错误修复。
 
-- **New**: `/resume` now lists background sessions started via `claude --bg` or agent view alongside interactive ones, marked with `bg`
-- **New**: Elapsed duration shown in background subagent completion notifications (e.g. "Agent completed · 3h 2m 5s")
-- **Changed**: `/model` now changes the model for the current session only — press `d` in the picker to set a default for new sessions
-- **Changed**: "extra usage" renamed to "usage credits" across CLI copy; `/extra-usage` is now `/usage-credits` (old name still works)
-- **Fixed**: Startup no longer hangs up to 75s when `api.anthropic.com` is unreachable — side-channel API calls now time out after 15s
-- **Fixed**: Terminal rendering corruption self-heals on missed window-resize events; progressive glitch in long sessions cleared; VS Code spinner uses fewer colors to reduce glitches
-- **Fixed**: macOS background sessions crashing with "exit 1 before init" under Full Disk Access-protected folders (regression in 2.1.143)
-- **Fixed**: MCP servers with paginated `tools/list` now return all pages (was silently dropping tools past page 1)
-- **Fixed**: File descriptor exhaustion in skill directories — non-`.md` files no longer trigger skill reloads
-- **Fixed**: 40+ additional fixes: `/branch` after worktree entry, Escape in AskUserQuestion notes field, Bedrock/Vertex Opus 1M context picker, remote login with `forceLoginMethod`, background session scroll on Windows, and more
+- **新增**：`/resume` 现在将通过 `claude --bg` 或智能体视图启动的后台会话与交互式会话一同列出，并标记为 `bg`
+- **新增**：后台子智能体完成通知中显示耗时（如"Agent completed · 3h 2m 5s"）
+- **变更**：`/model` 现在仅更改当前会话的模型 — 在选择器中按 `d` 为新会话设置默认模型
+- **变更**：CLI 中"extra usage"更名为"usage credits"；`/extra-usage` 现在为 `/usage-credits`（旧名称仍可用）
+- **修复**：当 `api.anthropic.com` 不可达时，启动不再卡死最长 75 秒 — 侧信道 API 调用现在在 15 秒后超时
+- **修复**：终端渲染损坏在错过窗口大小调整事件时可自愈；长时间使用的渐进式错误已清除；VS Code 动画使用更少颜色以减少错误
+- **修复**：在受完整磁盘访问保护的文件夹下，macOS 后台会话崩溃并显示"exit 1 before init"（2.1.143 引入的回归）
+- **修复**：分页 `tools/list` 的 MCP 服务器现在返回所有页面（之前静默丢弃第 1 页之后的工具）
+- **修复**：技能目录中的文件描述符耗尽 — 非 `.md` 文件不再触发技能重新加载
+- **修复**：40+ 项额外修复：工作树进入后的 `/branch`，`AskUserQuestion` 备注字段中的 Escape，Bedrock/Vertex Opus 1M 上下文选择器，`forceLoginMethod` 远程登录，Windows 后台会话滚动等
 
 ---
 
 ### v2.1.143 (2026-05-16)
 
-> Plugin dependency enforcement, projected context cost in /plugin marketplace, worktree.bgIsolation: "none", PowerShell -ExecutionPolicy Bypass by default, stop hook block cap, 30+ bug fixes.
+> 插件依赖强制检查，`/plugin` 市场中的预估上下文成本，`worktree.bgIsolation: "none"`，PowerShell 默认 `-ExecutionPolicy Bypass`，Stop 钩子阻塞上限，30+ 项错误修复。
 
-- **New**: Plugin dependency enforcement — `claude plugin disable` refuses when another enabled plugin depends on the target, with a copy-pasteable disable-chain hint; `claude plugin enable` force-enables transitive dependencies
-- **New**: Projected context cost (per-turn and per-invocation token estimates) in the `/plugin` marketplace browse pane
-- **New**: `worktree.bgIsolation: "none"` setting — lets background sessions edit the working copy directly without `EnterWorktree` (useful for repos where worktrees are impractical)
-- **New**: PowerShell tool now passes `-ExecutionPolicy Bypass` by default — opt out with `CLAUDE_CODE_POWERSHELL_RESPECT_EXECUTION_POLICY=1`
-- **Improved**: Background sessions now preserve the model and effort level set after waking from idle
-- **Improved**: Shift+Tab in attached agent sessions now includes auto mode in the cycle
-- **Fixed**: Stop hooks that block repeatedly no longer loop forever — turn ends with a warning after 8 consecutive blocks (override via `CLAUDE_CODE_STOP_HOOK_BLOCK_CAP`)
-- **Fixed**: Esc/Ctrl+C now cancels a pending `/loop` wakeup while Claude is idle between iterations
-- **Fixed**: `/goal` evaluator no longer fires while background shells or delegated subagents are still running
-- **Fixed**: `NO_COLOR`/`FORCE_COLOR` in `settings.json` env now apply to subprocesses only (no longer strips Claude Code's own UI colors)
-- **Fixed**: `claude agents --allow-dangerously-skip-permissions` now makes bypass mode available in the permission cycle (was incorrectly defaulting sessions to bypass mode)
-- **Fixed**: 20+ additional fixes: background session model+effort preservation after retire/wake, Windows event-loop with network-drive working directories, `claude --bg --dangerously-skip-permissions` persisting across retire/wake, background color bleed on 256-color terminals, stale fragment rendering on Windows Terminal
+- **新增**：插件依赖强制检查 — 当另一个已启用的插件依赖目标时，`claude plugin disable` 会拒绝操作并提示可复制粘贴的禁用链；`claude plugin enable` 强制启用传递依赖
+- **新增**：`/plugin` 市场浏览面板中显示预估上下文成本（每轮及每次调用的 Token 估算）
+- **新增**：`worktree.bgIsolation: "none"` 设置 — 允许后台会话直接在工作副本上编辑，无需 `EnterWorktree`（适用于工作树不实际的仓库）
+- **新增**：PowerShell 工具现在默认传递 `-ExecutionPolicy Bypass` — 通过 `CLAUDE_CODE_POWERSHELL_RESPECT_EXECUTION_POLICY=1` 退出该行为
+- **改进**：后台会话现在保留从空闲唤醒后设置的模型和努力等级
+- **改进**：在已附加的智能体会话中，Shift+Tab 现在将自动模式纳入循环
+- **修复**：反复阻塞的 Stop 钩子不再永久循环 — 在连续 8 次阻塞后结束轮次并显示警告（通过 `CLAUDE_CODE_STOP_HOOK_BLOCK_CAP` 覆盖）
+- **修复**：Esc/Ctrl+C 现在可在 Claude 在迭代间空闲时取消待处理的 `/loop` 唤醒
+- **修复**：`/goal` 评估器在后台 Shell 或委托的子智能体仍在运行时不再触发
+- **修复**：`settings.json` env 中的 `NO_COLOR`/`FORCE_COLOR` 现在仅应用于子进程（不再剥离 Claude Code 自身的 UI 颜色）
+- **修复**：`claude agents --allow-dangerously-skip-permissions` 现在使权限循环中可用绕过模式（此前错误地将会话默认为绕过模式）
+- **修复**：20+ 项额外修复：退休/唤醒后后台会话模型+努力等级保留，网络驱动器工作目录的 Windows 事件循环，`claude --bg --dangerously-skip-permissions` 跨退休/唤醒的持久化，256 色终端上的背景色溢出，Windows Terminal 上的过期片段渲染
 
 ---
 
 ### v2.1.142 (2026-05-15)
 
-> Fast mode upgraded to Opus 4.7 by default, new claude agents dispatch flags, root-level SKILL.md plugin support, /plugin shows LSP servers, MCP_TOOL_TIMEOUT fix, 25+ bug fixes.
+> 快速模式默认升级为 Opus 4.7，新增 `claude agents` 调度标志，根级 SKILL.md 插件支持，`/plugin` 显示 LSP 服务器，`MCP_TOOL_TIMEOUT` 修复，25+ 项错误修复。
 
-- **New**: Fast mode now uses **Opus 4.7** by default (previously Opus 4.6) — set `CLAUDE_CODE_OPUS_4_6_FAST_MODE_OVERRIDE=1` to pin to Opus 4.6
-- **New**: `claude agents` gains dispatch flags: `--add-dir`, `--settings`, `--mcp-config`, `--plugin-dir`, `--permission-mode`, `--model`, `--effort`, and `--dangerously-skip-permissions` to configure background sessions
-- **New**: Plugins with a root-level `SKILL.md` and no `skills/` subdirectory are now automatically surfaced as a skill
-- **New**: `/plugin` details pane and `claude plugin details` now show LSP servers a plugin provides
-- **New**: `/web-setup` warns before replacing an existing GitHub App connection
-- **Fixed**: `MCP_TOOL_TIMEOUT` now correctly raises the per-request fetch timeout for remote HTTP and SSE MCP servers (was capped at 60 seconds regardless of the configured value)
-- **Fixed**: Background sessions now recognize pre-existing git worktrees (was blocking Edit while `EnterWorktree` refused to create a duplicate)
-- **Fixed**: Daemon now exits cleanly after binary upgrade (e.g. `brew upgrade`) — was causing dispatched agents to crash-loop on the deleted path
-- **Fixed**: Background agents no longer crash-loop when Claude-in-Chrome extension is connected without a shared tab
-- **Fixed**: Clicking links in an attached `claude agents` session — headless browser shim no longer applies while attached
-- **Fixed**: `claude agents` "v to open in editor" now uses your shell's `$EDITOR`/`$VISUAL` instead of the daemon's default editor
-- **Fixed**: `claude agents` deadlock on Windows with network-drive working directories; Ctrl+C now works during startup
-- **Fixed**: `claude --bg --dangerously-skip-permissions` now persists across retire/wake
-- **Fixed**: Plugins using `skills: ["./"]` no longer show a false "path escapes plugin directory" error
-- **Fixed**: Plugin cache cleanup no longer deletes the active plugin version directory when no installation metadata is present
-- **Improved**: Reactive compaction: first summarize attempt seeds from the original request's overflow size, avoiding a wasted near-full-context retry
-- **Improved**: Hook configuration error: configuring a prompt- or agent-type hook for `SessionStart`/`Setup`/`SubagentStart` now shows a clear "use a command-type hook instead" message
+- **新增**：快速模式现在默认使用 **Opus 4.7**（之前为 Opus 4.6）— 设置 `CLAUDE_CODE_OPUS_4_6_FAST_MODE_OVERRIDE=1` 可固定使用 Opus 4.6
+- **新增**：`claude agents` 新增调度标志：`--add-dir`、`--settings`、`--mcp-config`、`--plugin-dir`、`--permission-mode`、`--model`、`--effort` 和 `--dangerously-skip-permissions`，用于配置后台会话
+- **新增**：包含根级 `SKILL.md` 且无 `skills/` 子目录的插件现在自动识别为技能
+- **新增**：`/plugin` 详情面板和 `claude plugin details` 现在显示插件提供的 LSP 服务器
+- **新增**：`/web-setup` 在替换已有 GitHub App 连接前发出警告
+- **修复**：`MCP_TOOL_TIMEOUT` 现在正确提高远程 HTTP 和 SSE MCP 服务器的每请求获取超时（之前无论配置值如何均上限 60 秒）
+- **修复**：后台会话现在能识别已存在的 git 工作树（之前因 `EnterWorktree` 拒绝创建重复而导致编辑被阻塞）
+- **修复**：守护进程现在在二进制升级（如 `brew upgrade`）后正常退出 — 之前会导致已调度的智能体在已删除路径上崩溃循环
+- **修复**：当 Claude-in-Chrome 扩展在没有共享标签的情况下连接时，后台智能体不再崩溃循环
+- **修复**：在已附加的 `claude agents` 会话中点击链接 — 已附加时不再应用无界面浏览器 shim
+- **修复**：`claude agents` 的"v 在编辑器中打开"现在使用 Shell 的 `$EDITOR`/`$VISUAL`，而非守护进程的默认编辑器
+- **修复**：网络驱动器工作目录时 `claude agents` 在 Windows 上死锁；Ctrl+C 在启动期间现在有效
+- **修复**：`claude --bg --dangerously-skip-permissions` 现在跨退休/唤醒持久化
+- **修复**：使用 `skills: ["./"]` 的插件不再显示误报的"路径超出插件目录"错误
+- **修复**：没有安装元数据时，插件缓存清理不再删除当前活跃的插件版本目录
+- **改进**：响应式压缩：首次摘要尝试从原始请求的溢出大小进行，避免近满上下文的无效重试
+- **改进**：钩子配置错误：为 `SessionStart`/`Setup`/`SubagentStart` 配置 prompt 或 agent 类型的钩子时，现在显示明确的"改用 command 类型钩子"提示
 
 ---
 
 ### v2.1.141 (2026-05-14)
 
-> Hook terminalSequence output field, claude agents --cwd, Rewind "Summarize up to here", 50+ bug fixes.
+> 钩子 `terminalSequence` 输出字段，`claude agents --cwd`，Rewind"Summarize up to here"，50+ 项错误修复。
 
-- **New**: Hook `terminalSequence` field in JSON output — emit desktop notifications, window titles, and bells from hooks without needing a controlling terminal
-- **New**: `CLAUDE_CODE_PLUGIN_PREFER_HTTPS` — clones GitHub plugin sources over HTTPS instead of SSH (useful in environments without a GitHub SSH key)
-- **New**: `ANTHROPIC_WORKSPACE_ID` environment variable for workload identity federation — scopes the minted token to a specific workspace
-- **New**: `claude agents --cwd <path>` — scope the session list to a specific directory
-- **New**: `/feedback` can now include recent sessions (last 24h or 7 days) for issues spanning more than the current session
-- **New**: Rewind menu: "Summarize up to here" — compress earlier context while keeping recent turns intact
-- **Improved**: Auto mode permission dialog now explains when a `permissions.ask` rule caused the prompt
-- **Improved**: "View diff in your IDE" option restored on file-edit permission prompts when an IDE is connected
-- **Improved**: Background agents launched via `/bg` or `←←` now preserve current permission mode instead of reverting to default
-- **Improved**: `claude agents` — agents that finish work but leave a background shell running now move to Completed
-- **Improved**: Spinner warms to amber after 10 seconds to signal Claude is still working during long thinking periods
-- **Improved**: Plugin menu navigation — `→`/Tab switch tabs, `↑` moves to the tab strip, tab headers and search box clickable in fullscreen
-- **Fixed**: Bedrock `awsCredentialExport` now always runs when configured (was skipped when ambient AWS credentials resolved), fixing cross-account access
-- **Fixed**: Plugin MCP servers with unset config variables now show a "config issue" message with a fix-it hint instead of a generic connection failure
-- **Fixed**: MCP HTTP/SSE servers returning 403 on connect now show "needs auth" instead of "failed"
-- **Fixed**: Remote MCP servers no longer disconnect unnecessarily when the optional server-events stream fails to reconnect — tool calls continue over POST
-- **Fixed**: Remote Control MCP connectors failing with 401 when worker session token rotated mid-session
-- **Fixed**: Remote Control no longer re-enrolls a trusted device when the server rejects a stale token — loops through `/login` properly
-- **Fixed**: 40+ additional fixes: markdown table cell-wrap regression, Ctrl+C in vim INSERT/VISUAL mode, alternative `chat:submit` keybindings, `voice:pushToTalk` custom keybindings, Windows Alt+V image paste, `/tui` with running background shells, `/model` changing autocompact threshold in other sessions, transcript view letter shortcuts after mouse click
+- **新增**：钩子 JSON 输出中的 `terminalSequence` 字段 — 无需控制终端即可从钩子发出桌面通知、窗口标题和提示音
+- **新增**：`CLAUDE_CODE_PLUGIN_PREFER_HTTPS` — 通过 HTTPS 克隆 GitHub 插件源，而非 SSH（适用于没有 GitHub SSH 密钥的环境）
+- **新增**：`ANTHROPIC_WORKSPACE_ID` 环境变量用于工作负载身份联合 — 将签发的 Token 限定到特定工作区
+- **新增**：`claude agents --cwd <path>` — 将会话列表范围限定到特定目录
+- **新增**：`/feedback` 现在可以包含近期会话（最近 24 小时或 7 天），用于跨会话的问题反馈
+- **新增**：Rewind 菜单："Summarize up to here" — 压缩较早的上下文，同时保留最近的轮次
+- **改进**：自动模式权限对话框现在说明何时是 `permissions.ask` 规则导致了该提示
+- **改进**：文件编辑权限提示上恢复了"在 IDE 中查看 diff"选项（当 IDE 已连接时）
+- **改进**：通过 `/bg` 或 `←←` 启动的后台智能体现在保留当前权限模式，而非恢复默认
+- **改进**：`claude agents` — 完成工作但仍有后台 Shell 运行的智能体现在移至"已完成"
+- **改进**：动画指示器在 10 秒后变为琥珀色，表明 Claude 在长时间思考期间仍在工作
+- **改进**：插件菜单导航 — `→`/Tab 切换选项卡，`↑` 移至选项卡栏，选项卡标题和搜索框在全屏模式下可点击
+- **修复**：Bedrock 的 `awsCredentialExport` 现在在配置时始终运行（之前在环境 AWS 凭证解析成功时跳过），修复跨账户访问
+- **修复**：未设置配置变量的插件 MCP 服务器现在显示"配置问题"提示及修复建议，而非通用连接失败
+- **修复**：连接时返回 403 的 MCP HTTP/SSE 服务器现在显示"需要认证"，而非"失败"
+- **修复**：当可选的服务器事件流重连失败时，远程 MCP 服务器不再不必要地断开连接 — 工具调用继续通过 POST 进行
+- **修复**：Worker 会话 Token 在会话中途轮换时，远程控制 MCP 连接器不再以 401 失败
+- **修复**：远程控制在服务器拒绝过期 Token 时不再重新注册受信任设备 — 正确地通过 `/login` 循环处理
+- **修复**：40+ 项额外修复：Markdown 表格单元格换行回归，Vim INSERT/VISUAL 模式中的 Ctrl+C，替代 `chat:submit` 键绑定，`voice:pushToTalk` 自定义键绑定，Windows Alt+V 图片粘贴，带运行后台 Shell 的 `/tui`，在其他会话中 `/model` 修改自动压缩阈值，鼠标点击后对话记录视图字母快捷键
 
 ---
 
 ### v2.1.140 (2026-05-13)
 
-> Agent tool subagent_type case-insensitive matching, plugin folder warnings, targeted bug fixes.
+> Agent 工具 `subagent_type` 大小写不敏感匹配，插件目录警告，针对性错误修复。
 
-- **Improved**: `Agent` tool `subagent_type` matching now case- and separator-insensitive — `"Code Reviewer"` resolves to `code-reviewer`, `"backend_architect"` to `backend-architect`
-- **Improved**: Updated agent color palette
-- **Improved**: Plugins now warn when a default component folder (e.g. `commands/`) is silently ignored because `plugin.json` sets the matching key — shown in `/doctor`, `claude plugin list`, and `/plugin`
-- **Fixed**: `/goal` silently hanging when `disableAllHooks` or `allowManagedHooksOnly` is set — now shows a clear message
-- **Fixed**: Symlinked settings hot-reload regression — symlinked files caused misattributed change events and spurious `ConfigChange` hooks
-- **Fixed**: `claude --bg` failing with "connection dropped mid-request" when the background service was about to idle-exit
-- **Fixed**: Background service startup failing on machines with enterprise endpoint security (allows more startup time)
-- **Fixed**: Remote managed settings not retrying on 401 — now retries once with a force-refreshed token
-- **Fixed**: Managed `extraKnownMarketplaces` auto-update policy not being persisted to `known_marketplaces.json`
-- **Fixed**: `/loop` scheduling redundant wakeups to poll for background tasks that already notify on completion
-- **Fixed**: Windows event-loop stall when a missing executable (e.g. `gh`) triggered synchronous `where.exe` re-spawns on every check
-- **Fixed**: `Read` tool calls failing validation when `offset` is passed as a whitespace-padded or `+`-prefixed string
-- **Fixed**: Native terminal cursor not staying at the input caret when the terminal loses focus
+- **改进**：`Agent` 工具 `subagent_type` 匹配现在不区分大小写和分隔符 — `"Code Reviewer"` 解析为 `code-reviewer`，`"backend_architect"` 解析为 `backend-architect`
+- **改进**：更新智能体调色板
+- **改进**：当 `plugin.json` 设置了对应键时，被静默忽略的默认组件目录（如 `commands/`）现在发出警告 — 显示在 `/doctor`、`claude plugin list` 和 `/plugin` 中
+- **修复**：设置了 `disableAllHooks` 或 `allowManagedHooksOnly` 时，`/goal` 静默挂起 — 现在显示明确提示
+- **修复**：符号链接设置热重载回归 — 符号链接文件导致错误归因的变更事件和虚假的 `ConfigChange` 钩子
+- **修复**：后台服务即将空闲退出时，`claude --bg` 失败并显示"连接在请求中途断开"
+- **修复**：企业端点安全软件的机器上后台服务启动失败（允许更长的启动时间）
+- **修复**：远程托管设置在 401 时不再重试 — 现在使用强制刷新的 Token 重试一次
+- **修复**：托管的 `extraKnownMarketplaces` 自动更新策略未持久化到 `known_marketplaces.json`
+- **修复**：`/loop` 为已在完成时通知的后台任务冗余调度唤醒
+- **修复**：缺失可执行文件（如 `gh`）在每次检查时同步触发 `where.exe` 重启导致 Windows 事件循环停滞
+- **修复**：`offset` 作为带空格或 `+` 前缀的字符串传入时，`Read` 工具调用校验失败
+- **修复**：终端失去焦点时，原生终端光标不再停留在输入光标位置
 
 ---
 
 ### v2.1.139 (2026-05-12)
 
-> Agent view (Research Preview), /goal command, hook exec form + continueOnBlock, 40+ bug fixes.
+> 智能体视图（研究预览），`/goal` 命令，钩子 exec 形式 + `continueOnBlock`，40+ 项错误修复。
 
-- **New**: Agent view (Research Preview) — `claude agents` opens a single list of all sessions (running, blocked on you, or done). Each row shows the session status, last response preview, and time since last interaction. Navigate with left arrow from any session or launch directly from the terminal. Select a session to peek at the last turn and reply inline without fully attaching; press Enter to attach. Background any session with `/bg`, or launch directly to the background with `claude --bg [task]`. Available on Pro, Max, Team, Enterprise, and API plans.
-- **New**: `/goal` command — set a completion condition; Claude keeps working across turns until met, with live elapsed/turns/tokens overlay panel
-- **New**: `/scroll-speed` command to tune mouse wheel scroll speed with live preview
-- **New**: `claude plugin details <name>` — shows plugin component inventory and projected per-session token cost
-- **New**: Transcript view navigation: `?` for shortcuts, `{`/`}` to jump between user prompts, `v` to toggle shortcut panel
-- **New**: Hook `args: string[]` field (exec form) — spawns command directly without a shell, path placeholders need no quoting
-- **New**: Hook `continueOnBlock` config option for `PostToolUse` — set `true` to feed rejection reason back to Claude and continue the turn
-- **New**: MCP stdio servers now receive `CLAUDE_PROJECT_DIR` in environment; plugin configs can reference `${CLAUDE_PROJECT_DIR}` in commands
-- **Improved**: Compaction prompt now asks the model to preserve sensitive user instructions
-- **Fixed**: `/mcp` Reconnect picks up `.mcp.json` edits without a restart; shows HTTP status + URL when reconnect fails
-- **Fixed**: Deadlock where expired credentials + `forceRemoteSettingsRefresh` blocked `claude auth login/logout/status`
-- **Fixed**: `autoAllowBashIfSandboxed` not auto-approving commands with shell expansions like `$VAR` and `$(cmd)`
-- **Fixed**: Unbounded MCP SSE memory growth — response bodies now capped at 16 MB per SSE frame
-- **Fixed**: `Skill(name *)` wildcard permission rules now work as prefix match (matching `Bash(ls *)` behavior)
-- **Fixed**: Settings hot-reload not detecting edits to symlinked `~/.claude/settings.json`
-- **Fixed**: 30+ additional fixes: hook terminal corruption, plugin dependency stale count, mouse wheel speed in Cursor/VS Code, MCP resources from disconnected servers in autocomplete, CJK/emoji border overflow, bash history up-arrow, multi-image paste
+- **新增**：智能体视图（研究预览）— `claude agents` 打开一个包含所有会话（运行中、等待你操作或已完成）的统一列表。每行显示会话状态、最新回复预览及上次交互时间。在任意会话中按左箭头导航或直接从终端启动。选择会话可在不完全附加的情况下查看最新轮次并行内回复；按 Enter 附加。通过 `/bg` 将任意会话切换至后台，或通过 `claude --bg [任务]` 直接在后台启动。适用于 Pro、Max、Team、Enterprise 和 API 计划。
+- **新增**：`/goal` 命令 — 设置完成条件；Claude 跨轮次持续工作直到满足条件，并显示实时耗时/轮次/Token 覆盖面板
+- **新增**：`/scroll-speed` 命令，可调节鼠标滚轮滚动速度并实时预览
+- **新增**：`claude plugin details <name>` — 显示插件组件清单及预估每会话 Token 成本
+- **新增**：对话记录视图导航：`?` 显示快捷键，`{`/`}` 在用户提示间跳转，`v` 切换快捷键面板
+- **新增**：钩子 `args: string[]` 字段（exec 形式）— 不通过 Shell 直接启动命令，路径占位符无需引号
+- **新增**：`PostToolUse` 的钩子 `continueOnBlock` 配置选项 — 设置为 `true` 可将拒绝原因反馈给 Claude 并继续当前轮次
+- **新增**：MCP stdio 服务器现在在环境中接收 `CLAUDE_PROJECT_DIR`；插件配置可在命令中引用 `${CLAUDE_PROJECT_DIR}`
+- **改进**：压缩提示现在要求模型保留敏感的用户指令
+- **修复**：`/mcp` 重连时拾取 `.mcp.json` 编辑内容，无需重启；重连失败时显示 HTTP 状态码 + URL
+- **修复**：过期凭证 + `forceRemoteSettingsRefresh` 阻塞 `claude auth login/logout/status` 的死锁
+- **修复**：`autoAllowBashIfSandboxed` 不自动批准包含 `$VAR` 和 `$(cmd)` 等 Shell 展开的命令
+- **修复**：无界限 MCP SSE 内存增长 — 响应体现在每个 SSE 帧上限 16 MB
+- **修复**：`Skill(name *)` 通配符权限规则现在作为前缀匹配（与 `Bash(ls *)` 行为一致）
+- **修复**：设置热重载无法检测到符号链接 `~/.claude/settings.json` 的编辑
+- **修复**：30+ 项额外修复：钩子终端损坏，插件依赖过期计数，Cursor/VS Code 中的鼠标滚轮速度，自动补全中来自断开服务器的 MCP 资源，CJK/emoji 边框溢出，bash 历史上箭头，多图片粘贴
 
 ---
 
 ### v2.1.138 (2026-05-11)
 
-> Internal fixes.
+> 内部修复。
 
-- **Fixed**: Internal fixes (no user-visible changes)
+- **修复**：内部修复（无用户可见变化）
 
 ---
 
 ### v2.1.137 (2026-05-11)
 
-> [VSCode] Fixed extension failing to activate on Windows.
+> [VSCode] 修复 Windows 上扩展激活失败。
 
-- **Fixed**: VS Code extension failing to activate on Windows
+- **修复**：VS Code 扩展在 Windows 上激活失败
 
 ---
 
 ### v2.1.136 (2026-05-11)
 
-> settings.autoMode.hard_deny, CLAUDE_CODE_ENABLE_FEEDBACK_SURVEY_FOR_OTEL, MCP /clear disappear fix, 40+ UI/terminal bug fixes.
+> `settings.autoMode.hard_deny`，`CLAUDE_CODE_ENABLE_FEEDBACK_SURVEY_FOR_OTEL`，MCP `/clear` 后消失修复，40+ 项 UI/终端错误修复。
 
-- **New**: `settings.autoMode.hard_deny` — auto mode classifier rules that block unconditionally regardless of user intent or allow exceptions
-- **New**: `CLAUDE_CODE_ENABLE_FEEDBACK_SURVEY_FOR_OTEL` to re-enable the session quality survey for enterprises capturing responses via OpenTelemetry
-- **Fixed**: MCP servers (`.mcp.json`, plugins, claude.ai connectors) silently disappearing after `/clear` in VS Code extension, JetBrains plugin, and Agent SDK
-- **Fixed**: MCP OAuth refresh tokens lost when multiple servers refresh concurrently — no more daily re-authentication for multi-server setups
-- **Fixed**: Rare login loop where a concurrent credential write could overwrite a freshly-rotated OAuth token and force re-login
-- **Fixed**: API error (400) when extended thinking emitted a redacted thinking block after a tool call
-- **Fixed**: `--resume` / `--continue` not finding sessions when the project path contains underscores
-- **Fixed**: Plan mode not blocking file writes when a matching `Edit(...)` allow rule exists
-- **Fixed**: WSL2: image paste from Windows clipboard now works via PowerShell fallback when xclip/wl-paste cannot read image data
-- **Fixed**: Plugin `Stop`/`UserPromptSubmit` hooks failing when cache cleanup deletes a version still in use
-- **Improved**: Visual consistency across slash command dialogs — standardized footer hints, spacing, arrow-key styling; dialog frame appears immediately during loading
-- **Fixed**: Colors appearing at wrong positions in bash command output and markdown code blocks
-- **Fixed**: ReasonML diffs rendering corrupted "undefined" text artifacts at word-diff boundaries
-- **Fixed**: `@` file picker not matching files created mid-session, and not finding files in directories with 100+ entries
-- **Fixed**: 30+ additional UI/terminal fixes: failed tool calls expand in fullscreen, Backspace/Ctrl+Backspace swap fix, `/usage` weekly reset date display, CJK terminal overflow, `/insights` crash on malformed tool calls, renderer crash on collapsibility change, shell-integration lock files not respecting `CLAUDE_CONFIG_DIR`, trailing whitespace in copied output, plugin uninstall case-insensitivity, `AskUserQuestion` multi-select array fix, `CronList` missing qualifiers, MCP tool results invisible on content-block returns
+- **新增**：`settings.autoMode.hard_deny` — 自动模式分类规则，无条件阻止，不受用户意图或允许例外影响
+- **新增**：`CLAUDE_CODE_ENABLE_FEEDBACK_SURVEY_FOR_OTEL`，用于为通过 OpenTelemetry 捕获响应的企业重新启用会话质量调查
+- **修复**：在 VS Code 扩展、JetBrains 插件和智能体 SDK 中 `/clear` 后，MCP 服务器（`.mcp.json`、插件、claude.ai 连接器）静默消失
+- **修复**：多个服务器并发刷新时丢失 MCP OAuth 刷新 Token — 多服务器配置不再每天重新认证
+- **修复**：并发凭证写入覆盖新鲜旋转的 OAuth Token 并强制重新登录的偶发登录循环
+- **修复**：工具调用后扩展思考发出已编辑 thinking block 时产生 API 错误（400）
+- **修复**：项目路径包含下划线时，`--resume` / `--continue` 找不到会话
+- **修复**：存在匹配 `Edit(...)` 允许规则时，计划模式未阻止文件写入
+- **修复**：WSL2：当 xclip/wl-paste 无法读取图像数据时，Windows 剪贴板的图片粘贴现通过 PowerShell 回退实现
+- **修复**：缓存清理删除仍在使用的版本时，插件 `Stop`/`UserPromptSubmit` 钩子失败
+- **改进**：斜杠命令对话框视觉一致性 — 标准化页脚提示、间距、箭头键样式；加载期间对话框框架立即出现
+- **修复**：bash 命令输出和 Markdown 代码块中颜色出现在错误位置
+- **修复**：ReasonML diff 在词差异边界处渲染损坏的"undefined"文本
+- **修复**：`@` 文件选择器不匹配会话中途创建的文件，且在超过 100 个条目的目录中找不到文件
+- **修复**：30+ 项额外 UI/终端修复：失败的工具调用在全屏模式下展开，Backspace/Ctrl+Backspace 互换修复，`/usage` 每周重置日期显示，CJK 终端溢出，`/insights` 在格式错误的工具调用上崩溃，可折叠性变更时渲染崩溃，Shell 集成锁文件不遵守 `CLAUDE_CONFIG_DIR`，复制输出中的尾随空白，插件卸载大小写不敏感，`AskUserQuestion` 多选数组修复，`CronList` 缺少限定符，MCP 工具结果在返回内容块时不可见
 
 ---
 
 ### v2.1.133 (2026-05-08)
 
-> worktree.baseRef setting, effort level in hooks, subagent skills fix, 15+ bug fixes.
+> `worktree.baseRef` 设置，钩子中的努力等级，子智能体技能修复，15+ 项错误修复。
 
-> **Breaking**: `worktree.baseRef` defaults to `fresh` (branches from `origin/<default>`), reverting 2.1.128 behavior where `EnterWorktree` used local HEAD. Set `worktree.baseRef: "head"` in settings to restore prior behavior.
+> **破坏性变更**：`worktree.baseRef` 默认为 `fresh`（从 `origin/<默认分支>` 创建分支），恢复 2.1.128 之前的行为（`EnterWorktree` 使用本地 HEAD）。在设置中添加 `worktree.baseRef: "head"` 可恢复之前的行为。
 
-- **New**: `worktree.baseRef` setting (`fresh` | `head`) — `fresh` (default) branches from `origin/<default-branch>`; `head` keeps local HEAD including unpushed commits. Applies to `--worktree`, `EnterWorktree`, and agent-isolation worktrees
-- **New**: `sandbox.bwrapPath` / `sandbox.socatPath` managed settings (Linux/WSL) to specify custom bubblewrap and socat binary locations
-- **New**: `parentSettingsBehavior` admin-tier key (`first-wins` | `merge`) to let admins opt SDK `managedSettings` into policy merge
-- **New**: Hooks receive active effort level via `effort.level` JSON field and `$CLAUDE_EFFORT` env var in Bash subcommands
-- **Improved**: Focus mode behavior and memory usage (background workers released under memory pressure)
-- **Fixed**: Subagents not discovering project/user/plugin skills via the Skill tool
-- **Fixed**: Parallel sessions dead-ending at 401 after refresh-token race wiped shared credentials
-- **Fixed**: `HTTP(S)_PROXY` / `NO_PROXY` / mTLS not respected for full MCP OAuth flow (discovery, client registration, token exchange, refresh)
-- **Fixed**: Read/Write/Edit denied on mapped network drives via `--add-dir` / SDK `additionalDirectories`
-- **Fixed**: Remote Control stop/interrupt from claude.ai not fully canceling the CLI session (queued messages stalled after interrupting stuck tool)
-- **Fixed**: `/effort` in one session unexpectedly changing effort level of other concurrent sessions
-- **Fixed**: `claude --help` now lists `--remote-control` flag
-- **Fixed**: VS Code extension: `claudeCode.claudeProcessWrapper` failing with "Unsupported platform" when extension build doesn't bundle a Claude binary
+- **新增**：`worktree.baseRef` 设置（`fresh` | `head`）— `fresh`（默认）从 `origin/<默认分支>` 创建分支；`head` 保留本地 HEAD，包含未推送的提交。适用于 `--worktree`、`EnterWorktree` 和智能体隔离工作树
+- **新增**：`sandbox.bwrapPath` / `sandbox.socatPath` 托管设置（Linux/WSL），用于指定自定义 bubblewrap 和 socat 二进制位置
+- **新增**：`parentSettingsBehavior` 管理员级别键（`first-wins` | `merge`），允许管理员将 SDK `managedSettings` 纳入策略合并
+- **新增**：钩子通过 `effort.level` JSON 字段和 Bash 子命令中的 `$CLAUDE_EFFORT` 环境变量接收当前努力等级
+- **改进**：焦点模式行为和内存使用（后台工作器在内存压力下释放）
+- **修复**：子智能体无法通过 Skill 工具发现项目/用户/插件技能
+- **修复**：刷新 Token 竞态清除共享凭证后，并行会话以 401 陷入死局
+- **修复**：`HTTP(S)_PROXY` / `NO_PROXY` / mTLS 未在完整 MCP OAuth 流程（发现、客户端注册、Token 交换、刷新）中生效
+- **修复**：通过 `--add-dir` / SDK `additionalDirectories` 映射的网络驱动器上 Read/Write/Edit 被拒绝
+- **修复**：来自 claude.ai 的远程控制停止/中断未完全取消 CLI 会话（中断卡住的工具后队列消息停滞）
+- **修复**：一个会话中的 `/effort` 意外更改其他并发会话的努力等级
+- **修复**：`claude --help` 现在列出 `--remote-control` 标志
+- **修复**：VS Code 扩展：当扩展构建未打包 Claude 二进制文件时，`claudeCode.claudeProcessWrapper` 失败并显示"不支持的平台"
 
 ---
 
 ### v2.1.132 (2026-05-08)
 
-> CLAUDE_CODE_SESSION_ID in Bash env, CLAUDE_CODE_DISABLE_ALTERNATE_SCREEN opt-out, MCP memory fix, 20+ terminal/TUI fixes.
+> Bash 环境中的 `CLAUDE_CODE_SESSION_ID`，`CLAUDE_CODE_DISABLE_ALTERNATE_SCREEN` 退出选项，MCP 内存泄漏修复，20+ 项终端/TUI 修复。
 
-- **New**: `CLAUDE_CODE_SESSION_ID` env var now passed to Bash tool subprocess environment (matches `session_id` in hook JSON input)
-- **New**: `CLAUDE_CODE_DISABLE_ALTERNATE_SCREEN=1` to opt out of the fullscreen alternate-screen renderer and keep output in the terminal's native scrollback
-- **New**: "Pasting…" footer hint while a Ctrl+V image paste is being read from the clipboard
-- **Fixed**: Unbounded memory growth (10GB+ RSS) when a stdio MCP server writes non-protocol data to stdout
-- **Fixed**: External SIGINT (`kill -INT`, IDE stop button) not running graceful shutdown — terminal modes now restored and `--resume` hint printed
-- **Fixed**: `--resume` failing with `no low surrogate in string` when tool error truncation split an emoji; pre-corrupted sessions sanitized on load
-- **Fixed**: `--permission-mode` flag ignored when resuming a plan-mode session with `-p --continue`/`--resume`; plan mode not re-applied after `ExitPlanMode` within the same session
-- **Fixed**: Fullscreen mode showing blank screen after laptop sleep/wake or Ctrl+Z/`fg` until next keystroke
-- **Fixed**: Cursor landing mid-grapheme on Ctrl+E/A/K/U/arrow keys with Indic conjuncts or ZWJ emoji wrapping across lines
-- **Fixed**: Vim operators corrupting text with decomposed (NFD) accented characters
-- **Fixed**: Pasting text starting with `/` silently swallowing input or triggering unknown-command reply
-- **Fixed**: Stray escape sequences in prompt when focus events or mouse-tracking reports interleave with bracketed paste
-- **Fixed**: Mouse wheel scrolling too fast in Cursor and VS Code 1.92–1.104 (upstream xterm.js bug); scroll-wheel runaway in JetBrains IDE 2025.2
-- **Fixed**: `/usage` Ctrl+S hanging when copying stats screenshot to clipboard on Linux/X11
-- **Fixed**: `/terminal-setup` showing contradictory error in Windows Terminal (Shift+Enter is natively supported)
-- **Fixed**: `/effort` picker not reflecting `CLAUDE_CODE_EFFORT_LEVEL` env var override
-- **Fixed**: `/status` showing wrong default model for some users
-- **Fixed**: Slash command autocomplete popup capped at ~3–5 visible commands instead of scaling with terminal height
-- **Fixed**: Statusline `context_window` token counts showing cumulative session totals instead of current context usage
-- **Fixed**: Alt+T (thinking toggle) not working on macOS without "Option as Meta" enabled (iTerm2, Terminal.app defaults)
-- **Fixed**: Dead keyboard input on Windows after re-opening a background session from `claude agents`
-- **Fixed**: MCP servers failing `tools/list` silently showing 0 tools — now retries once and shows "connected · tools fetch failed" in `/mcp`
-- **Fixed**: Unauthorized claude.ai MCP connectors showing as "failed" instead of "needs auth"; headless `-p` mode no longer retries non-transient 4xx failures
-- **Fixed**: Bedrock and Vertex 400 errors when `ENABLE_PROMPT_CACHING_1H` is set
+- **新增**：`CLAUDE_CODE_SESSION_ID` 环境变量现在传递给 Bash 工具子进程环境（与钩子 JSON 输入中的 `session_id` 一致）
+- **新增**：`CLAUDE_CODE_DISABLE_ALTERNATE_SCREEN=1`，用于退出全屏替代屏幕渲染器，保持输出在终端的原生滚动历史中
+- **新增**：Ctrl+V 粘贴图片时，从剪贴板读取期间显示"正在粘贴…"页脚提示
+- **修复**：stdio MCP 服务器向 stdout 写入非协议数据时无界限内存增长（RSS 超 10GB）
+- **修复**：外部 SIGINT（`kill -INT`、IDE 停止按钮）不运行优雅关闭 — 终端模式现已恢复，`--resume` 提示已打印
+- **修复**：工具错误截断分割了 emoji 时，`--resume` 失败并显示 `no low surrogate in string`；加载时对预损坏的会话进行清理
+- **修复**：使用 `-p --continue`/`--resume` 恢复计划模式会话时 `--permission-mode` 标志被忽略；同一会话中 `ExitPlanMode` 后计划模式未重新应用
+- **修复**：笔记本电脑睡眠/唤醒或 Ctrl+Z/`fg` 后全屏模式显示空白屏幕，直到下一次按键
+- **修复**：在包含跨行换行的 Indic 合字或 ZWJ emoji 时，Ctrl+E/A/K/U/方向键光标落在字形中间
+- **修复**：Vim 操作符使用分解的（NFD）带重音字符时损坏文本
+- **修复**：粘贴以 `/` 开头的文本静默吞噬输入或触发未知命令回复
+- **修复**：焦点事件或鼠标追踪报告与括号粘贴交错时，提示符中出现游离转义序列
+- **修复**：Cursor 和 VS Code 1.92–1.104 中鼠标滚轮滚动过快（上游 xterm.js 问题）；JetBrains IDE 2025.2 中滚轮失控
+- **修复**：Linux/X11 上复制统计截图到剪贴板时 `/usage` Ctrl+S 挂起
+- **修复**：`/terminal-setup` 在 Windows Terminal 中显示矛盾错误（Shift+Enter 原生支持）
+- **修复**：`/effort` 选择器未反映 `CLAUDE_CODE_EFFORT_LEVEL` 环境变量覆盖
+- **修复**：`/status` 为部分用户显示错误的默认模型
+- **修复**：斜杠命令自动补全弹窗上限约 3–5 个可见命令，而非随终端高度扩展
+- **修复**：状态栏 `context_window` Token 计数显示累计会话总量，而非当前上下文使用量
+- **修复**：macOS 上未启用"Option as Meta"时（iTerm2、Terminal.app 默认），Alt+T（思考切换）无效
+- **修复**：从 `claude agents` 重新打开后台会话后 Windows 键盘输入失效
+- **修复**：`tools/list` 失败的 MCP 服务器静默显示 0 个工具 — 现在重试一次并在 `/mcp` 中显示"已连接 · 工具获取失败"
+- **修复**：未授权的 claude.ai MCP 连接器显示为"失败"而非"需要认证"；无界面 `-p` 模式不再对非临时性 4xx 失败重试
+- **修复**：设置 `ENABLE_PROMPT_CACHING_1H` 时 Bedrock 和 Vertex 返回 400 错误
 
 ---
 
 ### v2.1.131 (2026-05-06)
 
-> VS Code extension Windows activation fix, Mantle auth fix.
+> VS Code 扩展 Windows 激活修复，Mantle 认证修复。
 
-- **Fixed**: VS Code extension failing to activate on Windows due to a hardcoded build path in the bundled SDK (`createRequire` polyfill bug)
-- **Fixed**: Mantle endpoint authentication failing with missing `x-api-key` header
+- **修复**：VS Code 扩展在 Windows 上激活失败，原因是打包 SDK 中硬编码了构建路径（`createRequire` polyfill 问题）
+- **修复**：Mantle 端点认证因缺少 `x-api-key` 请求头而失败
 
 ---
 
 ### v2.1.129 (2026-05-06)
 
-> --plugin-url flag, CLAUDE_CODE_PACKAGE_MANAGER_AUTO_UPDATE, Ctrl+R all-projects history restored, skillOverrides fix, 20+ bug fixes.
+> `--plugin-url` 标志，`CLAUDE_CODE_PACKAGE_MANAGER_AUTO_UPDATE`，Ctrl+R 全项目历史恢复，`skillOverrides` 修复，20+ 项错误修复。
 
-- **New**: `--plugin-url <url>` flag to fetch a plugin `.zip` archive from a URL for the current session
-- **New**: `CLAUDE_CODE_FORCE_SYNC_OUTPUT=1` env var to force-enable synchronized output on terminals where auto-detection fails (e.g. Emacs `eat`)
-- **New**: `CLAUDE_CODE_PACKAGE_MANAGER_AUTO_UPDATE`: when set, Homebrew or WinGet installations run the upgrade command in the background and prompt to restart
-- **Changed**: Plugin manifest `themes` and `monitors` declarations should now go under `"experimental": { ... }` — top-level still works but `claude plugin validate` will warn
-- **Changed**: Gateway `/v1/models` discovery is now opt-in via `CLAUDE_CODE_ENABLE_GATEWAY_MODEL_DISCOVERY=1` (was automatic in 2.1.126–2.1.128)
-- **Improved**: Ctrl+R history picker defaults to all projects again (pre-2.1.124 behavior) — press Ctrl+S to narrow to current project or session
-- **Improved**: Third-party deployments (Bedrock, Vertex, Foundry, `ANTHROPIC_BASE_URL` gateway) no longer see spinner tips pointing at first-party Anthropic surfaces
-- **Fixed**: `skillOverrides` setting now works: `off` hides from model and `/`, `user-invocable-only` hides from model only, `name-only` collapses description
-- **Fixed**: `claude_code.pull_request.count` OTel metric now counts PRs/MRs created via MCP tools (not just shell commands)
-- **Fixed**: Policy refusal error messages now include API Request ID for easier support debugging
-- **Fixed**: API errors with unrecognized 400 status codes showing raw JSON instead of the underlying error message
-- **Fixed**: `/clear` not resetting the terminal tab title after a conversation
-- **Fixed**: Session title chip from `/rename` disappearing while a permission or other dialog is active
-- **Fixed**: Agent panel below the prompt hidden when subagents are running (regression in 2.1.122)
-- **Fixed**: External-editor handoff (Ctrl+G) blanking the conversation history above the prompt
-- **Fixed**: `/context` dumping its rendered ASCII visualization grid into the conversation (~1.6k tokens wasted per call)
-- **Fixed**: `/agents` Library list arrow-key navigation — highlighted agent stays visible when list exceeds viewport
-- **Fixed**: `/branch` success message not including the new branch's session id for `/resume`
-- **Fixed**: Bold headers with keycap/ZWJ/skin-tone emoji losing trailing characters in fullscreen mode
-- **Fixed**: Server-managed settings policy not applying for enterprise/team users with stored OAuth credentials lacking `user:inference` scope
-- **Fixed**: OAuth refresh race after wake-from-sleep that could log out all running sessions
-- **Fixed**: 1-hour prompt cache TTL being silently downgraded to 5 minutes
-- **Fixed**: Cache-miss warning appearing spuriously after `/clear` or compaction when changing `/effort` or `/model`
-- **Fixed**: `Bash(mkdir *)`, `Bash(touch *)` and similar allow rules not honored for in-project paths
-- **Fixed**: `deniedMcpServers` patterns with `*://` scheme wildcard not matching mixed-case hostnames
-- **Fixed**: Harmless WebSocket warning logged as error in `--debug` during voice mode
-- **Fixed**: [VSCode] `/clear` not clearing the conversation context and displayed transcript
+- **新增**：`--plugin-url <url>` 标志，用于为当前会话从 URL 获取插件 `.zip` 压缩包
+- **新增**：`CLAUDE_CODE_FORCE_SYNC_OUTPUT=1` 环境变量，在自动检测失败的终端（如 Emacs `eat`）上强制启用同步输出
+- **新增**：`CLAUDE_CODE_PACKAGE_MANAGER_AUTO_UPDATE`：设置后，Homebrew 或 WinGet 安装在后台运行升级命令并提示重启
+- **变更**：插件清单中的 `themes` 和 `monitors` 声明现在应放在 `"experimental": { ... }` 下 — 顶级仍可用，但 `claude plugin validate` 将发出警告
+- **变更**：网关 `/v1/models` 发现现在通过 `CLAUDE_CODE_ENABLE_GATEWAY_MODEL_DISCOVERY=1` 选择启用（在 2.1.126–2.1.128 中为自动启用）
+- **改进**：Ctrl+R 历史选择器现在默认回到所有项目（2.1.124 之前的行为）— 按 Ctrl+S 可缩小到当前项目或会话
+- **改进**：第三方部署（Bedrock、Vertex、Foundry、`ANTHROPIC_BASE_URL` 网关）不再看到指向 Anthropic 第一方界面的旋转提示
+- **修复**：`skillOverrides` 设置现在生效：`off` 从模型和 `/` 中隐藏，`user-invocable-only` 仅从模型中隐藏，`name-only` 折叠描述
+- **修复**：`claude_code.pull_request.count` OTel 指标现在计算通过 MCP 工具创建的 PR/MR（不仅限于 Shell 命令）
+- **修复**：策略拒绝错误消息现在包含 API 请求 ID，便于支持调试
+- **修复**：未识别的 400 状态码 API 错误显示原始 JSON 而非底层错误消息
+- **修复**：`/clear` 后对话结束时未重置终端标签标题
+- **修复**：`/rename` 的会话标题标签在权限或其他对话框激活时消失
+- **修复**：子智能体运行时子智能体面板在提示框下方隐藏（2.1.122 引入的回归）
+- **修复**：外部编辑器切换（Ctrl+G）清空提示框上方的对话历史
+- **修复**：`/context` 将其渲染的 ASCII 可视化网格输出到对话中（每次调用浪费约 1600 Token）
+- **修复**：`/agents` 库列表箭头键导航 — 列表超出视口时高亮智能体保持可见
+- **修复**：`/branch` 成功消息未包含新分支的会话 id 供 `/resume` 使用
+- **修复**：全屏模式下带键帽/ZWJ/肤色 emoji 的粗体标题丢失尾部字符
+- **修复**：缺少 `user:inference` scope 的已存储 OAuth 凭证的企业/团队用户不应用服务器托管设置策略
+- **修复**：从睡眠唤醒后 OAuth 刷新竞态可能导致所有运行中会话退出
+- **修复**：1 小时提示缓存 TTL 被静默降级为 5 分钟
+- **修复**：`/clear` 或压缩后更改 `/effort` 或 `/model` 时虚假出现缓存未命中警告
+- **修复**：`Bash(mkdir *)`、`Bash(touch *)` 等允许规则对项目内路径未生效
+- **修复**：带 `*://` scheme 通配符的 `deniedMcpServers` 模式不匹配大小写混合的主机名
+- **修复**：`--debug` 模式下语音模式中的无害 WebSocket 警告被记录为错误
+- **修复**：[VSCode] `/clear` 未清除对话上下文和显示的记录
 
 ---
 
 ### v2.1.128 (2026-05-05)
 
-> EnterWorktree branch from local HEAD, --plugin-dir .zip support, --channels console auth, /mcp tool count, parallel bash tool fix, sub-agent prompt cache fix, 35+ bug fixes.
+> `EnterWorktree` 从本地 HEAD 创建分支，`--plugin-dir` 支持 `.zip`，`--channels` console 认证，`/mcp` 工具数量，并行 bash 工具修复，子智能体提示缓存修复，35+ 项错误修复。
 
-- **Fixed**: `EnterWorktree` now creates the new branch from local HEAD as documented — unpushed commits are no longer dropped when branching
-- **New**: `--plugin-dir` accepts `.zip` plugin archives in addition to directories
-- **New**: `--channels` now works with console (API key) authentication — managed orgs must set `channelsEnabled: true` in managed settings
-- **Improved**: `/mcp` shows tool count for each connected server and flags servers that connected with 0 tools
-- **Improved**: Reconnecting MCP servers no longer flood the conversation with full tool-name lists on every reconnect — re-announced tools are summarized by server prefix
-- **Improved**: SDK hosts receive a persistent `localSettings` suggestion for Bash permission prompts, so "Always allow" writes to `.claude/settings.local.json`
-- **Improved**: Bare `/color` (no args) now picks a random session color
-- **Improved**: `/model` picker collapses duplicate Opus 4.7 entries; current Opus shows as "Opus" instead of "Opus 4.7"
-- **Improved**: Subprocesses (Bash, hooks, MCP, LSP) no longer inherit `OTEL_*` env vars — OTEL-instrumented apps run via Bash no longer pick up the CLI's own OTLP endpoint
-- **Fixed**: Parallel shell tool calls — a failing read-only command (grep, git diff, ls) no longer cancels sibling calls
-- **Fixed**: Sub-agent progress summaries missing the prompt cache (~3× `cache_creation` reduction)
-- **Fixed**: Sessions on 1M-context models with a smaller autocompact window falsely blocked with "Prompt is too long"
-- **Fixed**: MCP stdio servers receiving corrupted arguments when `CLAUDE_CODE_SHELL_PREFIX` is set and an argument contains spaces or shell metacharacters
-- **Fixed**: `/plugin update` never detecting new versions of npm-sourced plugins
-- **Fixed**: MCP: `workspace` is now a reserved server name — existing servers with that name are skipped with a warning
-- **Fixed**: Markdown link labels lost on terminals without OSC 8 hyperlink support — links now render as `label (url)`
-- **Fixed**: Tab navigation in `/config` stranding focus — the tab header stays focused so arrows and Esc keep working
-- **Fixed**: Fenced code blocks inside list items carrying leading whitespace into the clipboard on copy-paste
-- **Fixed**: MCP tool results dropping images when the server returns both structured content and content blocks
-- **Fixed**: Terminal progress indicator (OSC 9;4) flickering off between tool calls
-- **Fixed**: 20+ additional terminal, clipboard, and session management bug fixes
+- **修复**：`EnterWorktree` 现在按文档说明从本地 HEAD 创建新分支 — 分支时未推送的提交不再丢失
+- **新增**：`--plugin-dir` 除目录外还接受 `.zip` 插件压缩包
+- **新增**：`--channels` 现在支持 console（API key）认证 — 托管组织必须在托管设置中设置 `channelsEnabled: true`
+- **改进**：`/mcp` 显示每个已连接服务器的工具数量，并标记以 0 个工具连接的服务器
+- **改进**：重连 MCP 服务器不再在每次重连时向对话发送完整工具名列表 — 重新声明的工具按服务器前缀汇总
+- **改进**：SDK 主机为 Bash 权限提示收到持久化 `localSettings` 建议，使"始终允许"写入 `.claude/settings.local.json`
+- **改进**：裸 `/color`（无参数）现在随机选择会话颜色
+- **改进**：`/model` 选择器折叠重复的 Opus 4.7 条目；当前 Opus 显示为"Opus"而非"Opus 4.7"
+- **改进**：子进程（Bash、钩子、MCP、LSP）不再继承 `OTEL_*` 环境变量 — 通过 Bash 运行的 OTEL 仪表化应用不再拾取 CLI 自身的 OTLP 端点
+- **修复**：并行 Shell 工具调用 — 失败的只读命令（grep、git diff、ls）不再取消兄弟调用
+- **修复**：子智能体进度摘要缺少提示缓存（`cache_creation` 减少约 3 倍）
+- **修复**：具有较小自动压缩窗口的 1M 上下文模型会话被错误阻止并显示"提示词过长"
+- **修复**：设置 `CLAUDE_CODE_SHELL_PREFIX` 且参数包含空格或 Shell 元字符时，MCP stdio 服务器接收到损坏的参数
+- **修复**：`/plugin update` 从不检测 npm 来源插件的新版本
+- **修复**：MCP：`workspace` 现在是保留的服务器名称 — 同名的已有服务器被跳过并显示警告
+- **修复**：不支持 OSC 8 超链接的终端上丢失 Markdown 链接标签 — 链接现在渲染为 `标签 (url)`
+- **修复**：`/config` 中的 Tab 导航使焦点停留 — 选项卡标题保持焦点，使箭头键和 Esc 继续有效
+- **修复**：列表项中的围栏代码块在复制粘贴时携带前置空白进入剪贴板
+- **修复**：服务器同时返回结构化内容和内容块时，MCP 工具结果丢失图片
+- **修复**：工具调用间的终端进度指示器（OSC 9;4）闪烁消失
+- **修复**：20+ 项额外终端、剪贴板和会话管理错误修复
 
 ---
 
 ### v2.1.126 (2026-05-01)
 
-> Gateway /v1/models listing in /model picker, claude project purge, OAuth paste code for WSL2/SSH, Windows PowerShell 7 as primary shell, security fix, 40+ bug fixes.
+> `/model` 选择器中的网关 `/v1/models` 列表，`claude project purge`，WSL2/SSH 中的 OAuth 粘贴代码，Windows PowerShell 7 作为主 Shell，安全修复，40+ 项错误修复。
 
-- **New**: `/model` picker now lists models from your gateway's `/v1/models` endpoint when `ANTHROPIC_BASE_URL` points at an Anthropic-compatible gateway
-- **New**: `claude project purge [path]` deletes all Claude Code state for a project (transcripts, tasks, file history, config entry) — supports `--dry-run`, `-y/--yes`, `-i/--interactive`, and `--all`
-- **Improved**: `--dangerously-skip-permissions` now bypasses prompts for writes to `.claude/`, `.git/`, `.vscode/`, shell config files, and other previously-protected paths (catastrophic removal commands still prompt as a safety net)
-- **Improved**: `claude auth login` accepts the OAuth code pasted into the terminal when the browser callback can't reach localhost (WSL2, SSH, containers)
-- **Improved**: `claude_code.skill_activated` OpenTelemetry event now fires for user-typed slash commands with a new `invocation_trigger` attribute (`"user-slash"`, `"claude-proactive"`, or `"nested-skill"`)
-- **Improved**: Auto mode spinner now turns red when a permission check stalls, instead of looking like the tool is running
-- **Improved**: Windows — PowerShell 7 installed via Microsoft Store, MSI without PATH, or `.NET global tool` is now detected; when PowerShell tool is enabled, Claude treats PowerShell as the primary shell instead of defaulting to Bash
-- **Improved**: Read tool — removed the per-file malware-assessment reminder that caused spurious refusals on legacy models
-- **Security**: Fixed `allowManagedDomainsOnly` / `allowManagedReadPathsOnly` being ignored when a higher-priority managed-settings source lacked a `sandbox` block
-- **Fixed**: Pasting an image larger than 2000px no longer breaks the session — images are downscaled on paste, oversized images in history are automatically removed and the request retried
-- **Fixed**: OAuth login failing with timeout on slow or proxied connections, in IPv6-only devcontainers, and when the browser callback can't reach localhost
-- **Fixed**: "Stream idle timeout" error after waking Mac from sleep mid-request; background and remote sessions no longer falsely abort during long model thinking pauses
-- **Fixed**: Japanese/Korean/Chinese text rendering as garbled characters on Windows in no-flicker mode
-- **Fixed**: `Ctrl+L` clearing the prompt input — it now only forces a screen redraw, matching readline behavior
-- **Fixed**: Deferred tools (WebSearch, WebFetch, etc.) not available to skills with `context: fork` on their first turn
-- **Fixed**: Windows clipboard writes no longer expose copied content in process command-line arguments visible to EDR/SIEM telemetry; also fixes >22KB selections not reaching the clipboard
-- **Fixed**: Agent SDK hang when the model emits a malformed tool name in a parallel tool call batch
-- **Fixed**: `/plugin` Uninstall reporting "Enabled" instead of "Uninstalled"
+- **新增**：当 `ANTHROPIC_BASE_URL` 指向兼容 Anthropic 的网关时，`/model` 选择器现在列出网关 `/v1/models` 端点的模型
+- **新增**：`claude project purge [path]` 删除项目的所有 Claude Code 状态（记录、任务、文件历史、配置条目）— 支持 `--dry-run`、`-y/--yes`、`-i/--interactive` 和 `--all`
+- **改进**：`--dangerously-skip-permissions` 现在绕过对 `.claude/`、`.git/`、`.vscode/`、Shell 配置文件及其他之前受保护路径的写入提示（灾难性删除命令仍会提示作为安全网）
+- **改进**：`claude auth login` 在浏览器回调无法访问 localhost 时（WSL2、SSH、容器）接受粘贴到终端的 OAuth 代码
+- **改进**：`claude_code.skill_activated` OpenTelemetry 事件现在对用户输入的斜杠命令触发，新增 `invocation_trigger` 属性（`"user-slash"`、`"claude-proactive"` 或 `"nested-skill"`）
+- **改进**：自动模式动画指示器在权限检查卡住时变为红色，而非看起来像工具正在运行
+- **改进**：Windows — 通过 Microsoft Store、MSI（未添加到 PATH）或 `.NET global tool` 安装的 PowerShell 7 现在被检测到；当 PowerShell 工具启用时，Claude 将 PowerShell 视为主 Shell 而非默认使用 Bash
+- **改进**：Read 工具 — 移除导致旧模型误拒的每文件恶意软件评估提醒
+- **安全**：修复 `allowManagedDomainsOnly` / `allowManagedReadPathsOnly` 在更高优先级托管设置源缺少 `sandbox` 块时被忽略的问题
+- **修复**：粘贴大于 2000px 的图片不再导致会话中断 — 粘贴时图片自动缩放，历史中的超大图片自动移除并重试请求
+- **修复**：慢速或代理连接、仅 IPv6 devcontainer 以及浏览器回调无法访问 localhost 时 OAuth 登录超时失败
+- **修复**：Mac 从睡眠唤醒后请求中途出现"Stream idle timeout"错误；后台和远程会话不再在长时间模型思考暂停时误终止
+- **修复**：无闪烁模式下 Windows 上日语/韩语/中文文本渲染为乱码
+- **修复**：`Ctrl+L` 清空提示输入 — 现在仅强制屏幕重绘，与 readline 行为一致
+- **修复**：带 `context: fork` 的技能首轮不可使用延迟工具（WebSearch、WebFetch 等）
+- **修复**：Windows 剪贴板写入不再在 EDR/SIEM 遥测的进程命令行参数中暴露复制内容；同时修复超过 22KB 的选区无法到达剪贴板的问题
+- **修复**：模型在并行工具调用批次中发出格式错误的工具名时，智能体 SDK 挂起
+- **修复**：`/plugin` 卸载报告"已启用"而非"已卸载"
 
 ---
 
 ### v2.1.123 (2026-04-29)
 
-> Hotfix: OAuth 401 retry loop when CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS=1.
+> 紧急修复：设置 `CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS=1` 时 OAuth 401 重试循环。
 
-- **Fixed**: OAuth authentication failing with a 401 retry loop when `CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS=1` is set
+- **修复**：设置 `CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS=1` 时 OAuth 认证以 401 重试循环失败
 
 ---
 
 ### v2.1.122 (2026-04-28)
 
-> ANTHROPIC_BEDROCK_SERVICE_TIER env var, PR URL in /resume search, Vertex AI/Bedrock fixes, image resize fix, many bug fixes.
+> `ANTHROPIC_BEDROCK_SERVICE_TIER` 环境变量，`/resume` 搜索 PR URL，Vertex AI/Bedrock 修复，图片缩放修复，多项错误修复。
 
-- **New**: `ANTHROPIC_BEDROCK_SERVICE_TIER` environment variable to select a Bedrock service tier (`default`, `flex`, or `priority`) via `X-Amzn-Bedrock-Service-Tier` header
-- **New**: Pasting a PR URL into the `/resume` search box now finds the session that created that PR (GitHub, GitHub Enterprise, GitLab, and Bitbucket)
-- **Improved**: `/mcp` now shows claude.ai connectors hidden by a manually-added server with the same URL, with a hint to remove the duplicate
-- **Fixed**: `/branch` producing forks that fail with "tool_use ids were found without tool_result blocks" from rewound timelines
-- **Fixed**: `/model` not showing Effort option for Bedrock application inference profile ARNs
-- **Fixed**: Vertex AI / Bedrock returning `invalid_request_error: output_config: Extra inputs are not permitted` on title generation and structured-output queries
-- **Fixed**: Vertex AI `count_tokens` endpoint returning 400 errors for users behind proxy gateways
-- **Fixed**: `!exit` / `!quit` in bash mode terminating the CLI instead of running as a shell command
-- **Fixed**: Images sent to newer models being resized to 2576px instead of the correct 2000px maximum
-- **Fixed**: Remote control session idle status redrawing twice per second, flooding `tmux -CC` control pipes
-- **Fixed**: `ToolSearch` missing MCP tools that connected after session start in nonblocking mode
-- **Fixed**: A malformed hooks entry in `settings.json` no longer invalidating the entire file
-- **Fixed**: `spinnerTipsOverride.excludeDefault` not suppressing time-based spinner tips
-- **Fixed**: Assistant messages appearing blank in some sessions due to a stale view preference
+- **新增**：`ANTHROPIC_BEDROCK_SERVICE_TIER` 环境变量，通过 `X-Amzn-Bedrock-Service-Tier` 请求头选择 Bedrock 服务等级（`default`、`flex` 或 `priority`）
+- **新增**：在 `/resume` 搜索框中粘贴 PR URL 现在可找到创建该 PR 的会话（支持 GitHub、GitHub Enterprise、GitLab 和 Bitbucket）
+- **改进**：`/mcp` 现在显示被手动添加的同 URL 服务器隐藏的 claude.ai 连接器，并提示删除重复项
+- **修复**：`/branch` 从倒回的时间线生成因"找到没有对应 tool_result 块的 tool_use id"而失败的分支
+- **修复**：`/model` 不为 Bedrock 应用推理配置文件 ARN 显示 Effort 选项
+- **修复**：Vertex AI / Bedrock 在标题生成和结构化输出查询上返回 `invalid_request_error: output_config: Extra inputs are not permitted`
+- **修复**：Vertex AI `count_tokens` 端点对代理网关后的用户返回 400 错误
+- **修复**：bash 模式中的 `!exit` / `!quit` 终止 CLI 而非作为 Shell 命令运行
+- **修复**：发送给较新模型的图片被缩放为 2576px 而非正确的 2000px 最大值
+- **修复**：远程控制会话空闲状态每秒重绘两次，导致 `tmux -CC` 控制管道消息泛滥
+- **修复**：非阻塞模式下 `ToolSearch` 漏掉会话开始后连接的 MCP 工具
+- **修复**：`settings.json` 中格式错误的钩子条目不再导致整个文件失效
+- **修复**：`spinnerTipsOverride.excludeDefault` 不抑制基于时间的动画提示
+- **修复**：部分会话中助手消息因过期视图偏好而显示为空白
 
 ---
 
 ### v2.1.121 (2026-04-27)
 
-> alwaysLoad MCP config, plugin prune, PostToolUse output replacement for all tools, critical memory leak fixes, many bug fixes.
+> MCP 配置的 `alwaysLoad` 选项，插件清理，`PostToolUse` 对所有工具的输出替换，严重内存泄漏修复，多项错误修复。
 
-- **New**: `alwaysLoad` option in MCP server config — when `true`, all tools from that server skip tool-search deferral and are always available
-- **New**: `claude plugin prune` removes orphaned auto-installed plugin dependencies; `plugin uninstall --prune` cascades
-- **New**: Type-to-filter search box in `/skills` for finding a skill without scrolling
-- **New**: `PostToolUse` hooks can now replace tool output for all tools via `hookSpecificOutput.updatedToolOutput` (previously MCP-only)
-- **New**: Vertex AI: support X.509 certificate-based Workload Identity Federation (mTLS ADC)
-- **Improved**: Fullscreen mode: typing into the prompt no longer jumps scroll to the bottom after scrolling up
-- **Improved**: Dialogs that overflow the terminal are now scrollable with arrow keys, PgUp/PgDn, home/end, and mouse wheel
-- **Improved**: Clicking any line of a long URL wrapping across rows in fullscreen now opens the full URL
-- **Improved**: `--dangerously-skip-permissions` no longer prompts for writes to `.claude/skills/`, `.claude/agents/`, and `.claude/commands/`
-- **Improved**: `/terminal-setup` now enables iTerm2's "Applications in terminal may access clipboard" for `/copy` in tmux
-- **Improved**: MCP servers that hit a transient startup error now auto-retry up to 3 times
-- **Improved**: Terminal tab session title is now generated in your configured `language` setting
-- **Improved**: Claude.ai connectors with the same upstream URL are now deduplicated
-- **Improved**: LSP diagnostic summaries now expand on click/ctrl+o and show the expand hint
-- **Improved**: OpenTelemetry: added `stop_reason`, `gen_i.response.finish_reasons`, and `user_system_prompt` (gated behind `OTEL_LOG_USER_PROMPTS`)
-- **[VSCode]**: `/context` now opens a native token usage dialog; voice dictation respects `accessibility.voice.speechLanguage`
-- **Fixed**: Unbounded memory growth (multi-GB RSS) when processing many images in a session
-- **Fixed**: `/usage` leaking up to ~2GB of memory on machines with large transcript histories
-- **Fixed**: Memory leak when long-running tools fail to emit a clear progress event
-- **Fixed**: Bash tool becoming permanently unusable when the start directory is deleted or moved mid-session
-- **Fixed**: `--resume` crashing on startup in external builds
-- **Fixed**: `--resume` failing on large sessions when a transcript line was corrupted by an unclean shutdown
-- **Fixed**: `thinking.type.enabled is not supported` error with Bedrock application inference profile ARNs
-- **Fixed**: Microsoft 365 MCP OAuth failing with duplicate or unsupported `prompt` parameter
-- **Fixed**: Scrollback duplication when pressing Ctrl+L in non-fullscreen mode on tmux, GNOME Terminal, Windows Terminal, Konsole
-- **Fixed**: claude.ai MCP connectors silently disappearing on transient auth error at startup
-- **Fixed**: "Always allow" rules for built-in tools in remote sessions not surviving worker restarts
-- **Fixed**: `NO_PROXY` not respected for all HTTP clients when set via `managed-settings.json` on native build
-- **Fixed**: Managed settings approval prompt exiting the session even when accepted
+- **新增**：MCP 服务器配置中的 `alwaysLoad` 选项 — 设置为 `true` 时，该服务器的所有工具跳过工具搜索延迟，始终可用
+- **新增**：`claude plugin prune` 移除孤立的自动安装插件依赖；`plugin uninstall --prune` 级联卸载
+- **新增**：`/skills` 中的输入过滤搜索框，无需滚动即可找到技能
+- **新增**：`PostToolUse` 钩子现在可通过 `hookSpecificOutput.updatedToolOutput` 替换所有工具的输出（之前仅限 MCP 工具）
+- **新增**：Vertex AI：支持基于 X.509 证书的工作负载身份联合（mTLS ADC）
+- **改进**：全屏模式：向上滚动后在提示框中输入不再跳回底部
+- **改进**：溢出终端的对话框现在支持箭头键、PgUp/PgDn、Home/End 和鼠标滚轮滚动
+- **改进**：点击全屏中跨行换行的长 URL 任意行现在打开完整 URL
+- **改进**：`--dangerously-skip-permissions` 不再对 `.claude/skills/`、`.claude/agents/` 和 `.claude/commands/` 的写入提示
+- **改进**：`/terminal-setup` 现在为 tmux 中的 `/copy` 启用 iTerm2 的"终端中的应用程序可以访问剪贴板"
+- **改进**：遇到临时启动错误的 MCP 服务器现在自动重试最多 3 次
+- **改进**：终端标签会话标题现在以配置的 `language` 设置生成
+- **改进**：具有相同上游 URL 的 Claude.ai 连接器现在去重
+- **改进**：LSP 诊断摘要现在在点击/Ctrl+O 时展开，并显示展开提示
+- **改进**：OpenTelemetry：新增 `stop_reason`、`gen_i.response.finish_reasons` 和 `user_system_prompt`（通过 `OTEL_LOG_USER_PROMPTS` 控制开关）
+- **[VSCode]**：`/context` 现在打开原生 Token 用量对话框；语音听写遵循 `accessibility.voice.speechLanguage` 设置
+- **修复**：处理会话中大量图片时出现的无限内存增长问题（RSS 达数 GB）
+- **修复**：在含有大量会话历史记录的机器上，`/usage` 泄漏最多约 2GB 内存的问题
+- **修复**：长时间运行的工具未能发出明确进度事件时引发的内存泄漏
+- **修复**：会话期间起始目录被删除或移动导致 Bash 工具永久不可用的问题
+- **修复**：`--resume` 在外部构建中启动时崩溃的问题
+- **修复**：非正常关机损坏会话记录行时，`--resume` 在大型会话中失败的问题
+- **修复**：Bedrock 应用推理配置文件 ARN 出现 `thinking.type.enabled is not supported` 错误的问题
+- **修复**：Microsoft 365 MCP OAuth 因重复或不支持的 `prompt` 参数而失败的问题
+- **修复**：在 tmux、GNOME Terminal、Windows Terminal、Konsole 的非全屏模式下，按 Ctrl+L 时终端回滚内容重复的问题
+- **修复**：claude.ai MCP 连接器在启动时遇到短暂认证错误后静默消失的问题
+- **修复**：远程会话中内置工具的"始终允许"规则在工作进程重启后失效的问题
+- **修复**：通过原生构建上的 `managed-settings.json` 设置 `NO_PROXY` 时未对所有 HTTP 客户端生效的问题
+- **修复**：托管设置审批提示在用户接受后仍退出会话的问题
 
 ---
 
 ### v2.1.120 (2026-04-24)
 
-> Windows no longer requires Git Bash, claude ultrareview CI subcommand, ${CLAUDE_EFFORT} in skills, many bug fixes.
+> Windows 不再需要 Git Bash，新增 claude ultrareview CI 子命令，技能支持 ${CLAUDE_EFFORT}，多项 bug 修复。
 
-- **New**: Windows: Git for Windows (Git Bash) is no longer required — when absent, Claude Code uses PowerShell as the shell tool
-- **New**: `claude ultrareview [target]` subcommand to run `/ultrareview` non-interactively from CI or scripts; `--json` for raw output; exits 0 on completion or 1 on failure
-- **New**: Skills can reference the current effort level with `${CLAUDE_EFFORT}` in their content
-- **New**: `AI_AGENT` environment variable set for subprocesses so `gh` can attribute traffic to Claude Code
-- **Improved**: Faster session start when many claude.ai connectors are configured but not authorized
-- **Improved**: `claude plugin validate` now accepts `$schema`, `version`, and `description` at the top level of `marketplace.json`
-- **Improved**: Auto-compact in auto mode now displays `auto` (lowercase) instead of a misleading token value
-- **Improved**: Spinner tips recommending the desktop app or creating skills/agents are hidden when you already have them
-- **Improved**: Show a "use PgUp/PgDn to scroll" hint when the terminal sends arrow keys instead of scroll events
-- **Fixed**: Pressing Esc during a stdio MCP tool call closing the entire server connection (regression in 2.1.105)
-- **Fixed**: `/rewind` and other interactive overlays not responding to keyboard input after `--resume`
-- **Fixed**: Terminal scrollback duplication in non-fullscreen mode (resize, dialog dismiss, long sessions)
-- **Fixed**: `DISABLE_TELEMETRY` / `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` not suppressing usage metrics telemetry for API and enterprise users
-- **Fixed**: False-positive "Dangerous rm operation" permission prompts in auto mode for multi-line bash with pipe and redirect
-- **Fixed**: Long selection menus clipping below the terminal in fullscreen mode
-- **Fixed**: Write tool output collapsing instead of expanding when clicking "+N lines" in fullscreen
-- **Fixed**: Slash command picker jumping while typing; highlight now only matches contiguous substrings
-- **Fixed**: `/plugin` marketplace failing to load when one entry uses an unrecognized source format
-- **Fixed**: `find` in the Bash tool exhausting open file descriptors on large directory trees, causing host-wide crashes (macOS/Linux native builds)
-- **[VSCode]**: `/usage` now opens the native Account & Usage dialog; voice dictation respects the `language` setting
+- **新增**：Windows：不再需要 Git for Windows（Git Bash）——缺少时，Claude Code 使用 PowerShell 作为 Shell 工具
+- **新增**：`claude ultrareview [target]` 子命令，可从 CI 或脚本中非交互式运行 `/ultrareview`；`--json` 输出原始结果；成功退出码为 0，失败为 1
+- **新增**：技能内容中可通过 `${CLAUDE_EFFORT}` 引用当前的努力等级
+- **新增**：为子进程设置 `AI_AGENT` 环境变量，以便 `gh` 能将流量归因到 Claude Code
+- **改进**：配置了多个 claude.ai 连接器但未授权时，会话启动速度更快
+- **改进**：`claude plugin validate` 现在接受 `marketplace.json` 顶层的 `$schema`、`version` 和 `description` 字段
+- **改进**：自动模式下的自动压缩现在显示 `auto`（小写）而非误导性的 Token 数值
+- **改进**：已安装桌面应用或已创建技能/智能体的用户不再显示推荐创建它们的加载提示
+- **改进**：当终端发送方向键而非滚动事件时，显示"使用 PgUp/PgDn 滚动"的提示
+- **修复**：在 stdio MCP 工具调用期间按 Esc 关闭整个服务器连接的问题（v2.1.105 中引入的回归）
+- **修复**：`--resume` 后 `/rewind` 及其他交互式覆盖层不响应键盘输入的问题
+- **修复**：非全屏模式下终端回滚内容重复的问题（调整大小、关闭对话框、长会话）
+- **修复**：`DISABLE_TELEMETRY` / `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` 未能抑制 API 和企业用户使用指标遥测的问题
+- **修复**：自动模式下多行带管道和重定向的 bash 命令出现误报"危险 rm 操作"权限提示的问题
+- **修复**：全屏模式下长选择菜单被裁剪到终端下方的问题
+- **修复**：全屏模式下点击"+N 行"时 Write 工具输出折叠而非展开的问题
+- **修复**：输入时斜杠命令选择器跳动的问题；高亮现在只匹配连续子字符串
+- **修复**：某条目使用无法识别的来源格式时 `/plugin` 市场加载失败的问题
+- **修复**：Bash 工具中 `find` 在大型目录树上耗尽文件描述符导致主机崩溃的问题（macOS/Linux 原生构建）
+- **[VSCode]**：`/usage` 现在打开原生账号与用量对话框；语音听写遵循 `language` 设置
 
 ---
 
 ### v2.1.119 (2026-04-24)
 
-> /config settings persist to settings.json with override precedence, --from-pr supports GitLab/Bitbucket/GitHub Enterprise, agent frontmatter improvements, security fix for blockedMarketplaces, 30+ bug fixes.
+> /config 设置持久化到 settings.json 并支持覆盖优先级，--from-pr 支持 GitLab/Bitbucket/GitHub Enterprise，智能体 frontmatter 改进，blockedMarketplaces 安全修复，30+ 项 bug 修复。
 
-- **New**: `/config` settings (theme, editor mode, verbose, etc.) now persist to `~/.claude/settings.json` and participate in project/local/policy override precedence
-- **New**: `prUrlTemplate` setting to point the footer PR badge at a custom code-review URL instead of github.com
-- **New**: `CLAUDE_CODE_HIDE_CWD` environment variable to hide the working directory in the startup logo
-- **New**: `--from-pr` now accepts GitLab merge-request, Bitbucket pull-request, and GitHub Enterprise PR URLs
-- **Improved**: `--print` mode now honors the agent's `tools:` and `disallowedTools:` frontmatter, matching interactive-mode behavior
-- **Improved**: `--agent <name>` now honors the agent definition's `permissionMode` for built-in agents
-- **Improved**: PowerShell tool commands can now be auto-approved in permission mode, matching Bash behavior
-- **Improved**: `PostToolUse` and `PostToolUseFailure` hook inputs now include `duration_ms` (tool execution time, excluding permission prompts and PreToolUse hooks)
-- **Improved**: Subagent and SDK MCP server reconfiguration now connects servers in parallel instead of serially
-- **Improved**: Plugins pinned by another plugin's version constraint now auto-update to the highest satisfying git tag
-- **Improved**: Vim mode: Esc in INSERT no longer pulls a queued message back into the input; press Esc again to interrupt
-- **Improved**: Slash command suggestions now highlight the characters that matched your query; picker wraps long descriptions instead of truncating
-- **Improved**: `owner/repo#N` shorthand links now use your git remote's host instead of always pointing at github.com
-- **Security**: `blockedMarketplaces` now correctly enforces `hostPattern` and `pathPattern` entries
-- **Fixed**: Pasting CRLF content (Windows clipboards, Xcode console) inserting an extra blank line between every line
-- **Fixed**: Glob and Grep tools disappearing on native macOS/Linux builds when Bash tool is denied via permissions
-- **Fixed**: Scrolling up in fullscreen mode snapping back to the bottom every time a tool finishes
-- **Fixed**: Auto mode overriding plan mode with conflicting "Execute immediately" instructions
-- **Fixed**: `Agent` tool with `isolation: "worktree"` reusing stale worktrees from prior sessions
-- **Fixed**: `TaskList` returning tasks in arbitrary filesystem order instead of sorted by ID
-- **Fixed**: `/plan` and `/plan open` not acting on the existing plan when entering plan mode
-- **Fixed**: Skills invoked before auto-compaction being re-executed against the next user message
-- **Fixed**: Verbose output setting not persisting after restart; disabled MCP servers appearing as "failed" in `/status`
-- **Fixed**: `${ENV_VAR}` placeholders in `headers` for HTTP/SSE/WebSocket MCP servers not being substituted
-- **Fixed**: MCP OAuth `--client-secret` not sent during token exchange for `client_secret_post` servers
-- **Fixed**: `/skills` Enter key closing dialog instead of pre-filling `/<skill-name>` in the prompt
-- **Fixed**: Spurious "GitHub API rate limit exceeded" hints from PR titles mentioning "rate limit"
-- **Fixed**: Async `PostToolUse` hooks emitting no response writing empty entries to session transcript
-- **Fixed**: `@`-file Tab completion replacing the entire prompt when used inside a slash command with an absolute path
+- **新增**：`/config` 设置（主题、编辑器模式、详细输出等）现在持久化到 `~/.claude/settings.json`，并参与项目/本地/策略覆盖优先级
+- **新增**：`prUrlTemplate` 设置——将页脚 PR 徽章指向自定义代码审查 URL，而非 github.com
+- **新增**：`CLAUDE_CODE_HIDE_CWD` 环境变量——在启动标志中隐藏工作目录
+- **新增**：`--from-pr` 现在接受 GitLab 合并请求、Bitbucket 拉取请求和 GitHub Enterprise PR 的 URL
+- **改进**：`--print` 模式现在遵循智能体的 `tools:` 和 `disallowedTools:` frontmatter，与交互模式行为一致
+- **改进**：`--agent <name>` 现在对内置智能体遵循其定义中的 `permissionMode`
+- **改进**：PowerShell 工具命令现在可在权限模式下自动审批，与 Bash 行为一致
+- **改进**：`PostToolUse` 和 `PostToolUseFailure` 钩子输入现在包含 `duration_ms`（工具执行时间，不含权限提示和 PreToolUse 钩子耗时）
+- **改进**：子智能体和 SDK MCP 服务器重新配置时，现在并行而非串行连接服务器
+- **改进**：被其他插件版本约束锁定的插件，现在自动更新到满足条件的最高 git 标签版本
+- **改进**：Vim 模式：INSERT 模式下按 Esc 不再将已排队的消息拉回输入框；再次按 Esc 可中断
+- **改进**：斜杠命令建议现在高亮显示与查询匹配的字符；选择器对长描述换行而非截断
+- **改进**：`owner/repo#N` 缩写链接现在使用你 git 远程仓库的主机地址，而非总是指向 github.com
+- **安全**：`blockedMarketplaces` 现在正确执行 `hostPattern` 和 `pathPattern` 条目
+- **修复**：粘贴 CRLF 内容（Windows 剪贴板、Xcode 控制台）时每行之间插入额外空行的问题
+- **修复**：通过权限拒绝 Bash 工具时，原生 macOS/Linux 构建中 Glob 和 Grep 工具消失的问题
+- **修复**：全屏模式下向上滚动时每次工具完成后自动跳回底部的问题
+- **修复**：自动模式用冲突的"立即执行"指令覆盖计划模式的问题
+- **修复**：使用 `isolation: "worktree"` 的 `Agent` 工具重用先前会话的旧工作树的问题
+- **修复**：`TaskList` 按文件系统任意顺序而非按 ID 排序返回任务的问题
+- **修复**：`/plan` 和 `/plan open` 进入计划模式时未对现有计划执行操作的问题
+- **修复**：自动压缩前调用的技能在下一条用户消息时被重新执行的问题
+- **修复**：详细输出设置重启后不持久化；已禁用的 MCP 服务器在 `/status` 中显示为"失败"的问题
+- **修复**：HTTP/SSE/WebSocket MCP 服务器 `headers` 中的 `${ENV_VAR}` 占位符未被替换的问题
+- **修复**：`client_secret_post` 服务器令牌交换时 MCP OAuth `--client-secret` 未发送的问题
+- **修复**：`/skills` 中 Enter 键关闭对话框而非在提示框中预填 `/<skill-name>` 的问题
+- **修复**：PR 标题中含有"rate limit"字样时出现虚假"GitHub API 速率限制超出"提示的问题
+- **修复**：异步 `PostToolUse` 钩子不返回响应时向会话记录写入空条目的问题
+- **修复**：在带绝对路径的斜杠命令内使用 `@` 文件 Tab 补全时替换整个提示的问题
 
 ### v2.1.118 (2026-04-23)
 
-> Vim visual mode, /usage merging /cost+/stats, custom named themes, hooks invoke MCP tools directly, many bug fixes.
+> Vim 可视模式，/usage 合并 /cost+/stats，自定义命名主题，Hooks 可直接调用 MCP 工具，多项 bug 修复。
 
-- **New**: Vim visual mode (`v`) and visual-line mode (`V`) with selection, operators (d, y, c, >, <), and visual feedback
-- **New**: `/cost` and `/stats` merged into `/usage` — both old commands remain as typing shortcuts that open the relevant tab
-- **New**: Create and switch between named custom themes from `/theme`, or hand-edit JSON files in `~/.claude/themes/`; plugins can ship themes via a `themes/` directory
-- **New**: Hooks can now invoke MCP tools directly via `type: "mcp_tool"` in hook configuration
-- **New**: `DISABLE_UPDATES` env var completely blocks all update paths including manual `claude update` (stricter than `DISABLE_AUTOUPDATER`)
-- **New**: WSL on Windows can inherit Windows-side managed settings via `wslInheritsWindowsSettings` policy key
-- **Improved**: Auto mode `"$defaults"` sentinel — include in `autoMode.allow`, `autoMode.soft_deny`, or `autoMode.environment` to add custom rules alongside built-in list instead of replacing it
-- **Improved**: "Don't ask again" option added to auto mode opt-in prompt
-- **Improved**: `--continue`/`--resume` now find sessions that added the current directory via `/add-dir`
-- **Improved**: `/color` syncs the session accent color to claude.ai/code when Remote Control is connected
-- **Improved**: `/model` picker now honors `ANTHROPIC_DEFAULT_*_MODEL_NAME`/`_DESCRIPTION` overrides when using a custom `ANTHROPIC_BASE_URL` gateway
-- **Improved**: `claude plugin tag` to create release git tags for plugins with version validation
-- **Improved**: Auto-update skip due to version constraints now appears in `/doctor` and `/plugin` Errors tab
-- **Fixed**: `/mcp` menu hiding OAuth Authenticate/Re-authenticate for servers with `headersHelper`, and HTTP/SSE servers stuck in "needs authentication" after a transient 401
-- **Fixed**: MCP OAuth tokens with no `expires_in` in response requiring re-authentication every hour
-- **Fixed**: MCP step-up authorization silently refreshing instead of prompting when `insufficient_scope` 403 names a scope already held
-- **Fixed**: macOS keychain race where concurrent token refresh could overwrite a freshly-refreshed OAuth token
-- **Fixed**: Credential save crash on Linux/Windows corrupting `~/.claude/.credentials.json`
-- **Fixed**: `/login` having no effect in sessions launched with `CLAUDE_CODE_OAUTH_TOKEN` env var
-- **Fixed**: Agent-type hooks failing with "Messages are required for agent hooks" for non-Stop events
-- **Fixed**: `prompt` hooks re-firing on tool calls made by an agent-hook verifier subagent
-- **Fixed**: `/fork` writing full parent conversation to disk per fork — now writes a pointer and hydrates on read
-- **Fixed**: Alt+K / Alt+X / Alt+^ / Alt+_ freezing keyboard input
-- **Fixed**: `plugin install` on an already-installed plugin not re-resolving a dependency at wrong version
-- **Fixed**: Subagents resumed via `SendMessage` not restoring their explicit `cwd`
+- **新增**：Vim 可视模式（`v`）和行可视模式（`V`），支持选择、操作符（d、y、c、>、<）和视觉反馈
+- **新增**：`/cost` 和 `/stats` 合并为 `/usage`——两个旧命令作为快捷方式保留，打开对应标签页
+- **新增**：可在 `/theme` 中创建并切换自定义命名主题，或手动编辑 `~/.claude/themes/` 下的 JSON 文件；插件可通过 `themes/` 目录提供主题
+- **新增**：Hooks 现在可以通过钩子配置中的 `type: "mcp_tool"` 直接调用 MCP 工具
+- **新增**：`DISABLE_UPDATES` 环境变量——完全阻止所有更新路径，包括手动 `claude update`（比 `DISABLE_AUTOUPDATER` 更严格）
+- **新增**：Windows 上的 WSL 可通过 `wslInheritsWindowsSettings` 策略键继承 Windows 侧的托管设置
+- **改进**：自动模式 `"$defaults"` 哨兵——可加入 `autoMode.allow`、`autoMode.soft_deny` 或 `autoMode.environment`，在内置列表基础上添加自定义规则而非替换
+- **改进**：自动模式选择提示新增"不再询问"选项
+- **改进**：`--continue`/`--resume` 现在可找到通过 `/add-dir` 添加当前目录的会话
+- **改进**：`/color` 在连接远程控制时将会话强调色同步到 claude.ai/code
+- **改进**：使用自定义 `ANTHROPIC_BASE_URL` 网关时，`/model` 选择器现在遵循 `ANTHROPIC_DEFAULT_*_MODEL_NAME`/`_DESCRIPTION` 覆盖
+- **改进**：`claude plugin tag` 支持为带版本验证的插件创建发布 git 标签
+- **改进**：因版本约束而跳过自动更新的情况现在显示在 `/doctor` 和 `/plugin` 错误标签页中
+- **修复**：带 `headersHelper` 的服务器 `/mcp` 菜单隐藏 OAuth 认证/重新认证，以及 HTTP/SSE 服务器短暂 401 后卡在"需要认证"状态的问题
+- **修复**：响应中无 `expires_in` 的 MCP OAuth Token 每小时需要重新认证的问题
+- **修复**：MCP 步进授权在 `insufficient_scope` 403 指定的 scope 已持有时静默刷新而非提示的问题
+- **修复**：macOS 密钥链竞争条件——并发令牌刷新可能覆盖刚刚刷新的 OAuth Token
+- **修复**：Linux/Windows 上凭据保存崩溃导致 `~/.claude/.credentials.json` 损坏的问题
+- **修复**：使用 `CLAUDE_CODE_OAUTH_TOKEN` 环境变量启动的会话中 `/login` 无效的问题
+- **修复**：非 Stop 事件的智能体类型钩子因"Messages are required for agent hooks"而失败的问题
+- **修复**：`prompt` 钩子在智能体钩子验证子智能体发出工具调用时重复触发的问题
+- **修复**：`/fork` 每次 fork 时将完整父会话写入磁盘的问题——现在改为写指针并在读取时按需加载
+- **修复**：Alt+K / Alt+X / Alt+^ / Alt+_ 冻结键盘输入的问题
+- **修复**：`plugin install` 在已安装的插件上未重新解析版本错误的依赖的问题
+- **修复**：通过 `SendMessage` 恢复的子智能体未还原其显式 `cwd` 的问题
 
 ### v2.1.117 (2026-04-22)
 
-> Default effort now `high` for Pro/Max on Opus 4.6 + Sonnet 4.6, native bfs/ugrep on macOS/Linux, Opus 4.7 1M context fix, /model persistence, 15+ bug fixes.
+> Opus 4.6 + Sonnet 4.6 的 Pro/Max 默认努力等级改为 `high`，macOS/Linux 原生 bfs/ugrep，Opus 4.7 1M 上下文修复，/model 持久化，15+ 项 bug 修复。
 
-- **Changed**: Default effort level changed to `high` for Pro/Max subscribers on Opus 4.6 and Sonnet 4.6 (was `medium`)
-- **Fixed**: Opus 4.7 sessions were computing `/context` percentage against a 200K window instead of the native 1M — causing inflated percentages and premature autocompact
-- **New**: Native macOS/Linux builds now use embedded `bfs` (search) and `ugrep` (grep) replacing the Glob/Grep tools — faster without an extra tool round-trip (Windows and npm-installed builds unchanged)
-- **Improved**: `/model` selections now persist across restarts even when the project pins a different model; startup header shows when the active model comes from a project or managed-settings pin
-- **Improved**: `/resume` now offers to summarize stale, large sessions before re-reading them (matching existing `--resume` behavior)
-- **Improved**: Faster startup when both local and claude.ai MCP servers are configured (concurrent connect now default)
-- **Improved**: `plugin install` on an already-installed plugin now installs any missing dependencies instead of stopping at "already installed"; dependency errors say "not installed" with an install hint
-- **Improved**: `cleanupPeriodDays` retention sweep now also covers `~/.claude/tasks/`, `~/.claude/shell-snapshots/`, and `~/.claude/backups/`
-- **Improved**: Agent frontmatter `mcpServers` are now loaded for main-thread agent sessions via `--agent`
-- **Improved**: OpenTelemetry `user_prompt` events now include `command_name` and `command_source` for slash commands; cost/token/API events include `effort` attribute when supported
-- **Fixed**: Plain-CLI OAuth sessions dying with "Please run /login" when access token expires mid-session — token now refreshed reactively on 401
-- **Fixed**: `WebFetch` hanging on very large HTML pages (truncates input before HTML-to-markdown conversion)
-- **Fixed**: Crash when a proxy returns HTTP 204 No Content
-- **Fixed**: `/login` having no effect when launched with `CLAUDE_CODE_OAUTH_TOKEN` env var and that token expires
-- **Fixed**: Prompt-input undo (`Ctrl+_`) doing nothing immediately after typing, and skipping a state on each undo step
-- **Fixed**: `NO_PROXY` not being respected for remote API requests when running under Bun
-- **Fixed**: Bedrock application-inference-profile requests failing with 400 when backed by Opus 4.7 with thinking disabled
+- **变更**：Pro/Max 订阅用户在 Opus 4.6 和 Sonnet 4.6 上的默认努力等级改为 `high`（原为 `medium`）
+- **修复**：Opus 4.7 会话的 `/context` 百分比基于 200K 窗口计算而非原生 1M——导致比例虚高并提前触发自动压缩
+- **新增**：macOS/Linux 原生构建现在内置 `bfs`（搜索）和 `ugrep`（grep）替代 Glob/Grep 工具——无需额外工具调用，速度更快（Windows 和 npm 安装版不变）
+- **改进**：即使项目固定了不同模型，`/model` 的选择也会在重启后持久化；启动头部显示当前模型来自项目还是托管设置的固定
+- **改进**：`/resume` 现在为过时的大型会话提供摘要选项后再重新读取（与现有 `--resume` 行为一致）
+- **改进**：同时配置本地和 claude.ai MCP 服务器时，启动速度更快（并发连接现为默认）
+- **改进**：对已安装插件执行 `plugin install` 时，现在会安装缺失的依赖而非停止于"已安装"；依赖错误显示"未安装"并附带安装提示
+- **改进**：`cleanupPeriodDays` 保留期清理现在也覆盖 `~/.claude/tasks/`、`~/.claude/shell-snapshots/` 和 `~/.claude/backups/`
+- **改进**：通过 `--agent` 的主线程智能体会话现在加载智能体 frontmatter 中的 `mcpServers`
+- **改进**：OpenTelemetry `user_prompt` 事件现在包含斜杠命令的 `command_name` 和 `command_source`；成本/Token/API 事件在支持时包含 `effort` 属性
+- **修复**：Plain-CLI OAuth 会话在访问令牌过期时因"Please run /login"而终止——现在在 401 时反应性刷新 Token
+- **修复**：`WebFetch` 在极大 HTML 页面上挂起的问题（在 HTML 转 Markdown 转换前截断输入）
+- **修复**：代理返回 HTTP 204 No Content 时崩溃的问题
+- **修复**：使用 `CLAUDE_CODE_OAUTH_TOKEN` 环境变量启动且该 Token 过期时，`/login` 无效的问题
+- **修复**：输入后立即执行提示输入撤销（`Ctrl+_`）无效，以及每步撤销跳过一个状态的问题
+- **修复**：在 Bun 下运行时远程 API 请求不遵循 `NO_PROXY` 的问题
+- **修复**：Bedrock 应用推理配置文件请求在 Opus 4.7 禁用 thinking 时返回 400 的问题
 
 ### v2.1.116 (2026-04-21)
 
-> Regression fix release: ends the six-week Triple Harness Incident (Mar 4–Apr 20, 2026). Also: /resume up to 67% faster on large sessions, inline thinking progress spinner, sandbox security fix, many bug fixes.
+> 回归修复版本：终结长达六周的三重 Harness 事件（2026 年 3 月 4 日至 4 月 20 日）。另外：大型会话的 /resume 速度提升最多 67%，内联 thinking 进度指示器，沙箱安全修复，多项 bug 修复。
 
-- **Regression fix**: All three harness-level changes responsible for the six-week quality regression (effort defaults, thinking-budget clear, verbosity instruction) are reverted or fixed in this release — see [Triple Harness Incident](./known-issues.md#triple-harness-incident-effort-thinking-tokens-verbosity-mar-apr-2026) for the full timeline
-- **Improved**: `/resume` is up to 67% faster on sessions 40MB+ and handles sessions with many dead-fork entries more efficiently
-- **Improved**: Faster MCP startup when multiple stdio servers are configured; `resources/templates/list` is deferred to the first `@`-mention
-- **Improved**: Smoother fullscreen scrolling in VS Code, Cursor, and Windsurf; `/terminal-setup` now configures the editor's scroll sensitivity
-- **Improved**: Thinking spinner shows inline progress ("still thinking", "thinking more", "almost done thinking") replacing the separate hint row
-- **Improved**: `/config` search now matches option values (e.g., searching "vim" finds the Editor mode setting)
-- **Improved**: `/doctor` can now be opened while Claude is responding, without waiting for the current turn to finish
-- **Improved**: `/reload-plugins` and background plugin auto-update now auto-install missing dependencies from already-added marketplaces
-- **Improved**: Bash tool surfaces a hint when `gh` commands hit GitHub's API rate limit, so agents can back off instead of retrying
-- **Improved**: Usage tab shows 5-hour and weekly usage immediately and no longer fails when the usage endpoint is rate-limited
-- **Improved**: Agent frontmatter `hooks:` now fire when running as a main-thread agent via `--agent`
-- **Improved**: Slash command menu shows "No commands match" when filter has zero results, instead of disappearing
-- **Security**: Sandbox auto-allow no longer bypasses the dangerous-path safety check for `rm`/`rmdir` targeting `/`, `$HOME`, or other critical system directories
-- **Fixed**: Devanagari and other Indic scripts rendering with broken column alignment in the terminal UI
-- **Fixed**: `Ctrl+-` not triggering undo in terminals using the Kitty keyboard protocol (iTerm2, Ghostty, kitty, WezTerm, Windows Terminal)
-- **Fixed**: `Cmd+Left/Right` not jumping to line start/end in Kitty protocol terminals (Warp fullscreen, kitty, Ghostty, WezTerm)
-- **Fixed**: `Ctrl+Z` hanging the terminal when Claude Code is launched via a wrapper process (e.g., `npx`, `bun run`)
-- **Fixed**: Scrollback duplication in inline mode where resizing the terminal or large output bursts would repeat earlier conversation history
-- **Fixed**: Modal search dialogs overflowing the screen at short terminal heights, hiding the search box and keyboard hints
-- **Fixed**: Scattered blank cells and disappearing composer chrome in the VS Code integrated terminal during scrolling
-- **Fixed**: Intermittent API 400 error related to cache control TTL ordering that could occur when a parallel request completed during request setup
-- **Fixed**: `/branch` rejecting conversations with transcripts larger than 50MB
-- **Fixed**: `/resume` silently showing an empty conversation on large session files instead of reporting the load error
-- **Fixed**: `/plugin` Installed tab showing the same item twice when it appears under Needs attention or Favorites
-- **Fixed**: `/update` and `/tui` not working after entering a worktree mid-session
+- **回归修复**：本版本回滚或修复了导致六周质量回归的所有三项 Harness 层面变更（努力等级默认值、thinking 预算清除、详细输出指令）——完整时间线请参见 [三重 Harness 事件](./known-issues.md#triple-harness-incident-effort-thinking-tokens-verbosity-mar-apr-2026)
+- **改进**：40MB 以上会话的 `/resume` 速度提升最多 67%，对含大量死分支条目的会话处理更高效
+- **改进**：配置了多个 stdio 服务器时 MCP 启动更快；`resources/templates/list` 推迟到首次 `@` 引用时执行
+- **改进**：在 VS Code、Cursor 和 Windsurf 中全屏滚动更流畅；`/terminal-setup` 现在配置编辑器的滚动灵敏度
+- **改进**：thinking 指示器显示内联进度（"still thinking"、"thinking more"、"almost done thinking"），替代单独的提示行
+- **改进**：`/config` 搜索现在匹配选项值（例如搜索"vim"可找到编辑器模式设置）
+- **改进**：Claude 响应时可打开 `/doctor`，无需等待当前轮次完成
+- **改进**：`/reload-plugins` 和后台插件自动更新现在从已添加的市场自动安装缺失的依赖
+- **改进**：Bash 工具在 `gh` 命令触达 GitHub API 速率限制时显示提示，以便智能体退避而非重试
+- **改进**：用量标签页立即显示 5 小时和每周用量，用量端点被速率限制时不再失败
+- **改进**：通过 `--agent` 运行为主线程智能体时，智能体 frontmatter 中的 `hooks:` 现在可触发
+- **改进**：过滤结果为零时斜杠命令菜单显示"无匹配命令"而非直接消失
+- **安全**：沙箱自动允许不再对目标为 `/`、`$HOME` 或其他关键系统目录的 `rm`/`rmdir` 绕过危险路径安全检查
+- **修复**：在终端 UI 中 Devanagari 及其他印度文字渲染出现列对齐异常的问题
+- **修复**：使用 Kitty 键盘协议的终端（iTerm2、Ghostty、kitty、WezTerm、Windows Terminal）中 `Ctrl+-` 不触发撤销的问题
+- **修复**：Kitty 协议终端（Warp 全屏、kitty、Ghostty、WezTerm）中 `Cmd+Left/Right` 不跳转到行首/尾的问题
+- **修复**：通过包装进程（如 `npx`、`bun run`）启动 Claude Code 时 `Ctrl+Z` 挂起终端的问题
+- **修复**：内联模式下终端调整大小或大量输出突发导致早期对话历史重复的回滚重复问题
+- **修复**：终端高度较短时模态搜索对话框溢出屏幕，隐藏搜索框和键盘提示的问题
+- **修复**：VS Code 集成终端中滚动时出现分散空白格和编辑器 chrome 消失的问题
+- **修复**：并行请求在请求设置期间完成时，与缓存控制 TTL 排序相关的间歇性 API 400 错误
+- **修复**：`/branch` 拒绝记录超过 50MB 的会话的问题
+- **修复**：`/resume` 在大型会话文件中静默显示空会话而非报告加载错误的问题
+- **修复**：`/plugin` 已安装标签页在"需要关注"或"收藏"中出现时显示相同条目两次的问题
+- **修复**：会话中进入工作树后 `/update` 和 `/tui` 无法使用的问题
 
 ---
 
 ### v2.1.114 (2026-04-18)
 
-> Fixed crash in permission dialog when an agent teams teammate requested tool permission.
+> 修复智能体团队成员请求工具权限时权限对话框崩溃的问题。
 
-- **Fixed**: Crash in the permission dialog when an agent teams teammate requested tool permission
+- **修复**：智能体团队成员请求工具权限时权限对话框崩溃的问题
 
 ---
 
 ### v2.1.113 (2026-04-18)
 
-> Native Claude Code binary spawning, sandbox.network.deniedDomains setting, security hardening, many bug fixes.
+> 原生 Claude Code 二进制文件生成，sandbox.network.deniedDomains 设置，安全加固，多项 bug 修复。
 
-- **New**: CLI now spawns a native Claude Code binary via a per-platform optional dependency instead of bundled JavaScript
-- **New**: `sandbox.network.deniedDomains` setting — block specific domains even when a broader `allowedDomains` wildcard would otherwise permit them
-- **Improved**: Fullscreen mode — `Shift+↑/↓` now scrolls the viewport when extending a selection past the visible edge
-- **Improved**: `Ctrl+A` and `Ctrl+E` now move to the start/end of the current logical line in multiline input (readline behavior)
-- **Improved**: Windows: `Ctrl+Backspace` now deletes the previous word
-- **Improved**: Long URLs in responses and bash output stay clickable when they wrap across lines (in terminals with OSC 8 hyperlinks)
-- **Improved**: `/loop` — pressing Esc now cancels pending wakeups; wakeups display as "Claude resuming /loop wakeup" for clarity
-- **Improved**: `/extra-usage` now works from Remote Control (mobile/web) clients
-- **Improved**: Remote Control clients can now query `@`-file autocomplete suggestions
-- **Improved**: `/ultrareview` — faster launch with parallelized checks, diffstat in the launch dialog, animated launching state
-- **Improved**: Subagents that stall mid-stream now fail with a clear error after 10 minutes instead of hanging silently
-- **Improved**: Bash tool — multi-line commands whose first line is a comment now show the full command in the transcript, closing a UI-spoofing vector
-- **Improved**: Running `cd <current-directory> && git …` no longer triggers a permission prompt when the `cd` is a no-op
-- **Security**: On macOS, `/private/{etc,var,tmp,home}` paths are now treated as dangerous removal targets under `Bash(rm:*)` allow rules
-- **Security**: Bash deny rules now match commands wrapped in `env`/`sudo`/`watch`/`ionice`/`setsid` and similar exec wrappers
-- **Security**: `Bash(find:*)` allow rules no longer auto-approve `find -exec`/`-delete`
-- **Fixed**: MCP concurrent-call timeout handling where a message for one tool call could silently disarm another call's watchdog
-- **Fixed**: Cmd-backspace / `Ctrl+U` to once again delete from the cursor to the start of the line
-- **Fixed**: Markdown tables breaking when a cell contains an inline code span with a pipe character
-- **Fixed**: Session recap auto-firing while composing unsent text in the prompt
-- **Fixed**: `/copy` "Full response" not aligning markdown table columns for pasting into GitHub, Notion, or Slack
-- **Fixed**: Messages typed while viewing a running subagent hidden from its transcript and misattributed to the parent AI
-- **Fixed**: `Bash dangerouslyDisableSandbox` running commands outside the sandbox without a permission prompt
-- **Fixed**: `/effort auto` confirmation now says "Effort level set to max" to match the status bar label
-- **Fixed**: The "copied N chars" toast overcounting emoji and other multi-code-unit characters
-- **Fixed**: `/insights` crashing with `EBUSY` on Windows
-- **Fixed**: Exit confirmation dialog mislabeling one-shot scheduled tasks as recurring — now shows a countdown
-- **Fixed**: Slash/@ completion menu not sitting flush against the prompt border in fullscreen mode
-- **Fixed**: `CLAUDE_CODE_EXTRA_BODY output_config.effort` causing 400 errors on subagent calls to models without effort support and on Vertex AI
-- **Fixed**: Prompt cursor disappearing when `NO_COLOR` is set
-- **Fixed**: `ToolSearch` ranking so pasted MCP tool names surface the actual tool instead of description-matching siblings
-- **Fixed**: Compacting a resumed long-context session failing with "Extra usage is required for long context requests"
-- **Fixed**: `plugin install` succeeding when a dependency version conflicts with an already-installed plugin — now reports `range-conflict`
-- **Fixed**: "Refine with Ultraplan" not showing the remote session URL in the transcript
-- **Fixed**: SDK image content blocks that fail to process crashing the session — now degrade to a text placeholder
-- **Fixed**: Remote Control sessions not streaming subagent transcripts
-- **Fixed**: Remote Control sessions not being archived when Claude Code exits
-- **Fixed**: `thinking.type.enabled is not supported` 400 error when using Opus 4.7 via a Bedrock Application Inference Profile ARN
+- **新增**：CLI 现在通过每平台可选依赖生成原生 Claude Code 二进制文件，而非捆绑 JavaScript
+- **新增**：`sandbox.network.deniedDomains` 设置——即使更宽泛的 `allowedDomains` 通配符允许，也可阻止特定域名
+- **改进**：全屏模式——`Shift+↑/↓` 现在在选择超出可见边缘时滚动视口
+- **改进**：`Ctrl+A` 和 `Ctrl+E` 现在在多行输入中移动到当前逻辑行的开头/结尾（readline 行为）
+- **改进**：Windows：`Ctrl+Backspace` 现在删除上一个单词
+- **改进**：响应和 bash 输出中的长 URL 跨行折叠后仍可点击（在支持 OSC 8 超链接的终端中）
+- **改进**：`/loop`——按 Esc 现在取消待处理的唤醒；唤醒显示为"Claude resuming /loop wakeup"以便清晰识别
+- **改进**：`/extra-usage` 现在可在远程控制（移动端/网页端）客户端中使用
+- **改进**：远程控制客户端现在可查询 `@` 文件自动补全建议
+- **改进**：`/ultrareview`——并行化检查启动更快，启动对话框中显示 diffstat，新增动画启动状态
+- **改进**：中途停滞的子智能体现在在 10 分钟后以明确错误失败，而非静默挂起
+- **改进**：Bash 工具——首行为注释的多行命令现在在记录中显示完整命令，消除 UI 欺骗向量
+- **改进**：运行 `cd <current-directory> && git …` 时，若 `cd` 是空操作则不再触发权限提示
+- **安全**：在 macOS 上，`/private/{etc,var,tmp,home}` 路径现在在 `Bash(rm:*)` 允许规则下被视为危险删除目标
+- **安全**：Bash 拒绝规则现在匹配被 `env`/`sudo`/`watch`/`ionice`/`setsid` 等 exec 包装器包裹的命令
+- **安全**：`Bash(find:*)` 允许规则不再自动批准 `find -exec`/`-delete`
+- **修复**：MCP 并发调用超时处理问题——一个工具调用的消息可能静默解除另一调用的看门狗
+- **修复**：Cmd-backspace / `Ctrl+U` 再次可删除从光标到行首的内容
+- **修复**：单元格中含有带管道字符的内联代码时 Markdown 表格损坏的问题
+- **修复**：在提示框中输入未发送的文本时会话摘要自动触发的问题
+- **修复**：`/copy` "完整响应"粘贴到 GitHub、Notion 或 Slack 时 Markdown 表格列未对齐的问题
+- **修复**：查看正在运行的子智能体时输入的消息从其记录中消失并错误归因于父 AI 的问题
+- **修复**：`Bash dangerouslyDisableSandbox` 在沙箱外运行命令而无权限提示的问题
+- **修复**：`/effort auto` 确认现在显示"努力等级设为最大"以与状态栏标签一致
+- **修复**："已复制 N 个字符"提示对含 emoji 和其他多码元字符计数过多的问题
+- **修复**：`/insights` 在 Windows 上崩溃并报 `EBUSY` 的问题
+- **修复**：退出确认对话框将一次性计划任务误标为循环任务的问题——现在显示倒计时
+- **修复**：全屏模式下斜杠/@ 补全菜单未紧贴提示边框的问题
+- **修复**：`CLAUDE_CODE_EXTRA_BODY output_config.effort` 在不支持 effort 的模型和 Vertex AI 的子智能体调用中引发 400 错误的问题
+- **修复**：设置 `NO_COLOR` 时提示光标消失的问题
+- **修复**：`ToolSearch` 排序问题——粘贴 MCP 工具名称时现在能找到实际工具而非描述匹配的同级工具
+- **修复**：压缩已恢复的长上下文会话时因"长上下文请求需要额外用量"而失败的问题
+- **修复**：`plugin install` 在依赖版本与已安装插件冲突时仍成功的问题——现在报告 `range-conflict`
+- **修复**："用 Ultraplan 优化"未在记录中显示远程会话 URL 的问题
+- **修复**：SDK 图像内容块处理失败导致会话崩溃的问题——现在降级为文本占位符
+- **修复**：远程控制会话不流式传输子智能体记录的问题
+- **修复**：Claude Code 退出时远程控制会话未被存档的问题
+- **修复**：通过 Bedrock 应用推理配置文件 ARN 使用 Opus 4.7 时出现 `thinking.type.enabled is not supported` 400 错误的问题
 
 ---
 
 ### v2.1.111 (2026-04-16)
 
-> Claude Opus 4.7 xhigh effort level, /ultrareview cloud code review, /less-permission-prompts skill, Auto mode for Max subscribers.
+> Claude Opus 4.7 xhigh 努力等级，/ultrareview 云端代码审查，/less-permission-prompts 技能，Max 订阅者的自动模式。
 
-- **New**: Claude Opus 4.7 `xhigh` effort level — between `high` and `max`; available via `/effort`, `--effort`, and the model picker; other models fall back to `high`
-- **New**: Auto mode for Max subscribers on Opus 4.7 — no longer requires `--enable-auto-mode`
-- **New**: `/ultrareview` skill — runs comprehensive code review in the cloud using parallel multi-agent analysis; invoke without arguments for current branch, or `/ultrareview <PR#>` for a specific GitHub PR
-- **New**: `/less-permission-prompts` skill — scans transcripts for common read-only Bash and MCP tool calls, proposes a prioritized allowlist for `.claude/settings.json`
-- **New**: "Auto (match terminal)" theme option — follows your terminal's dark/light mode; selectable via `/theme`
-- **New**: `/effort` opens an interactive slider when called without arguments; arrow-key navigation + Enter to confirm
-- **Improved**: Plan files now named after your prompt (e.g. `fix-auth-race-snug-otter.md`) instead of purely random words
-- **Improved**: Read-only bash commands with glob patterns (e.g. `ls *.ts`) and commands starting with `cd <project-dir> &&` no longer trigger a permission prompt
-- **Improved**: `/setup-vertex` and `/setup-bedrock` show the actual `settings.json` path when `CLAUDE_CONFIG_DIR` is set, seed model candidates from existing pins on re-run, offer a "with 1M context" option
-- **Improved**: `/skills` menu now supports sorting by estimated token count — press `t` to toggle
-- **Improved**: `Ctrl+U` clears the entire input buffer (`Ctrl+Y` restores); `Ctrl+L` forces full screen redraw
-- **Improved**: Typo suggestions for near-miss `claude <word>` invocations (e.g. `claude udpate` → "Did you mean `claude update`?")
-- **Improved**: Headless `--output-format stream-json` includes `plugin_errors` on the init event; `OTEL_LOG_RAW_API_BODIES` env var emits full API bodies as OpenTelemetry log events
-- **Fixed**: Terminal display tearing (random characters, drifting input) in iTerm2 + tmux setups when terminal notifications are sent
-- **Fixed**: `@` file suggestions re-scanning entire project on every turn in non-git directories; only config files shown in freshly-initialized git repos with no tracked files
-- **Fixed**: LSP diagnostics from before an edit appearing after it, causing model to re-read already-edited files
-- **Fixed**: Tab-completing `/resume` immediately resuming an arbitrary titled session instead of showing the session picker
-- **Fixed**: `/clear` dropping the session name set by `/rename`, causing statusline to lose `session_name`
-- **Fixed**: Claude calling non-existent `commit` skill showing "Unknown skill: commit" for users without a custom `/commit` command
-- **Fixed**: 429 rate-limit errors on Bedrock/Vertex/Foundry incorrectly referencing status.claude.com
-- **Fixed**: Multiple additional issues — bare URLs unclickable when terminal wraps them across lines, feedback surveys appearing back-to-back, Windows `CLAUDE_ENV_FILE` and SessionStart hook env files now apply, drive-letter path permission rules correctly root-anchored
-- **Fixed**: Plugin error handling improvements — dependency errors distinguish conflicting/invalid/overly complex version requirements; stale resolved versions after `plugin update`; `plugin install` recovers from interrupted installs
-- **Reverted**: v2.1.110 cap on non-streaming fallback retries — it traded long waits for more outright failures during API overload
+- **新增**：Claude Opus 4.7 `xhigh` 努力等级——介于 `high` 和 `max` 之间；可通过 `/effort`、`--effort` 和模型选择器使用；其他模型回退到 `high`
+- **新增**：Max 订阅者在 Opus 4.7 上的自动模式——不再需要 `--enable-auto-mode`
+- **新增**：`/ultrareview` 技能——使用并行多智能体分析在云端运行全面代码审查；不带参数时审查当前分支，`/ultrareview <PR#>` 审查特定 GitHub PR
+- **新增**：`/less-permission-prompts` 技能——扫描记录中常见的只读 Bash 和 MCP 工具调用，为 `.claude/settings.json` 提出优先级排序的允许列表
+- **新增**："自动（匹配终端）"主题选项——跟随终端的深色/浅色模式；可通过 `/theme` 选择
+- **新增**：不带参数调用 `/effort` 时打开交互式滑块；支持方向键导航 + Enter 确认
+- **改进**：计划文件现在以提示命名（如 `fix-auth-race-snug-otter.md`），而非纯随机词
+- **改进**：含有 glob 模式的只读 bash 命令（如 `ls *.ts`）和以 `cd <project-dir> &&` 开头的命令不再触发权限提示
+- **改进**：`/setup-vertex` 和 `/setup-bedrock` 在设置 `CLAUDE_CONFIG_DIR` 时显示实际 `settings.json` 路径，重新运行时从现有固定项中预填模型候选，提供"含 1M 上下文"选项
+- **改进**：`/skills` 菜单现在支持按估计 Token 数排序——按 `t` 切换
+- **改进**：`Ctrl+U` 清空整个输入缓冲区（`Ctrl+Y` 恢复）；`Ctrl+L` 强制全屏重绘
+- **改进**：对接近正确的 `claude <word>` 调用提供拼写建议（如 `claude udpate` → "你是否想输入 `claude update`？"）
+- **改进**：无头模式 `--output-format stream-json` 在 init 事件中包含 `plugin_errors`；`OTEL_LOG_RAW_API_BODIES` 环境变量将完整 API 请求体作为 OpenTelemetry 日志事件发出
+- **修复**：iTerm2 + tmux 设置中发送终端通知时出现显示撕裂（随机字符、输入漂移）的问题
+- **修复**：非 git 目录中 `@` 文件建议在每次会话中重新扫描整个项目；刚初始化的无跟踪文件的 git 仓库只显示配置文件
+- **修复**：编辑前的 LSP 诊断出现在编辑后，导致模型重新读取已编辑文件的问题
+- **修复**：Tab 补全 `/resume` 时立即恢复任意标题会话而非显示会话选择器的问题
+- **修复**：`/clear` 丢失 `/rename` 设置的会话名称，导致状态栏丢失 `session_name` 的问题
+- **修复**：Claude 调用不存在的 `commit` 技能时对无自定义 `/commit` 命令的用户显示"未知技能: commit"的问题
+- **修复**：Bedrock/Vertex/Foundry 上的 429 速率限制错误错误地引用 status.claude.com 的问题
+- **修复**：多个额外问题——终端折行时裸 URL 不可点击、反馈调查背靠背出现、Windows `CLAUDE_ENV_FILE` 和 SessionStart 钩子环境文件现在生效、驱动器字母路径权限规则正确锚定到根目录
+- **修复**：插件错误处理改进——依赖错误区分冲突/无效/过于复杂的版本要求；`plugin update` 后版本解析结果过时；`plugin install` 从中断的安装中恢复
+- **已回滚**：v2.1.110 对非流式回退重试次数的上限——在 API 过载期间，此举以长时间等待换来了更多彻底失败
 
 ---
 
 ### v2.1.110 (2026-04-16)
 
-> /tui fullscreen command, push notification tool, --resume resurrects scheduled tasks, /focus command, 30+ bug fixes.
+> /tui 全屏命令，推送通知工具，--resume 恢复计划任务，/focus 命令，30+ 项 bug 修复。
 
-- **New**: `/tui` command and `tui` setting — run `/tui fullscreen` to switch to flicker-free rendering within the same conversation
-- **New**: Push notification tool (`PushNotification`) — Claude can send mobile push notifications when Remote Control and "Push when Claude decides" config are enabled
-- **New**: `--resume`/`--continue` now resurrects unexpired scheduled tasks
-- **New**: `/focus` command — focus view is now toggled separately; `Ctrl+O` reverts to toggling between normal and verbose transcript only
-- **New**: `autoScrollEnabled` config — disable conversation auto-scroll in fullscreen mode
-- **New**: Option to show Claude's last response as commented context in the `Ctrl+G` external editor (enable via `/config`)
-- **Improved**: `/plugin` Installed tab — items needing attention and favorites appear at the top; disabled items hidden behind a fold; `f` to favorite
-- **Improved**: `/doctor` warns when an MCP server is defined in multiple config scopes with different endpoints
-- **Improved**: Session recap now enabled for users with telemetry disabled (Bedrock, Vertex, Foundry, `DISABLE_TELEMETRY`); opt out via `/config` or `CLAUDE_CODE_ENABLE_AWAY_SUMMARY=0`
-- **Improved**: Write tool informs the model when you edit proposed content in the IDE diff before accepting; Bash tool enforces documented maximum timeout
-- **Fixed**: MCP tool calls hanging indefinitely when server connection drops mid-response on SSE/HTTP transports
-- **Fixed**: Non-streaming fallback retries causing multi-minute hangs when API is unreachable
-- **Fixed**: `PermissionRequest` hooks returning `updatedInput` not being re-checked against `permissions.deny` rules; `setMode:'bypassPermissions'` now respects `disableBypassPermissionsMode`
-- **Fixed**: `PreToolUse` hook `additionalContext` dropped when the tool call fails
-- **Fixed**: stdio MCP servers that print stray non-JSON lines to stdout being disconnected on first stray line (regression in 2.1.105)
-- **Fixed**: Headless/SDK auto-title firing an extra Haiku request when `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` or `CLAUDE_CODE_DISABLE_TERMINAL_TITLE` is set
-- **Fixed**: Garbled startup rendering in macOS Terminal.app and other terminals without synchronized output support
-- **Security**: Hardened "Open in editor" actions against command injection from untrusted filenames
-- **Fixed**: Multiple additional issues — high CPU usage in fullscreen, dropped keystrokes after relaunch, `/skills` menu not scrolling, Remote Control session renames not persisting, session cleanup not removing subagent transcripts
+- **新增**：`/tui` 命令和 `tui` 设置——运行 `/tui fullscreen` 可在同一会话中切换到无闪烁渲染
+- **新增**：推送通知工具（`PushNotification`）——在启用远程控制和"Claude 决定时推送"配置时，Claude 可发送移动端推送通知
+- **新增**：`--resume`/`--continue` 现在恢复未过期的计划任务
+- **新增**：`/focus` 命令——焦点视图现在单独切换；`Ctrl+O` 恢复为在普通记录和详细记录之间切换
+- **新增**：`autoScrollEnabled` 配置——禁用全屏模式下的会话自动滚动
+- **新增**：可在 `Ctrl+G` 外部编辑器中将 Claude 的上一条响应显示为注释上下文（通过 `/config` 启用）
+- **改进**：`/plugin` 已安装标签页——需要关注的条目和收藏置顶；已禁用条目折叠隐藏；`f` 键收藏
+- **改进**：`/doctor` 在 MCP 服务器在多个配置范围中以不同端点定义时给出警告
+- **改进**：会话摘要现在对禁用遥测的用户开放（Bedrock、Vertex、Foundry、`DISABLE_TELEMETRY`）；可通过 `/config` 或 `CLAUDE_CODE_ENABLE_AWAY_SUMMARY=0` 退出
+- **改进**：Write 工具在 IDE diff 中接受前告知模型你修改了提议内容；Bash 工具强制执行文档规定的最大超时
+- **修复**：SSE/HTTP 传输上服务器连接中途断开时 MCP 工具调用无限挂起的问题
+- **修复**：API 不可达时非流式回退重试导致数分钟挂起的问题
+- **修复**：`PermissionRequest` 钩子返回 `updatedInput` 时未重新检查 `permissions.deny` 规则；`setMode:'bypassPermissions'` 现在遵循 `disableBypassPermissionsMode`
+- **修复**：工具调用失败时 `PreToolUse` 钩子的 `additionalContext` 丢失的问题
+- **修复**：将无关非 JSON 行打印到 stdout 的 stdio MCP 服务器在第一行无关内容时断开连接的问题（v2.1.105 中引入的回归）
+- **修复**：设置 `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` 或 `CLAUDE_CODE_DISABLE_TERMINAL_TITLE` 时，无头/SDK 自动标题触发额外 Haiku 请求的问题
+- **修复**：macOS Terminal.app 和其他不支持同步输出的终端中启动渲染乱码的问题
+- **安全**：针对不受信任文件名的命令注入加固了"在编辑器中打开"操作
+- **修复**：多个额外问题——全屏高 CPU 用量、重新启动后按键丢失、`/skills` 菜单无法滚动、远程控制会话重命名不持久、会话清理未删除子智能体记录
 
 ---
 
 ### v2.1.109 (2026-04-15)
 
-> Improved extended-thinking indicator with a rotating progress hint.
+> 改进了带旋转进度提示的扩展 thinking 指示器。
 
-- **Improved**: Extended-thinking indicator now shows a rotating progress hint for better visibility during long thinking phases
+- **改进**：扩展 thinking 指示器现在在长时间 thinking 阶段显示旋转进度提示以提高可见性
 
 ---
 
 ### v2.1.108 (2026-04-15)
 
-> 1-hour prompt cache TTL option, /recap session context feature, built-in slash commands discoverable via Skill tool, /undo alias for /rewind.
+> 1 小时提示缓存 TTL 选项，/recap 会话上下文功能，内置斜杠命令可通过 Skill 工具发现，/undo 作为 /rewind 的别名。
 
-- **New**: `ENABLE_PROMPT_CACHING_1H` env var — opt into 1-hour prompt cache TTL on API key, Bedrock, Vertex, and Foundry (`ENABLE_PROMPT_CACHING_1H_BEDROCK` deprecated but still honored); `FORCE_PROMPT_CACHING_5M` to force 5-minute TTL
-- **New**: `/recap` feature — provides context when returning to a session after a break; configurable in `/config`; force with `CLAUDE_CODE_ENABLE_AWAY_SUMMARY` if telemetry disabled
-- **New**: Model can now discover and invoke built-in slash commands like `/init`, `/review`, `/security-review` via the Skill tool
-- **New**: `/undo` is now an alias for `/rewind`
-- **New**: "verbose" indicator when viewing the detailed transcript (`Ctrl+O`)
-- **New**: Startup warning when prompt caching is disabled via `DISABLE_PROMPT_CACHING*` environment variables
-- **Improved**: `/model` now warns before switching models mid-conversation (next response re-reads full history uncached)
-- **Improved**: `/resume` picker defaults to sessions from the current directory; press `Ctrl+A` to show all projects
-- **Improved**: Error messages distinguish server rate limits from plan usage limits; 5xx/529 errors link to status.claude.com; unknown slash commands suggest closest match
-- **Improved**: Memory footprint for file reads, edits, and syntax highlighting reduced by loading language grammars on demand
-- **Fixed**: Paste not working in the `/login` code prompt (regression in 2.1.105)
-- **Fixed**: `DISABLE_TELEMETRY` subscribers falling back to 5-minute prompt cache TTL instead of 1 hour
-- **Fixed**: Bash tool producing no output when `CLAUDE_ENV_FILE` (e.g. `~/.zprofile`) ends with a `#` comment line
-- **Fixed**: `--resume <session-id>` losing session's custom name and color set via `/rename`
-- **Fixed**: Diacritical marks (accents, umlauts, cedillas) being dropped from responses when `language` setting is configured
-- **Fixed**: `--teleport` and `--resume <id>` precondition errors (dirty git tree, session not found) exiting silently
+- **新增**：`ENABLE_PROMPT_CACHING_1H` 环境变量——在 API 密钥、Bedrock、Vertex 和 Foundry 上选择 1 小时提示缓存 TTL（`ENABLE_PROMPT_CACHING_1H_BEDROCK` 已弃用但仍受支持）；`FORCE_PROMPT_CACHING_5M` 强制使用 5 分钟 TTL
+- **新增**：`/recap` 功能——在休息后返回会话时提供上下文；可在 `/config` 中配置；遥测禁用时使用 `CLAUDE_CODE_ENABLE_AWAY_SUMMARY` 强制开启
+- **新增**：模型现在可通过 Skill 工具发现并调用内置斜杠命令，如 `/init`、`/review`、`/security-review`
+- **新增**：`/undo` 现在是 `/rewind` 的别名
+- **新增**：查看详细记录时（`Ctrl+O`）显示"verbose"指示器
+- **新增**：通过 `DISABLE_PROMPT_CACHING*` 环境变量禁用提示缓存时显示启动警告
+- **改进**：`/model` 现在在会话中途切换模型前给出警告（下一条响应将无缓存地重新读取完整历史）
+- **改进**：`/resume` 选择器默认显示当前目录的会话；按 `Ctrl+A` 显示所有项目
+- **改进**：错误消息区分服务器速率限制和计划用量限制；5xx/529 错误链接到 status.claude.com；未知斜杠命令建议最接近的匹配
+- **改进**：文件读取、编辑和语法高亮的内存占用通过按需加载语言语法而减少
+- **修复**：`/login` 代码提示中粘贴不生效的问题（v2.1.105 中引入的回归）
+- **修复**：`DISABLE_TELEMETRY` 订阅者回退到 5 分钟提示缓存 TTL 而非 1 小时的问题
+- **修复**：`CLAUDE_ENV_FILE`（如 `~/.zprofile`）以 `#` 注释行结尾时 Bash 工具无输出的问题
+- **修复**：`--resume <session-id>` 丢失通过 `/rename` 设置的会话自定义名称和颜色的问题
+- **修复**：配置 `language` 设置时响应中变音符号（重音、变音、软音）丢失的问题
+- **修复**：`--teleport` 和 `--resume <id>` 前置条件错误（git 工作树不干净、会话未找到）静默退出的问题
 
 ---
 
 ### v2.1.107 (2026-04-14)
 
-> Show thinking hints sooner during long operations.
+> 长时间操作期间更早显示 thinking 提示。
 
-- **Improved**: Thinking hints now appear sooner during long operations for better real-time feedback
+- **改进**：长时间操作期间 thinking 提示现在更早出现，提供更好的实时反馈
 
 ---
 
 ### v2.1.105 (2026-04-13)
 
-> EnterWorktree path parameter, PreCompact hook blocking, plugin background monitors, /proactive alias, WebFetch strips CSS/JS, /doctor with status icons and f-to-fix, and multiple bug fixes.
+> EnterWorktree 路径参数，PreCompact 钩子阻断，插件后台监视器，/proactive 别名，WebFetch 去除 CSS/JS，带状态图标和 f 键修复的 /doctor，以及多项 bug 修复。
 
-- **New**: `path` parameter on `EnterWorktree` tool — switch into an existing worktree of the current repository
-- **New**: PreCompact hook support — hooks can block compaction by exiting with code 2 or returning `{"decision":"block"}`
-- **New**: Background monitor support for plugins via a top-level `monitors` manifest key — auto-arms at session start or on skill invoke
-- **New**: `/proactive` is now an alias for `/loop`
-- **Improved**: Stalled API streams now abort after 5 minutes of no data and retry non-streaming instead of hanging indefinitely
-- **Improved**: Network error messages show retry immediately instead of a silent spinner
-- **Improved**: `/doctor` layout with status icons; press `f` to have Claude fix reported issues
-- **Improved**: `WebFetch` strips `<style>` and `<script>` contents — CSS-heavy pages no longer exhaust content budget before reaching actual text
-- **Improved**: Skill description listing cap raised from 250 to 1,536 characters; startup warning when descriptions are truncated
-- **Improved**: Stale agent worktree cleanup now removes worktrees whose PR was squash-merged
-- **Fixed**: Images attached to queued messages (sent while Claude is working) being dropped
-- **Fixed**: Screen going blank when prompt input wraps to second line in long conversations
-- **Fixed**: `/model` picker on Bedrock in non-US regions persisting invalid `us.*` model IDs when inference profile discovery is in-flight
-- **Fixed**: 429 rate-limit errors showing raw JSON dump instead of clean message for API-key, Bedrock, and Vertex users
-- **Fixed**: MCP tools missing on first turn of headless/remote-trigger sessions when MCP servers connect asynchronously
-- **Fixed**: Various crash and `/resume` failures including malformed text blocks and `/help` layout at short terminal heights
-- **Fixed**: `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` in one project settings permanently disabling usage metrics for all projects
+- **新增**：`EnterWorktree` 工具的 `path` 参数——切换到当前仓库的现有工作树
+- **新增**：PreCompact 钩子支持——钩子可通过退出码 2 或返回 `{"decision":"block"}` 阻断压缩
+- **新增**：插件后台监视器支持，通过顶层 `monitors` 清单键——在会话启动或技能调用时自动激活
+- **新增**：`/proactive` 现在是 `/loop` 的别名
+- **改进**：停滞的 API 流现在在无数据 5 分钟后中止并回退到非流式模式，而非无限挂起
+- **改进**：网络错误消息立即显示重试提示，而非显示静默加载指示器
+- **改进**：`/doctor` 布局增加状态图标；按 `f` 让 Claude 修复报告的问题
+- **改进**：`WebFetch` 去除 `<style>` 和 `<script>` 内容——CSS 密集页面不再在到达实际文本前耗尽内容预算
+- **改进**：技能描述列表上限从 250 字符提升至 1,536 字符；描述被截断时显示启动警告
+- **改进**：旧智能体工作树清理现在删除其 PR 已被 squash 合并的工作树
+- **修复**：附加到已排队消息（Claude 工作时发送）的图片被丢弃的问题
+- **修复**：长会话中提示输入换行到第二行时屏幕变白的问题
+- **修复**：非美国区域 Bedrock 上 `/model` 选择器在推理配置文件发现进行中时持久化无效 `us.*` 模型 ID 的问题
+- **修复**：API 密钥、Bedrock 和 Vertex 用户的 429 速率限制错误显示原始 JSON 而非清晰消息的问题
+- **修复**：MCP 服务器异步连接时无头/远程触发会话首轮缺少 MCP 工具的问题
+- **修复**：各种崩溃和 `/resume` 失败问题，包括格式错误的文本块和短终端高度下 `/help` 布局问题
+- **修复**：一个项目中设置 `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` 永久禁用所有项目使用指标的问题
 
 ---
 
 ### v2.1.101 (2026-04-10)
 
-> /team-onboarding command for teammate ramp-up, OS CA certificate store trusted by default for enterprise TLS proxies, /ultraplan auto-creates cloud environment, and 40+ bug fixes including --resume context loss, Bedrock SigV4 auth, sub-agent worktree file access, and Grep ENOENT self-heal.
+> /team-onboarding 命令用于成员快速上手，OS CA 证书存储默认受信任以支持企业 TLS 代理，/ultraplan 自动创建云端环境，以及 40+ 项 bug 修复，包括 --resume 上下文丢失、Bedrock SigV4 认证、子智能体工作树文件访问和 Grep ENOENT 自愈。
 
-- **New**: `/team-onboarding` command — generates a teammate ramp-up guide from your local Claude Code usage patterns
-- **New**: OS CA certificate store is now trusted by default — enterprise TLS proxies work without extra config; set `CLAUDE_CODE_CERT_STORE=bundled` to revert to bundled CAs only
-- **New**: `/ultraplan` and other remote-session features now auto-create a default cloud environment instead of requiring web setup first
-- **Improved**: `claude -p --resume <name>` now accepts session titles set via `/rename` or `--name`
-- **Improved**: Unrecognized hook event names in `settings.json` no longer cause the entire file to be ignored
-- **Improved**: Rate-limit retry messages show which limit was hit and when it resets (instead of opaque countdown)
-- **Improved**: Brief mode retries once when Claude responds with plain text instead of a structured message
-- **Fixed**: `--resume`/`--continue` losing conversation context on large sessions when the loader anchored on a dead-end branch
-- **Fixed**: Bedrock SigV4 authentication failing with 403 when `ANTHROPIC_AUTH_TOKEN`, `apiKeyHelper`, or `ANTHROPIC_CUSTOM_HEADERS` set an Authorization header
-- **Fixed**: Sub-agents running in isolated worktrees denied Read/Edit access to files inside their own worktree
-- **Fixed**: `RemoteTrigger` tool's `run` action sending an empty body and being rejected by the server
-- **Fixed**: Grep tool ENOENT when the embedded ripgrep binary path becomes stale (VS Code extension auto-update, macOS App Translocation) — now falls back to system `rg` and self-heals mid-session
-- **Fixed**: Hardcoded 5-minute request timeout aborting slow backends (local LLMs, extended thinking, slow gateways) regardless of `API_TIMEOUT_MS`
-- **Fixed**: Command injection vulnerability in POSIX `which` fallback used by LSP binary detection
-- **Fixed**: `permissions.deny` rules not overriding a PreToolUse hook's `permissionDecision: "ask"`
-- **Fixed**: Memory leak where long sessions retained dozens of historical copies of the message list in the virtual scroller
-- **Fixed**: `/btw` writing a full conversation copy to disk on every use
+- **新增**：`/team-onboarding` 命令——根据你的本地 Claude Code 使用模式生成团队成员快速上手指南
+- **新增**：OS CA 证书存储现在默认受信任——企业 TLS 代理无需额外配置即可工作；设置 `CLAUDE_CODE_CERT_STORE=bundled` 可还原为仅使用捆绑 CA
+- **新增**：`/ultraplan` 和其他远程会话功能现在自动创建默认云端环境，无需先进行网页设置
+- **改进**：`claude -p --resume <name>` 现在接受通过 `/rename` 或 `--name` 设置的会话标题
+- **改进**：`settings.json` 中无法识别的钩子事件名称不再导致整个文件被忽略
+- **改进**：速率限制重试消息显示触发了哪个限制以及何时重置（而非不透明的倒计时）
+- **改进**：简洁模式在 Claude 以纯文本而非结构化消息响应时重试一次
+- **修复**：`--resume`/`--continue` 在大型会话中加载器锚定到死端分支时丢失会话上下文的问题
+- **修复**：设置 `ANTHROPIC_AUTH_TOKEN`、`apiKeyHelper` 或 `ANTHROPIC_CUSTOM_HEADERS` 的 Authorization 头时 Bedrock SigV4 认证以 403 失败的问题
+- **修复**：在隔离工作树中运行的子智能体被拒绝读取/编辑其自身工作树内文件的问题
+- **修复**：`RemoteTrigger` 工具的 `run` 操作发送空请求体并被服务器拒绝的问题
+- **修复**：Grep 工具 ENOENT 问题——嵌入的 ripgrep 二进制路径过时时（VS Code 扩展自动更新、macOS App Translocation）现在回退到系统 `rg` 并在会话中自愈
+- **修复**：硬编码的 5 分钟请求超时在 `API_TIMEOUT_MS` 设置下仍中止慢速后端（本地 LLM、扩展 thinking、慢速网关）的问题
+- **修复**：LSP 二进制检测使用的 POSIX `which` 回退中存在的命令注入漏洞
+- **修复**：`permissions.deny` 规则未覆盖 PreToolUse 钩子的 `permissionDecision: "ask"` 的问题
+- **修复**：长会话在虚拟滚动器中保留数十个历史消息列表副本导致的内存泄漏
+- **修复**：`/btw` 每次使用时将完整会话副本写入磁盘的问题
 
 ### v2.1.98 (2026-04-10)
 
-> Vertex AI interactive setup wizard, Monitor tool for background script streaming, major Bash security hardening (8+ permission bypasses fixed), and subprocess PID namespace sandboxing.
+> Vertex AI 交互式设置向导，后台脚本流式传输的 Monitor 工具，Bash 安全重大加固（修复 8+ 项权限绕过），以及子进程 PID 命名空间沙箱。
 
-- **New**: Interactive Vertex AI setup wizard from the login screen (select "3rd-party platform") — guides through GCP authentication, project and region configuration, credential verification, and model pinning
-- **New**: Monitor tool for streaming events from background scripts
-- **New**: `CLAUDE_CODE_PERFORCE_MODE` env var — Edit/Write/NotebookEdit fail on read-only files with a `p4 edit` hint instead of silently overwriting
-- **New**: Subprocess sandboxing with PID namespace isolation on Linux when `CLAUDE_CODE_SUBPROCESS_ENV_SCRUB` is set; `CLAUDE_CODE_SCRIPT_CAPS` env var to limit per-session script invocations
-- **New**: `--exclude-dynamic-system-prompt-sections` flag in print mode for improved cross-user prompt caching
-- **New**: W3C `TRACEPARENT` env var injected into Bash tool subprocesses when OTEL tracing is enabled
-- **New**: LSP: Claude Code now identifies itself via `clientInfo` in the initialize request
-- **Security (Bash)**: Fixed permission bypass where backslash-escaped flags could be auto-allowed as read-only and execute arbitrary code
-- **Security (Bash)**: Fixed compound commands bypassing forced permission prompts in auto and bypass-permissions modes
-- **Security (Bash)**: Fixed read-only commands with unknown env-var prefixes not prompting (only `LANG`, `TZ`, `NO_COLOR`, etc. are now safe-listed)
-- **Security (Bash)**: Fixed `/dev/tcp/...` and `/dev/udp/...` redirects not prompting
-- **Security (Bash)**: Fixed `grep -f FILE` / `rg -f FILE` not prompting when reading pattern files outside the working directory
-- **Fixed**: Stalled streaming responses timing out instead of falling back to non-streaming mode
-- **Fixed**: `--dangerously-skip-permissions` silently downgraded to accept-edits mode after approving a protected-path Bash write
-- **Fixed**: Managed-settings allow rules remaining active after admin removal until process restart
-- **Fixed**: `permissions.additionalDirectories` changes not applying mid-session; `--add-dir` access unaffected by removal
-- **Fixed**: MCP OAuth `oauth.authServerMetadataUrl` not honored on token refresh — fixes ADFS and similar IdPs
-- **Fixed**: 429 retries burning all attempts in ~13s with small `Retry-After` — exponential backoff now applies as minimum
-- **Fixed**: Capital letters dropped to lowercase in xterm/VS Code integrated terminal with kitty keyboard protocol active
-- **Fixed**: macOS text replacements deleting trigger word instead of inserting substitution
-- **Fixed**: Agent team members not inheriting leader's permission mode with `--dangerously-skip-permissions`
-- **Fixed**: `CLAUDE_CODE_MAX_CONTEXT_TOKENS` now honors `DISABLE_COMPACT`
-- **Improved**: `/agents` with tabbed layout — Running tab shows live subagents, Library tab adds Run and View actions
-- **Improved**: `/resume` filter hint labels; project/worktree/branch names in filter indicator
-- **Improved**: Accept Edits mode auto-approves filesystem commands prefixed with safe env vars or process wrappers
-- **Improved**: Write tool diff computation 60% faster on files with tabs/`&`/`$`
+- **新增**：登录界面的 Vertex AI 交互式设置向导（选择"第三方平台"）——引导完成 GCP 认证、项目和区域配置、凭据验证和模型固定
+- **新增**：Monitor 工具——用于从后台脚本流式传输事件
+- **新增**：`CLAUDE_CODE_PERFORCE_MODE` 环境变量——Edit/Write/NotebookEdit 在只读文件上失败并给出 `p4 edit` 提示，而非静默覆盖
+- **新增**：在 Linux 上设置 `CLAUDE_CODE_SUBPROCESS_ENV_SCRUB` 时，对子进程进行 PID 命名空间隔离沙箱；`CLAUDE_CODE_SCRIPT_CAPS` 环境变量限制每会话脚本调用次数
+- **新增**：打印模式中的 `--exclude-dynamic-system-prompt-sections` 标志——改善跨用户提示缓存
+- **新增**：启用 OTEL 追踪时，W3C `TRACEPARENT` 环境变量注入到 Bash 工具子进程
+- **新增**：LSP：Claude Code 现在在初始化请求中通过 `clientInfo` 标识自身
+- **安全（Bash）**：修复反斜杠转义标志可被自动允许为只读并执行任意代码的权限绕过问题
+- **安全（Bash）**：修复复合命令在自动和绕过权限模式下绕过强制权限提示的问题
+- **安全（Bash）**：修复带未知环境变量前缀的只读命令不提示的问题（现在只有 `LANG`、`TZ`、`NO_COLOR` 等在安全白名单中）
+- **安全（Bash）**：修复 `/dev/tcp/...` 和 `/dev/udp/...` 重定向不提示的问题
+- **安全（Bash）**：修复在工作目录外读取模式文件时 `grep -f FILE` / `rg -f FILE` 不提示的问题
+- **修复**：停滞的流式响应超时而非回退到非流式模式的问题
+- **修复**：批准受保护路径的 Bash 写入后 `--dangerously-skip-permissions` 静默降级为接受编辑模式的问题
+- **修复**：管理员删除后托管设置允许规则在进程重启前仍保持活跃的问题
+- **修复**：`permissions.additionalDirectories` 变更未在会话中途生效；`--add-dir` 访问不受删除影响
+- **修复**：MCP OAuth `oauth.authServerMetadataUrl` 在令牌刷新时不生效——修复 ADFS 和类似 IdP
+- **修复**：服务器返回小 `Retry-After` 时 429 重试在约 13 秒内耗尽所有尝试——现在指数退避作为最低标准
+- **修复**：xterm/VS Code 集成终端在 Kitty 键盘协议激活时大写字母变小写的问题
+- **修复**：macOS 文字替换删除触发词而非插入替换文字的问题
+- **修复**：智能体团队成员未继承领导者的 `--dangerously-skip-permissions` 权限模式的问题
+- **修复**：`CLAUDE_CODE_MAX_CONTEXT_TOKENS` 现在遵循 `DISABLE_COMPACT`
+- **改进**：`/agents` 新增分标签页布局——运行中标签页显示实时子智能体，库标签页新增运行和查看操作
+- **改进**：`/resume` 过滤提示标签；过滤指示器中显示项目/工作树/分支名称
+- **改进**：接受编辑模式自动批准带安全环境变量或进程包装器前缀的文件系统命令
+- **改进**：含制表符/`&`/`$` 的大文件 Write 工具差异计算速度提升 60%
 
 ### v2.1.97 (2026-04-09)
 
-> Major bug-fix release with 30+ fixes across NO_FLICKER mode, /resume, permissions, and MCP — plus focus view toggle and status line enhancements.
+> 主要 bug 修复版本，包含 NO_FLICKER 模式、/resume、权限和 MCP 的 30+ 项修复——以及焦点视图切换和状态栏增强。
 
-- **New**: Focus view toggle (`Ctrl+O`) in NO_FLICKER mode — shows prompt, one-line tool summary with edit diffstats, and final response
-- **New**: `refreshInterval` status line setting — re-runs the status line command every N seconds
-- **New**: `workspace.git_worktree` field added to status line JSON input, populated when inside a linked git worktree
-- **New**: `● N running` indicator in `/agents` next to agent types with live subagent instances
-- **New**: Syntax highlighting for Cedar policy files (`.cedar`, `.cedarpolicy`)
-- **Fixed (permissions)**: `--dangerously-skip-permissions` silently downgraded to accept-edits mode after approving a write to a protected path
-- **Fixed (permissions)**: Permission rules with names matching JS prototype properties (e.g. `toString`) causing `settings.json` to be silently ignored
-- **Fixed (permissions)**: Managed-settings allow rules remaining active after admin removal until process restart
-- **Fixed (permissions)**: `permissions.additionalDirectories` changes not applying mid-session; removing a dir now correctly revokes access without affecting `--add-dir` entries
-- **Fixed (MCP)**: HTTP/SSE connections accumulating ~50 MB/hr of unreleased buffers on reconnect
-- **Fixed (MCP)**: OAuth `oauth.authServerMetadataUrl` not honored on token refresh after restart — fixes ADFS and similar IdPs
-- **Fixed (rate limits)**: 429 retries burning all attempts in ~13 s when server returns small `Retry-After` — exponential backoff now applies as minimum
-- **Fixed (rate limits)**: Rate-limit upgrade options disappearing after context compaction
-- **Fixed (/resume)**: 6 fixes — `--resume <name>` opened uneditable, Ctrl+A wiped search, empty list swallowed navigation, task-status replaced conversation summary, cross-project staleness, file-edit diffs disappearing for files >10 KB
-- **Fixed (transcript)**: `--resume` cache misses from attachment messages not saved; messages typed during Claude's response not persisted
-- **Fixed (hooks)**: `Stop`/`SubagentStop` hooks failing on long sessions; hook evaluator API errors showing "JSON validation failed" instead of actual message
-- **Fixed (subagents)**: Worktree isolation / `cwd:` override leaking working directory back to parent Bash tool
-- **Fixed (compaction)**: Duplicate multi-MB subagent transcript files on prompt-too-long retries
-- **Fixed (plugins)**: `claude plugin update` reporting "already at latest" for git-based marketplace plugins with newer remote commits; slash command picker breaking when plugin frontmatter `name` is a YAML boolean keyword
-- **Fixed (NO_FLICKER, 15 fixes)**: Wrapped URL spaces, zellij scroll artifacts, MCP result hover crash, API retry memory leak, slow Windows Terminal mouse-wheel, custom status line hidden on terminals <24 rows, Shift+Enter/Alt+arrow in Warp, CJK text garbled on Windows copy, footer indicator wrapping, blockquote left bar across wrapped lines, transient context-low notification
-- **Fixed (Bedrock)**: SigV4 auth failing when `AWS_BEARER_TOKEN_BEDROCK` / `ANTHROPIC_BEDROCK_BASE_URL` set to empty strings (as GitHub Actions does for unset inputs)
-- **Improved**: Accept Edits mode auto-approves filesystem commands prefixed with safe env vars or process wrappers (e.g. `LANG=C rm foo`, `timeout 5 mkdir out`)
-- **Improved**: Auto mode and bypass-permissions mode auto-approve sandbox network access prompts; `sandbox.network.allowMachLookup` now takes effect on macOS
-- **Improved**: Pasted and attached images compressed to same token budget as Read tool images
-- **Improved**: Slash command and `@`-mention completion now triggers after CJK sentence punctuation — Japanese/Chinese input no longer requires a space before `/` or `@`
-- **Improved**: Bridge sessions show local git repo, branch, and working directory on the claude.ai session card
-- **Improved**: Session transcript size reduced by skipping empty hook entries and capping stored pre-edit file copies; per-block entries now carry final token usage
-- **Updated**: `/claude-api` skill covers Managed Agents alongside the Claude API
+- **新增**：NO_FLICKER 模式中的焦点视图切换（`Ctrl+O`）——显示提示、带编辑差异统计的单行工具摘要和最终响应
+- **新增**：`refreshInterval` 状态栏设置——每 N 秒重新运行状态栏命令
+- **新增**：状态栏 JSON 输入新增 `workspace.git_worktree` 字段——在链接的 git 工作树内时填充
+- **新增**：`/agents` 中在有实时子智能体实例的智能体类型旁显示 `● N 运行中` 指示器
+- **新增**：Cedar 策略文件（`.cedar`、`.cedarpolicy`）的语法高亮
+- **修复（权限）**：批准受保护路径的写入后 `--dangerously-skip-permissions` 静默降级为接受编辑模式的问题
+- **修复（权限）**：权限规则名称与 JS 原型属性匹配（如 `toString`）导致 `settings.json` 被静默忽略的问题
+- **修复（权限）**：管理员删除后托管设置允许规则在进程重启前仍保持活跃的问题
+- **修复（权限）**：`permissions.additionalDirectories` 变更未在会话中途生效；删除目录现在正确撤销访问而不影响 `--add-dir` 条目
+- **修复（MCP）**：HTTP/SSE 连接在重新连接时每小时积累约 50 MB 未释放缓冲区的问题
+- **修复（MCP）**：重启后令牌刷新时 OAuth `oauth.authServerMetadataUrl` 不生效——修复 ADFS 和类似 IdP
+- **修复（速率限制）**：服务器返回小 `Retry-After` 时 429 重试在约 13 秒内耗尽所有尝试——现在指数退避作为最低标准
+- **修复（速率限制）**：上下文压缩后速率限制升级选项消失的问题
+- **修复（/resume）**：6 项修复——`--resume <name>` 打开后无法编辑、Ctrl+A 清空搜索、空列表吞掉导航、任务状态替换会话摘要、跨项目过时、超过 10KB 的文件编辑差异消失
+- **修复（记录）**：附件消息未保存导致 `--resume` 缓存未命中；Claude 响应期间输入的消息未持久化
+- **修复（钩子）**：`Stop`/`SubagentStop` 钩子在长会话中失败；钩子评估器 API 错误显示"JSON 验证失败"而非实际消息
+- **修复（子智能体）**：工作树隔离/`cwd:` 覆盖将工作目录泄漏回父 Bash 工具的问题
+- **修复（压缩）**：提示过长重试时产生重复的多 MB 子智能体记录文件的问题
+- **修复（插件）**：`claude plugin update` 对有更新远程提交的基于 git 的市场插件报告"已是最新"；插件 frontmatter `name` 为 YAML 布尔关键字时斜杠命令选择器损坏
+- **修复（NO_FLICKER，15 项修复）**：折行 URL 空格、zellij 滚动残影、MCP 结果悬停崩溃、API 重试内存泄漏、Windows Terminal 鼠标滚轮响应慢、终端不足 24 行时自定义状态栏隐藏、Warp 中 Shift+Enter/Alt+方向键、Windows 复制 CJK 文字乱码、页脚指示器折行、块引用左侧边栏跨折行、短暂的上下文不足通知
+- **修复（Bedrock）**：`AWS_BEARER_TOKEN_BEDROCK` / `ANTHROPIC_BEDROCK_BASE_URL` 设为空字符串时（GitHub Actions 对未设置输入的处理方式）SigV4 认证失败的问题
+- **改进**：接受编辑模式自动批准带安全环境变量或进程包装器前缀的文件系统命令（如 `LANG=C rm foo`、`timeout 5 mkdir out`）
+- **改进**：自动模式和绕过权限模式自动批准沙箱网络访问提示；`sandbox.network.allowMachLookup` 现在在 macOS 上生效
+- **改进**：粘贴和附加的图片压缩至与 Read 工具图片相同的 Token 预算
+- **改进**：斜杠命令和 `@` 提及补全现在在 CJK 句子标点后触发——日语/中文输入不再需要在 `/` 或 `@` 前加空格
+- **改进**：Bridge 会话在 claude.ai 会话卡片上显示本地 git 仓库、分支和工作目录
+- **改进**：跳过空钩子条目并限制存储的编辑前文件副本，会话记录大小减少；每条块条目现在携带最终 Token 用量
+- **更新**：`/claude-api` 技能涵盖 Managed Agents 以及 Claude API
 
 ---
 
 ### v2.1.96 (2026-04-08)
 
-> Hotfix release addressing a Bedrock authentication regression introduced in v2.1.94.
+> 修复 v2.1.94 中引入的 Bedrock 认证回归的热修复版本。
 
-- **Fixed**: Bedrock requests failing with `403 "Authorization header is missing"` when using `AWS_BEARER_TOKEN_BEDROCK` or `CLAUDE_CODE_SKIP_BEDROCK_AUTH` (regression from v2.1.94)
+- **修复**：使用 `AWS_BEARER_TOKEN_BEDROCK` 或 `CLAUDE_CODE_SKIP_BEDROCK_AUTH` 时 Bedrock 请求因 `403 "Authorization header is missing"` 失败的问题（v2.1.94 引入的回归）
 
 ---
 
 ### v2.1.94 (2026-04-07)
 
-> Feature release adding Amazon Bedrock Mantle support, raising the default effort level for professional users, and improving plugin skill naming.
+> 功能版本，新增 Amazon Bedrock Mantle 支持，提升专业用户默认努力等级，改进插件技能命名。
 
-- **New**: Amazon Bedrock powered by Mantle support — set `CLAUDE_CODE_USE_MANTLE=1`
-- **New**: Default effort level changed from medium to **high** for API-key, Bedrock/Vertex/Foundry, Team, and Enterprise users (control with `/effort`)
-- **New**: Plugin skills declared via `"skills": ["./"]` now use frontmatter `name` instead of directory basename — stable naming across install methods
-- **New**: Compact `Slacked #channel` header with clickable link for Slack MCP send-message tool calls
-- **New**: `keep-coding-instructions` frontmatter field support for plugin output styles
-- **New**: `hookSpecificOutput.sessionTitle` on `UserPromptSubmit` hooks for setting session title programmatically
-- **Fixed**: Agents stuck after 429 rate-limit with long Retry-After — error surfaces immediately instead of silently waiting
-- **Fixed**: Console login on macOS silently failing with "Not logged in" when login keychain is locked — error now surfaced with `claude doctor` fix guidance
-- **Fixed**: Plugin skill hooks defined in YAML frontmatter being silently ignored
-- **Fixed**: Scrollback showing duplicate diffs and blank pages in long-running sessions
+- **新增**：由 Mantle 驱动的 Amazon Bedrock 支持——设置 `CLAUDE_CODE_USE_MANTLE=1`
+- **新增**：API 密钥、Bedrock/Vertex/Foundry、团队和企业用户的默认努力等级从中等改为**高**（通过 `/effort` 控制）
+- **新增**：通过 `"skills": ["./"]` 声明的插件技能现在使用 frontmatter 的 `name` 而非目录基本名——跨安装方式的稳定命名
+- **新增**：Slack MCP 发送消息工具调用的紧凑 `Slacked #channel` 头部，带可点击链接
+- **新增**：插件输出样式的 `keep-coding-instructions` frontmatter 字段支持
+- **新增**：`UserPromptSubmit` 钩子上的 `hookSpecificOutput.sessionTitle`——通过编程方式设置会话标题
+- **修复**：智能体在长时间 `Retry-After` 的 429 速率限制后卡住——错误现在立即显示而非静默等待
+- **修复**：macOS 上控制台登录在登录密钥链锁定时静默失败并显示"未登录"——现在显示错误并附 `claude doctor` 修复指南
+- **修复**：YAML frontmatter 中定义的插件技能钩子被静默忽略的问题
+- **修复**：长时间运行会话中回滚显示重复差异和空白页的问题
 
 ---
 
 ### v2.1.92 (2026-04-04)
 
-> Feature release adding interactive Bedrock wizard, fail-closed managed settings enforcement, and /cost per-model breakdown.
+> 功能版本，新增交互式 Bedrock 向导，fail-closed 托管设置强制执行，以及 /cost 按模型细分。
 
-- **New**: Interactive Bedrock setup wizard from the login screen ("3rd-party platform") — step-by-step AWS auth, region config, credential verification, and model pinning
-- **New**: `forceRemoteSettingsRefresh` policy setting — blocks CLI startup until managed settings are freshly fetched, exits with error if fetch fails (fail-closed enforcement)
-- **New**: Per-model and cache-hit cost breakdown in `/cost` for subscription users
-- **New**: `/release-notes` is now an interactive version picker
-- **New**: Remote Control session names use hostname as default prefix (e.g. `myhost-graceful-unicorn`), overridable with `--remote-control-session-name-prefix`
-- **New**: Pro users see a footer hint when returning after prompt cache expiry, estimating uncached tokens for next turn
-- **Fixed**: Subagent spawning permanently failing with "Could not determine pane count" after tmux windows are killed or renumbered
-- **Fixed**: API 400 error when extended thinking produced a whitespace-only text block alongside real content
-- **Fixed**: Linux sandbox `apply-seccomp` helper now shipped in both npm and native builds — restores unix-socket blocking for sandboxed commands
-- **Improved**: Write tool diff computation 60% faster for large files with tabs/`&`/`$`
-- **Removed**: `/tag` command
-- **Removed**: `/vim` command — toggle vim mode via `/config` → Editor mode
+- **新增**：登录界面的交互式 Bedrock 设置向导（"第三方平台"）——逐步引导 AWS 认证、区域配置、凭据验证和模型固定
+- **新增**：`forceRemoteSettingsRefresh` 策略设置——阻止 CLI 启动直到托管设置新鲜获取；获取失败时以错误退出（fail-closed 强制执行）
+- **新增**：`/cost` 中订阅用户的按模型和缓存命中成本细分
+- **新增**：`/release-notes` 现在是交互式版本选择器
+- **新增**：远程控制会话名称使用主机名作为默认前缀（如 `myhost-graceful-unicorn`），可通过 `--remote-control-session-name-prefix` 覆盖
+- **新增**：Pro 用户在提示缓存过期后返回时看到页脚提示，估算下一轮的未缓存 Token
+- **修复**：tmux 窗口被杀死或重新编号后子智能体生成永久失败并报"Could not determine pane count"的问题
+- **修复**：扩展 thinking 在实际内容旁产生纯空白文本块时的 API 400 错误
+- **修复**：Linux 沙箱 `apply-seccomp` 辅助工具现在随 npm 和原生构建一同提供——恢复沙箱命令的 unix 套接字阻断
+- **改进**：含制表符/`&`/`$` 的大文件 Write 工具差异计算速度提升 60%
+- **已移除**：`/tag` 命令
+- **已移除**：`/vim` 命令——通过 `/config` → 编辑器模式切换 Vim 模式
 
 ---
 
 ### v2.1.91 (2026-04-03)
 
-> Maintenance release with MCP result size override, plugin executable support, and Edit tool token reduction.
+> 维护版本，新增 MCP 结果大小覆盖、插件可执行文件支持和 Edit 工具 Token 减少。
 
-- **New**: MCP tool result size override via `_meta["anthropic/maxResultSizeChars"]` annotation (up to 500K) — large DB schemas and API payloads pass through without truncation
-- **New**: `disableSkillShellExecution` setting — disable inline shell execution in skills, slash commands, and plugin commands
-- **New**: Plugins can ship executables under `bin/` for direct Bash tool invocation without full path
-- **New**: Multi-line prompts now supported in `claude-cli://open?q=` deep links (`%0A` encoded newlines accepted)
-- **Fixed**: `--resume` losing conversation history when async transcript writes fail silently
-- **Fixed**: `cmd+delete` not deleting to start of line in iTerm2, Kitty, WezTerm, Ghostty, Windows Terminal
-- **Fixed**: Plan mode in remote sessions losing track of plan file after container restart
-- **Fixed**: JSON schema validation for `permissions.defaultMode: "auto"` in settings.json
-- **Improved**: Edit tool uses shorter `old_string` anchors — reduces output tokens
-- **Improved**: `/claude-api` skill guidance expanded with agent design patterns (tool surface decisions, context management, caching strategy)
-- **Improved**: `stripAnsi` ~2x faster on Bun via `Bun.stripANSI`
+- **新增**：通过 `_meta["anthropic/maxResultSizeChars"]` 注解覆盖 MCP 工具结果大小（最多 500K）——大型数据库 schema 和 API 载荷无需截断即可传递
+- **新增**：`disableSkillShellExecution` 设置——禁用技能、斜杠命令和插件命令中的内联 Shell 执行
+- **新增**：插件可在 `bin/` 下提供可执行文件，供 Bash 工具无需完整路径直接调用
+- **新增**：`claude-cli://open?q=` 深链接现在支持多行提示（接受 `%0A` 编码的换行符）
+- **修复**：`--resume` 在异步记录写入静默失败时丢失会话历史的问题
+- **修复**：iTerm2、Kitty、WezTerm、Ghostty、Windows Terminal 中 `cmd+delete` 不删除到行首的问题
+- **修复**：远程会话中计划模式在容器重启后丢失计划文件追踪的问题
+- **修复**：`settings.json` 中 `permissions.defaultMode: "auto"` 的 JSON schema 验证问题
+- **改进**：Edit 工具使用更短的 `old_string` 锚点——减少输出 Token
+- **改进**：`/claude-api` 技能指导扩展，加入智能体设计模式（工具界面决策、上下文管理、缓存策略）
+- **改进**：通过 `Bun.stripANSI`，`stripAnsi` 在 Bun 上速度提升约 2 倍
 
 ---
 
 ### v2.1.90 (2026-04-02)
 
-> Feature release adding `/powerup` interactive lessons, PowerShell tool hardening, and key performance/reliability fixes.
+> 功能版本，新增 `/powerup` 交互式课程、PowerShell 工具加固，以及关键性能/可靠性修复。
 
-- **New**: `/powerup` command — interactive animated lessons teaching Claude Code features with live terminal demos
-- **Fixed**: Infinite loop crashing sessions when rate-limit options dialog repeatedly auto-opened after hitting usage limit
-- **Fixed**: `--resume` causing full prompt-cache miss on first request for users with deferred tools, MCP servers, or custom agents (regression since v2.1.69)
-- **Fixed**: `PreToolUse` hooks that emit JSON to stdout and exit with code 2 not correctly blocking the tool call
-- **Fixed**: Collapsed search/read summary badge appearing multiple times in fullscreen scrollback during CLAUDE.md auto-load
-- **Fixed**: Auto mode not respecting explicit user boundaries ("don't push", "wait for X before Y")
-- **Fixed**: Headers disappearing when scrolling `/model`, `/config`, and other selection screens
-- **Hardened**: PowerShell tool permissions — trailing `&` background job bypass, `-ErrorAction Break` debugger hang, archive-extraction TOCTOU, parse-fail fallback deny-rule degradation
-- **Improved**: SSE transport handles large streamed frames in linear time (was quadratic)
-- **Improved**: Eliminated per-turn JSON.stringify of MCP tool schemas on cache-key lookup
-- **Improved**: `/resume` all-projects view loads project sessions in parallel
-- **Changed**: `--resume` picker no longer shows sessions created by `claude -p` or SDK invocations
+- **新增**：`/powerup` 命令——带实时终端演示的交互式动画课程，教授 Claude Code 功能
+- **修复**：触达用量限制后速率限制选项对话框反复自动打开导致无限循环崩溃会话的问题
+- **修复**：对拥有延迟工具、MCP 服务器或自定义智能体的用户，`--resume` 导致首次请求完整提示缓存未命中的问题（v2.1.69 以来的回归）
+- **修复**：输出 JSON 到 stdout 并以退出码 2 退出的 `PreToolUse` 钩子未正确阻断工具调用的问题
+- **修复**：CLAUDE.md 自动加载期间折叠的搜索/读取摘要徽章在全屏回滚中多次出现的问题
+- **修复**：自动模式不遵守用户明确边界（"不要推送"、"在 X 之前等待 Y"）的问题
+- **修复**：滚动 `/model`、`/config` 和其他选择界面时标题消失的问题
+- **加固**：PowerShell 工具权限——尾部 `&` 后台任务绕过、`-ErrorAction Break` 调试器挂起、归档提取 TOCTOU、解析失败回退拒绝规则降级
+- **改进**：SSE 传输以线性时间处理大型流式帧（原为二次方时间）
+- **改进**：消除缓存键查找时每轮对 MCP 工具 schema 的 JSON.stringify
+- **改进**：`/resume` 全项目视图并行加载项目会话
+- **变更**：`--resume` 选择器不再显示由 `claude -p` 或 SDK 调用创建的会话
 
 ---
 
 ### v2.1.89 (2026-04-01)
 
-> Large bugfix + feature release with new hook types, headless workflow improvements, and notable behavior changes.
+> 大型 bug 修复 + 功能版本，新增钩子类型、无头工作流改进和值得关注的行为变更。
 
-- **New**: `"defer"` permission decision for `PreToolUse` hooks — headless sessions can pause at a tool call and resume with `-p --resume` to re-evaluate
-- **New**: `PermissionDenied` hook — fires after auto mode classifier denials; return `{retry: true}` to let the model retry with an alternative approach
-- **New**: Named subagents now appear in `@` mention typeahead suggestions for easier invocation
-- **New**: `CLAUDE_CODE_NO_FLICKER=1` env var to opt into flicker-free alt-screen rendering with virtualized scrollback
-- **New**: `MCP_CONNECTION_NONBLOCKING=true` for `-p` mode — skips MCP connection wait; `--mcp-config` servers bounded at 5s
-- **New**: Auto mode denied commands now show a notification and appear in `/permissions` → Recent tab
-- **Changed**: Thinking summaries are no longer generated by default in interactive sessions — add `showThinkingSummaries: true` to `settings.json` to restore
-- **Improved**: `/env` now applies to PowerShell tool commands (previously only affected Bash)
-- **Improved**: PowerShell tool prompt with version-appropriate syntax guidance (5.1 vs 7+)
-- **Fixed**: `StructuredOutput` schema cache bug causing ~50% failure rate in workflows with multiple schemas
-- **Fixed**: Edit/Write tools doubling CRLF on Windows and stripping Markdown hard line breaks (two trailing spaces)
-- **Fixed**: Hooks `if` condition filtering not matching compound commands (`ls && git push`) or commands with env-var prefixes (`FOO=bar git push`)
-- **Fixed**: Prompt cache misses in long sessions caused by tool schema bytes changing mid-session
-- **Fixed**: Nested CLAUDE.md files being re-injected dozens of times in long sessions that read many files
-- **Fixed**: Memory leaks: large JSON LRU cache key retention, LSP diagnostic data, StructuredOutput cache
-- **Fixed**: Crashes: large file edits (>1 GiB), large session file removal (>50 MB), `--resume` with old tool results
-- **Fixed**: Voice mode: macOS Apple Silicon microphone permission, Windows WebSocket 101 error, modifier-combo push-to-talk
-- **Fixed**: `/stats` losing historical data beyond 30 days; `/stats` undercounting tokens from subagent/fork usage
-- **Fixed**: Scrollback disappearing when scrolling up in long sessions; rendering artifacts on main-screen terminals
-- **Fixed**: SDK error result messages (`error_during_execution`, `error_max_turns`) now correctly set `is_error: true`
-- **Fixed**: PreToolUse/PostToolUse hooks not providing `file_path` as absolute path for Write/Edit/Read tools
+- **新增**：`PreToolUse` 钩子的 `"defer"` 权限决策——无头会话可在工具调用处暂停，并通过 `-p --resume` 恢复以重新评估
+- **新增**：`PermissionDenied` 钩子——在自动模式分类器拒绝后触发；返回 `{retry: true}` 让模型用另一种方法重试
+- **新增**：命名子智能体现在出现在 `@` 提及补全建议中，便于调用
+- **新增**：`CLAUDE_CODE_NO_FLICKER=1` 环境变量——选择使用带虚拟化回滚的无闪烁备用屏幕渲染
+- **新增**：`-p` 模式的 `MCP_CONNECTION_NONBLOCKING=true`——跳过 MCP 连接等待；`--mcp-config` 服务器限制在 5 秒内
+- **新增**：自动模式拒绝的命令现在显示通知并出现在 `/permissions` → 最近标签页
+- **变更**：thinking 摘要默认不再在交互式会话中生成——在 `settings.json` 中添加 `showThinkingSummaries: true` 可恢复
+- **改进**：`/env` 现在应用于 PowerShell 工具命令（之前只影响 Bash）
+- **改进**：PowerShell 工具提示包含版本适配的语法指南（5.1 与 7+）
+- **修复**：`StructuredOutput` schema 缓存 bug——在含多个 schema 的工作流中导致约 50% 的失败率
+- **修复**：Windows 上 Edit/Write 工具 CRLF 双重处理以及 Markdown 硬换行（两个尾部空格）被去除的问题
+- **修复**：钩子 `if` 条件过滤未匹配复合命令（`ls && git push`）或带环境变量前缀的命令（`FOO=bar git push`）的问题
+- **修复**：会话中途工具 schema 字节变化导致长会话提示缓存未命中的问题
+- **修复**：读取大量文件的长会话中嵌套 CLAUDE.md 文件被重复注入数十次的问题
+- **修复**：内存泄漏：大型 JSON LRU 缓存键保留、LSP 诊断数据、StructuredOutput 缓存
+- **修复**：崩溃问题：大文件编辑（>1 GiB）、大型会话文件删除（>50 MB）、携带旧工具结果时使用 `--resume`
+- **修复**：语音模式：macOS Apple Silicon 麦克风权限、Windows WebSocket 101 错误、修饰键组合按下即说
+- **修复**：`/stats` 丢失 30 天以上历史数据；`/stats` 漏计子智能体/分支用量的 Token
+- **修复**：长会话向上滚动时回滚内容消失；主屏幕终端出现渲染异常
+- **修复**：SDK 错误结果消息（`error_during_execution`、`error_max_turns`）现已正确设置 `is_error: true`
+- **修复**：PreToolUse/PostToolUse Hooks 未将 Write/Edit/Read 工具的 `file_path` 提供为绝对路径
 
-> **Breaking**: Thinking summaries now off by default. Set `showThinkingSummaries: true` in settings.json to restore.
+> **重大变更**：思考摘要现在默认关闭。在 settings.json 中设置 `showThinkingSummaries: true` 可恢复。
 
 ---
 
 ### v2.1.87 (2026-03-30)
 
-- **Fixed**: Messages in Cowork Dispatch not getting delivered
+- **修复**：Cowork Dispatch 中的消息未能成功送达
 
 ---
 
 ### v2.1.86 (2026-03-28)
 
-- **New**: `X-Claude-Code-Session-Id` header added to API requests — proxies can aggregate requests by session without parsing the body
-- **New**: `.jj` and `.sl` added to VCS directory exclusion lists so Grep and file autocomplete don't descend into Jujutsu or Sapling metadata
-- **Improved**: Reduced token overhead when mentioning files with `@` — raw string content no longer JSON-escaped
-- **Improved**: Better prompt cache hit rate for Bedrock, Vertex, and Foundry users by removing dynamic content from tool descriptions
-- **Improved**: Read tool now uses compact line-number format and deduplicates unchanged re-reads, reducing token usage
-- **Improved**: Skill descriptions in `/skills` listing capped at 250 characters to reduce context usage; `/skills` menu now sorted alphabetically
-- **Improved**: Reduced startup event-loop stalls when many claude.ai MCP connectors are configured (macOS keychain cache extended from 5s to 30s)
-- **Fixed**: Official marketplace plugin scripts failing with "Permission denied" on macOS/Linux since v2.1.83
-- **Fixed**: `--resume` failing with "tool_use ids were found without tool_result blocks" on sessions created before v2.1.85
-- **Fixed**: Write/Edit/Read failing on files outside the project root (e.g., `~/.claude/CLAUDE.md`) when conditional skills or rules are configured
-- **Fixed**: Unnecessary config disk writes on every skill invocation — could cause performance issues and config corruption on Windows
-- **Fixed**: Potential out-of-memory crash when using `/feedback` on very long sessions with large transcript files
-- **Fixed**: `--bare` mode dropping MCP tools in interactive sessions and silently discarding messages enqueued mid-turn
-- **Fixed**: `c` shortcut copying only ~20 characters of the OAuth login URL instead of the full URL
-- **Fixed**: Masked input (e.g., OAuth code paste) leaking the start of the token when wrapping across multiple lines on narrow terminals
-- **Fixed**: Statusline showing another session's model when running multiple Claude Code instances and using `/model`
-- **Fixed**: Scroll not following new messages after wheel scroll or click-to-select at bottom of a long conversation
-- **Fixed**: `/plugin` uninstall dialog: pressing `n` now correctly uninstalls while preserving the plugin's data directory
-- **Fixed**: Regression where pressing Enter after clicking could leave the transcript blank until the response arrived
-- **Fixed**: `ultrathink` hint lingering after deleting the keyword
-- **Fixed**: Memory growth in long sessions from markdown/highlight render caches retaining full content strings
-- **Fixed (VSCode)**: Extension incorrectly showing "Not responding" during long-running operations
-- **Fixed (VSCode)**: Extension defaulting Max plan users to Sonnet after OAuth token refresh (8 hours after login)
+- **新增**：API 请求中新增 `X-Claude-Code-Session-Id` 头——代理无需解析请求体即可按会话聚合请求
+- **新增**：`.jj` 和 `.sl` 已加入 VCS 目录排除列表，Grep 和文件自动补全不会进入 Jujutsu 或 Sapling 元数据目录
+- **改进**：通过 `@` 提及文件时减少 Token 开销——原始字符串内容不再进行 JSON 转义
+- **改进**：通过从工具描述中删除动态内容，提升 Bedrock、Vertex 和 Foundry 用户的提示缓存命中率
+- **改进**：Read 工具现在使用紧凑行号格式，并对未变更的重复读取进行去重，减少 Token 用量
+- **改进**：`/skills` 列表中的技能描述上限缩减至 250 个字符以减少上下文占用；`/skills` 菜单现按字母顺序排序
+- **改进**：配置了大量 claude.ai MCP 连接器时，减少启动时的事件循环阻塞（macOS 钥匙串缓存从 5 秒延长至 30 秒）
+- **修复**：官方市场插件脚本自 v2.1.83 起在 macOS/Linux 上出现"权限被拒绝"的失败问题
+- **修复**：`--resume` 在 v2.1.85 之前创建的会话上出现"找到 tool_use id 但缺少 tool_result 块"的失败问题
+- **修复**：配置了条件技能或规则时，Write/Edit/Read 在项目根目录之外的文件（如 `~/.claude/CLAUDE.md`）上失败的问题
+- **修复**：每次调用技能时对配置进行不必要的磁盘写入——可能导致 Windows 上的性能问题和配置损坏
+- **修复**：在含有大型转录文件的超长会话上使用 `/feedback` 时可能发生的内存溢出崩溃
+- **修复**：`--bare` 模式在交互式会话中丢弃 MCP 工具，以及静默丢弃轮次中途排队的消息
+- **修复**：`c` 快捷键仅复制 OAuth 登录 URL 的约 20 个字符而非完整 URL
+- **修复**：遮罩输入（如 OAuth 代码粘贴）在窄终端换行时泄漏 Token 开头内容
+- **修复**：运行多个 Claude Code 实例并使用 `/model` 时，状态栏显示其他会话的模型
+- **修复**：在长对话底部进行滚轮滚动或点击选择后，滚动不再跟随新消息
+- **修复**：`/plugin` 卸载对话框：按 `n` 现可正确卸载同时保留插件数据目录
+- **修复**：点击后按 Enter 可能导致转录内容空白直到响应到达的回归问题
+- **修复**：删除关键词后 `ultrathink` 提示残留的问题
+- **修复**：长会话中因 Markdown/高亮渲染缓存保留完整内容字符串导致的内存增长
+- **修复（VSCode）**：扩展在长时间运行操作期间错误显示"无响应"
+- **修复（VSCode）**：OAuth Token 刷新后（登录 8 小时后），扩展将 Max 计划用户默认切换至 Sonnet
 
 ### v2.1.85 (2026-03-27)
 
-- **New**: Conditional `if` field for hooks — filter when hooks run using permission rule syntax (e.g., `Bash(git *)`) to reduce unnecessary process spawning overhead
-- **New**: `CLAUDE_CODE_MCP_SERVER_NAME` and `CLAUDE_CODE_MCP_SERVER_URL` env vars for MCP `headersHelper` scripts, allowing one helper script to serve multiple MCP servers
-- **New**: PreToolUse hooks can now satisfy `AskUserQuestion` by returning `updatedInput` alongside `permissionDecision: "allow"` — enables headless integrations to collect answers via their own UI
-- **New**: Timestamp markers in transcripts when scheduled tasks (`/loop`, `CronCreate`) fire
-- **New**: Deep link queries (`claude-cli://open?q=…`) now support up to 5,000 characters with a "scroll to review" warning for long pre-filled prompts
-- **New**: MCP OAuth now follows RFC 9728 Protected Resource Metadata discovery to find the authorization server
-- **New**: Plugins blocked by organization policy (`managed-settings.json`) are now hidden from marketplace views and cannot be installed/enabled
-- **New**: `tool_parameters` in OpenTelemetry `tool_result` events are now gated behind `OTEL_LOG_TOOL_DETAILS=1`
-- **Improved**: Scroll performance with large transcripts — WASM yoga-layout replaced with pure TypeScript implementation
-- **Improved**: `@`-mention file autocomplete performance on large repositories
-- **Improved**: PowerShell dangerous command detection
-- **Fixed**: `/compact` failing with "context exceeded" when the conversation itself was too large for the compact request to fit
-- **Fixed**: `deniedMcpServers` setting not blocking claude.ai MCP servers
-- **Fixed**: Terminal left in enhanced keyboard mode after exit in Ghostty, Kitty, WezTerm — Ctrl+C and Ctrl+D now work correctly after quitting
-- **Fixed**: `--worktree` exiting with an error in non-git repositories before the `WorktreeCreate` hook could run
-- **Fixed**: MCP step-up authorization failing when a refresh token exists (servers requesting elevated scopes via `403 insufficient_scope`)
-- **Fixed**: Prompts getting stuck in queue after running certain slash commands (up-arrow unable to retrieve them)
-- **Fixed**: Raw key sequences appearing in prompt when running over SSH or in VS Code integrated terminal
-- **Fixed**: `shift+enter` and `meta+enter` being intercepted by typeahead suggestions instead of inserting newlines
-- **Fixed**: Remote Control session status stuck on "Requires Action" after a permission is resolved
-- **Fixed**: Memory leak in remote sessions when a streaming response is interrupted
-- **Fixed**: Python Agent SDK: `type:'sdk'` MCP servers passed via `--mcp-config` no longer dropped during startup
-- **Fixed**: Crash when `OTEL_LOGS_EXPORTER`, `OTEL_METRICS_EXPORTER`, or `OTEL_TRACES_EXPORTER` is set to `none`
-- **Fixed**: Diff syntax highlighting not working in non-native builds
-- **Fixed**: Stale content bleeding through when scrolling up during streaming
+- **新增**：Hooks 的条件 `if` 字段——使用权限规则语法（如 `Bash(git *)`）过滤 Hooks 触发时机，减少不必要的进程生成开销
+- **新增**：`CLAUDE_CODE_MCP_SERVER_NAME` 和 `CLAUDE_CODE_MCP_SERVER_URL` 环境变量用于 MCP `headersHelper` 脚本，允许一个辅助脚本服务多个 MCP 服务器
+- **新增**：PreToolUse Hooks 现在可通过同时返回 `updatedInput` 和 `permissionDecision: "allow"` 来满足 `AskUserQuestion`——使无头集成能通过自己的 UI 收集答案
+- **新增**：计划任务（`/loop`、`CronCreate`）触发时在转录中添加时间戳标记
+- **新增**：深链接查询（`claude-cli://open?q=…`）现支持最多 5,000 个字符，对较长的预填提示显示"滚动查看"警告
+- **新增**：MCP OAuth 现遵循 RFC 9728 受保护资源元数据发现来查找授权服务器
+- **新增**：被组织策略（`managed-settings.json`）屏蔽的插件现在在市场视图中隐藏，且无法安装/启用
+- **新增**：OpenTelemetry `tool_result` 事件中的 `tool_parameters` 现在由 `OTEL_LOG_TOOL_DETAILS=1` 控制
+- **改进**：大型转录的滚动性能——WASM yoga-layout 替换为纯 TypeScript 实现
+- **改进**：大型仓库中 `@` 文件自动补全的性能
+- **改进**：PowerShell 危险命令检测
+- **修复**：当对话本身过大导致压缩请求无法容纳时，`/compact` 失败并报"上下文超限"
+- **修复**：`deniedMcpServers` 设置未能屏蔽 claude.ai MCP 服务器
+- **修复**：在 Ghostty、Kitty、WezTerm 中退出后终端仍处于增强键盘模式——退出后 Ctrl+C 和 Ctrl+D 现已正常工作
+- **修复**：在非 git 仓库中使用 `--worktree` 时，在 `WorktreeCreate` Hook 运行前即报错退出
+- **修复**：存在刷新 Token 时 MCP 逐步授权失败（服务器通过 `403 insufficient_scope` 请求更高权限）
+- **修复**：运行某些斜杠命令后提示卡在队列中（上箭头无法检索）
+- **修复**：通过 SSH 或在 VS Code 集成终端中运行时，提示框中出现原始键序列
+- **修复**：`shift+enter` 和 `meta+enter` 被预输入建议拦截而非插入换行
+- **修复**：Remote Control 会话状态在权限解决后仍停留在"需要操作"
+- **修复**：远程会话中流式响应中断时的内存泄漏
+- **修复**：Python Agent SDK：通过 `--mcp-config` 传入的 `type:'sdk'` MCP 服务器不再在启动时被丢弃
+- **修复**：将 `OTEL_LOGS_EXPORTER`、`OTEL_METRICS_EXPORTER` 或 `OTEL_TRACES_EXPORTER` 设置为 `none` 时崩溃
+- **修复**：非原生构建中差异语法高亮不生效
+- **修复**：流式传输期间向上滚动时出现旧内容渗透
 
 ### v2.1.84 (2026-03-26)
 
-- **New**: PowerShell tool for Windows (opt-in preview) — direct PowerShell access alongside Bash tool. Learn more at https://code.claude.com/docs/en/tools-reference#powershell-tool
-- **New**: `TaskCreated` hook fires when a task is created via `TaskCreate`
-- **New**: `WorktreeCreate` hook now supports `type: "http"` — return the created worktree path via `hookSpecificOutput.worktreePath` in the response JSON
-- **New**: `allowedChannelPlugins` managed setting for team/enterprise admins to define a channel plugin allowlist
-- **New**: `ANTHROPIC_DEFAULT_{OPUS,SONNET,HAIKU}_MODEL_SUPPORTS` env vars to override effort/thinking capability detection for pinned models on Bedrock, Vertex, Foundry; `_MODEL_NAME`/`_DESCRIPTION` to customize the `/model` picker label
-- **New**: `CLAUDE_STREAM_IDLE_TIMEOUT_MS` env var to configure the streaming idle watchdog threshold (default 90s)
-- **New**: Idle-return prompt nudging users back after 75+ minutes to `/clear`, reducing unnecessary token re-caching on stale sessions
-- **New**: Deep links (`claude-cli://`) now open in your preferred terminal instead of whichever terminal is detected first
-- **New**: `x-client-request-id` header added to API requests for debugging timeouts
-- **New**: Rules and skills `paths:` frontmatter now accepts a YAML list of globs
-- **New**: MCP tool descriptions and server instructions capped at 2KB to prevent OpenAPI-generated servers from bloating context
-- **New**: `ANTHROPIC_CUSTOM_MODEL_OPTION` env var to add a custom entry to the `/model` picker
-- **New**: Managed settings can now be set via macOS plist or Windows Registry
-- **Improved**: Global system-prompt caching now works when `ToolSearch` is enabled, including for users with many MCP tools
-- **Improved**: Better dangerous-removal detection for Windows drive roots (`C:\`, `C:\Windows`, etc.)
-- **Improved**: Interactive startup ~30ms faster (parallel `setup()` with slash command/agent loading)
-- **Improved**: Stats screenshot (Ctrl+S in `/stats`) now works in all builds and is 16x faster
-- **Improved**: p90 prompt cache hit rate improved
-- **Fixed**: `ANTHROPIC_BETAS` environment variable being silently ignored when using Haiku models
-- **Fixed**: Startup performance issue on partial clone repositories (Scalar/GVFS) that triggered mass blob downloads
-- **Fixed**: Spurious "Not logged in" errors on macOS caused by transient keychain read failures
-- **Fixed**: Cold-start race where core tools could be deferred without their bypass active (Edit/Write failing with InputValidationError)
-- **Fixed**: Native terminal cursor not tracking input caret (IME composition for CJK now renders inline)
-- **Fixed**: Workflow subagents failing with API 400 when outer session uses `--json-schema` and subagent also specifies a schema
-- **Fixed**: Hang when generating attachment snippets for large edited files; MCP tool/resource cache leak on reconnect
-- **Fixed**: Voice push-to-talk leaking characters into text input; transcripts now insert at correct position
-- **Fixed**: `Ctrl+U` (kill-to-line-start) being a no-op at line boundaries in multiline input
-- **Fixed**: Null-unbinding a default chord binding still entering chord-wait mode instead of freeing the prefix key
-- **Changed**: Issue/PR references only become clickable links when written as `owner/repo#123` — bare `#123` no longer auto-linked
-- **Changed**: Slash commands unavailable for current auth setup (`/voice`, `/mobile`, `/chrome`, `/upgrade`, etc.) are now hidden instead of shown
-- **VSCode**: Added rate limit warning banner with usage percentage and reset time
-- **VSCode**: Fixed Windows PATH inheritance for Bash tool regression (regression from v2.1.78 fix)
+- **新增**：Windows 的 PowerShell 工具（可选预览）——在 Bash 工具之外提供直接 PowerShell 访问。详见 https://code.claude.com/docs/en/tools-reference#powershell-tool
+- **新增**：通过 `TaskCreate` 创建任务时触发 `TaskCreated` Hook
+- **新增**：`WorktreeCreate` Hook 现支持 `type: "http"`——通过响应 JSON 中的 `hookSpecificOutput.worktreePath` 返回创建的工作树路径
+- **新增**：面向团队/企业管理员的 `allowedChannelPlugins` 托管设置，用于定义频道插件白名单
+- **新增**：`ANTHROPIC_DEFAULT_{OPUS,SONNET,HAIKU}_MODEL_SUPPORTS` 环境变量，用于覆盖 Bedrock、Vertex、Foundry 上固定模型的效能/思考能力检测；`_MODEL_NAME`/`_DESCRIPTION` 可自定义 `/model` 选择器标签
+- **新增**：`CLAUDE_STREAM_IDLE_TIMEOUT_MS` 环境变量，用于配置流式空闲看门狗阈值（默认 90 秒）
+- **新增**：空闲返回提示——75 分钟以上不活动后提示用户使用 `/clear`，减少旧会话不必要的 Token 重新缓存
+- **新增**：深链接（`claude-cli://`）现在在您偏好的终端中打开，而不是首先检测到的终端
+- **新增**：API 请求中新增 `x-client-request-id` 头用于调试超时问题
+- **新增**：规则和技能的 `paths:` 前置元数据现在接受 YAML glob 列表
+- **新增**：MCP 工具描述和服务器指令上限设为 2KB，防止 OpenAPI 生成的服务器膨胀上下文
+- **新增**：`ANTHROPIC_CUSTOM_MODEL_OPTION` 环境变量，用于向 `/model` 选择器添加自定义条目
+- **新增**：托管设置现可通过 macOS plist 或 Windows 注册表进行配置
+- **改进**：启用 `ToolSearch` 时（包括拥有大量 MCP 工具的用户），全局系统提示缓存现已生效
+- **改进**：改进对 Windows 驱动器根目录（`C:\`、`C:\Windows` 等）的危险删除操作检测
+- **改进**：交互式启动约快 30 毫秒（斜杠命令/智能体加载并行 `setup()`）
+- **改进**：统计截图（在 `/stats` 中按 Ctrl+S）现在适用于所有构建版本，速度提升 16 倍
+- **改进**：p90 提示缓存命中率提升
+- **修复**：使用 Haiku 模型时 `ANTHROPIC_BETAS` 环境变量被静默忽略
+- **修复**：部分克隆仓库（Scalar/GVFS）上的启动性能问题，该问题会触发大量 blob 下载
+- **修复**：macOS 上由 keychain 读取偶发失败引起的"未登录"误报错误
+- **修复**：冷启动竞争条件，导致核心工具可能在未激活绕过的情况下被延迟加载（Edit/Write 出现 InputValidationError）
+- **修复**：原生终端光标未跟踪输入插入符（CJK 的 IME 输入法合成现已内联渲染）
+- **修复**：外层会话使用 `--json-schema` 且子智能体也指定 schema 时，工作流子智能体出现 API 400 错误
+- **修复**：为大型已编辑文件生成附件片段时挂起；MCP 工具/资源缓存在重连时泄漏
+- **修复**：语音按下即说泄漏字符到文本输入；转录现在在正确位置插入
+- **修复**：`Ctrl+U`（删除到行首）在多行输入中的行边界处无效
+- **修复**：对默认和弦绑定进行 null 解绑后仍进入和弦等待模式而非释放前缀键
+- **变更**：Issue/PR 引用仅在写作 `owner/repo#123` 格式时才变为可点击链接——单独的 `#123` 不再自动链接
+- **变更**：当前身份验证设置下不可用的斜杠命令（`/voice`、`/mobile`、`/chrome`、`/upgrade` 等）现在隐藏而非显示
+- **VSCode**：新增带使用百分比和重置时间的速率限制警告横幅
+- **VSCode**：修复 Bash 工具的 Windows PATH 继承回归问题（v2.1.78 修复引入的回归）
 
 ### v2.1.83 (2026-03-25)
 
-- **New**: `managed-settings.d/` drop-in directory alongside `managed-settings.json` — separate teams can deploy independent policy fragments that merge alphabetically
-- **New**: `CwdChanged` and `FileChanged` hook events for reactive environment management (e.g., direnv, auto-toolchain switching)
-- **New**: `sandbox.failIfUnavailable` setting — exits with an error when sandbox is enabled but cannot start, instead of running unsandboxed
-- **New**: `disableDeepLinkRegistration` setting to prevent `claude-cli://` protocol handler registration
-- **New**: `CLAUDE_CODE_SUBPROCESS_ENV_SCRUB=1` strips Anthropic and cloud provider credentials from Bash tool, hooks, and MCP stdio server subprocess environments
-- **New**: Transcript search — press `/` in transcript mode (Ctrl+O) to search, `n`/`N` to step through matches
-- **New**: `Ctrl+X Ctrl+E` as an alias for opening the external editor (readline-native binding; `Ctrl+G` still works)
-- **New**: Pasted images now insert an `[Image #N]` chip at cursor for positional referencing in prompts
-- **New**: Agents can declare `initialPrompt` in frontmatter to auto-submit a first turn
-- **New**: `chat:killAgents` and `chat:fastMode` are now rebindable via `~/.claude/keybindings.json`
-- **Security**: Fixed `--mcp-config` CLI flag bypassing `allowedMcpServers`/`deniedMcpServers` managed policy enforcement
-- **Fixed**: Claude Code hanging on exit on macOS
-- **Fixed**: Screen flashing blank after being idle for a few seconds
-- **Fixed**: Mouse tracking escape sequences leaking to shell prompt after exit
-- **Fixed**: Background subagents becoming invisible after context compaction (could cause duplicate agents)
-- **Fixed**: `--mcp-config` CLI flag bypassing `allowedMcpServers`/`deniedMcpServers` managed policy
-- **Fixed**: Native modules not loading on Amazon Linux 2 and glibc 2.26 systems; Linux sandbox failing with "ripgrep not found"
-- **Fixed**: Sessions with `saved_hook_context` causing startup performance issues
-- **Fixed**: Conditional `.claude/rules/*.md` and nested CLAUDE.md files not loading in print mode
-- **Fixed**: Agents from `.claude/agents/` not discovered in git worktrees (now loads from main repo)
-- **Improved**: `WebFetch` identifies as `Claude-User` in requests; binary content (PDFs, audio) saved to disk with correct extension
-- **Improved**: Reduced scrollback resets from once per turn to once per ~50 messages
-- **Improved**: Increased non-streaming fallback token cap (21k → 64k) and timeout (120s → 300s)
-- **Changed**: "Stop all background agents" keybinding moved from `Ctrl+F` to `Ctrl+X Ctrl+K`
+- **新增**：`managed-settings.json` 旁边的 `managed-settings.d/` 插件目录——不同团队可以部署独立的策略片段，按字母顺序合并
+- **新增**：`CwdChanged` 和 `FileChanged` Hook 事件，用于响应式环境管理（如 direnv、自动工具链切换）
+- **新增**：`sandbox.failIfUnavailable` 设置——沙盒已启用但无法启动时报错退出，而非以无沙盒模式运行
+- **新增**：`disableDeepLinkRegistration` 设置，用于阻止 `claude-cli://` 协议处理程序注册
+- **新增**：`CLAUDE_CODE_SUBPROCESS_ENV_SCRUB=1` 可从 Bash 工具、Hooks 和 MCP stdio 服务器子进程环境中清除 Anthropic 和云提供商凭证
+- **新增**：转录搜索——在转录模式（Ctrl+O）中按 `/` 搜索，按 `n`/`N` 逐条跳转
+- **新增**：`Ctrl+X Ctrl+E` 作为打开外部编辑器的别名（readline 原生绑定；`Ctrl+G` 仍可用）
+- **新增**：粘贴的图片现在在光标处插入 `[Image #N]` 标签，用于在提示中进行位置引用
+- **新增**：智能体可在前置元数据中声明 `initialPrompt` 以自动提交第一轮
+- **新增**：`chat:killAgents` 和 `chat:fastMode` 现可通过 `~/.claude/keybindings.json` 重新绑定
+- **安全**：修复 `--mcp-config` CLI 标志绕过 `allowedMcpServers`/`deniedMcpServers` 托管策略的问题
+- **修复**：Claude Code 在 macOS 上退出时挂起
+- **修复**：空闲几秒后屏幕闪烁变白
+- **修复**：退出后鼠标追踪转义序列泄漏到 shell 提示符
+- **修复**：上下文压缩后后台子智能体变得不可见（可能导致智能体重复）
+- **修复**：`--mcp-config` CLI 标志绕过 `allowedMcpServers`/`deniedMcpServers` 托管策略
+- **修复**：Amazon Linux 2 和 glibc 2.26 系统上原生模块无法加载；Linux 沙盒出现"找不到 ripgrep"错误
+- **修复**：含有 `saved_hook_context` 的会话导致启动性能问题
+- **修复**：打印模式下条件 `.claude/rules/*.md` 和嵌套 CLAUDE.md 文件无法加载
+- **修复**：`.claude/agents/` 中的智能体在 git 工作树中无法发现（现在从主仓库加载）
+- **改进**：`WebFetch` 在请求中标识为 `Claude-User`；二进制内容（PDF、音频）以正确扩展名保存到磁盘
+- **改进**：将回滚重置从每轮一次减少到每约 50 条消息一次
+- **改进**：非流式回退 Token 上限提升（21k → 64k），超时时间延长（120s → 300s）
+- **变更**："停止所有后台智能体"快捷键从 `Ctrl+F` 移至 `Ctrl+X Ctrl+K`
 
 ### v2.1.81 (2026-03-22)
 
-- **New**: `--bare` flag for scripted `-p` calls — skips hooks, LSP, plugin sync, and skill directory walks; requires `ANTHROPIC_API_KEY` or `apiKeyHelper` via `--settings` (OAuth and keychain auth disabled); auto-memory fully disabled
-- **New**: `--channels` permission relay — channel servers that declare the permission capability can now forward tool approval prompts to your phone
-- **Changed**: Plan mode hides the "clear context" option by default (restore with `"showClearContextOnPlanAccept": true` in settings)
-- **Improved**: MCP read/search tool calls collapse into a single "Queried {server}" line (expand with Ctrl+O)
-- **Improved**: `!` bash mode discoverability — Claude now suggests it when you need to run an interactive command
-- **Improved**: Plugin freshness — ref-tracked plugins re-clone on every load to pick up upstream changes
-- **Improved**: Remote Control session titles refresh after your third message; `/rename` now syncs title for RC sessions
-- **Improved**: MCP OAuth updated to support Client ID Metadata Document (CIMD / SEP-991) for servers without Dynamic Client Registration
-- **Fixed**: Resuming a worktree session now switches back to that worktree automatically
-- **Fixed**: Multiple concurrent sessions requiring repeated re-authentication when one session refreshes its OAuth token
-- **Fixed**: Voice mode silently swallowing retry failures with misleading "check your network" message; voice audio not recovering when server silently drops WebSocket
-- **Fixed**: `CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS` not suppressing the structured-outputs beta header (caused 400 errors on Vertex/Bedrock proxies)
-- **Fixed**: Race condition where background agent task output could hang indefinitely when task completed between polling intervals
-- **Fixed**: `/btw` not including pasted text when used during an active response
-- **Fixed**: Plugin hooks blocking prompt submission when plugin directory is deleted mid-session
-- **Fixed**: Remote Control `/exit` not reliably archiving the session
-- **Fixed**: Node.js 18 crash
-- **Fixed**: Unnecessary permission prompts for Bash commands containing dashes in strings
-- **Disabled**: Line-by-line response streaming on Windows (including WSL in Windows Terminal) due to rendering issues
-- **VSCode**: Fixed Windows PATH inheritance for Bash tool when using Git Bash (regression in v2.1.78)
+- **新增**：`--bare` 标志用于脚本化 `-p` 调用——跳过 Hooks、LSP、插件同步和技能目录遍历；需要通过 `--settings` 提供 `ANTHROPIC_API_KEY` 或 `apiKeyHelper`（OAuth 和钥匙串身份验证已禁用）；自动记忆完全禁用
+- **新增**：`--channels` 权限中继——声明了权限功能的频道服务器现在可以将工具审批提示转发到您的手机
+- **变更**：计划模式默认隐藏"清除上下文"选项（在 settings 中设置 `"showClearContextOnPlanAccept": true` 可恢复）
+- **改进**：MCP 读取/搜索工具调用折叠为单行"已查询 {server}"（可用 Ctrl+O 展开）
+- **改进**：`!` bash 模式可发现性——Claude 现在会在您需要运行交互式命令时建议使用它
+- **改进**：插件新鲜度——ref 追踪的插件每次加载时重新克隆以获取上游变更
+- **改进**：Remote Control 会话标题在第三条消息后刷新；`/rename` 现在同步 RC 会话的标题
+- **改进**：MCP OAuth 更新，支持客户端 ID 元数据文档（CIMD / SEP-991），适用于不支持动态客户端注册的服务器
+- **修复**：恢复工作树会话后现在自动切换回该工作树
+- **修复**：一个会话刷新 OAuth Token 时，多个并发会话需要重复重新验证
+- **修复**：语音模式静默吞噬重试失败并显示误导性"检查网络"消息；服务器静默断开 WebSocket 时语音音频无法恢复
+- **修复**：`CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS` 未抑制结构化输出 beta 头（导致 Vertex/Bedrock 代理出现 400 错误）
+- **修复**：后台智能体任务在轮询间隔之间完成时，任务输出可能无限期挂起的竞争条件
+- **修复**：活跃响应期间使用 `/btw` 时未包含粘贴的文本
+- **修复**：会话中途删除插件目录时，插件 Hooks 阻塞提示提交
+- **修复**：Remote Control `/exit` 未可靠地归档会话
+- **修复**：Node.js 18 崩溃
+- **修复**：包含字符串中破折号的 Bash 命令触发不必要的权限提示
+- **已禁用**：Windows（包括 Windows Terminal 中的 WSL）上的逐行响应流式传输（因渲染问题）
+- **VSCode**：修复使用 Git Bash 时 Bash 工具的 Windows PATH 继承问题（v2.1.78 中的回归）
 
 ### v2.1.80 (2026-03-20)
 
-- **New**: `rate_limits` field in statusline scripts for displaying Claude.ai rate limit usage (5-hour and 7-day windows with `used_percentage` and `resets_at`)
-- **New**: `source: 'settings'` plugin marketplace source — declare plugin entries inline in `settings.json`
-- **New**: CLI tool usage detection to plugin tips, in addition to file pattern matching
-- **New**: `effort` frontmatter support for skills and slash commands to override the model effort level when invoked
-- **New**: `--channels` (research preview) — allow MCP servers to push messages into your session
-- **Fixed**: `--resume` dropping parallel tool results — sessions with parallel tool calls now restore all tool_use/tool_result pairs instead of showing `[Tool result missing]` placeholders
-- **Fixed**: Voice mode WebSocket failures caused by Cloudflare bot detection on non-browser TLS fingerprints
-- **Fixed**: 400 errors when using fine-grained tool streaming through API proxies, Bedrock, or Vertex
-- **Fixed**: `/remote-control` appearing for gateway and third-party provider deployments where it cannot function
-- **Fixed**: Managed settings not being applied at startup when `remote-settings.json` was cached from a prior session
-- **Performance**: ~80MB memory reduction on startup for large repositories (tested on 250k-file repos)
-- **Improved**: Responsiveness of `@` file autocomplete in large git repos; `/effort` now shows what auto currently resolves to
-- **Improved**: `/permissions` — Tab and arrow keys now switch tabs from within a list; background tasks panel left arrow closes list view
+- **新增**：状态栏脚本中的 `rate_limits` 字段，用于显示 Claude.ai 速率限制使用情况（5 小时和 7 天窗口，包含 `used_percentage` 和 `resets_at`）
+- **新增**：`source: 'settings'` 插件市场来源——在 `settings.json` 中内联声明插件条目
+- **新增**：插件提示中新增 CLI 工具使用检测，补充文件模式匹配
+- **新增**：技能和斜杠命令的 `effort` 前置元数据支持，用于在调用时覆盖模型效能级别
+- **新增**：`--channels`（研究预览）——允许 MCP 服务器向您的会话推送消息
+- **修复**：`--resume` 丢弃并行工具结果——含有并行工具调用的会话现在可恢复所有 tool_use/tool_result 对，而不是显示 `[Tool result missing]` 占位符
+- **修复**：语音模式 WebSocket 因非浏览器 TLS 指纹上的 Cloudflare 机器人检测失败
+- **修复**：通过 API 代理、Bedrock 或 Vertex 使用细粒度工具流式传输时出现 400 错误
+- **修复**：`/remote-control` 在无法正常工作的网关和第三方提供商部署中显示
+- **修复**：从之前的会话缓存了 `remote-settings.json` 时，托管设置在启动时未应用
+- **性能**：大型仓库启动时内存减少约 80MB（在 25 万文件仓库上测试）
+- **改进**：大型 git 仓库中 `@` 文件自动补全的响应速度；`/effort` 现在显示 auto 当前解析的值
+- **改进**：`/permissions`——Tab 和方向键现在可以在列表中切换标签页；后台任务面板左箭头关闭列表视图
 
 ### v2.1.79 (2026-03-19)
 
-- **New**: `--console` flag to `claude auth login` for Anthropic Console (API billing) authentication
-- **New**: "Show turn duration" toggle added to the `/config` menu
-- **Fixed**: `claude -p` hanging when spawned as a subprocess without explicit stdin (e.g. Python `subprocess.run`)
-- **Fixed**: Ctrl+C not working in `-p` (print) mode
-- **Fixed**: `/btw` returning the main agent's output instead of answering the side question when triggered during streaming
-- **Fixed**: Voice mode not activating correctly on startup when `voiceEnabled: true` is set
-- **Fixed**: Enterprise users unable to retry on rate limit (429) errors
-- **Fixed**: `SessionEnd` hooks not firing when using interactive `/resume` to switch sessions
-- **Fixed**: Custom status line showing nothing when workspace trust is blocking it
-- **Fixed**: `CLAUDE_CODE_DISABLE_TERMINAL_TITLE` not preventing terminal title from being set on startup
-- **Performance**: Improved startup memory usage by ~18MB across all scenarios
-- **Performance**: Non-streaming API fallback now has a 2-minute per-attempt timeout (prevents indefinite hangs)
-- **VSCode**: Added `/remote-control` to bridge session to claude.ai/code for browser/phone continuation
-- **VSCode**: Session tabs now get AI-generated titles based on first message
-- **VSCode**: Fixed thinking pill showing "Thinking" instead of "Thought for Ns" after response completes
+- **新增**：`claude auth login` 的 `--console` 标志，用于 Anthropic 控制台（API 计费）身份验证
+- **新增**：在 `/config` 菜单中新增"显示轮次时长"开关
+- **修复**：作为子进程（如 Python `subprocess.run`）生成时无显式 stdin 导致 `claude -p` 挂起
+- **修复**：`-p`（打印）模式下 Ctrl+C 不起作用
+- **修复**：流式传输期间触发时，`/btw` 返回主智能体的输出而非回答附带问题
+- **修复**：设置 `voiceEnabled: true` 后启动时语音模式无法正确激活
+- **修复**：企业用户无法在速率限制（429）错误时重试
+- **修复**：使用交互式 `/resume` 切换会话时 `SessionEnd` Hooks 未触发
+- **修复**：工作区信任阻止自定义状态栏时显示空白
+- **修复**：`CLAUDE_CODE_DISABLE_TERMINAL_TITLE` 未阻止启动时设置终端标题
+- **性能**：所有场景启动内存用量改善约 18MB
+- **性能**：非流式 API 回退现在每次尝试有 2 分钟超时（防止无限挂起）
+- **VSCode**：新增 `/remote-control` 以桥接会话至 claude.ai/code，支持浏览器/手机继续
+- **VSCode**：会话标签现在根据第一条消息获得 AI 生成的标题
+- **VSCode**：修复响应完成后思考标签仍显示"Thinking"而非"Thought for Ns"
 
 ### v2.1.78 (2026-03-18)
 
-- **New**: `StopFailure` hook event that fires when the turn ends due to an API error (rate limit, auth failure, etc.)
-- **New**: `${CLAUDE_PLUGIN_DATA}` variable for plugin persistent state that survives plugin updates; `/plugin uninstall` now prompts before deleting plugin data
-- **New**: `effort`, `maxTurns`, and `disallowedTools` frontmatter support for plugin-shipped agents
-- **New**: `ANTHROPIC_CUSTOM_MODEL_OPTION` env var to add a custom entry to the `/model` picker (with optional `_NAME` and `_DESCRIPTION` suffixed vars)
-- **New**: Terminal notifications (iTerm2/Kitty/Ghostty popups, progress bar) now reach the outer terminal when running inside tmux with `set -g allow-passthrough on`
-- **New**: Response text now streams line-by-line as it's generated
-- **Fixed**: ⚠️ **Security** — Silent sandbox disable when `sandbox.enabled: true` is set but dependencies are missing — now shows a visible startup warning
-- **Fixed**: ⚠️ **Security** — `deny: ["mcp__servername"]` permission rules were not removing MCP server tools before sending to the model, allowing it to see and attempt blocked tools
-- **Fixed**: ⚠️ **Security** — `.git`, `.claude`, and other protected directories were writable without a prompt in `bypassPermissions` mode
-- **Fixed**: Infinite loop when API errors triggered stop hooks that re-fed blocking errors to the model
-- **Fixed**: `cc log` and `--resume` silently truncating conversation history on large sessions (>5 MB) that used subagents
-- **Fixed**: `sandbox.filesystem.allowWrite` not working with absolute paths (previously required `//` prefix)
-- **Fixed**: `--worktree` flag not loading skills and hooks from the worktree directory
-- **Fixed**: `CLAUDE_CODE_DISABLE_GIT_INSTRUCTIONS` and `includeGitInstructions` setting not suppressing git status section in system prompt
-- **Fixed**: Bash tool not finding Homebrew and other PATH-dependent binaries when VS Code is launched from Dock/Spotlight
-- **Fixed**: Voice mode modifier-combo push-to-talk keybindings requiring a hold instead of activating immediately
-- **Fixed**: Voice mode not working on WSL2 with WSLg (Windows 11)
-- **Fixed**: `ANTHROPIC_BETAS` environment variable being silently ignored when using Haiku models
-- **VSCode**: Fixed "API Error: Rate limit reached" when selecting Opus — model dropdown no longer offers 1M context variant to subscribers whose plan tier is unknown
-- **Performance**: Improved memory usage and startup time when resuming large sessions
+- **新增**：`StopFailure` Hook 事件——当轮次因 API 错误（速率限制、身份验证失败等）结束时触发
+- **新增**：插件持久状态的 `${CLAUDE_PLUGIN_DATA}` 变量，在插件更新后仍保留；`/plugin uninstall` 现在在删除插件数据前提示确认
+- **新增**：插件提供的智能体支持 `effort`、`maxTurns` 和 `disallowedTools` 前置元数据
+- **新增**：`ANTHROPIC_CUSTOM_MODEL_OPTION` 环境变量，用于向 `/model` 选择器添加自定义条目（附加可选的 `_NAME` 和 `_DESCRIPTION` 后缀变量）
+- **新增**：终端通知（iTerm2/Kitty/Ghostty 弹窗、进度条）现在通过 `set -g allow-passthrough on` 在 tmux 内运行时可到达外层终端
+- **新增**：响应文本现在逐行流式传输
+- **修复**：⚠️ **安全**——设置 `sandbox.enabled: true` 但依赖项缺失时沙盒静默禁用——现在显示可见的启动警告
+- **修复**：⚠️ **安全**——`deny: ["mcp__servername"]` 权限规则在发送给模型前未移除 MCP 服务器工具，允许模型看到并尝试被屏蔽的工具
+- **修复**：⚠️ **安全**——在 `bypassPermissions` 模式下，`.git`、`.claude` 和其他受保护目录无需提示即可写入
+- **修复**：API 错误触发向模型重新馈送阻塞错误的停止 Hooks 时产生无限循环
+- **修复**：`cc log` 和 `--resume` 在使用子智能体的大型会话（>5 MB）上静默截断对话历史
+- **修复**：`sandbox.filesystem.allowWrite` 对绝对路径不生效（之前需要 `//` 前缀）
+- **修复**：`--worktree` 标志未从工作树目录加载技能和 Hooks
+- **修复**：`CLAUDE_CODE_DISABLE_GIT_INSTRUCTIONS` 和 `includeGitInstructions` 设置未抑制系统提示中的 git 状态部分
+- **修复**：从 Dock/Spotlight 启动 VS Code 时，Bash 工具找不到 Homebrew 和其他依赖 PATH 的二进制文件
+- **修复**：语音模式修饰键组合按下即说快捷键需要长按而非立即激活
+- **修复**：语音模式在 WSL2 with WSLg（Windows 11）上无法工作
+- **修复**：使用 Haiku 模型时 `ANTHROPIC_BETAS` 环境变量被静默忽略
+- **VSCode**：修复选择 Opus 时出现"API 错误：已达到速率限制"——计划层级未知的订阅者的模型下拉框不再提供 1M 上下文变体
+- **性能**：恢复大型会话时内存用量和启动时间改善
 
 ### v2.1.77 (2026-03-17)
 
-- **New**: ⭐ Opus 4.6 default maximum output tokens raised to 64k; upper bound for Opus 4.6 and Sonnet 4.6 raised to 128k tokens
-- **New**: `allowRead` sandbox filesystem setting to re-allow read access within `denyRead` regions
-- **New**: `/copy N` to copy the Nth-latest assistant response directly
-- **New**: `/branch` command (replaces `/fork`; `/fork` still works as an alias)
-- **New**: `SendMessage` now auto-resumes stopped agents in the background instead of returning an error
-- **Fixed**: ⚠️ **Security** — `PreToolUse` hooks returning `"allow"` could bypass `deny` permission rules including enterprise managed settings
-- **Fixed**: Auto-updater accumulating tens of gigabytes of memory when slash-command overlay repeatedly opened/closed, triggering overlapping binary downloads
-- **Fixed**: `--resume` silently truncating recent conversation history due to a race between memory-extraction writes and the main transcript
-- **Fixed**: "Always Allow" on compound bash commands (e.g. `cd src && npm test`) saving a single rule for the full string instead of per-subcommand, leading to dead rules and repeated permission prompts
-- **Fixed**: Write tool silently converting line endings when overwriting CRLF files or creating files in CRLF directories
-- **Fixed**: Cost and token usage not tracked when API falls back to non-streaming mode
-- **Fixed**: `CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS` not stripping beta tool-schema fields, causing proxy gateways to reject requests
-- **Fixed**: Bash tool reporting errors for successful commands when system temp directory path contains spaces
-- **Fixed**: Paste being lost when typing immediately after pasting; Ctrl+D in `/feedback` deleting forward instead of exiting
-- **Fixed**: Various rendering fixes: ordered list numbers, CJK bleeding, background colors in tmux, hyperlinks opening twice in VS Code
-- **Fixed**: Teammate panes not closing when leader exits; iTerm2 session crash when selecting text inside tmux over SSH
-- **Breaking**: `Agent` tool no longer accepts a `resume` parameter — use `SendMessage({to: agentId})` to continue a previously spawned agent
-- **VSCode**: Fixed gitignore patterns with commas silently excluding filetypes from `@`-mention file picker; improved scroll wheel responsiveness; improved plan preview tab titles
-- **Performance**: Faster startup on macOS (~60ms) by reading keychain credentials in parallel with module loading; faster `--resume` on fork-heavy sessions (up to 45% faster, 100-150MB less peak memory)
+- **新增**：⭐ Opus 4.6 默认最大输出 Token 提升至 64k；Opus 4.6 和 Sonnet 4.6 的上限提升至 128k Token
+- **新增**：`allowRead` 沙盒文件系统设置，用于在 `denyRead` 区域内重新允许读取访问
+- **新增**：`/copy N` 直接复制第 N 条最新的助手响应
+- **新增**：`/branch` 命令（替换 `/fork`；`/fork` 仍作为别名保留）
+- **新增**：`SendMessage` 现在自动在后台恢复已停止的智能体而非返回错误
+- **修复**：⚠️ **安全**——返回 `"allow"` 的 `PreToolUse` Hooks 可绕过 `deny` 权限规则（包括企业托管设置）
+- **修复**：自动更新程序在斜杠命令覆盖层反复打开/关闭时积累数十 GB 内存，触发重叠的二进制下载
+- **修复**：`--resume` 因内存提取写入与主转录之间的竞争静默截断近期对话历史
+- **修复**：对复合 bash 命令（如 `cd src && npm test`）使用"始终允许"时，为整个字符串保存单条规则而非按子命令保存，导致死规则和重复权限提示
+- **修复**：Write 工具在覆盖 CRLF 文件或在 CRLF 目录中创建文件时静默转换行尾
+- **修复**：API 回退到非流式模式时未追踪成本和 Token 用量
+- **修复**：`CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS` 未剥离 beta 工具 schema 字段，导致代理网关拒绝请求
+- **修复**：系统临时目录路径包含空格时，Bash 工具将成功命令报告为错误
+- **修复**：粘贴后立即输入时粘贴内容丢失；`/feedback` 中 Ctrl+D 向前删除而非退出
+- **修复**：各种渲染修复：有序列表编号、CJK 溢出、tmux 中的背景色、VS Code 中超链接打开两次
+- **修复**：队长退出时队友窗格未关闭；在 SSH 上的 tmux 中选择文本导致 iTerm2 会话崩溃
+- **重大变更**：`Agent` 工具不再接受 `resume` 参数——使用 `SendMessage({to: agentId})` 继续之前生成的智能体
+- **VSCode**：修复含逗号的 gitignore 模式静默排除 `@` 文件选择器中整个文件类型；改善滚轮响应速度；改善计划预览标签标题
+- **性能**：macOS 上的启动速度提升（约 60ms），并行读取钥匙串凭证与模块加载；分支密集会话的 `--resume` 速度提升（最高 45%，峰值内存减少 100-150MB）
 
 ### v2.1.76 (2026-03-14)
 
-- **New**: ⭐ MCP elicitation support — MCP servers can now request structured input mid-task via an interactive dialog (form fields or browser URL)
-- **New**: `Elicitation` and `ElicitationResult` hooks to intercept and override MCP input responses before they're sent back to the server
-- **New**: `PostCompact` hook that fires after compaction completes
-- **New**: `-n` / `--name <name>` CLI flag to set a display name for the session at startup
-- **New**: `worktree.sparsePaths` setting for `claude --worktree` in large monorepos — check out only needed directories via git sparse-checkout
-- **New**: `/effort` slash command to set model effort level
-- **Fixed**: Deferred tools (loaded via `ToolSearch`) losing their input schemas after conversation compaction — array and number parameters were being rejected with type errors
-- **Fixed**: Auto-compaction retrying indefinitely after consecutive failures — circuit breaker now stops after 3 attempts
-- **Fixed**: `Bash(cmd:*)` permission rules not matching when a quoted argument contains `#`
-- **Fixed**: Slash commands showing "Unknown skill"
-- **Fixed**: Plan mode asking for re-approval after the plan was already accepted
-- **Fixed**: Voice mode swallowing keypresses while a permission dialog or plan editor was open
-- **Fixed**: `/voice` not working on Windows when installed via npm
-- **Fixed**: Bridge sessions failing to recover after extended WebSocket disconnects
-- **Improved**: `--worktree` startup performance by reading git refs directly, skipping redundant `git fetch`
-- **Improved**: Killing a background agent now preserves its partial results in the conversation context
-- **Improved**: Model fallback notifications — now always visible with human-friendly model names
-- **Improved**: Stale worktree cleanup — worktrees left behind after interrupted parallel runs are automatically cleaned up
-- **Improved**: Blockquote readability on dark terminal themes — italic with left bar instead of dim
-- **Updated**: `--plugin-dir` now accepts one path only; use repeated flags for multiple directories
-- **VSCode**: Fixed gitignore patterns containing commas silently excluding entire filetypes from the `@`-mention file picker
+- **新增**：⭐ MCP 引导输入支持——MCP 服务器现在可以通过交互式对话框（表单字段或浏览器 URL）在任务中途请求结构化输入
+- **新增**：`Elicitation` 和 `ElicitationResult` Hooks，用于在 MCP 输入响应发回服务器前拦截和覆盖
+- **新增**：`PostCompact` Hook，在压缩完成后触发
+- **新增**：`-n` / `--name <name>` CLI 标志，用于在启动时为会话设置显示名称
+- **新增**：大型单体仓库的 `worktree.sparsePaths` 设置——通过 git sparse-checkout 仅检出所需目录
+- **新增**：`/effort` 斜杠命令，用于设置模型效能级别
+- **修复**：延迟工具（通过 `ToolSearch` 加载）在对话压缩后丢失输入 schema——数组和数字参数被拒绝并报类型错误
+- **修复**：连续失败后自动压缩无限重试——断路器现在在 3 次尝试后停止
+- **修复**：`Bash(cmd:*)` 权限规则在带引号的参数包含 `#` 时不匹配
+- **修复**：斜杠命令显示"未知技能"
+- **修复**：计划模式在计划已被接受后再次要求重新审批
+- **修复**：权限对话框或计划编辑器打开时，语音模式吞噬按键
+- **修复**：通过 npm 安装时 `/voice` 在 Windows 上不工作
+- **修复**：扩展 WebSocket 断开后桥接会话无法恢复
+- **改进**：通过直接读取 git refs 跳过冗余 `git fetch`，提升 `--worktree` 启动性能
+- **改进**：终止后台智能体现在保留其在对话上下文中的部分结果
+- **改进**：模型回退通知——现在始终可见，并使用人类友好的模型名称
+- **改进**：旧工作树清理——并行运行中断后留下的工作树自动清理
+- **改进**：暗色终端主题下的块引用可读性——改为带左边栏的斜体
+- **更新**：`--plugin-dir` 现在只接受一个路径；使用重复标志指定多个目录
+- **VSCode**：修复含逗号的 gitignore 模式静默排除 `@` 文件选择器中整个文件类型
 
 ### v2.1.75 (2026-03-13)
 
-- **New**: ⭐ 1M context window for Opus 4.6 now enabled by default for Max, Team, and Enterprise plans (previously required extra usage)
-- **New**: Session name display on the prompt bar when using `/rename`
-- **New**: Last-modified timestamps on memory files — helps Claude reason about freshness of memories
-- **New**: Hook source display (settings/plugin/skill) in permission prompts when a hook requires confirmation
-- **New**: `/color` command available for all users to set a prompt-bar color
-- **Fixed**: Token estimation over-counting for thinking and `tool_use` blocks (was causing premature context compaction)
-- **Fixed**: Bash tool mangling `!` in piped commands (e.g. `jq 'select(.x != .y)'` now works correctly)
-- **Fixed**: Voice mode not activating correctly on fresh installs without toggling `/voice` twice
-- **Fixed**: Claude Code header not updating model name after switching with `/model` or Option+P
-- **Fixed**: Session crash when attachment message computation returns undefined values
-- **Fixed**: Managed-disabled plugins showing up in `/plugin` Installed tab
-- **Fixed**: Corrupted marketplace config path handling
-- **Fixed**: `/resume` losing session names after resuming a forked or continued session
-- **Improved**: Startup performance on macOS non-MDM machines (skips unnecessary subprocess spawns)
-- **Improved**: Async hook completion messages suppressed by default (visible with `--verbose` or transcript mode)
+- **新增**：⭐ Opus 4.6 的 1M 上下文窗口现在对 Max、Team 和 Enterprise 计划默认启用（之前需要额外用量）
+- **新增**：使用 `/rename` 时在提示栏显示会话名称
+- **新增**：记忆文件的最后修改时间戳——帮助 Claude 推断记忆的新鲜度
+- **新增**：权限提示中显示 Hook 来源（settings/plugin/skill）（当 Hook 需要确认时）
+- **新增**：所有用户可使用 `/color` 命令设置提示栏颜色
+- **修复**：对思考和 `tool_use` 块 Token 估算过多（导致过早触发上下文压缩）
+- **修复**：Bash 工具破坏管道命令中的 `!`（如 `jq 'select(.x != .y)'` 现在可以正常工作）
+- **修复**：新安装时语音模式无需切换两次 `/voice` 即可正确激活
+- **修复**：通过 `/model` 或 Option+P 切换后 Claude Code 标题未更新模型名称
+- **修复**：附件消息计算返回 undefined 值时的会话崩溃
+- **修复**：托管禁用的插件显示在 `/plugin` 已安装标签页中
+- **修复**：损坏的市场配置路径处理
+- **修复**：恢复分叉或继续的会话后 `/resume` 丢失会话名称
+- **改进**：macOS 非 MDM 机器的启动性能（跳过不必要的子进程生成）
+- **改进**：默认情况下抑制异步 Hook 完成消息（可通过 `--verbose` 或转录模式查看）
 
 ### v2.1.74 (2026-03-12)
 
-- **New**: `/context` command shows actionable suggestions — identifies context-heavy tools, memory bloat, capacity warnings with optimization tips
-- **New**: `autoMemoryDirectory` setting to configure custom directory for auto-memory storage
-- **Fixed**: Memory leak in streaming API response buffers — unbounded RSS growth on Node.js/npm path resolved
-- **Fixed**: Managed policy `ask` rules being bypassed by user `allow` rules or skill `allowed-tools`
-- **Fixed**: MCP OAuth authentication hanging when callback port is already in use
-- **Fixed**: MCP OAuth refresh (Slack) never prompting re-auth after refresh token expires
-- **Fixed**: Voice mode on macOS native binary — binary now includes `audio-input` entitlement for microphone permission prompt
-- **Fixed**: `SessionEnd` hooks killed after 1.5s regardless of `hook.timeout` (now configurable via `CLAUDE_CODE_SESSIONEND_HOOKS_TIMEOUT_MS`)
-- **Changed**: `--plugin-dir` local dev copies now override installed marketplace plugins with same name
-- **VSCode**: Fixed delete button not working for Untitled sessions
+- **新增**：`/context` 命令显示可操作建议——识别占用上下文较多的工具、记忆膨胀、容量警告及优化提示
+- **新增**：`autoMemoryDirectory` 设置，用于配置自动记忆存储的自定义目录
+- **修复**：流式 API 响应缓冲区中的内存泄漏——解决了 Node.js/npm 路径上的 RSS 无限增长
+- **修复**：托管策略 `ask` 规则被用户 `allow` 规则或技能 `allowed-tools` 绕过
+- **修复**：回调端口已被占用时 MCP OAuth 身份验证挂起
+- **修复**：刷新 Token 过期后 MCP OAuth 刷新（Slack）从不提示重新验证
+- **修复**：macOS 原生二进制上的语音模式——二进制现在包含麦克风权限提示所需的 `audio-input` 授权
+- **修复**：`SessionEnd` Hooks 无论 `hook.timeout` 如何都在 1.5 秒后被终止（现在可通过 `CLAUDE_CODE_SESSIONEND_HOOKS_TIMEOUT_MS` 配置）
+- **变更**：`--plugin-dir` 本地开发副本现在覆盖同名的已安装市场插件
+- **VSCode**：修复无标题会话的删除按钮不起作用
 
 ### v2.1.73 (2026-03-11)
 
-- **New**: `modelOverrides` setting — map model picker entries to custom provider model IDs (Bedrock inference profile ARNs, etc.)
-- **New**: Actionable guidance when OAuth login or connectivity checks fail due to SSL certificate errors (corporate proxies, `NODE_EXTRA_CA_CERTS`)
-- **Fixed**: Freezes and 100% CPU loops triggered by permission prompts for complex bash commands
-- **Fixed**: Deadlock when many skill files changed at once (e.g. `git pull` in repo with large `.claude/skills/` directory)
-- **Fixed**: Bash tool output lost when running multiple Claude Code sessions in the same project directory
-- **Fixed**: Subagents with `model: opus`/`sonnet`/`haiku` being silently downgraded on Bedrock, Vertex, Foundry
-- **Fixed**: Background bash processes from subagents not cleaned up when agent exits
-- **Fixed**: `SessionStart` hooks firing twice when resuming via `--resume` or `--continue`
-- **Fixed**: JSON-output hooks injecting no-op system-reminder messages into the model's context on every turn
-- **Fixed**: Linux sandbox failing with "ripgrep not found" on native builds
-- **Fixed**: Linux native modules on Amazon Linux 2 (glibc 2.26 systems)
-- **Changed**: Default Opus model on Bedrock, Vertex, Foundry → Opus 4.6 (was 4.1)
-- **Changed**: Deprecated `/output-style` — use `/config` instead; output style fixed at session start for better prompt caching
-- **VSCode**: Fixed HTTP 400 errors for users behind proxies or on Bedrock/Vertex with Claude 4.5 models
+- **新增**：`modelOverrides` 设置——将模型选择器条目映射到自定义提供商模型 ID（Bedrock 推理配置文件 ARN 等）
+- **新增**：OAuth 登录或连接检查因 SSL 证书错误失败时（企业代理、`NODE_EXTRA_CA_CERTS`）提供可操作指导
+- **修复**：复杂 bash 命令的权限提示触发的冻结和 100% CPU 循环
+- **修复**：大量技能文件同时变更时的死锁（如在含有大型 `.claude/skills/` 目录的仓库中执行 `git pull`）
+- **修复**：在同一项目目录中运行多个 Claude Code 会话时 Bash 工具输出丢失
+- **修复**：在 Bedrock、Vertex、Foundry 上使用 `model: opus`/`sonnet`/`haiku` 的子智能体被静默降级
+- **修复**：智能体退出时子智能体的后台 bash 进程未清理
+- **修复**：通过 `--resume` 或 `--continue` 恢复时 `SessionStart` Hooks 触发两次
+- **修复**：JSON 输出 Hooks 每轮向模型上下文注入无操作的系统提醒消息
+- **修复**：原生构建上 Linux 沙盒出现"找不到 ripgrep"错误
+- **修复**：Amazon Linux 2（glibc 2.26 系统）上的 Linux 原生模块
+- **变更**：Bedrock、Vertex、Foundry 上的默认 Opus 模型 → Opus 4.6（之前为 4.1）
+- **变更**：已弃用 `/output-style`——使用 `/config` 代替；输出样式在会话开始时固定以获得更好的提示缓存
+- **VSCode**：修复通过代理或在 Bedrock/Vertex 上使用 Claude 4.5 模型的用户出现 HTTP 400 错误
 
 ### v2.1.72 (2026-03-09)
 
-- **New**: Restored `model` parameter on Agent tool — per-invocation model overrides are back
-- **New**: `/plan` accepts optional description (e.g., `/plan fix the auth bug`) to enter plan mode and start immediately
-- **New**: `ExitWorktree` tool to leave an `EnterWorktree` session
-- **New**: `CLAUDE_CODE_DISABLE_CRON` env var to stop scheduled cron jobs mid-session
-- **New**: `lsof`, `pgrep`, `tput`, `ss`, `fd`, `fdfind` added to bash auto-approval allowlist
-- **New**: `/copy` `w` key writes selection directly to file, bypassing clipboard (useful over SSH)
-- **Changed**: Simplified effort levels to low/medium/high (removed max), new symbols ○ ◐ ●; use `/effort auto` to reset
-- **Changed**: CLAUDE.md HTML comments (`<!-- ... -->`) now hidden from Claude when auto-injected (visible via Read tool)
-- **Changed**: `/config` — Escape cancels changes, Enter saves and closes, Space toggles settings
-- **Fixed**: SDK `query()` prompt cache invalidation — up to 12x input token cost reduction
-- **Fixed**: Tool search now activates with `ANTHROPIC_BASE_URL` when `ENABLE_TOOL_SEARCH` is set
-- **Fixed**: Skill hooks firing twice per event when a hooks-enabled skill is invoked by the model
-- **Fixed**: `/clear` killing background agent/bash tasks — only foreground tasks now cleared
-- **Fixed**: Worktree isolation: Task tool resume not restoring cwd, background task notifications missing `worktreePath`/`worktreeBranch`
-- **Fixed**: `--continue` not resuming from most recent point after `--compact`
-- **Fixed**: Team agents now inherit the leader's model
-- **Fixed**: Parallel tool calls — only Bash errors cascade to siblings (Read/WebFetch/Glob failures no longer cancel siblings)
-- **Fixed**: Multiple hooks issues: `transcript_path` wrong for resumed/forked sessions, async hooks not receiving stdin, PostToolUse block reason displaying twice
-- **Fixed**: Several sandbox permission, plugin installation (Windows/OneDrive), and voice mode issues
-- **Perf**: Reduced bundle size by ~510 KB; improved CPU utilization in long sessions; faster bash init via native module
+- **新增**：恢复 Agent 工具的 `model` 参数——每次调用的模型覆盖已回归
+- **新增**：`/plan` 接受可选描述（如 `/plan 修复身份验证 bug`）以进入计划模式并立即开始
+- **新增**：`ExitWorktree` 工具，用于离开 `EnterWorktree` 会话
+- **新增**：`CLAUDE_CODE_DISABLE_CRON` 环境变量，用于在会话中途停止计划的 cron 任务
+- **新增**：`lsof`、`pgrep`、`tput`、`ss`、`fd`、`fdfind` 加入 bash 自动审批白名单
+- **新增**：`/copy` 的 `w` 键直接将选择写入文件，绕过剪贴板（适用于 SSH 场景）
+- **变更**：效能级别简化为低/中/高（移除最高），新符号 ○ ◐ ●；使用 `/effort auto` 重置
+- **变更**：CLAUDE.md HTML 注释（`<!-- ... -->`）在自动注入时对 Claude 隐藏（可通过 Read 工具查看）
+- **变更**：`/config`——Escape 取消变更，Enter 保存并关闭，Space 切换设置
+- **修复**：SDK `query()` 提示缓存失效——输入 Token 成本最高减少 12 倍
+- **修复**：设置 `ANTHROPIC_BASE_URL` 并配置 `ENABLE_TOOL_SEARCH` 时工具搜索现已激活
+- **修复**：模型调用技能时启用 Hooks 的技能每个事件触发两次
+- **修复**：`/clear` 终止后台智能体/bash 任务——现在仅清除前台任务
+- **修复**：工作树隔离：Task 工具恢复不还原工作目录，后台任务通知缺少 `worktreePath`/`worktreeBranch`
+- **修复**：`--compact` 后 `--continue` 不从最近点恢复
+- **修复**：团队智能体现在继承队长的模型
+- **修复**：并行工具调用——只有 Bash 错误级联到兄弟任务（Read/WebFetch/Glob 失败不再取消兄弟任务）
+- **修复**：多个 Hooks 问题：恢复/分叉会话的 `transcript_path` 错误、异步 Hooks 未接收 stdin、PostToolUse 阻止原因显示两次
+- **修复**：若干沙盒权限、插件安装（Windows/OneDrive）和语音模式问题
+- **性能**：Bundle 大小减少约 510 KB；长会话 CPU 利用率改善；通过原生模块加快 bash 初始化
 
 ### v2.1.69 (2026-03-04)
 
-- **Security**: Fixed nested skill discovery loading skills from gitignored directories like `node_modules` — critical security fix
-- **Security**: Fixed symlink bypass allowing writes outside working directory in `acceptEdits` mode
-- **Security**: Fixed trust dialog silently enabling all `.mcp.json` servers on first run (per-server approval now required)
-- **Security**: Fixed sandbox not blocking non-allowed domains when `allowManagedDomainsOnly` is enabled
-- **New**: `InstructionsLoaded` hook event fires when CLAUDE.md or `.claude/rules/*.md` files are loaded into context
-- **New**: `agent_id`, `agent_type`, `worktree` fields added to all hook events (subagent tracking, worktree metadata)
-- **New**: `${CLAUDE_SKILL_DIR}` variable for skills to reference their own installation directory in SKILL.md content
-- **New**: `/reload-plugins` command to activate pending plugin changes without restarting Claude Code
-- **New**: Voice STT expanded to 20 languages (+10: Russian, Polish, Turkish, Dutch, Ukrainian, Greek, Czech, Danish, Swedish, Norwegian)
-- **New**: `sandbox.enableWeakerNetworkIsolation` setting (macOS) for Go tools (gh, gcloud, terraform) behind MITM proxy
-- **New**: `includeGitInstructions` setting (and `CLAUDE_CODE_DISABLE_GIT_INSTRUCTIONS` env var) to remove built-in commit/PR instructions from system prompt
-- **New**: `oauth.authServerMetadataUrl` config option for MCP servers with custom OAuth discovery
-- **New**: `pluginTrustMessage` in managed settings for organization-specific plugin trust context
-- **New**: Optional `--name` argument for `/remote-control` to set a custom session title visible in claude.ai/code
-- **Changed**: Sonnet 4.5 users on Pro/Max/Team auto-migrated to Sonnet 4.6
-- **Changed**: `/resume` picker now shows most recent prompt instead of first one
-- **Fixed**: 15+ memory leaks — React Compiler memoCache, REPL render scopes (~35MB over 1000 turns), teammate history pinning, hook event accumulation
-- **Fixed**: ~16MB baseline memory reduction (deferred Yoga WASM preloading)
-- **Fixed**: MCP binary content (PDFs, Office docs, audio) now saved to disk with correct extension instead of raw base64 in context
-- **Fixed**: Startup performance — skills/plugins loading, worktree git subprocess, macOS keychain, managed settings
-- **Fixed**: Escape not interrupting running turn when input box has draft text
-- **Fixed**: Duplicate CLAUDE.md, slash commands, agents, and rules when running from nested worktree
-- **Fixed**: macOS keychain corruption with multiple OAuth MCP servers (stdin buffer overflow)
+- **安全**：修复嵌套技能发现从 `node_modules` 等 gitignore 目录加载技能——关键安全修复
+- **安全**：修复符号链接绕过，允许在 `acceptEdits` 模式下向工作目录外写入
+- **安全**：修复首次运行时信任对话框静默启用所有 `.mcp.json` 服务器（现在需要逐服务器审批）
+- **安全**：修复启用 `allowManagedDomainsOnly` 时沙盒未屏蔽非允许域名
+- **新增**：`InstructionsLoaded` Hook 事件，在 CLAUDE.md 或 `.claude/rules/*.md` 文件加载到上下文时触发
+- **新增**：所有 Hook 事件新增 `agent_id`、`agent_type`、`worktree` 字段（子智能体追踪、工作树元数据）
+- **新增**：技能的 `${CLAUDE_SKILL_DIR}` 变量，用于在 SKILL.md 内容中引用其自身安装目录
+- **新增**：`/reload-plugins` 命令，无需重启 Claude Code 即可激活待处理的插件变更
+- **新增**：语音 STT 扩展至 20 种语言（+10 种：俄语、波兰语、土耳其语、荷兰语、乌克兰语、希腊语、捷克语、丹麦语、瑞典语、挪威语）
+- **新增**：`sandbox.enableWeakerNetworkIsolation` 设置（macOS），用于 MITM 代理后的 Go 工具（gh、gcloud、terraform）
+- **新增**：`includeGitInstructions` 设置（以及 `CLAUDE_CODE_DISABLE_GIT_INSTRUCTIONS` 环境变量），用于从系统提示中移除内置提交/PR 说明
+- **新增**：`oauth.authServerMetadataUrl` 配置选项，用于使用自定义 OAuth 发现的 MCP 服务器
+- **新增**：托管设置中的 `pluginTrustMessage`，用于提供组织特定的插件信任上下文
+- **新增**：`/remote-control` 的可选 `--name` 参数，用于设置在 claude.ai/code 中可见的自定义会话标题
+- **变更**：Pro/Max/Team 上的 Sonnet 4.5 用户自动迁移到 Sonnet 4.6
+- **变更**：`/resume` 选择器现在显示最近一条提示而非第一条
+- **修复**：15+ 个内存泄漏——React Compiler memoCache、REPL 渲染作用域（1000 轮约 35MB）、队友历史记录固定、Hook 事件累积
+- **修复**：约 16MB 基准内存减少（延迟 Yoga WASM 预加载）
+- **修复**：MCP 二进制内容（PDF、Office 文档、音频）现在以正确扩展名保存到磁盘，而非在上下文中以原始 base64 存储
+- **修复**：启动性能——技能/插件加载、工作树 git 子进程、macOS keychain、托管设置
+- **修复**：输入框有草稿文本时 Escape 未中断正在运行的轮次
+- **修复**：从嵌套工作树运行时 CLAUDE.md、斜杠命令、智能体和规则重复
+- **修复**：多个 OAuth MCP 服务器导致 macOS keychain 损坏（stdin 缓冲区溢出）
 
 ### v2.1.68 (2026-03-04)
 
-- **Changed**: Opus 4.6 now defaults to medium effort for Max and Team subscribers (sweet spot between speed and thoroughness)
-- **New**: Re-introduced `ultrathink` keyword to enable high effort for the next turn specifically
-- **Breaking**: Opus 4 and Opus 4.1 removed from Claude Code on first-party API — users auto-migrated to Opus 4.6
+- **变更**：Opus 4.6 现在对 Max 和 Team 订阅者默认使用中等效能（速度与彻底性的最佳平衡点）
+- **新增**：重新引入 `ultrathink` 关键词，专门为下一轮启用高效能
+- **重大变更**：Opus 4 和 Opus 4.1 从 Claude Code 第一方 API 中移除——用户自动迁移到 Opus 4.6
 
 ### v2.1.66 (2026-03-04)
 
-- **Fixed**: Reduced spurious error logging
+- **修复**：减少误报错误日志
 
 ### v2.1.63 (2026-02-27)
 
-- **New**: HTTP hooks — hooks can now `POST` JSON to a URL and receive JSON back, instead of running a shell command. Useful for CI/CD integrations and stateless backend endpoints (v2.1.63+)
-- **New**: Project configs & auto-memory now shared across all git worktrees of the same repository
-- **New**: `/simplify` and `/batch` bundled slash commands
-- **New**: `ENABLE_CLAUDEAI_MCP_SERVERS=false` env var to opt out of claude.ai MCP server exposure
-- **Improved**: `/model` command shows currently active model in picker
-- **Fixed**: Major wave of memory leaks — WebSocket listeners, MCP caches, git root detection cache, JSON parsing cache, bash prefix cache, subagent AppState after compaction, MCP server fetch caches on reconnect
-- **Fixed**: VSCode remote sessions not appearing in conversation history
-- **Fixed**: `/clear` not resetting cached skills (stale skill content persisted to new conversation)
-- **Fixed**: Local slash command output (e.g. `/cost`) appearing as user messages in UI
+- **新增**：HTTP Hooks——Hooks 现在可以向 URL 发送 JSON 并接收 JSON 回复，而非运行 shell 命令。适用于 CI/CD 集成和无状态后端端点（v2.1.63+）
+- **新增**：项目配置和自动记忆现在在同一仓库的所有 git 工作树间共享
+- **新增**：`/simplify` 和 `/batch` 捆绑斜杠命令
+- **新增**：`ENABLE_CLAUDEAI_MCP_SERVERS=false` 环境变量，用于退出 claude.ai MCP 服务器暴露
+- **改进**：`/model` 命令在选择器中显示当前活跃模型
+- **修复**：大量内存泄漏——WebSocket 监听器、MCP 缓存、git 根目录检测缓存、JSON 解析缓存、bash 前缀缓存、压缩后的子智能体 AppState、重连时的 MCP 服务器获取缓存
+- **修复**：VSCode 远程会话未出现在对话历史中
+- **修复**：`/clear` 未重置缓存的技能（旧技能内容持续到新对话）
+- **修复**：本地斜杠命令输出（如 `/cost`）在 UI 中显示为用户消息
 
 ### v2.1.62 (2026-02-27)
 
-- **Fixed**: Prompt suggestion cache regression that reduced cache hit rates
+- **修复**：提示建议缓存回归，导致缓存命中率降低
 
 ### v2.1.61 (2026-02-27)
 
-- **Fixed**: Concurrent writes corrupting config file on Windows
+- **修复**：Windows 上并发写入损坏配置文件
 
 ### v2.1.59 (2026-02-26)
 
-- **New**: Auto-memory — Claude automatically saves useful context to memory; manage with `/memory`
-- **New**: `/copy` command — interactive picker when code blocks are present, select individual blocks or full response
-- **Improved**: Smarter "always allow" prefix suggestions for compound bash commands (per-subcommand prefixes instead of treating whole command as one)
-- **Improved**: Memory usage in multi-agent sessions (releases completed subagent task state)
-- **Improved**: Ordering of short task lists
-- **Fixed**: MCP OAuth token refresh race condition when running multiple Claude Code instances simultaneously
-- **Fixed**: Shell commands not showing clear error message when working directory has been deleted
-- **Fixed**: Config file corruption that could wipe authentication when multiple Claude Code instances ran simultaneously
+- **新增**：自动记忆——Claude 自动将有用的上下文保存到记忆；使用 `/memory` 管理
+- **新增**：`/copy` 命令——存在代码块时显示交互式选择器，可选择单个块或完整响应
+- **改进**：复合 bash 命令更智能的"始终允许"前缀建议（每个子命令的前缀，而非将整个命令视为一个）
+- **改进**：多智能体会话中的内存用量（释放已完成的子智能体任务状态）
+- **改进**：短任务列表的排序
+- **修复**：同时运行多个 Claude Code 实例时 MCP OAuth Token 刷新竞争条件
+- **修复**：工作目录已删除时 shell 命令未显示清晰错误消息
+- **修复**：多个 Claude Code 实例同时运行时配置文件损坏可能清除身份验证
 
 ### v2.1.58 (2026-02-26)
 
-- **Expanded**: Remote Control available to more users
+- **扩展**：Remote Control 对更多用户开放
 
 ### v2.1.56 (2026-02-25)
 
-- **Fixed**: VSCode: Another cause of "command 'claude-vscode.editor.openLast' not found" crashes
+- **修复**：VSCode：另一个导致"找不到命令 'claude-vscode.editor.openLast'"崩溃的原因
 
 ### v2.1.55 (2026-02-25)
 
-- **Fixed**: BashTool failing on Windows with EINVAL error
+- **修复**：BashTool 在 Windows 上因 EINVAL 错误失败
 
 ### v2.1.53 (2026-02-25)
 
-- **Fixed**: UI flicker where user input briefly disappeared after submission before rendering
-- **Fixed**: Bulk agent kill (ctrl+f) now sends single aggregate notification instead of one per agent, and properly clears command queue
-- **Fixed**: Graceful shutdown sometimes leaving stale sessions when using Remote Control (parallelized teardown)
-- **Fixed**: `--worktree` flag sometimes being ignored on first launch
-- **Fixed**: Panic ("switch on corrupted value") on Windows
-- **Fixed**: Crash when spawning many processes on Windows
-- **Fixed**: Crash in WebAssembly interpreter on Linux x64 & Windows x64
-- **Fixed**: Crash that sometimes occurred after 2 minutes on Windows ARM64
+- **修复**：UI 闪烁，提交后用户输入在渲染前短暂消失
+- **修复**：批量智能体终止（ctrl+f）现在发送单条聚合通知而非每个智能体一条，并正确清除命令队列
+- **修复**：使用 Remote Control 时优雅关闭有时留下旧会话（并行化清理）
+- **修复**：`--worktree` 标志有时在首次启动时被忽略
+- **修复**：Windows 上的崩溃（"switch on corrupted value"）
+- **修复**：Windows 上生成大量进程时崩溃
+- **修复**：Linux x64 和 Windows x64 上 WebAssembly 解释器崩溃
+- **修复**：Windows ARM64 上有时在 2 分钟后发生的崩溃
 
 ### v2.1.52 (2026-02-24)
 
-- **Fixed**: VSCode extension crash on Windows ("command 'claude-vscode.editor.openLast' not found")
+- **修复**：Windows 上 VSCode 扩展崩溃（"找不到命令 'claude-vscode.editor.openLast'"）
 
 ### v2.1.51 (2026-02-24)
 
-- **New**: `claude remote-control` subcommand for external builds — enables local environment serving for all users
-- **New**: Custom npm registries and specific version pinning when installing plugins from npm sources
-- **New**: SDK: `CLAUDE_CODE_ACCOUNT_UUID`, `CLAUDE_CODE_USER_EMAIL`, `CLAUDE_CODE_ORGANIZATION_UUID` env vars to provide account info synchronously (eliminates race conditions in early telemetry)
-- **Changed**: BashTool now skips login shell (`-l` flag) by default when shell snapshot is available — performance improvement (previously required `CLAUDE_BASH_NO_LOGIN=true`)
-- **Changed**: Tool results larger than 50K characters now persisted to disk (previously 100K threshold)
-- **Improved**: `/model` picker now shows human-readable labels (e.g., "Sonnet 4.5") instead of raw model IDs for pinned versions, with upgrade hint when newer version available
-- **Fixed**: Security issue where `statusLine` and `fileSuggestion` hook commands could execute without workspace trust acceptance in interactive mode
-- **Fixed**: Duplicate `control_response` messages from WebSocket reconnects causing API 400 errors
-- **Fixed**: Slash command autocomplete crashing when a plugin's SKILL.md description is a YAML array or other non-string type
+- **新增**：用于外部构建的 `claude remote-control` 子命令——为所有用户启用本地环境服务
+- **新增**：从 npm 源安装插件时支持自定义 npm 注册表和特定版本固定
+- **新增**：SDK：`CLAUDE_CODE_ACCOUNT_UUID`、`CLAUDE_CODE_USER_EMAIL`、`CLAUDE_CODE_ORGANIZATION_UUID` 环境变量，用于同步提供账户信息（消除早期遥测中的竞争条件）
+- **变更**：BashTool 在 shell 快照可用时默认跳过登录 shell（`-l` 标志）——性能改善（之前需要 `CLAUDE_BASH_NO_LOGIN=true`）
+- **变更**：超过 50K 字符的工具结果现在持久化到磁盘（之前阈值为 100K）
+- **改进**：`/model` 选择器现在显示人类可读标签（如"Sonnet 4.5"）而非原始模型 ID，并在有更新版本时显示升级提示
+- **修复**：`statusLine` 和 `fileSuggestion` Hook 命令在交互式模式下未接受工作区信任即可执行的安全问题
+- **修复**：WebSocket 重连时重复 `control_response` 消息导致 API 400 错误
+- **修复**：插件的 SKILL.md 描述为 YAML 数组或其他非字符串类型时，斜杠命令自动补全崩溃
 
 ### v2.1.50 (2026-02-21)
 
-- **New**: `WorktreeCreate` and `WorktreeRemove` hook events — custom VCS setup/teardown when agent worktree isolation creates or removes worktrees
-- **New**: `isolation: worktree` in agent definitions for declarative worktree isolation (no longer requires setting in each call)
-- **New**: `claude agents` CLI command to list all configured agents
-- **New**: `startupTimeout` configuration for LSP servers
-- **New**: `CLAUDE_CODE_DISABLE_1M_CONTEXT` env var to disable 1M context window support
-- **New**: Pre-configured OAuth client credentials for MCP servers that don't support Dynamic Client Registration (Slack); use `--client-id` and `--client-secret` with `claude mcp add`
-- **New**: VSCode `/extra-usage` command support
-- **Changed**: Opus 4.6 (fast mode) now includes full 1M context window
-- **Changed**: `CLAUDE_CODE_SIMPLE` mode now also disables MCP tools, attachments, hooks, and CLAUDE.md loading for fully minimal experience
-- **Fixed**: Bug where resumed sessions could be invisible when working directory involved symlinks
-- **Fixed**: `disableAllHooks` setting to respect managed settings hierarchy (non-managed settings can no longer disable managed hooks)
-- **Fixed**: Linux: native modules not loading on systems with glibc older than 2.30 (RHEL 8)
-- **Fixed**: Memory leak in agent teams where completed teammate tasks were never garbage collected
-- **Fixed**: Memory leak where completed task state objects were never removed from AppState
-- **Fixed**: Memory leak where LSP diagnostic data was never cleaned up after delivery
-- **Fixed**: Unbounded memory growth in long sessions (file history snapshots capped; circular buffer fix; stream buffers released after use)
-- **Fixed**: MCP tools not discovered when tool search is enabled and prompt passed as launch argument
-- **Fixed**: Prompt suggestion cache regression that reduced cache hit rates
-- **Improved**: Startup performance for headless mode (`-p`) by deferring Yoga WASM and UI component imports
-- **Improved**: Memory usage during long sessions by clearing internal caches after compaction and clearing large tool results after processing
+- **新增**：`WorktreeCreate` 和 `WorktreeRemove` Hook 事件——智能体工作树隔离创建或删除工作树时的自定义 VCS 设置/清理
+- **新增**：智能体定义中的 `isolation: worktree`，用于声明式工作树隔离（不再需要在每次调用中设置）
+- **新增**：`claude agents` CLI 命令，用于列出所有已配置的智能体
+- **新增**：LSP 服务器的 `startupTimeout` 配置
+- **新增**：`CLAUDE_CODE_DISABLE_1M_CONTEXT` 环境变量，用于禁用 1M 上下文窗口支持
+- **新增**：为不支持动态客户端注册的 MCP 服务器（Slack）预配置 OAuth 客户端凭证；在 `claude mcp add` 中使用 `--client-id` 和 `--client-secret`
+- **变更**：Opus 4.6（快速模式）现在包含完整 1M 上下文窗口
+- **变更**：`CLAUDE_CODE_SIMPLE` 模式现在也禁用 MCP 工具、附件、Hooks 和 CLAUDE.md 加载，提供完全最小化体验
+- **修复**：工作目录涉及符号链接时恢复的会话可能不可见
+- **修复**：`disableAllHooks` 设置遵循托管设置层级（非托管设置不再能禁用托管 Hooks）
+- **修复**：Linux：glibc 版本低于 2.30（RHEL 8）的系统上原生模块无法加载
+- **修复**：智能体团队中已完成队友任务从未被垃圾回收的内存泄漏
+- **修复**：已完成任务状态对象从未从 AppState 移除的内存泄漏
+- **修复**：LSP 诊断数据在交付后从未清理的内存泄漏
+- **修复**：长会话中的无限内存增长（文件历史快照已上限；循环缓冲区修复；流缓冲区使用后释放）
+- **修复**：启用工具搜索且提示作为启动参数传入时 MCP 工具无法发现
+- **修复**：提示建议缓存回归，导致缓存命中率降低
+- **改进**：通过延迟 Yoga WASM 和 UI 组件导入，提升无头模式（`-p`）的启动性能
+- **改进**：压缩后清理内部缓存、处理后清理大型工具结果，改善长会话期间的内存用量
 
 ### v2.1.49 (2026-02-20)
 
-- **New**: `--worktree` / `-w` CLI flag to start Claude in an isolated git worktree
-- **New**: Subagents support `isolation: "worktree"` for working in a temporary git worktree
-- **New**: `background: true` field in agent definitions to always run as a background task
-- **New**: `ConfigChange` hook event — fires when configuration files change during a session (enterprise security auditing + blocking)
-- **New**: Plugins can ship `settings.json` for default configuration
-- **New**: `--from-pr` flag to resume sessions linked to a specific GitHub PR (+ sessions auto-linked when created via `gh pr create`)
-- **New**: `PreToolUse` hooks can return `additionalContext` to the model
-- **New**: `plansDirectory` setting to customize where plan files are stored
-- **New**: `auto:N` syntax for configuring MCP tool search auto-enable threshold
-- **New**: `Setup` hook event triggered via `--init`, `--init-only`, or `--maintenance` CLI flags
-- **Changed**: Sonnet 4.5 1M context removed from Max plan — Sonnet 4.6 now has 1M context (switch in `/model`)
-- **Changed**: Simple mode now includes file edit tool (not just Bash)
-- **Fixed**: File-not-found errors now suggest corrected paths when model drops repo folder
-- **Fixed**: Ctrl+C and ESC silently ignored when background agents running + main thread idle (double-press within 3s now kills all agents)
-- **Fixed**: Plugin `enable`/`disable` auto-detects correct scope (no longer defaults to user scope)
-- **Fixed**: Context window blocking limit calculated too aggressively (~65% instead of ~98%)
-- **Fixed**: Memory issues causing crashes with parallel subagents
-- **Fixed**: Memory leak in long sessions where stream resources not cleaned up
-- **Fixed**: `@` symbol incorrectly triggering file autocomplete in bash mode
-- **Fixed**: Background agent results returning raw transcript data instead of final answer
-- **Fixed**: Slash command autocomplete selecting wrong command (e.g. `/context` vs `/compact`)
-- **Improved**: `@` mention file suggestion speed (~3× faster in git repos)
-- **Improved**: MCP connection: `list_changed` notification support for dynamic tool updates without reconnection
-- **Improved**: Skills invoke progress display; skill suggestions prioritize recently/frequently used
-- **Improved**: Incremental output for async agents; token count includes background agent tokens
+- **新增**：`--worktree` / `-w` CLI 标志，在隔离的 git 工作树中启动 Claude
+- **新增**：子智能体支持 `isolation: "worktree"`，在临时 git 工作树中工作
+- **新增**：智能体定义中的 `background: true` 字段，始终作为后台任务运行
+- **新增**：`ConfigChange` Hook 事件——会话期间配置文件变更时触发（企业安全审计 + 阻止）
+- **新增**：插件可附带默认配置的 `settings.json`
+- **新增**：`--from-pr` 标志，用于恢复与特定 GitHub PR 关联的会话（+ 通过 `gh pr create` 创建时会话自动关联）
+- **新增**：`PreToolUse` Hooks 可向模型返回 `additionalContext`
+- **新增**：`plansDirectory` 设置，用于自定义计划文件存储位置
+- **新增**：`auto:N` 语法，用于配置 MCP 工具搜索自动启用阈值
+- **新增**：通过 `--init`、`--init-only` 或 `--maintenance` CLI 标志触发的 `Setup` Hook 事件
+- **变更**：从 Max 计划中移除 Sonnet 4.5 1M 上下文——Sonnet 4.6 现有 1M 上下文（在 `/model` 中切换）
+- **变更**：简单模式现在包含文件编辑工具（不只是 Bash）
+- **修复**：文件未找到错误现在在模型丢失仓库文件夹时建议更正路径
+- **修复**：后台智能体运行且主线程空闲时 Ctrl+C 和 ESC 静默忽略（3 秒内双击现在终止所有智能体）
+- **修复**：插件 `enable`/`disable` 自动检测正确范围（不再默认为用户范围）
+- **修复**：上下文窗口阻塞限制计算过于激进（约 65% 而非约 98%）
+- **修复**：并行子智能体导致崩溃的内存问题
+- **修复**：长会话中流资源未清理的内存泄漏
+- **修复**：`@` 符号在 bash 模式下错误触发文件自动补全
+- **修复**：后台智能体结果返回原始转录数据而非最终答案
+- **修复**：斜杠命令自动补全选择错误命令（如 `/context` 与 `/compact`）
+- **改进**：`@` 提及文件建议速度提升约 3 倍（git 仓库中）
+- **改进**：MCP 连接：`list_changed` 通知支持动态工具更新而无需重连
+- **改进**：技能调用进度显示；技能建议优先显示最近/频繁使用的技能
+- **改进**：异步智能体的增量输出；Token 计数包含后台智能体 Token
 
 ### v2.1.47 (2026-02-19)
 
-- **Improved**: VS Code plan preview auto-updates as Claude iterates; commenting enabled only when plan is ready for review; preview stays open when rejected for revision
-- **New**: `ctrl+f` kills all background agents simultaneously (replaces double-ESC); ESC now cancels main thread only, background agents keep running
-- **New**: `last_assistant_message` field added to Stop and SubagentStop hook inputs (access final response without parsing transcript files)
-- **New**: `chat:newline` keybinding action; `added_dirs` in statusline JSON workspace section
-- **Fixed**: Compaction failing when conversation contains many PDF documents (strips document blocks alongside images)
-- **Fixed**: Edit tool corrupting Unicode curly quotes (`"` `"` `'` `'`) by replacing with straight quotes
-- **Fixed**: Parallel file write/edit — single file failure no longer aborts sibling operations
-- **Fixed**: OSC 8 hyperlinks only clickable on first line when link text wraps across multiple terminal lines
-- **Fixed**: Bash permission classifier now validates match descriptions against actual input rules (prevents hallucinated permissions)
-- **Fixed**: Config backups timestamped and rotated (5 most recent kept) instead of overwriting
-- **Fixed**: Session name lost after context compaction; plan mode lost after compaction
-- **Fixed**: Hooks (PreToolUse, PostToolUse) silently failing on Windows (now uses Git Bash)
-- **Fixed**: Custom agents/skills not discovered in git worktrees (main repo `.claude/` now included)
-- **Fixed**: 70+ additional rendering, session, permission, and platform fixes
+- **改进**：VS Code 计划预览在 Claude 迭代时自动更新；仅在计划准备好审查时启用评论；被拒绝时预览保持打开以供修改
+- **新增**：`ctrl+f` 同时终止所有后台智能体（替换双 ESC）；ESC 现在只取消主线程，后台智能体继续运行
+- **新增**：Stop 和 SubagentStop Hook 输入中新增 `last_assistant_message` 字段（无需解析转录文件即可访问最终响应）
+- **新增**：`chat:newline` 快捷键动作；状态栏 JSON 工作区部分中的 `added_dirs`
+- **修复**：对话包含大量 PDF 文档时压缩失败（随图片一并清除文档块）
+- **修复**：Edit 工具将 Unicode 弯引号（`"` `"` `'` `'`）替换为直引号导致损坏
+- **修复**：并行文件写入/编辑——单个文件失败不再中止兄弟操作
+- **修复**：链接文本跨多个终端行换行时 OSC 8 超链接仅在第一行可点击
+- **修复**：Bash 权限分类器现在根据实际输入规则验证匹配描述（防止产生幻觉权限）
+- **修复**：配置备份带时间戳并轮换（保留最近 5 个）而非覆盖
+- **修复**：上下文压缩后会话名称丢失；压缩后计划模式丢失
+- **修复**：Windows 上 Hooks（PreToolUse、PostToolUse）静默失败（现在使用 Git Bash）
+- **修复**：自定义智能体/技能在 git 工作树中无法发现（现在包含主仓库 `.claude/`）
+- **修复**：70+ 个额外的渲染、会话、权限和平台修复
 
 ### v2.1.46 (2026-02-19)
 
-- **Fixed**: Orphaned Claude Code processes after terminal disconnect on macOS
-- **New**: Support for using claude.ai MCP connectors in Claude Code
+- **修复**：macOS 上终端断开后 Claude Code 进程变为孤儿进程
+- **新增**：支持在 Claude Code 中使用 claude.ai MCP 连接器
 
 ### v2.1.45 (2026-02-17)
 
-- **New**: Claude Sonnet 4.6 model support
-- **New**: `spinnerTipsOverride` setting — customize spinner tips via `tips` array, opt out of built-in tips with `excludeDefault: true`
-- **New**: SDK `SDKRateLimitInfo` and `SDKRateLimitEvent` types for rate limit status tracking (utilization, reset times, overage)
-- **Fixed**: Agent Teams teammates failing on Bedrock, Vertex, and Foundry (env vars now propagated to tmux-spawned processes)
-- **Fixed**: Sandbox "operation not permitted" errors on macOS temp file writes
-- **Fixed**: Task tool (backgrounded agents) crashing with `ReferenceError` on completion
-- **Improved**: Memory usage for large shell command outputs (RSS no longer grows unboundedly)
-- **Improved**: Startup performance (removed eager session history loading)
-- **Improved**: Plugin-provided commands, agents, and hooks available immediately after install (no restart needed)
+- **新增**：Claude Sonnet 4.6 模型支持
+- **新增**：`spinnerTipsOverride` 设置——通过 `tips` 数组自定义加载提示，使用 `excludeDefault: true` 退出内置提示
+- **新增**：SDK `SDKRateLimitInfo` 和 `SDKRateLimitEvent` 类型，用于速率限制状态追踪（利用率、重置时间、超额）
+- **修复**：Agent Teams 队友在 Bedrock、Vertex 和 Foundry 上失败（环境变量现在传播到 tmux 生成的进程）
+- **修复**：macOS 临时文件写入时沙盒"操作不允许"错误
+- **修复**：Task 工具（后台智能体）完成时因 `ReferenceError` 崩溃
+- **改进**：大型 shell 命令输出的内存用量（RSS 不再无限增长）
+- **改进**：启动性能（移除急于加载的会话历史）
+- **改进**：安装后插件提供的命令、智能体和 Hooks 立即可用（无需重启）
 
 ### v2.1.44 (2026-02-17)
 
-- Fixed: Auth refresh errors
+- 修复：身份验证刷新错误
 
 ### v2.1.43 (2026-02-17)
 
-- Fixed: AWS auth refresh hanging indefinitely (added 3-minute timeout)
-- Fixed: Structured-outputs beta header being sent unconditionally on Vertex/Bedrock
-- Fixed: Spurious warnings for non-agent markdown files in `.claude/agents/` directory
+- 修复：AWS 身份验证刷新无限期挂起（添加 3 分钟超时）
+- 修复：结构化输出 beta 头在 Vertex/Bedrock 上无条件发送
+- 修复：`.claude/agents/` 目录中非智能体 Markdown 文件产生误报警告
 
 ### v2.1.42 (2026-02-14)
 
-- **Improved**: Startup performance via deferred Zod schema construction (faster on large projects)
-- **Improved**: Prompt cache hit rate by moving date outside the system prompt (avoids daily cache invalidation)
-- **New**: Opus 4.6 effort callout for eligible users (one-time onboarding)
-- Fixed: `/resume` showing interrupt messages as session titles
-- Fixed: Image dimension limit errors now suggest using `/compact` instead of opaque failure
+- **改进**：通过延迟 Zod schema 构建提升启动性能（在大型项目上更快）
+- **改进**：将日期移到系统提示外以提高提示缓存命中率（避免每日缓存失效）
+- **新增**：符合条件用户的 Opus 4.6 效能说明（一次性引导）
+- 修复：`/resume` 将中断消息显示为会话标题
+- 修复：图片尺寸限制错误现在建议使用 `/compact` 而非不透明失败
 
 ### v2.1.41 (2026-02-13)
 
-- **New**: Guard against launching Claude Code inside another Claude Code session
-- **New**: `claude auth login`, `claude auth status`, `claude auth logout` CLI subcommands
-- **New**: Windows ARM64 (win32-arm64) native binary support
-- Added `speed` attribute to OTel events and trace spans for fast mode visibility
-- **Improved**: `/rename` auto-generates session name from conversation context when called without arguments
-- Improved narrow terminal layout for prompt footer
-- Fixed: Agent Teams using wrong model identifier for Bedrock, Vertex, and Foundry customers
-- Fixed: Crash when MCP tools return image content during streaming
-- Fixed: `/resume` session previews showing raw XML tags instead of readable command names
-- Fixed: Opus 4.6 launch announcement showing for Bedrock/Vertex/Foundry users
-- Fixed: Hook blocking errors (exit code 2) not showing stderr to the user
-- Fixed: Structured-outputs beta header sent unconditionally on Vertex/Bedrock
-- Fixed: File resolution for @-mentions with anchor fragments (e.g., `@README.md#installation`)
-- Fixed: FileReadTool blocking on FIFOs, `/dev/stdin`, and large files
-- Fixed: Background task notifications not delivered in streaming Agent SDK mode
-- Fixed: Auto-compact failure error notifications shown to users
-- Fixed: Stale permission rules not clearing when settings change on disk
-- Fixed: Permission wait time included in subagent elapsed time display
-- Fixed: Proactive ticks firing while in plan mode
-- Improved: Model error messages for Bedrock/Vertex/Foundry with fallback suggestions
+- **新增**：防止在另一个 Claude Code 会话内启动 Claude Code 的保护机制
+- **新增**：`claude auth login`、`claude auth status`、`claude auth logout` CLI 子命令
+- **新增**：Windows ARM64（win32-arm64）原生二进制支持
+- 在 OTel 事件和追踪 span 中添加 `speed` 属性，用于快速模式可见性
+- **改进**：不带参数调用时，`/rename` 从对话上下文自动生成会话名称
+- 改善窄终端的提示页脚布局
+- 修复：Agent Teams 对 Bedrock、Vertex 和 Foundry 客户使用错误的模型标识符
+- 修复：流式传输期间 MCP 工具返回图片内容时崩溃
+- 修复：`/resume` 会话预览显示原始 XML 标签而非可读命令名称
+- 修复：Bedrock/Vertex/Foundry 用户看到 Opus 4.6 发布公告
+- 修复：Hook 阻塞错误（退出代码 2）未向用户显示 stderr
+- 修复：结构化输出 beta 头在 Vertex/Bedrock 上无条件发送
+- 修复：带锚点片段的 @-提及文件解析（如 `@README.md#installation`）
+- 修复：FileReadTool 在 FIFO、`/dev/stdin` 和大文件上阻塞
+- 修复：流式 Agent SDK 模式下后台任务通知未送达
+- 修复：向用户显示自动压缩失败错误通知
+- 修复：磁盘上 settings 变更时旧权限规则未清除
+- 修复：子智能体已用时间显示中包含权限等待时间
+- 修复：计划模式期间主动 tick 触发
+- 改进：Bedrock/Vertex/Foundry 的模型错误消息，包含回退建议
 
 ### v2.1.39 (2026-02-10)
 
-- Improved: Terminal rendering performance
-- Fixed: Fatal errors being swallowed instead of displayed
-- Fixed: Process hanging after session close
-- Fixed: Character loss at terminal screen boundary
-- Fixed: Blank lines in verbose transcript view
+- 改进：终端渲染性能
+- 修复：致命错误被吞噬而非显示
+- 修复：会话关闭后进程挂起
+- 修复：终端屏幕边界处字符丢失
+- 修复：详细转录视图中的空行
 
 ### v2.1.38 (2026-02-10)
 
-- Fixed: VS Code terminal scroll-to-top regression introduced in 2.1.37
-- Fixed: Tab key queueing slash commands instead of autocompleting
-- Fixed: Bash permission matching for commands using environment variable wrappers
-- Fixed: Text between tool uses disappearing when not using streaming
-- **Security**: Improved heredoc delimiter parsing to prevent command smuggling
-- **Security**: Blocked writes to `.claude/skills` directory in sandbox mode
+- 修复：2.1.37 引入的 VS Code 终端滚动到顶部回归
+- 修复：Tab 键将斜杠命令排入队列而非自动补全
+- 修复：使用环境变量包装器的命令的 bash 权限匹配
+- 修复：不使用流式传输时工具调用之间的文本消失
+- **安全**：改进 heredoc 分隔符解析以防止命令走私
+- **安全**：在沙盒模式下阻止写入 `.claude/skills` 目录
 
 ### v2.1.37 (2026-02-08)
 
-- Fixed `/fast` not immediately available after enabling `/extra-usage`
+- 修复：启用 `/extra-usage` 后 `/fast` 未立即可用
 
 ### v2.1.36 (2026-02-08) ⭐
 
-- ⭐ **Fast mode now available for Opus 4.6** — Same model, faster output. Toggle with `/fast`. [Learn more](https://code.claude.com/docs/en/fast-mode)
+- ⭐ **Opus 4.6 的快速模式现已可用**——相同模型，更快输出。使用 `/fast` 切换。[了解更多](https://code.claude.com/docs/en/fast-mode)
 
 ### v2.1.34 (2026-02-07)
 
-- Fixed a crash when agent teams setting changed between renders
-- **Security fix**: Commands excluded from sandboxing (via `sandbox.excludedCommands` or `dangerouslyDisableSandbox`) could bypass the Bash ask permission rule when `autoAllowBashIfSandboxed` was enabled
+- 修复：智能体团队设置在渲染之间变更时崩溃
+- **安全修复**：启用 `autoAllowBashIfSandboxed` 时，从沙盒中排除的命令（通过 `sandbox.excludedCommands` 或 `dangerouslyDisableSandbox`）可能绕过 Bash 询问权限规则
 
 ### v2.1.33 (2026-02-06)
 
-**Highlights**:
-- **Agent teams fixes** — Improved tmux session handling and availability warnings
-- **New hook events** — `TeammateIdle` and `TaskCompleted` for multi-agent workflows
-- **Agent frontmatter enhancements**:
-  - `memory` field for user/project/local scope memory selection
-  - `Task(agent_type)` syntax to restrict sub-agent spawning in agent definitions
-- **Plugin identification** — Plugin name now shown in skill descriptions and `/skills` menu
-- **VSCode improvements** — Remote sessions support, branch/message count in session picker
-- Fixed: Thinking interruption, streaming abort, proxy settings, `/resume` XML markup
-- Improved: API connection errors show specific cause instead of generic message
-- Improved: Invalid managed settings errors now surfaced properly
-- Multiple stability fixes across agent workflows and tool interactions
+**亮点**：
+- **智能体团队修复**——改进 tmux 会话处理和可用性警告
+- **新增 Hook 事件**——多智能体工作流的 `TeammateIdle` 和 `TaskCompleted`
+- **智能体前置元数据增强**：
+  - 用于用户/项目/本地范围记忆选择的 `memory` 字段
+  - `Task(agent_type)` 语法，用于在智能体定义中限制子智能体生成
+- **插件标识**——插件名称现在显示在技能描述和 `/skills` 菜单中
+- **VSCode 改进**——远程会话支持、会话选择器中的分支/消息数量
+- 修复：思考中断、流式传输中止、代理设置、`/resume` XML 标记
+- 改进：API 连接错误现在显示具体原因而非通用消息
+- 改进：无效托管设置错误现在正确呈现
+- 跨智能体工作流和工具交互的多项稳定性修复
 
-### v2.1.32 (2026-02-05) ⭐ MAJOR
+### v2.1.32 (2026-02-05) ⭐ 重大更新
 
-**Highlights**:
-- ⭐ **Claude Opus 4.6 is now available!**
-- ⭐ **Agent teams research preview** — Multi-agent collaboration for complex tasks (token-intensive, requires `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1`)
-- ⭐ **Automatic memory recording and recall** — Claude now automatically records and recalls memories as it works
-- **"Summarize from here"** — Message selector now allows partial conversation summarization
-- Skills from `.claude/skills/` in `--add-dir` directories auto-load
-- Fixed: `@` file completion showing incorrect relative paths from subdirectories
-- Fixed: Bash tool no longer throws "Bad substitution" errors with JavaScript template literals (e.g., `${index + 1}`)
-- Improved: Skill character budget now scales with context window (2% of context)
-- Improved: `--resume` re-uses `--agent` value from previous conversation by default
-- Fixed: Thai/Lao spacing vowels rendering issues
-- [VSCode] Fixed slash commands incorrectly executing when pressing Enter with preceding text
-- [VSCode] Added spinner when loading past conversations list
+**亮点**：
+- ⭐ **Claude Opus 4.6 现已可用！**
+- ⭐ **智能体团队研究预览**——复杂任务的多智能体协作（Token 密集型，需要 `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1`）
+- ⭐ **自动记忆记录和召回**——Claude 现在在工作时自动记录和召回记忆
+- **"从此处摘要"**——消息选择器现在允许部分对话摘要
+- `--add-dir` 目录中 `.claude/skills/` 的技能自动加载
+- 修复：`@` 文件补全在子目录中显示错误的相对路径
+- 修复：Bash 工具不再因 JavaScript 模板字面量（如 `${index + 1}`）抛出"Bad substitution"错误
+- 改进：技能字符预算现在随上下文窗口扩展（上下文的 2%）
+- 改进：`--resume` 默认重用之前对话的 `--agent` 值
+- 修复：泰语/老挝语间距元音渲染问题
+- 【VSCode】修复按 Enter 时有前置文本的斜杠命令错误执行
+- 【VSCode】加载过去对话列表时添加加载动画
 
 ### v2.1.31 (2026-02-03)
 
-- **Session resume hint** — Exit message now shows how to continue your conversation later
-- **Full-width (zenkaku) space support** — Added Japanese IME checkbox selection support
-- Fixed: PDF too large errors permanently locking sessions (now recoverable without starting new conversation)
-- Fixed: Bash commands incorrectly reporting "Read-only file system" when sandbox enabled
-- Fixed: Plan mode crash when project config missing default fields
-- Fixed: `temperatureOverride` being silently ignored in streaming API path
-- Fixed: LSP shutdown/exit compatibility with strict language servers
-- Improved: System prompts now guide model toward Read/Edit/Glob/Grep tools instead of bash equivalents
-- Improved: PDF and request size error messages show actual limits (100 pages, 20MB)
-- Reduced: Layout jitter when spinner appears/disappears during streaming
+- **会话恢复提示**——退出消息现在显示如何稍后继续对话
+- **全角空格支持**——新增日语 IME 复选框选择支持
+- 修复：PDF 过大错误永久锁定会话（现在无需新建对话即可恢复）
+- 修复：启用沙盒时 bash 命令错误报告"只读文件系统"
+- 修复：项目配置缺少默认字段时计划模式崩溃
+- 修复：流式 API 路径中 `temperatureOverride` 被静默忽略
+- 修复：与严格语言服务器的 LSP 关闭/退出兼容性
+- 改进：系统提示现在引导模型使用 Read/Edit/Glob/Grep 工具而非 bash 等效命令
+- 改进：PDF 和请求大小错误消息显示实际限制（100 页、20MB）
+- 减少：流式传输期间加载动画出现/消失时的布局抖动
 
 ### v2.1.30 (2026-02-02)
 
-- **⭐ PDF page range support** — `pages` parameter in Read tool for PDFs (e.g., `pages: "1-5"`) with lightweight references for large PDFs (>10 pages)
-- **⭐ Pre-configured OAuth for MCP servers** — Built-in client credentials for servers without Dynamic Client Registration (Slack support via `--client-id` and `--client-secret`)
-- **⭐ New `/debug` command** — Claude can help troubleshoot current session issues
-- **Additional git flags** — Support for `git log` and `git show` read-only flags (`--topo-order`, `--cherry-pick`, `--format`, `--raw`)
-- **Task tool metrics** — Results now include token count, tool uses, and duration
-- **Reduced motion mode** — New config option for accessibility
-- Fixed: Phantom "(no content)" text blocks in API history (reduces token waste)
-- Fixed: Prompt cache not invalidating when tool schemas changed
-- Fixed: 400 errors after `/login` with thinking blocks
-- Fixed: Session resume hang with corrupted `parentUuid` cycles
-- Fixed: Rate limit showing wrong "/upgrade" for Max 20x users
-- Fixed: Permission dialogs stealing focus while typing
-- Fixed: Subagents unable to access SDK MCP tools
-- Fixed: Windows users with `.bashrc` unable to run bash
-- Improved: Memory usage for `--resume` (68% reduction for many sessions)
-- Improved: TaskStop displays stopped command description instead of generic message
-- Changed: `/model` executes immediately instead of queuing
-- [VSCode] Added multiline input in "Other" text fields (Shift+Enter for new lines)
-- [VSCode] Fixed duplicate sessions in session list
+- **⭐ PDF 页面范围支持**——Read 工具中 PDF 的 `pages` 参数（如 `pages: "1-5"`），大型 PDF（>10 页）提供轻量引用
+- **⭐ MCP 服务器预配置 OAuth**——为不支持动态客户端注册的服务器内置客户端凭证（通过 `--client-id` 和 `--client-secret` 支持 Slack）
+- **⭐ 新增 `/debug` 命令**——Claude 可帮助排查当前会话问题
+- **额外 git 标志**——支持 `git log` 和 `git show` 只读标志（`--topo-order`、`--cherry-pick`、`--format`、`--raw`）
+- **Task 工具指标**——结果现在包含 Token 计数、工具使用次数和时长
+- **减少动效模式**——用于可访问性的新配置选项
+- 修复：API 历史中的幽灵"(no content)"文本块（减少 Token 浪费）
+- 修复：工具 schema 变更时提示缓存未失效
+- 修复：带思考块的 `/login` 后出现 400 错误
+- 修复：`parentUuid` 循环损坏导致的会话恢复挂起
+- 修复：Max 20x 用户速率限制显示错误的"/upgrade"
+- 修复：权限对话框在输入时抢占焦点
+- 修复：子智能体无法访问 SDK MCP 工具
+- 修复：有 `.bashrc` 的 Windows 用户无法运行 bash
+- 改进：`--resume` 的内存用量（减少 68%，适用于多个会话）
+- 改进：TaskStop 显示已停止的命令描述而非通用消息
+- 变更：`/model` 立即执行而非排队
+- 【VSCode】在"其他"文本字段中添加多行输入（Shift+Enter 换行）
+- 【VSCode】修复会话列表中的重复会话
 
 ### v2.1.29 (2026-01-31)
 
-- **Performance**: Fixed startup performance issues when resuming sessions with saved hook context
-- Significantly improved session recovery speed for long-duration sessions
+- **性能**：修复恢复带有已保存 Hook 上下文的会话时的启动性能问题
+- 大幅提升长时间会话的恢复速度
 
 ### v2.1.27 (2026-01-29)
 
-- **New**: `--from-pr` flag to resume sessions linked to a specific GitHub PR number or URL
-- **New**: Sessions automatically linked to PRs when created via `gh pr create`
-- Added tool call failures and denials to debug logs
-- Fixed context management validation error for Bedrock/Vertex gateway users
-- Fixed `/context` command not displaying colored output
-- Fixed status bar duplicating background task indicator when PR status was shown
-- [Windows] Fixed bash command execution failing for users with `.bashrc` files
-- [Windows] Fixed console windows flashing when spawning child processes
-- [VSCode] Fixed OAuth token expiration causing 401 errors after extended sessions
+- **新增**：`--from-pr` 标志，用于恢复与特定 GitHub PR 编号或 URL 关联的会话
+- **新增**：通过 `gh pr create` 创建时会话自动关联到 PR
+- 在调试日志中添加工具调用失败和拒绝记录
+- 修复：Bedrock/Vertex 网关用户的上下文管理验证错误
+- 修复：`/context` 命令未显示彩色输出
+- 修复：显示 PR 状态时状态栏重复显示后台任务指示器
+- 【Windows】修复有 `.bashrc` 文件的用户 bash 命令执行失败
+- 【Windows】修复生成子进程时控制台窗口闪烁
+- 【VSCode】修复扩展会话后 OAuth Token 过期导致 401 错误
 
 ### v2.1.25 (2026-01-30)
 
-- Fixed beta header validation for Bedrock and Vertex gateway users — Ensures `CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS=1` environment variable works correctly
+- 修复：Bedrock 和 Vertex 网关用户的 beta 头验证——确保 `CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS=1` 环境变量正常工作
 
 ### v2.1.23 (2026-01-29)
 
-- **Customizable spinner verbs** — New `spinnerVerbs` setting allows personalization of spinner action words
-- mTLS and corporate proxy connectivity fixes — Improved support for users behind corporate proxies with client certificates
-- Per-user temp directory isolation — Prevents permission conflicts on shared systems
-- Improved terminal rendering performance — Optimized screen data layout for faster updates
-- Fixed: Prompt caching race condition causing 400 errors
-- Fixed: Async hooks not canceling when headless streaming ends
-- Fixed: Tab completion not updating input field
-- Fixed: Ripgrep search timeouts returning empty results instead of errors
-- Changed: Bash commands show timeout duration alongside elapsed time
-- Changed: Merged PRs show purple status indicator in prompt footer
-- [IDE] Fixed: Model options displaying incorrect region strings for Bedrock users in headless mode
+- **可自定义的加载动画动词**——新增 `spinnerVerbs` 设置，允许个性化加载动画动作词
+- mTLS 和企业代理连接修复——改进对带有客户端证书的企业代理用户的支持
+- 每用户临时目录隔离——防止共享系统上的权限冲突
+- 改进终端渲染性能——优化屏幕数据布局以加快更新速度
+- 修复：提示缓存竞争条件导致 400 错误
+- 修复：无头流式传输结束时异步 Hooks 未取消
+- 修复：Tab 补全未更新输入字段
+- 修复：Ripgrep 搜索超时返回空结果而非错误
+- 变更：bash 命令在已用时间旁边显示超时时长
+- 变更：已合并的 PR 在提示页脚显示紫色状态指示器
+- 【IDE】修复：无头模式下 Bedrock 用户的模型选项显示错误区域字符串
 
 ### v2.1.22 (2026-01-28)
 
-- Improved task UI performance with virtualization — Task list now uses virtual scrolling for better responsiveness with many tasks
-- Vim selection and deletion fixes — Fixed visual mode selections and `dw` command behavior
-- LSP improvements: Kotlin support, UTF-16 range handling, better error recovery
-- Tasks now consistently use `task-N` IDs instead of internal UUIDs
-- Fixed: `#` keyboard shortcut not working in task creation fields
-- Fixed: Compact tool use rendering in chat history
-- Fixed: Session URL escaping in git commit messages
-- Fixed: Command output handling improvements
+- 虚拟化改进任务 UI 性能——任务列表现在使用虚拟滚动，多任务时响应更佳
+- Vim 选择和删除修复——修复可视模式选择和 `dw` 命令行为
+- LSP 改进：Kotlin 支持、UTF-16 范围处理、更好的错误恢复
+- 任务现在统一使用 `task-N` ID 而非内部 UUID
+- 修复：`#` 键盘快捷键在任务创建字段中不工作
+- 修复：聊天历史中工具使用的紧凑渲染
+- 修复：git 提交消息中的会话 URL 转义
+- 修复：命令输出处理改进
 
 ### v2.1.21 (2026-01-28)
 
-- **Skills/commands can specify required/recommended Claude Code version** — Use `minClaudeCodeVersion` and `recommendedClaudeCodeVersion` in frontmatter
-- **New TaskCreate fields**: `category` (testing, implementation, documentation, etc.), `checklist` (subtasks as markdown list), `parentId` (task hierarchy)
-- **Automatic Claude Code update checking** at session start (respects auto-update settings)
-- Tasks appear in `/context` output with 'Disable tasks' shortcut for quick toggling
-- Improved task UI: Delete button added, better empty state messaging
-- Fixed: Task deletion now properly removes all related task data
-- Fixed: Shell environment variables expanded correctly in hook commands
-- Fixed: Pasted URLs with parentheses properly formatted in markdown
-- Fixed: Bash output capture for commands with large output
+- **技能/命令可指定所需/推荐的 Claude Code 版本**——在前置元数据中使用 `minClaudeCodeVersion` 和 `recommendedClaudeCodeVersion`
+- **新增 TaskCreate 字段**：`category`（测试、实现、文档等）、`checklist`（Markdown 列表格式的子任务）、`parentId`（任务层级）
+- **会话启动时自动检查 Claude Code 更新**（遵守自动更新设置）
+- 任务出现在 `/context` 输出中，带有"禁用任务"快捷方式以便快速切换
+- 改进任务 UI：添加删除按钮，改善空状态消息
+- 修复：任务删除现在正确移除所有相关任务数据
+- 修复：Hook 命令中的 shell 环境变量正确展开
+- 修复：带括号的粘贴 URL 在 Markdown 中格式化正确
+- 修复：大输出命令的 bash 输出捕获
 
 ### v2.1.20 (2026-01-27)
 
-- **New**: TaskUpdate tool can delete tasks via `status="deleted"`
-- **New**: PR review status indicator in prompt footer — Shows PR state (approved, changes requested, pending, draft) as colored dot with clickable link
-- Arrow key history navigation in vim normal mode when cursor cannot move further
-- External editor shortcut (Ctrl+G) added to help menu
-- Support for loading CLAUDE.md from `--add-dir` directories (requires `CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD=1`)
-- Fixed: Session compaction issues causing full history load instead of compact summary
-- Fixed: Agents ignoring user messages while actively working
-- Fixed: Wide character (emoji, CJK) rendering artifacts
-- Improved: Task list dynamically adjusts to terminal height
-- Changed: Background agents prompt for tool permissions before launching
-- Changed: Config backups timestamped and rotated (keeps 5 most recent)
+- **新增**：TaskUpdate 工具可通过 `status="deleted"` 删除任务
+- **新增**：提示页脚中的 PR 审查状态指示器——以彩色点和可点击链接显示 PR 状态（已批准、请求变更、待审查、草稿）
+- vim 正常模式下光标无法移动时，方向键进行历史导航
+- 在帮助菜单中添加外部编辑器快捷键（Ctrl+G）
+- 支持从 `--add-dir` 目录加载 CLAUDE.md（需要 `CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD=1`）
+- 修复：会话压缩问题导致加载完整历史而非压缩摘要
+- 修复：智能体在主动工作时忽略用户消息
+- 修复：宽字符（emoji、CJK）渲染异常
+- 改进：任务列表动态适应终端高度
+- 变更：后台智能体在启动前提示工具权限
+- 变更：配置备份带时间戳并轮换（保留最近 5 个）
 
 ### v2.1.19 (2026-01-25)
 
-- **New**: `CLAUDE_CODE_ENABLE_TASKS` environment variable — Set to `false` to temporarily revert to old task system
-- **New**: Argument shorthand in custom commands — Use `$0`, `$1`, etc. instead of verbose syntax
-- [VSCode] Session forking and rewind functionality enabled for all users
-- Fixed: Crashes on processors without AVX instruction support
-- Fixed: Dangling Claude Code processes when terminal closed (SIGKILL fallback)
-- Fixed: `/rename` and `/tag` not updating correct session when resuming from different directory (git worktrees)
-- Fixed: Resuming sessions by custom title from different directory
-- Fixed: Pasted text lost when using prompt stash (Ctrl+S) and restore
-- Fixed: Agent list displaying "Sonnet (default)" instead of "Inherit (default)" for agents without explicit model
-- Fixed: Backgrounded hook commands blocking session instead of returning early
-- Fixed: File write preview omitting empty lines
-- Changed: Skills without additional permissions/hooks allowed without approval
-- [SDK] Added replay of queued_command attachment messages when `replayUserMessages` enabled
+- **新增**：`CLAUDE_CODE_ENABLE_TASKS` 环境变量——设置为 `false` 可临时恢复旧任务系统
+- **新增**：自定义命令中的参数简写——使用 `$0`、`$1` 等代替冗长语法
+- 【VSCode】为所有用户启用会话分叉和回滚功能
+- 修复：不支持 AVX 指令的处理器上崩溃
+- 修复：终端关闭时 Claude Code 进程悬空（SIGKILL 回退）
+- 修复：从不同目录恢复时 `/rename` 和 `/tag` 未更新正确的会话（git 工作树）
+- 修复：从不同目录按自定义标题恢复会话
+- 修复：使用提示暂存（Ctrl+S）和恢复时粘贴的文本丢失
+- 修复：智能体列表显示"Sonnet（默认）"而非"继承（默认）"（针对未明确指定模型的智能体）
+- 修复：后台化的 Hook 命令阻塞会话而非提前返回
+- 修复：文件写入预览省略空行
+- 变更：不需要额外权限/Hooks 的技能无需审批即可使用
+- 【SDK】当 `replayUserMessages` 启用时，新增已排队命令附件消息的重放
 
-**⚠️ Breaking**:
-- Indexed argument syntax changed: `$ARGUMENTS.0` → `$ARGUMENTS[0]` (bracket syntax)
+**⚠️ 重大变更**：
+- 索引参数语法变更：`$ARGUMENTS.0` → `$ARGUMENTS[0]`（括号语法）
 
 ### v2.1.18 (2026-01-24) ⭐
 
-- ⭐ **Customizable keyboard shortcuts** — Configure keybindings per context, create chord sequences, personalize workflow
-- Run `/keybindings` to get started
-- Learn more: [code.claude.com/docs/en/keybindings](https://code.claude.com/docs/en/keybindings)
+- ⭐ **可自定义键盘快捷键**——按上下文配置快捷键绑定，创建和弦序列，个性化工作流
+- 运行 `/keybindings` 开始使用
+- 了解更多：[code.claude.com/docs/en/keybindings](https://code.claude.com/docs/en/keybindings)
 
 ### v2.1.17 (2026-01-23)
 
-- Fix: Crashes on processors without AVX instruction support
+- 修复：不支持 AVX 指令的处理器上崩溃
 
 ### v2.1.16 (2026-01-22) ⭐
 
-- ⭐ **New task management system** with dependency tracking
-- [VSCode] Native plugin management support
-- [VSCode] OAuth users can browse and resume remote sessions from Sessions dialog
-- Fixed: Out-of-memory crashes when resuming sessions with heavy subagent usage
-- Fixed: "Context remaining" warning not hidden after `/compact`
-- [IDE] Fixed race condition on Windows where sidebar view container wouldn't appear
+- ⭐ **带依赖追踪的新任务管理系统**
+- 【VSCode】原生插件管理支持
+- 【VSCode】OAuth 用户可从会话对话框浏览和恢复远程会话
+- 修复：恢复大量使用子智能体的会话时内存溢出崩溃
+- 修复：`/compact` 后"剩余上下文"警告未隐藏
+- 【IDE】修复：Windows 上侧边栏视图容器不出现的竞争条件
 
 ### v2.1.15 (2026-01-22)
 
-- **⚠️ Deprecation notice for npm installations** — Run `claude install` or see [docs](https://docs.anthropic.com/en/docs/claude-code/getting-started)
-- Improved UI rendering performance with React Compiler
-- Fixed: MCP stdio server timeout not killing child process, which could cause UI freezes
+- **⚠️ npm 安装弃用通知**——运行 `claude install` 或查看[文档](https://docs.anthropic.com/en/docs/claude-code/getting-started)
+- 使用 React Compiler 改进 UI 渲染性能
+- 修复：MCP stdio 服务器超时未终止子进程，可能导致 UI 冻结
 
 ### v2.1.14 (2026-01-21)
 
-- **History-based autocomplete in bash mode** — Type `!` followed by a partial command and press Tab to complete from bash history
-- Search functionality in installed plugins list
-- Support for pinning plugins to specific git commit SHAs for exact version control
-- Fixed: Context window blocking limit calculated too aggressively (~65% instead of ~98%)
-- Fixed: Memory issues and leaks in long-running sessions with parallel subagents
-- Fixed: `@` symbol incorrectly triggering file autocomplete in bash mode
-- Fixed: Slash command autocomplete selecting wrong command for similar names
-- Improved: Backspace deletes pasted text as single token
+- **bash 模式中基于历史的自动补全**——输入 `!` 后跟部分命令，按 Tab 从 bash 历史补全
+- 已安装插件列表中的搜索功能
+- 支持将插件固定到特定 git 提交 SHA 以进行精确版本控制
+- 修复：上下文窗口阻塞限制计算过于激进（约 65% 而非约 98%）
+- 修复：长时间运行的并行子智能体会话中的内存问题和泄漏
+- 修复：`@` 符号在 bash 模式下错误触发文件自动补全
+- 修复：斜杠命令自动补全对相似名称选择错误命令
+- 改进：Backspace 将粘贴的文本作为单个 Token 删除
 
 ### v2.1.12 (2026-01-18)
 
-- Bug fix: Message rendering
+- Bug 修复：消息渲染
 
 ### v2.1.11 (2026-01-17)
 
-- Fix: Excessive MCP connection requests for HTTP/SSE transports
+- 修复：HTTP/SSE 传输的 MCP 连接请求过多
 
 ### v2.1.10 (2026-01-17)
 
-- New `Setup` hook event (--init, --init-only, --maintenance flags)
-- Keyboard shortcut 'c' to copy OAuth URL
-- File suggestions show as removable attachments
-- [VSCode] Plugin install count + trust warnings
+- 新增 `Setup` Hook 事件（--init、--init-only、--maintenance 标志）
+- 键盘快捷键 'c' 用于复制 OAuth URL
+- 文件建议显示为可移除附件
+- 【VSCode】插件安装数量 + 信任警告
 
 ### v2.1.9 (2026-01-16)
 
-- **`auto:N` syntax for MCP tool search threshold** — Configure when Tool Search activates: `ENABLE_TOOL_SEARCH=auto:5` (5% context), `auto:10` (default), `auto:20` (conservative). See [architecture.md](./architecture.md#mcp-tool-search-lazy-loading) for details.
-- `plansDirectory` setting for custom plan file locations
-- Session URL attribution to commits/PRs from web sessions
-- PreToolUse hooks can return `additionalContext`
-- `${CLAUDE_SESSION_ID}` string substitution for skills
+- **MCP 工具搜索阈值的 `auto:N` 语法**——配置工具搜索激活时机：`ENABLE_TOOL_SEARCH=auto:5`（5% 上下文）、`auto:10`（默认）、`auto:20`（保守）。详见 [architecture.md](./architecture.md#mcp-tool-search-lazy-loading)
+- `plansDirectory` 设置用于自定义计划文件位置
+- 从 Web 会话向提交/PR 添加会话 URL 归因
+- PreToolUse Hooks 可返回 `additionalContext`
+- 技能的 `${CLAUDE_SESSION_ID}` 字符串替换
 
 ### v2.1.7 (2026-01-15)
 
-- `showTurnDuration` setting to hide turn duration messages
-- **MCP Tool Search auto mode enabled by default** — Lazy loading for MCP tools when definitions exceed 10% of context. Based on Anthropic's [Advanced Tool Use](https://www.anthropic.com/engineering/advanced-tool-use) API feature. Result: **85% token reduction** on tool definitions, improved tool selection accuracy (Opus 4: 49%→74%, Opus 4.5: 79.5%→88.1%)
-- Inline display of agent final response in task notifications
+- `showTurnDuration` 设置用于隐藏轮次时长消息
+- **MCP 工具搜索自动模式默认启用**——当工具定义超过上下文的 10% 时，MCP 工具延迟加载。基于 Anthropic 的[高级工具使用](https://www.anthropic.com/engineering/advanced-tool-use) API 功能。结果：工具定义的 **Token 减少 85%**，工具选择准确性改善（Opus 4：49%→74%，Opus 4.5：79.5%→88.1%）
+- 在任务通知中内联显示智能体最终响应
 
-**⚠️ Breaking**:
-- OAuth/API Console URLs changed: `console.anthropic.com` → `platform.claude.com`
-- Security fix: Wildcard permission rules could match compound commands
+**⚠️ 重大变更**：
+- OAuth/API 控制台 URL 变更：`console.anthropic.com` → `platform.claude.com`
+- 安全修复：通配符权限规则可能匹配复合命令
 
 ### v2.1.6 (2026-01-14)
 
-- Search functionality in `/config` command
-- Date range filtering in `/stats` (press `r` to cycle)
-- Auto-discovery of skills from nested `.claude/skills` directories
-- Updates section in `/doctor` showing auto-update channel
+- `/config` 命令中的搜索功能
+- `/stats` 中的日期范围过滤（按 `r` 循环）
+- 从嵌套 `.claude/skills` 目录自动发现技能
+- `/doctor` 中显示自动更新频道的更新部分
 
-**⚠️ Security Fix**: Permission bypass via shell line continuation
+**⚠️ 安全修复**：通过 shell 行继续的权限绕过
 
 ### v2.1.5 (2026-01-13)
 
-- `CLAUDE_CODE_TMPDIR` environment variable for custom temp directory
+- `CLAUDE_CODE_TMPDIR` 环境变量，用于自定义临时目录
 
 ### v2.1.4 (2026-01-12)
 
-- `CLAUDE_CODE_DISABLE_BACKGROUND_TASKS` environment variable
+- `CLAUDE_CODE_DISABLE_BACKGROUND_TASKS` 环境变量
 
 ### v2.1.3 (2026-01-11)
 
-- Merged slash commands and skills (simplified mental model)
-- Release channel toggle (stable/latest) in `/config`
-- `/doctor` warnings for unreachable permission rules
+- 合并斜杠命令和技能（简化心智模型）
+- `/config` 中的发布频道切换（稳定版/最新版）
+- `/doctor` 对不可达权限规则的警告
 
 ### v2.1.2 (2026-01-10)
 
-- Windows Package Manager (winget) support
-- Clickable hyperlinks for file paths (OSC 8 terminals)
-- Shift+Tab shortcut in plan mode for auto-accept edits
-- Large bash outputs saved to disk instead of truncated
+- Windows 包管理器（winget）支持
+- 文件路径的可点击超链接（OSC 8 终端）
+- 计划模式中的 Shift+Tab 快捷键用于自动接受编辑
+- 大型 bash 输出保存到磁盘而非截断
 
-**⚠️ Breaking**:
-- Security fix: Command injection in bash command processing
-- Deprecated: `C:\ProgramData\ClaudeCode` managed settings path
+**⚠️ 重大变更**：
+- 安全修复：bash 命令处理中的命令注入
+- 已弃用：`C:\ProgramData\ClaudeCode` 托管设置路径
 
-### v2.1.0 (2026-01-08) ⭐ MAJOR
+### v2.1.0 (2026-01-08) ⭐ 重大更新
 
-**Highlights**:
-- ⭐ **Automatic skill hot-reload** — Skills modified in `~/.claude/skills` or `.claude/skills` immediately available
-- ⭐ **Shift+Enter works OOTB** in iTerm2, WezTerm, Ghostty, Kitty
-- ⭐ **New Vim motions**: `;` `,` `y` `yy` `Y` `p` `P` text objects (`iw` `aw` `i"` etc.) `>>` `<<` `J`
-- **Unified Ctrl+B** for backgrounding all running tasks
-- `/plan` command shortcut to enable plan mode
-- Slash command autocomplete anywhere in input
-- `language` setting for response language (e.g., `language: "japanese"`)
-- Skills `context: fork` support for forked sub-agent context
-- Hooks support in agent/skill/command frontmatter
-- MCP `list_changed` notifications support
-- `/teleport` and `/remote-env` commands for web sessions
-- Disable specific agents with `Task(AgentName)` syntax
-- `--tools` flag in interactive mode
-- YAML-style lists in frontmatter `allowed-tools`
+**亮点**：
+- ⭐ **自动技能热重载**——在 `~/.claude/skills` 或 `.claude/skills` 中修改的技能立即可用
+- ⭐ **Shift+Enter 在 iTerm2、WezTerm、Ghostty、Kitty 中开箱即用**
+- ⭐ **新增 Vim 动作**：`;` `,` `y` `yy` `Y` `p` `P` 文本对象（`iw` `aw` `i"` 等）`>>` `<<` `J`
+- **统一的 Ctrl+B** 用于后台化所有运行中的任务
+- `/plan` 命令快捷方式用于启用计划模式
+- 斜杠命令在输入任意位置自动补全
+- 响应语言的 `language` 设置（如 `language: "japanese"`）
+- 技能 `context: fork` 支持分叉子智能体上下文
+- 智能体/技能/命令前置元数据中的 Hooks 支持
+- MCP `list_changed` 通知支持
+- Web 会话的 `/teleport` 和 `/remote-env` 命令
+- 使用 `Task(AgentName)` 语法禁用特定智能体
+- 交互式模式中的 `--tools` 标志
+- 前置元数据 `allowed-tools` 中的 YAML 样式列表
 
-**⚠️ Breaking**:
-- OAuth URLs: `console.anthropic.com` → `platform.claude.com`
-- Removed permission prompt for entering plan mode
-- [SDK] Minimum zod peer dependency: `^4.0.0`
+**⚠️ 重大变更**：
+- OAuth URL：`console.anthropic.com` → `platform.claude.com`
+- 移除进入计划模式的权限提示
+- 【SDK】最低 zod 对等依赖：`^4.0.0`
 
 ---
 
-## 2.0.x Series (November 2025 - January 2026)
+## 2.0.x 系列（2025 年 11 月 - 2026 年 1 月）
 
 ### v2.0.76 (2026-01-05)
 
-- Fix: macOS code-sign warning with Claude in Chrome
+- 修复：Chrome 中 Claude 的 macOS 代码签名警告
 
 ### v2.0.74 (2026-01-04) ⭐
 
-- ⭐ **LSP (Language Server Protocol) tool** for code intelligence (go-to-definition, find references, hover)
-- `/terminal-setup` for Kitty, Alacritty, Zed, Warp
-- Ctrl+T in `/theme` to toggle syntax highlighting
-- Grouped skills/agents by source in `/context`
+- ⭐ **LSP（语言服务器协议）工具**，提供代码智能（转到定义、查找引用、悬停）
+- Kitty、Alacritty、Zed、Warp 的 `/terminal-setup`
+- `/theme` 中的 Ctrl+T 用于切换语法高亮
+- `/context` 中按来源分组显示技能/智能体
 
 ### v2.0.72 (2026-01-02) ⭐
 
-- ⭐ **Claude in Chrome (Beta)** — Control browser directly from Claude Code
-- Reduced terminal flickering
-- QR code for mobile app download
-- Thinking toggle changed: Tab → Alt+T
+- ⭐ **Chrome 中的 Claude（测试版）**——直接从 Claude Code 控制浏览器
+- 减少终端闪烁
+- 移动应用下载的二维码
+- 思考切换键变更：Tab → Alt+T
 
 ### v2.0.70 (2025-12-30)
 
-- Enter key accepts/submits prompt suggestions immediately
-- Wildcard syntax `mcp__server__*` for MCP tool permissions
-- Auto-update toggle for plugin marketplaces
-- 3x memory usage improvement for large conversations
+- Enter 键立即接受/提交提示建议
+- MCP 工具权限的通配符语法 `mcp__server__*`
+- 插件市场的自动更新切换
+- 大型对话内存用量改善 3 倍
 
-**⚠️ Breaking**: Removed `#` shortcut for quick memory entry
+**⚠️ 重大变更**：移除 `#` 快捷键用于快速记忆输入
 
 ### v2.0.67 (2025-12-26) ⭐
 
-- ⭐ **Thinking mode enabled by default for Opus 4.5**
-- Thinking config moved to `/config`
-- Search in `/permissions` with `/` shortcut
+- ⭐ **Opus 4.5 默认启用思考模式**
+- 思考配置移至 `/config`
+- 在 `/permissions` 中使用 `/` 快捷键搜索
 
 ### v2.0.64 (2025-12-22) ⭐
 
-- ⭐ **Instant auto-compacting**
-- ⭐ **Async agents and bash commands** with wake-up messages
-- `/stats` with usage graphs, streaks, favorite model
-- Named sessions: `/rename`, `/resume <name>`
-- Support for `.claude/rules/` directory
-- Image dimension metadata for coordinate mappings
+- ⭐ **即时自动压缩**
+- ⭐ **异步智能体和 bash 命令**，带唤醒消息
+- `/stats` 包含用量图表、连续使用记录、最爱模型
+- 命名会话：`/rename`、`/resume <name>`
+- 支持 `.claude/rules/` 目录
+- 坐标映射的图片尺寸元数据
 
 ### v2.0.60 (2025-12-18) ⭐
 
-- ⭐ **Background agents** — Agents run while you work
-- `--disable-slash-commands` CLI flag
-- Model name in Co-Authored-By commits
+- ⭐ **后台智能体**——智能体在您工作时运行
+- `--disable-slash-commands` CLI 标志
+- 提交的 Co-Authored-By 中包含模型名称
 - `/mcp enable|disable [server-name]`
 
-### v2.0.51 (2025-12-10) ⭐ MAJOR
+### v2.0.51 (2025-12-10) ⭐ 重大更新
 
-- ⭐ **Opus 4.5 released**
-- ⭐ **Claude Code for Desktop**
-- Updated usage limits for Opus 4.5
-- Plan Mode builds more precise plans
+- ⭐ **Opus 4.5 发布**
+- ⭐ **桌面版 Claude Code**
+- 更新 Opus 4.5 的使用限制
+- 计划模式构建更精确的计划
 
 ### v2.0.45 (2025-12-05) ⭐
 
-- ⭐ **Microsoft Foundry support**
-- `PermissionRequest` hook for auto-approve/deny
-- `&` prefix for background tasks to web
+- ⭐ **Microsoft Foundry 支持**
+- 自动审批/拒绝的 `PermissionRequest` Hook
+- Web 中后台任务的 `&` 前缀
 
 ### v2.0.28 (2025-11-18) ⭐
 
-- ⭐ **Plan mode: introduced Plan subagent**
-- Subagents: resume capability
-- Subagents: dynamic model selection
-- `--max-budget-usd` flag (SDK)
-- Git-based plugins branch/tag support (`#branch`)
+- ⭐ **计划模式：引入计划子智能体**
+- 子智能体：恢复能力
+- 子智能体：动态模型选择
+- `--max-budget-usd` 标志（SDK）
+- 基于 Git 的插件分支/标签支持（`#branch`）
 
 ### v2.0.24 (2025-11-10)
 
-- Claude Code Web: Web → CLI teleport
-- Sandbox mode for BashTool (Linux & Mac)
-- Bedrock: `awsAuthRefresh` output display
+- Claude Code Web：Web → CLI 传送
+- BashTool 沙盒模式（Linux 和 Mac）
+- Bedrock：`awsAuthRefresh` 输出显示
 
 ---
 
-## Breaking Changes Summary
+## 重大变更摘要
 
-### URLs
+### URL
 
-| Version | Change |
+| 版本 | 变更 |
 |---------|--------|
-| v2.1.0, v2.1.7 | OAuth/API Console: `console.anthropic.com` → `platform.claude.com` |
+| v2.1.0, v2.1.7 | OAuth/API 控制台：`console.anthropic.com` → `platform.claude.com` |
 
 ### Windows
 
-| Version | Change |
+| 版本 | 变更 |
 |---------|--------|
-| v2.0.58 | Managed settings prefer `C:\Program Files\ClaudeCode` |
-| v2.1.2 | Deprecated `C:\ProgramData\ClaudeCode` path |
+| v2.0.58 | 托管设置优先使用 `C:\Program Files\ClaudeCode` |
+| v2.1.2 | 已弃用 `C:\ProgramData\ClaudeCode` 路径 |
 
-### SDK / Agent Tool
+### SDK / Agent 工具
 
-| Version | Change |
+| 版本 | 变更 |
 |---------|--------|
-| v2.0.25 | Removed legacy SDK entrypoint → `@anthropic-ai/claude-agent-sdk` |
-| v2.1.0 | Minimum zod peer dependency: `^4.0.0` |
-| v2.1.77 | `Agent` tool no longer accepts `resume` parameter — use `SendMessage({to: agentId})` instead |
+| v2.0.25 | 移除旧版 SDK 入口点 → `@anthropic-ai/claude-agent-sdk` |
+| v2.1.0 | 最低 zod 对等依赖：`^4.0.0` |
+| v2.1.77 | `Agent` 工具不再接受 `resume` 参数——使用 `SendMessage({to: agentId})` 代替 |
 
-### API Ecosystem
+### API 生态系统
 
-| Date | Feature |
+| 日期 | 功能 |
 |------|---------|
-| 2026-01-29 | **Structured Outputs GA**: `output_config.format` remplace `output_format`. [Docs](https://platform.claude.com/docs/en/build-with-claude/structured-outputs) |
-| 2026-04-30 | **1M context beta retired**: `context-1m-2025-08-07` header no longer accepted for Sonnet 4.5/4 — requests >200k tokens error. Migrate to Sonnet 4.6 or Opus 4.6. |
+| 2026-01-29 | **结构化输出 GA**：`output_config.format` 替换 `output_format`。[文档](https://platform.claude.com/docs/en/build-with-claude/structured-outputs) |
+| 2026-04-30 | **1M 上下文 beta 退役**：Sonnet 4.5/4 不再接受 `context-1m-2025-08-07` 头——超过 200k Token 的请求报错。迁移到 Sonnet 4.6 或 Opus 4.6。|
 
-### Shortcuts
+### 快捷键
 
-| Version | Change |
+| 版本 | 变更 |
 |---------|--------|
-| v2.0.70 | Removed `#` shortcut for quick memory entry |
+| v2.0.70 | 移除 `#` 快捷键用于快速记忆输入 |
 
-### Security Fixes
+### 安全修复
 
-| Version | Issue |
+| 版本 | 问题 |
 |---------|-------|
-| v2.1.2 | Command injection in bash command processing |
-| v2.1.6 | Shell line continuation permission bypass |
-| v2.1.7 | Wildcard permission rules compound commands |
-| v2.1.38 | Heredoc delimiter command smuggling prevention |
+| v2.1.2 | bash 命令处理中的命令注入 |
+| v2.1.6 | shell 行继续权限绕过 |
+| v2.1.7 | 通配符权限规则复合命令 |
+| v2.1.38 | heredoc 分隔符命令走私预防 |
 
-### Syntax
+### 语法
 
-| Version | Change |
+| 版本 | 变更 |
 |---------|--------|
-| v2.1.19 | Indexed argument syntax changed: `$ARGUMENTS.0` → `$ARGUMENTS[0]` (bracket syntax) |
+| v2.1.19 | 索引参数语法变更：`$ARGUMENTS.0` → `$ARGUMENTS[0]`（括号语法）|
 
 ---
 
-## Milestone Features
+## 里程碑功能
 
-| Version | Key Features |
+| 版本 | 主要功能 |
 |---------|--------------|
-| **v2.1.69** | InstructionsLoaded hook, 4 security fixes, 15+ memory fixes, Voice STT 20 languages |
-| **v2.1.68** | ultrathink re-introduced, Opus 4.6 medium effort default, Opus 4/4.1 removed |
-| **v2.1.63** | HTTP hooks, worktree config sharing, /simplify + /batch bundled commands |
-| **v2.1.32** | Opus 4.6, Agent teams preview, Automatic memory |
-| **v2.1.18** | Customizable keyboard shortcuts with /keybindings |
-| **v2.1.16** | New task management system with dependency tracking |
-| **v2.1.0** | Skill hot-reload, Shift+Enter OOTB, Vim motions, /plan command |
-| **v2.0.74** | LSP tool for code intelligence |
-| **v2.0.72** | Claude in Chrome (browser control) |
-| **v2.0.67** | Thinking mode default for Opus 4.5 |
-| **v2.0.64** | Instant auto-compact, async agents, named sessions |
-| **v2.0.60** | Background agents |
-| **v2.0.51** | Opus 4.5, Claude Code for Desktop |
-| **v2.0.45** | Microsoft Foundry, PermissionRequest hook |
-| **v2.0.28** | Plan subagent, subagent resume/model selection |
-| **v2.0.24** | Web teleport, Sandbox mode |
+| **v2.1.69** | InstructionsLoaded Hook、4 项安全修复、15+ 个内存修复、语音 STT 20 种语言 |
+| **v2.1.68** | 重新引入 ultrathink、Opus 4.6 中等效能默认值、移除 Opus 4/4.1 |
+| **v2.1.63** | HTTP Hooks、工作树配置共享、/simplify + /batch 捆绑命令 |
+| **v2.1.32** | Opus 4.6、智能体团队预览、自动记忆 |
+| **v2.1.18** | 可自定义键盘快捷键与 /keybindings |
+| **v2.1.16** | 带依赖追踪的新任务管理系统 |
+| **v2.1.0** | 技能热重载、Shift+Enter 开箱即用、Vim 动作、/plan 命令 |
+| **v2.0.74** | 用于代码智能的 LSP 工具 |
+| **v2.0.72** | Chrome 中的 Claude（浏览器控制）|
+| **v2.0.67** | Opus 4.5 默认思考模式 |
+| **v2.0.64** | 即时自动压缩、异步智能体、命名会话 |
+| **v2.0.60** | 后台智能体 |
+| **v2.0.51** | Opus 4.5、桌面版 Claude Code |
+| **v2.0.45** | Microsoft Foundry、PermissionRequest Hook |
+| **v2.0.28** | 计划子智能体、子智能体恢复/模型选择 |
+| **v2.0.24** | Web 传送、沙盒模式 |
 
 ---
 
-## Updating This Document
+## 更新本文档
 
-1. **Watch**: [github.com/anthropics/claude-code/releases](https://github.com/anthropics/claude-code/releases)
-2. **Update**: `machine-readable/claude-code-releases.yaml` (source of truth)
-3. **Regenerate**: Update this markdown accordingly
-4. **Sync landing**: Run `./scripts/check-landing-sync.sh`
+1. **关注**：[github.com/anthropics/claude-code/releases](https://github.com/anthropics/claude-code/releases)
+2. **更新**：`machine-readable/claude-code-releases.yaml`（数据源）
+3. **重新生成**：相应更新此 Markdown
+4. **同步落地页**：运行 `./scripts/check-landing-sync.sh`
 
 ---
 
-*Last updated: 2026-03-05 | [Back to main guide](../ultimate-guide.md)*
+*最后更新：2026-03-05 | [返回主指南](../ultimate-guide.md)*

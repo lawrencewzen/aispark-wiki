@@ -1,62 +1,62 @@
 > 📚 **AI Spark Wiki** · Claude Code 知识库
 
 ---
-title: "Production Safety Rules"
-description: "Non-negotiable safety rules for teams deploying Claude Code in production environments"
+title: "生产安全规则"
+description: "在生产环境中部署 Claude Code 的团队不可妥协的安全规则"
 tags: [security, guide, devops]
 ---
 
-# Production Safety Rules
+# 生产安全规则
 
-> **Audience**: Teams deploying Claude Code in production environments.
-> **For solo learners**: See [Getting Started](#getting-started) instead.
-
----
-
-## TL;DR (30 seconds)
-
-**6 non-negotiable rules for production teams**:
-
-1. ✅ **Port Stability**: Never change backend/frontend ports
-2. ✅ **Database Safety**: Always backup before destructive ops
-3. ✅ **Feature Completeness**: Never ship half-implemented features
-4. ✅ **Infrastructure Lock**: Docker/env changes require permission
-5. ✅ **Dependency Safety**: No new dependencies without approval
-6. ✅ **Pattern Following**: Conform to existing codebase conventions
+> **目标读者**：在生产环境中部署 Claude Code 的团队。
+> **独立学习者**：请参见[入门指南](#getting-started)。
 
 ---
 
-## When to Use These Rules
+## 速览（30 秒）
 
-| Project Type | Use These Rules? | Why |
+**生产团队的 6 条不可妥协规则**：
+
+1. ✅ **端口稳定**：绝不更改后端/前端端口
+2. ✅ **数据库安全**：破坏性操作前始终备份
+3. ✅ **功能完整**：绝不发布半成品功能
+4. ✅ **基础设施锁定**：Docker/env 变更需要授权
+5. ✅ **依赖安全**：新依赖需获批准
+6. ✅ **遵循模式**：符合现有代码库规范
+
+---
+
+## 何时使用这些规则
+
+| 项目类型 | 使用这些规则？ | 原因 |
 |--------------|------------------|-----|
-| Learning / Tutorials | ❌ No | Too restrictive for exploration |
-| Solo prototypes | ❌ No | Overhead not worth it |
-| Small teams (2-3), staging env | ⚠️ Partial | Rules 1, 3, 6 only |
-| Production apps, multi-dev teams | ✅ Yes | All 6 rules |
-| Regulated industries (HIPAA, SOC2) | ✅ Yes + add compliance rules | Critical safety |
+| 学习/教程 | ❌ 否 | 对探索过于限制 |
+| 个人原型 | ❌ 否 | 额外开销不值得 |
+| 小型团队（2-3 人），测试环境 | ⚠️ 部分 | 仅规则 1、3、6 |
+| 生产应用、多开发者团队 | ✅ 是 | 全部 6 条规则 |
+| 受监管行业（HIPAA、SOC2） | ✅ 是 + 添加合规规则 | 关键安全 |
 
 ---
 
-## Rule 1: Port Stability
+## 规则 1：端口稳定
 
-### The Problem
+### 问题所在
 
-Changing ports breaks:
-- Local development environments
-- Docker Compose configurations
-- Deployed service configs
-- Team member setups
+更改端口会破坏：
+- 本地开发环境
+- Docker Compose 配置
+- 已部署服务配置
+- 团队成员的设置
 
-**Real incident**: Backend port changed from 3000 → 8080 during refactor. All developers lost a day re-configuring local envs. Staging deployment failed silently because nginx proxy still pointed to 3000.
+**真实事故**：重构时后端端口从 3000 改为 8080。所有开发者花了一天时间重新配置本地环境。测试环境部署静默失败，因为 nginx 代理仍指向 3000。
 
-### The Rule
+### 规则
 
-**Never modify backend/frontend ports without explicit team permission.**
+**未经团队明确许可，绝不修改后端/前端端口。**
 
-### Implementation
+### 实现方式
 
-**Option A: Permission deny in `settings.json`**
+**方式 A：在 `settings.json` 中拒绝权限**
 
 ```json
 {
@@ -71,7 +71,7 @@ Changing ports breaks:
 }
 ```
 
-**Option B: Pre-commit hook**
+**方式 B：工具前钩子**
 
 ```bash
 # .claude/hooks/PreToolUse.sh
@@ -81,67 +81,67 @@ if [[ "$TOOL" == "Edit" ]]; then
 
     if [[ "$FILE" =~ (docker-compose|vite.config|package.json) ]] && \
        [[ "$CONTENT" =~ (port|PORT):[[:space:]]*[0-9] ]]; then
-        echo "⚠️ BLOCKED: Port modification detected in $FILE"
-        echo "Ports must remain stable across team. Request permission first."
+        echo "⚠️ 已阻止：检测到 $FILE 中有端口修改"
+        echo "端口必须保持稳定以便团队协作。请先获得许可。"
         exit 2
     fi
 fi
 ```
 
-**Option C: CLAUDE.md constraint**
+**方式 C：CLAUDE.md 约束**
 
 ```markdown
-## Port Configuration
+## 端口配置
 
-**CRITICAL**: Ports are locked for team coordination.
+**重要**：端口已为团队协作而锁定。
 
-Current ports:
-- Frontend (Vite): 5173
-- Backend (Express): 3000
-- Database: 5432
+当前端口：
+- 前端（Vite）：5173
+- 后端（Express）：3000
+- 数据库：5432
 
-To change ports:
-1. Create RFC document in `/docs/rfcs/`
-2. Get team approval (3+ reviewers)
-3. Update all environments simultaneously
-4. Notify team 48h in advance
+更改端口需要：
+1. 在 `/docs/rfcs/` 中创建 RFC 文档
+2. 获得团队审批（3+ 名审查者）
+3. 同时更新所有环境
+4. 提前 48 小时通知团队
 ```
 
-### Edge Cases
+### 边界情况
 
-| Scenario | Behavior |
+| 场景 | 处理方式 |
 |----------|----------|
-| Adding NEW service | OK (doesn't break existing) |
-| Changing test env port | OK (isolated from dev/prod) |
-| Port conflict on machine | Ask user to resolve locally (.env.local) |
+| 添加新服务 | 允许（不影响现有服务） |
+| 更改测试环境端口 | 允许（与开发/生产隔离） |
+| 机器上的端口冲突 | 要求用户本地解决（.env.local） |
 
 ---
 
-## Rule 2: Database Safety
+## 规则 2：数据库安全
 
-### The Problem
+### 问题所在
 
-Accidental deletions in production = data loss.
+生产环境意外删除 = 数据丢失。
 
-**Real incidents**:
-- `DELETE FROM users WHERE id = 123` → Forgot `WHERE` → All users deleted
-- `DROP TABLE sessions` during cleanup → Production table dropped
-- Migration rollback → Data loss because no backup
+**真实事故**：
+- `DELETE FROM users WHERE id = 123` → 忘记 `WHERE` → 所有用户被删除
+- 清理时 `DROP TABLE sessions` → 生产表被删除
+- 迁移回滚 → 因无备份而丢失数据
 
-### The Rule
+### 规则
 
-**Always backup before destructive operations.**
+**破坏性操作前始终备份。**
 
-Destructive operations:
-- `DELETE FROM` (without `LIMIT 1`)
+破坏性操作包括：
+- `DELETE FROM`（不带 `LIMIT 1`）
 - `DROP TABLE`
 - `TRUNCATE`
 - `ALTER TABLE ... DROP COLUMN`
-- Database migrations that can't rollback
+- 无法回滚的数据库迁移
 
-### Implementation
+### 实现方式
 
-**Option A: Pre-tool hook with backup enforcement**
+**方式 A：带备份强制的工具前钩子**
 
 ```bash
 # .claude/hooks/PreToolUse.sh
@@ -152,14 +152,14 @@ TOOL=$(echo "$INPUT" | jq -r '.tool.name')
 if [[ "$TOOL" == "Bash" ]]; then
     COMMAND=$(echo "$INPUT" | jq -r '.tool.input.command')
 
-    # Detect destructive database operations
+    # 检测破坏性数据库操作
     if [[ "$COMMAND" =~ (DROP TABLE|DELETE FROM|TRUNCATE|ALTER.*DROP) ]]; then
-        echo "🚨 BLOCKED: Destructive database operation detected"
+        echo "🚨 已阻止：检测到破坏性数据库操作"
         echo ""
-        echo "Required steps:"
-        echo "1. Create backup: pg_dump -U user dbname > backup_\$(date +%Y%m%d_%H%M%S).sql"
-        echo "2. Verify backup size is reasonable"
-        echo "3. Re-run after backup confirmation"
+        echo "必要步骤："
+        echo "1. 创建备份：pg_dump -U user dbname > backup_\$(date +%Y%m%d_%H%M%S).sql"
+        echo "2. 验证备份大小合理"
+        echo "3. 确认备份后重新运行"
         exit 2
     fi
 fi
@@ -167,65 +167,65 @@ fi
 exit 0
 ```
 
-**Option B: Migration safety wrapper**
+**方式 B：迁移安全包装脚本**
 
 ```bash
 # scripts/safe-migrate.sh
 #!/bin/bash
 set -e
 
-echo "🔍 Pre-migration checks..."
+echo "🔍 迁移前检查..."
 
-# 1. Check environment
+# 1. 检查环境
 if [[ "$NODE_ENV" == "production" ]]; then
-    echo "❌ BLOCKED: Use migration service for production"
+    echo "❌ 已阻止：生产环境请使用迁移服务"
     exit 1
 fi
 
-# 2. Create backup
+# 2. 创建备份
 BACKUP_FILE="backups/pre-migration-$(date +%Y%m%d_%H%M%S).sql"
 mkdir -p backups
 pg_dump $DATABASE_URL > "$BACKUP_FILE"
-echo "✅ Backup created: $BACKUP_FILE"
+echo "✅ 备份已创建：$BACKUP_FILE"
 
-# 3. Run migration
-echo "🚀 Running migration..."
+# 3. 运行迁移
+echo "🚀 运行迁移..."
 npm run prisma:migrate:dev
 
-# 4. Verify
-echo "🔍 Verifying database state..."
+# 4. 验证
+echo "🔍 验证数据库状态..."
 npm run prisma:validate
 
-echo "✅ Migration complete. Backup: $BACKUP_FILE"
+echo "✅ 迁移完成。备份：$BACKUP_FILE"
 ```
 
-**Option C: CLAUDE.md protocol**
+**方式 C：CLAUDE.md 协议**
 
 ```markdown
-## Database Operations
+## 数据库操作
 
-### Destructive Operations Protocol
+### 破坏性操作协议
 
-**NEVER run these without backup**:
-- DELETE, DROP, TRUNCATE, ALTER...DROP
+**以下操作绝不在没有备份的情况下执行**：
+- DELETE、DROP、TRUNCATE、ALTER...DROP
 
-**Required steps**:
-1. Announce in #dev-ops Slack channel
-2. Create backup: `./scripts/backup-db.sh`
-3. Verify backup: `ls -lh backups/` (should be >0 bytes)
-4. Execute in staging FIRST
-5. Wait 24h for issues
-6. Execute in production with on-call engineer present
+**必要步骤**：
+1. 在 Slack #dev-ops 频道公告
+2. 创建备份：`./scripts/backup-db.sh`
+3. 验证备份：`ls -lh backups/`（大小应 >0 字节）
+4. 先在测试环境执行
+5. 等待 24 小时观察问题
+6. 在值班工程师在场时在生产环境执行
 
-**Emergency rollback**:
+**紧急回滚**：
 ```bash
-psql $DATABASE_URL < backups/[latest].sql
+psql $DATABASE_URL < backups/[最新备份].sql
 ```
 ```
 
-### MCP Database Safety
+### MCP 数据库安全
 
-If using MCP database servers (Postgres, MySQL, etc.):
+如果使用 MCP 数据库服务器（Postgres、MySQL 等）：
 
 ```json
 {
@@ -236,95 +236,95 @@ If using MCP database servers (Postgres, MySQL, etc.):
       "env": {
         "POSTGRES_URL": "postgres://readonly:***@dev-db.example.com:5432/appdb"
       },
-      "comment": "READ-ONLY user for safety"
+      "comment": "仅限只读用户，确保安全"
     }
   }
 }
 ```
 
-**Critical**: Use read-only database users for MCP. See [Data Privacy Guide](./data-privacy.md#risk-2-mcp-database-access).
+**重要**：MCP 使用只读数据库用户。参见[数据隐私指南](./data-privacy.md#risk-2-mcp-database-access)。
 
 ---
 
-## Rule 3: Feature Completeness
+## 规则 3：功能完整
 
-### The Problem
+### 问题所在
 
-Claude Code sometimes "half-asses" features when context runs low:
-- Deletes existing functionality instead of fixing bugs
-- Adds `TODO` comments for core features
-- Leaves error states unhandled
-- Creates mock implementations
+当上下文不足时，Claude Code 有时会"敷衍了事"：
+- 删除现有功能而不是修复错误
+- 为核心功能添加 `TODO` 注释
+- 未处理错误状态
+- 创建模拟实现
 
-**Real incidents**:
-- Payment validation "fixed" by removing validation entirely
-- Error handling "added" with `throw new Error("Not implemented")`
-- Feature "completed" with `// TODO: Add actual logic here`
+**真实事故**：
+- 支付验证"修复"为完全删除验证
+- 错误处理"添加"为 `throw new Error("Not implemented")`
+- 功能"完成"为 `// TODO: Add actual logic here`
 
-### The Rule
+### 规则
 
-**Never ship half-implemented features. If you start, you finish to working state.**
+**绝不发布半成品功能。如果开始了，就必须做到可工作状态。**
 
-### Implementation
+### 实现方式
 
-**Option A: CLAUDE.md constraint**
+**方式 A：CLAUDE.md 约束**
 
 ```markdown
-## Feature Implementation Standards
+## 功能实现标准
 
-### NON-NEGOTIABLE
+### 不可妥协
 
-1. **No TODOs for core functionality**
-   - TODOs allowed ONLY for future enhancements
-   - Core features must be complete and working
+1. **核心功能不允许有 TODO**
+   - TODO 仅允许用于未来增强
+   - 核心功能必须完整且可工作
 
-2. **No mock implementations**
-   - No `throw new Error("Not implemented")`
-   - No fake data generators in production code paths
+2. **不允许模拟实现**
+   - 不允许 `throw new Error("Not implemented")`
+   - 生产代码路径中不允许假数据生成器
 
-3. **Complete error handling**
-   - Every async call has try/catch
-   - Every user input is validated
-   - Every API call has timeout and retry logic
+3. **完整的错误处理**
+   - 每个异步调用都有 try/catch
+   - 每个用户输入都经过验证
+   - 每个 API 调用都有超时和重试逻辑
 
-4. **Downgrade = Delete the feature entirely**
-   - If you can't fix properly, remove the feature
-   - Document why in commit message
-   - Create issue for proper implementation
+4. **降级 = 完全删除该功能**
+   - 如果无法正确修复，则删除该功能
+   - 在提交信息中记录原因
+   - 创建 Issue 以便正确实现
 
-### Validation
+### 验证
 
-Before accepting changes, verify:
-- [ ] No `TODO` in modified files (except future enhancements)
-- [ ] No `throw new Error("Not implemented")`
-- [ ] No commented-out code without explanation
-- [ ] All new functions have error handling
+接受变更前，验证：
+- [ ] 修改的文件中没有 `TODO`（未来增强除外）
+- [ ] 没有 `throw new Error("Not implemented")`
+- [ ] 没有无注释的注释掉的代码
+- [ ] 所有新函数都有错误处理
 ```
 
-**Option B: Pre-commit git hook**
+**方式 B：pre-commit git 钩子**
 
 ```bash
 # .git/hooks/pre-commit
 #!/bin/bash
 
-# Check staged files for "half-assing" patterns
+# 检查暂存文件中的"敷衍了事"模式
 STAGED=$(git diff --cached --name-only --diff-filter=ACM)
 
 for FILE in $STAGED; do
     if [[ "$FILE" =~ \.(ts|tsx|js|jsx|py)$ ]]; then
-        # Check for TODOs in core logic (not tests)
+        # 检查核心逻辑中的 TODO（非测试）
         if ! [[ "$FILE" =~ test|spec ]]; then
             if git diff --cached "$FILE" | grep -E "^\+.*TODO.*implement|^\+.*Not implemented"; then
-                echo "❌ COMMIT BLOCKED: TODO/Not implemented in $FILE"
-                echo "   Complete the feature or remove it entirely."
+                echo "❌ 提交已阻止：$FILE 中有 TODO/Not implemented"
+                echo "   请完成该功能或完全删除它。"
                 exit 1
             fi
         fi
 
-        # Check for mock placeholders
+        # 检查模拟占位符
         if git diff --cached "$FILE" | grep -E "^\+.*(MOCK_DATA|fakeData|placeholder)"; then
-            echo "⚠️ WARNING: Mock data detected in $FILE"
-            echo "   Ensure this is intentional for staging/dev only."
+            echo "⚠️ 警告：$FILE 中检测到模拟数据"
+            echo "   请确认这仅用于测试/开发环境。"
         fi
     fi
 done
@@ -332,45 +332,45 @@ done
 exit 0
 ```
 
-**Option C: Output evaluator command**
+**方式 C：输出评估命令**
 
 ```bash
-# Before committing
+# 提交前运行
 /validate-changes
 
-# This runs the output-evaluator agent (see examples/agents/output-evaluator.md)
-# which scores changes on:
-# - Correctness (10/10)
-# - Completeness (10/10)  ← Detects half-assing
-# - Safety (10/10)
+# 这会运行 output-evaluator 智能体（参见 examples/agents/output-evaluator.md）
+# 评分维度：
+# - 正确性（10/10）
+# - 完整性（10/10）  ← 检测敷衍了事
+# - 安全性（10/10）
 ```
 
 ---
 
-## Rule 4: Infrastructure Lock
+## 规则 4：基础设施锁定
 
-### The Problem
+### 问题所在
 
-Claude might modify infrastructure configs without understanding production implications:
-- Changes Docker Compose volumes → data loss
-- Modifies `.env.example` → breaks onboarding
-- Updates Terraform → unintended resource changes
-- Tweaks Kubernetes manifests → downtime
+Claude 可能在不了解生产影响的情况下修改基础设施配置：
+- 更改 Docker Compose 卷 → 数据丢失
+- 修改 `.env.example` → 破坏入职流程
+- 更新 Terraform → 意外的资源变更
+- 调整 Kubernetes 清单 → 停机
 
-### The Rule
+### 规则
 
-**Infrastructure modifications require explicit team permission.**
+**基础设施修改需要团队明确授权。**
 
-Files to protect:
-- `docker-compose.yml`, `Dockerfile`
-- `.env.example` (templates, NOT personal .env.local)
-- `kubernetes/`, `k8s/`, `terraform/`, `helm/`
-- CI/CD configs (`.github/workflows/`, `.gitlab-ci.yml`)
-- Database schemas (requires migration review)
+需要保护的文件：
+- `docker-compose.yml`、`Dockerfile`
+- `.env.example`（模板，非个人 .env.local）
+- `kubernetes/`、`k8s/`、`terraform/`、`helm/`
+- CI/CD 配置（`.github/workflows/`、`.gitlab-ci.yml`）
+- 数据库架构（需要迁移审查）
 
-### Implementation
+### 实现方式
 
-**Option A: Permission deny**
+**方式 A：权限拒绝**
 
 ```json
 {
@@ -388,51 +388,51 @@ Files to protect:
 }
 ```
 
-**Option B: CLAUDE.md rule**
+**方式 B：CLAUDE.md 规则**
 
 ```markdown
-## Infrastructure Changes
+## 基础设施变更
 
-You are **FORBIDDEN** from modifying these without explicit permission:
+**未经明确许可，禁止修改**以下内容：
 
-- `docker-compose.yml`, `Dockerfile`
-- `.env.example` (template for new developers)
-- `terraform/`, `kubernetes/` (infrastructure as code)
-- `.github/workflows/` (CI/CD pipelines)
-- `prisma/schema.prisma` (database schema)
+- `docker-compose.yml`、`Dockerfile`
+- `.env.example`（新开发者的模板）
+- `terraform/`、`kubernetes/`（基础设施即代码）
+- `.github/workflows/`（CI/CD 流水线）
+- `prisma/schema.prisma`（数据库架构）
 
-**If infrastructure change is needed**:
-1. Ask user: "This requires infrastructure change. Should I create an RFC?"
-2. Create RFC document in `docs/rfcs/YYYYMMDD-<title>.md`
-3. Do NOT modify files until RFC approved
+**如果需要基础设施变更**：
+1. 询问用户："这需要基础设施变更。是否创建 RFC？"
+2. 在 `docs/rfcs/YYYYMMDD-<title>.md` 中创建 RFC 文档
+3. RFC 批准前不要修改文件
 ```
 
-**Note**: Personal `.env.local` files are OK to modify (they're gitignored).
+**注意**：个人 `.env.local` 文件可以修改（它们在 gitignore 中）。
 
 ---
 
-## Rule 5: Dependency Safety
+## 规则 5：依赖安全
 
-### The Problem
+### 问题所在
 
-Adding dependencies without team approval:
-- Increases bundle size (performance)
-- Introduces security vulnerabilities
-- Creates license compliance issues
-- Adds maintenance burden
+未经团队批准添加依赖会：
+- 增加包体积（性能问题）
+- 引入安全漏洞
+- 造成许可证合规问题
+- 增加维护负担
 
-**Real incidents**:
-- Added `moment.js` (200KB) when `date-fns` (tiny) already in project
-- Installed `lodash` when project uses `ramda`
-- Added GPL library → license violation for proprietary codebase
+**真实事故**：
+- 已有 `date-fns`（体积小）的情况下引入了 `moment.js`（200KB）
+- 项目使用 `ramda` 时安装了 `lodash`
+- 为专有代码库添加了 GPL 库 → 许可证违规
 
-### The Rule
+### 规则
 
-**No new dependencies without explicit approval.**
+**未经明确批准，不添加新依赖。**
 
-### Implementation
+### 实现方式
 
-**Option A: Permission deny on package managers**
+**方式 A：对包管理器使用权限拒绝**
 
 ```json
 {
@@ -454,51 +454,51 @@ Adding dependencies without team approval:
 }
 ```
 
-**Option B: CLAUDE.md protocol**
+**方式 B：CLAUDE.md 协议**
 
 ```markdown
-## Dependency Management
+## 依赖管理
 
-### Immutable Stack Rule
+### 不可变技术栈规则
 
-**You are FORBIDDEN from adding new dependencies** (`npm install <package>`).
+**禁止添加新依赖**（`npm install <包名>`）。
 
-**If new dependency is needed**:
-1. Check if existing dependency solves it:
-   - Date manipulation? Use existing `date-fns`
-   - HTTP requests? Use existing `axios`
-   - State management? Use existing `zustand`
-2. If genuinely needed, ASK:
-   - "I need [package] for [reason]. Existing alternatives: [X, Y]. Should I add it?"
-3. Wait for explicit approval
-4. User will run: `npm install <package>` manually
+**如果需要新依赖**：
+1. 检查现有依赖是否能解决：
+   - 日期处理？使用现有 `date-fns`
+   - HTTP 请求？使用现有 `axios`
+   - 状态管理？使用现有 `zustand`
+2. 如果确实需要，请询问：
+   - "我需要 [包名] 用于 [原因]。现有替代方案：[X、Y]。是否添加？"
+3. 等待明确批准
+4. 用户将手动运行：`npm install <包名>`
 
-**Allowed without asking**:
-- `npm install` (installs existing package.json deps)
-- Dev dependencies for testing (`-D` flag after approval)
+**无需询问即可执行**：
+- `npm install`（安装现有 package.json 中的依赖）
+- 获批准后的开发依赖（`-D` 标志）
 ```
 
-**Option C: Pre-tool hook**
+**方式 C：工具前钩子**
 
 ```bash
 # .claude/hooks/PreToolUse.sh
 if [[ "$TOOL" == "Bash" ]]; then
     COMMAND=$(echo "$INPUT" | jq -r '.tool.input.command')
 
-    # Block dependency installation
+    # 阻止依赖安装
     if [[ "$COMMAND" =~ (npm|pnpm|yarn)[[:space:]]+(install|add|i)[[:space:]]+[a-zA-Z] ]]; then
-        echo "🚨 BLOCKED: New dependency installation"
+        echo "🚨 已阻止：新依赖安装"
         echo ""
-        echo "Dependencies must be approved by team lead."
-        echo "Create PR with RFC explaining:"
-        echo "1. Why this dependency is needed"
-        echo "2. Alternatives considered"
-        echo "3. Bundle size impact"
-        echo "4. License compatibility"
+        echo "依赖必须由技术负责人批准。"
+        echo "创建 PR 并附上 RFC，说明："
+        echo "1. 为什么需要这个依赖"
+        echo "2. 考虑过的替代方案"
+        echo "3. 包体积影响"
+        echo "4. 许可证兼容性"
         exit 2
     fi
 
-    # Allow: npm install (no args), npm install -g, pnpm install
+    # 允许：npm install（无参数）、npm install -g、pnpm install
     if [[ "$COMMAND" =~ ^(npm|pnpm|yarn)[[:space:]]+install$ ]]; then
         exit 0
     fi
@@ -507,115 +507,115 @@ fi
 
 ---
 
-## Rule 6: Pattern Following
+## 规则 6：遵循模式
 
-### The Problem
+### 问题所在
 
-Claude introduces new patterns inconsistent with codebase:
-- Uses `class` components when project is functional React
-- Imports `lodash` when project uses `ramda`
-- Writes REST endpoints when project is GraphQL
-- Uses `fetch` when project standardized on `axios`
+Claude 引入与代码库不一致的新模式：
+- 项目使用函数式 React 时使用 `class` 组件
+- 项目使用 `ramda` 时导入 `lodash`
+- 项目是 GraphQL 时编写 REST 端点
+- 项目标准化使用 `axios` 时使用 `fetch`
 
-### The Rule
+### 规则
 
-**Conform to existing codebase conventions. Check before implementing.**
+**遵循现有代码库规范。实现前先检查。**
 
-### Implementation
+### 实现方式
 
-**Option A: CLAUDE.md conventions**
+**方式 A：CLAUDE.md 规范**
 
 ```markdown
-## Code Conventions
+## 代码规范
 
-### Tech Stack (DO NOT DEVIATE)
+### 技术栈（不得偏离）
 
-**Frontend**:
-- React 18 with **function components + hooks** (NO class components)
-- State: Zustand (NOT Redux, Context)
-- HTTP: axios (NOT fetch)
-- Styling: Tailwind CSS (NOT styled-components, emotion)
-- Forms: React Hook Form + Zod
+**前端**：
+- React 18 使用**函数组件 + Hooks**（禁止使用 class 组件）
+- 状态：Zustand（非 Redux、Context）
+- HTTP：axios（非 fetch）
+- 样式：Tailwind CSS（非 styled-components、emotion）
+- 表单：React Hook Form + Zod
 
-**Backend**:
+**后端**：
 - Node.js + Express
-- Database: Prisma ORM (NOT raw SQL, TypeORM)
-- Auth: JWT via jose library
-- Validation: Zod schemas
+- 数据库：Prisma ORM（非原始 SQL、TypeORM）
+- 认证：通过 jose 库实现 JWT
+- 验证：Zod schemas
 
-**Testing**:
-- Unit: Vitest (NOT Jest)
-- E2E: Playwright (NOT Cypress)
+**测试**：
+- 单元测试：Vitest（非 Jest）
+- E2E 测试：Playwright（非 Cypress）
 
-### Import Patterns
+### 导入模式
 
-**Always use**:
+**始终使用**：
 ```typescript
-import { useState } from 'react'           // ✅ Named imports
-import axios from 'axios'                  // ✅ Default import
+import { useState } from 'react'           // ✅ 具名导入
+import axios from 'axios'                  // ✅ 默认导入
 ```
 
-**Never use**:
+**禁止使用**：
 ```typescript
-import React from 'react'                  // ❌ Deprecated pattern
-import * as axios from 'axios'             // ❌ Namespace import
+import React from 'react'                  // ❌ 已废弃的模式
+import * as axios from 'axios'             // ❌ 命名空间导入
 ```
 
-### File Structure
+### 文件结构
 
 ```
 src/
-  features/          ← Group by feature (NOT by type)
+  features/          ← 按功能组织（非按类型）
     auth/
       components/
       hooks/
       api/
-  shared/            ← Shared utilities
+  shared/            ← 共享工具
     components/
     hooks/
 ```
 
-### Design System
+### 设计系统
 
-UI changes MUST use existing design system:
-- Check `src/shared/components/` for existing components
-- Use Tailwind utility classes from `tailwind.config.js`
-- Colors from `colors.ts` palette ONLY
-- Typography from `typography.config.js`
+UI 变更必须使用现有设计系统：
+- 在 `src/shared/components/` 中查找现有组件
+- 使用 `tailwind.config.js` 中的 Tailwind 工具类
+- 仅使用 `colors.ts` 中的颜色
+- 使用 `typography.config.js` 中的排版
 
-**Before creating new component**:
-1. Search: `rg "Button" src/shared/components/`
-2. If exists, use it
-3. If doesn't exist, ask: "Should I create new Button component or use existing primitive?"
+**创建新组件前**：
+1. 搜索：`rg "Button" src/shared/components/`
+2. 如果存在，使用它
+3. 如果不存在，询问："是否创建新 Button 组件，还是使用现有基础组件？"
 ```
 
-**Option B: Pre-implementation analysis**
+**方式 B：实现前分析**
 
 ```markdown
-## Before Implementing
+## 实现前
 
-**ALWAYS** run these checks:
+**始终**运行以下检查：
 
-1. **Pattern check**:
+1. **模式检查**：
 ```bash
-# How does codebase handle X?
-rg "import.*useState" src/  # Check React patterns
-rg "axios\." src/           # Check HTTP patterns
-rg "prisma\." src/          # Check DB patterns
+# 代码库如何处理 X？
+rg "import.*useState" src/  # 检查 React 模式
+rg "axios\." src/           # 检查 HTTP 模式
+rg "prisma\." src/          # 检查数据库模式
 ```
 
-2. **Existing components**:
+2. **现有组件**：
 ```bash
-# Does component already exist?
+# 组件是否已存在？
 find src/shared/components -name "*Button*"
 find src/shared/components -name "*Modal*"
 ```
 
-3. **Ask user if unclear**:
-   - "I see project uses [X]. Should I follow this pattern or use [Y]?"
+3. **不确定时询问用户**：
+   - "我看到项目使用 [X]。是否遵循此模式，还是使用 [Y]？"
 ```
 
-**Option C: Automated validation**
+**方式 C：自动化验证**
 
 ```bash
 # .claude/hooks/PostToolUse.sh
@@ -623,20 +623,20 @@ find src/shared/components -name "*Modal*"
 if [[ "$TOOL" == "Write" ]] || [[ "$TOOL" == "Edit" ]]; then
     FILE=$(echo "$INPUT" | jq -r '.tool.input.file_path')
 
-    # Check for pattern violations
+    # 检查模式违规
     if [[ "$FILE" =~ \.(tsx?)$ ]]; then
         CONTENT=$(cat "$FILE")
 
-        # Violation: class components in React
+        # 违规：React 中的 class 组件
         if echo "$CONTENT" | grep -q "class.*extends.*Component"; then
-            echo "⚠️ WARNING: Class component detected in $FILE"
-            echo "   Project uses function components. Consider refactoring."
+            echo "⚠️ 警告：$FILE 中检测到 class 组件"
+            echo "   项目使用函数组件，请考虑重构。"
         fi
 
-        # Violation: wrong HTTP library
+        # 违规：错误的 HTTP 库
         if echo "$CONTENT" | grep -q "import.*fetch\|window.fetch"; then
-            echo "⚠️ WARNING: fetch() detected in $FILE"
-            echo "   Project uses axios. Use: import axios from 'axios'"
+            echo "⚠️ 警告：$FILE 中检测到 fetch()"
+            echo "   项目使用 axios。请使用：import axios from 'axios'"
         fi
     fi
 fi
@@ -644,49 +644,49 @@ fi
 
 ---
 
-## Rule 7: The Verification Paradox
+## 规则 7：验证悖论
 
-### The Problem
+### 问题所在
 
-When AI succeeds 99% of the time, traditional human verification becomes fragile:
+当 AI 成功率达到 99% 时，传统的人工验证变得脆弱：
 
-**The paradox**: As AI reliability increases, human review quality decreases.
+**悖论**：AI 可靠性越高，人工审查质量越低。
 
-- **Vigilance fatigue**: Rare errors (1%) slip through when humans unconsciously trust patterns that usually work
-- **Pattern-trusting behavior**: Manual review degrades as reviewers stop expecting errors
-- **False confidence**: "It worked last 50 times" creates blind spots for the 51st failure
-- **Cognitive load**: Humans aren't optimized to catch 1-in-100 errors consistently
+- **警觉性疲劳**：当人类潜意识信任通常有效的模式时，罕见错误（1%）会被忽视
+- **信任模式行为**：随着审查者不再预期错误，人工审查质量下降
+- **错误的自信**："已经成功了 50 次"会导致对第 51 次失败的盲点
+- **认知负荷**：人类无法持续捕捉 1/100 的错误
 
-**Real incidents**:
-- Payment validation bypassed after 200 successful transactions → fraud on transaction #201
-- Security check skipped because "AI always gets auth right" → credentials leaked
-- Test suite passing 99% → production bug from the 1% case that wasn't tested
+**真实事故**：
+- 200 次成功交易后支付验证被绕过 → 第 201 次发生欺诈
+- "AI 始终做对认证"导致跳过安全检查 → 凭证泄露
+- 测试套件 99% 通过 → 来自那 1% 未测试情况的生产 bug
 
-**Source**: [Alan Engineering Team (Charles Gorintin, Maxime Le Bras), Feb 2026](https://www.linkedin.com/pulse/le-principe-de-la-tour-eiffel-et-ralph-wiggum-maxime-le-bras-psmxe/)
+**来源**：[Alan 工程团队（Charles Gorintin、Maxime Le Bras），2026 年 2 月](https://www.linkedin.com/pulse/le-principe-de-la-tour-eiffel-et-ralph-wiggum-maxime-le-bras-psmxe/)
 
-### The Rule
+### 规则
 
-**Build automated safety systems instead of relying on human vigilance.**
+**构建自动化安全系统，而非依赖人工警觉性。**
 
-When AI reliability crosses ~95%, shift from manual review to automated guardrails.
+当 AI 可靠性超过约 95% 时，从人工审查转向自动化护栏。
 
-### Anti-Patterns vs Better Approaches
+### 反模式 vs 更好的方法
 
-| Anti-Pattern | Better Approach |
+| 反模式 | 更好的方法 |
 |--------------|-----------------|
-| Manual review for every AI output | Automated test suites + selective review |
-| Trust because "it worked last time" | Verification contracts (tests, types, lints) |
-| Human as sole error detector | Guardrails that fail fast (CI/CD gates) |
-| "Spot-check" strategy for high-frequency AI ops | Comprehensive automated validation |
-| Reviewer fatigue = lower standards over time | Consistent automated quality bars |
+| 对每个 AI 输出进行人工审查 | 自动化测试套件 + 选择性审查 |
+| 因"上次成功了"而信任 | 验证契约（测试、类型、Lint） |
+| 人类作为唯一错误检测者 | 快速失败的护栏（CI/CD 门控） |
+| 高频 AI 操作的"抽查"策略 | 全面自动化验证 |
+| 审查者疲劳 = 随时间降低标准 | 一致的自动化质量标准 |
 
-### Implementation
+### 实现方式
 
-**Option A: Automated Guardrail Stack**
+**方式 A：自动化护栏堆栈**
 
 ```yaml
 # .github/workflows/ai-safety.yml
-name: AI Output Validation
+name: AI 输出验证
 
 on: [pull_request]
 
@@ -694,147 +694,147 @@ jobs:
   validate:
     runs-on: ubuntu-latest
     steps:
-      - name: Type safety
-        run: npm run typecheck      # Catch type errors AI missed
+      - name: 类型安全
+        run: npm run typecheck      # 捕获 AI 遗漏的类型错误
 
-      - name: Lint rules
-        run: npm run lint            # Enforce code standards
+      - name: Lint 规则
+        run: npm run lint            # 强制代码标准
 
-      - name: Unit tests
-        run: npm run test            # Verify behavior contracts
+      - name: 单元测试
+        run: npm run test            # 验证行为契约
 
-      - name: E2E tests
-        run: npm run test:e2e        # Catch integration failures
+      - name: E2E 测试
+        run: npm run test:e2e        # 捕获集成失败
 
-      - name: Security audit
-        run: npm audit               # Detect vulnerable dependencies
+      - name: 安全审计
+        run: npm audit               # 检测易受攻击的依赖
 
-      - name: Bundle analysis
-        run: npm run analyze         # Catch bloat/regressions
+      - name: 包分析
+        run: npm run analyze         # 捕获体积/性能回归
 
-      # Human review ONLY after all automation passes
+      # 所有自动化通过后才进行人工审查
 ```
 
-**Option B: Verification Contracts in CLAUDE.md**
+**方式 B：CLAUDE.md 中的验证契约**
 
 ```markdown
-## Verification Protocol
+## 验证协议
 
-### NEVER rely on human review alone
+### 绝不仅依赖人工审查
 
-**Automated verification required**:
-1. **Type safety**: `npm run typecheck` must pass (zero errors)
-2. **Tests**: `npm run test` coverage ≥ 80% for new code
-3. **Lint**: `npm run lint` must pass (zero warnings)
-4. **Security**: `npm audit` must show zero high/critical vulnerabilities
-5. **Performance**: Lighthouse score ≥ 90 for affected pages
+**必须进行自动化验证**：
+1. **类型安全**：`npm run typecheck` 必须通过（零错误）
+2. **测试**：`npm run test` 新代码覆盖率 ≥ 80%
+3. **Lint**：`npm run lint` 必须通过（零警告）
+4. **安全**：`npm audit` 必须显示零高危/严重漏洞
+5. **性能**：受影响页面的 Lighthouse 评分 ≥ 90
 
-**Human review is for**:
-- Architecture decisions
-- UX/design choices
-- Business logic validation
-- Edge cases automation can't catch
+**人工审查用于**：
+- 架构决策
+- UX/设计选择
+- 业务逻辑验证
+- 自动化无法捕获的边界情况
 
-**Human review is NOT for**:
-- Syntax errors (use linters)
-- Type errors (use TypeScript)
-- Performance regressions (use benchmarks)
-- Security issues (use automated scanners)
+**人工审查不用于**：
+- 语法错误（使用 Lint 工具）
+- 类型错误（使用 TypeScript）
+- 性能回归（使用基准测试）
+- 安全问题（使用自动化扫描器）
 ```
 
-**Option C: Pre-merge checklist (automated)**
+**方式 C：自动化预合并检查清单**
 
 ```bash
 # .claude/hooks/PreCommit.sh
 #!/bin/bash
 
-echo "🔍 Running automated verification (Verification Paradox defense)..."
+echo "🔍 运行自动化验证（验证悖论防御）..."
 
-# 1. Type safety
-npm run typecheck || { echo "❌ Type errors detected"; exit 1; }
+# 1. 类型安全
+npm run typecheck || { echo "❌ 检测到类型错误"; exit 1; }
 
 # 2. Lint
-npm run lint || { echo "❌ Lint errors detected"; exit 1; }
+npm run lint || { echo "❌ 检测到 Lint 错误"; exit 1; }
 
-# 3. Tests
-npm run test || { echo "❌ Tests failing"; exit 1; }
+# 3. 测试
+npm run test || { echo "❌ 测试失败"; exit 1; }
 
-# 4. Security
-npm audit --audit-level=high || { echo "❌ Security vulnerabilities detected"; exit 1; }
+# 4. 安全
+npm audit --audit-level=high || { echo "❌ 检测到安全漏洞"; exit 1; }
 
-echo "✅ All automated checks passed"
-echo "💡 Human review can now focus on architecture/UX/business logic"
+echo "✅ 所有自动化检查通过"
+echo "💡 人工审查现在可以专注于架构/UX/业务逻辑"
 ```
 
-### Edge Cases
+### 边界情况
 
-| Scenario | Behavior |
+| 场景 | 处理方式 |
 |----------|----------|
-| AI writes perfect code 99.9% | STILL run automation (paradox applies even at 99.9%) |
-| Time pressure, "just ship it" | Automation is non-negotiable (fast ≠ skip safety) |
-| Trivial changes (typo fix) | Run automation (typos can break prod) |
-| Emergency hotfix | Automation REQUIRED (stress = higher error rate) |
+| AI 代码质量达 99.9% | 仍要运行自动化（悖论即使在 99.9% 时也适用） |
+| 时间压力，"直接发布" | 自动化不可妥协（快速 ≠ 跳过安全） |
+| 微小变更（修正错别字） | 运行自动化（错别字可能破坏生产） |
+| 紧急热修复 | 自动化必须执行（压力下错误率更高） |
 
-### Why This Matters
+### 为什么重要
 
-**Old model (pre-AI)**:
-- Code quality = human expertise + careful review
-- Errors caught by experienced developers
-- Review quality stays consistent
+**旧模型（前 AI 时代）**：
+- 代码质量 = 人类专业知识 + 仔细审查
+- 错误由有经验的开发者捕获
+- 审查质量保持一致
 
-**New model (AI-assisted)**:
-- AI produces high-quality code 95%+ of the time
-- Humans become complacent ("AI usually gets it right")
-- 5% error rate slips through fatigued review
+**新模型（AI 辅助）**：
+- AI 95%+ 的时间产生高质量代码
+- 人类变得自满（"AI 通常能做对"）
+- 5% 的错误率通过疲劳的审查漏出
 
-**Solution**: Automate the boring verification (syntax, types, tests), reserve human attention for creative/strategic review.
+**解决方案**：自动化枯燥的验证（语法、类型、测试），保留人类注意力用于创造性/战略性审查。
 
-### Integration with Other Rules
+### 与其他规则的整合
 
-- **Rule 3 (Feature Completeness)**: Automated tests verify features are actually complete
-- **Rule 2 (Database Safety)**: Migration tests catch destructive operations
-- **Rule 6 (Pattern Following)**: Linters enforce project conventions automatically
+- **规则 3（功能完整）**：自动化测试验证功能确实完整
+- **规则 2（数据库安全）**：迁移测试捕获破坏性操作
+- **规则 6（遵循模式）**：Lint 工具自动强制项目规范
 
-The agent-side counterpart to this paradox is the Verification Gap pattern documented in the [TDD workflow](../workflows/tdd-with-claude.md#the-verification-gap).
+此悖论的智能体侧对应是 [TDD 工作流](../workflows/tdd-with-claude.md#the-verification-gap)中记录的验证缺口模式。
 
 ---
 
-## Integration with Existing Workflows
+## 与现有工作流的集成
 
-### With Plan Mode
+### 与计划模式结合
 
 ```bash
-# Before multi-file changes
+# 多文件变更前
 /plan
 
-# Claude enters read-only mode, explores codebase
-# Identifies patterns, conventions, existing implementations
-# Proposes plan following project conventions
-# You review before execution
+# Claude 进入只读模式，探索代码库
+# 识别模式、规范、现有实现
+# 提出遵循项目规范的方案
+# 您在执行前审查
 ```
 
-### With Git Hooks
+### 与 Git 钩子结合
 
-These rules integrate with existing git workflows:
+这些规则与现有 git 工作流集成：
 
 ```bash
 # .git/hooks/pre-commit
 #!/bin/bash
 
-# Run safety checks
+# 运行安全检查
 ./.claude/hooks/production-safety-check.sh
 
-# If blocked, commit fails
+# 如果阻止，提交失败
 exit $?
 ```
 
-### With CI/CD
+### 与 CI/CD 结合
 
-Add validation step:
+添加验证步骤：
 
 ```yaml
 # .github/workflows/pr-validation.yml
-name: PR Validation
+name: PR 验证
 on: [pull_request]
 
 jobs:
@@ -843,46 +843,46 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Check for half-assing
+      - name: 检查半成品功能
         run: |
           if git diff origin/main...HEAD | grep -E "TODO.*implement|Not implemented"; then
-            echo "❌ PR contains incomplete features"
+            echo "❌ PR 包含未完成的功能"
             exit 1
           fi
 
-      - name: Check for unauthorized deps
+      - name: 检查未授权依赖
         run: |
           git diff origin/main...HEAD -- package.json | grep -E '^\+.*"[^"]+": "[^"]+"' || exit 0
-          echo "⚠️ New dependencies detected. Review required."
+          echo "⚠️ 检测到新依赖，需要审查。"
 ```
 
 ---
 
-## Troubleshooting
+## 故障排除
 
-### "These rules are too restrictive"
+### "这些规则过于严格"
 
-**Solution**: Adapt based on your team size and stage.
+**解决方案**：根据团队规模和阶段调整。
 
-| Team Size | Recommended Rules |
+| 团队规模 | 推荐规则 |
 |-----------|-------------------|
-| 1-2 devs | Rules 1, 3, 6 only |
-| 3-10 devs | Rules 1, 3, 5, 6 |
-| 10+ devs or production | All 6 rules |
+| 1-2 人 | 仅规则 1、3、6 |
+| 3-10 人 | 规则 1、3、5、6 |
+| 10+ 人或生产环境 | 全部 6 条规则 |
 
-### "Claude keeps getting blocked"
+### "Claude 一直被阻止"
 
-**Solution**: Rules are working! Options:
+**解决方案**：规则正在生效！选项：
 
-1. **Grant temporary permission**:
+1. **授予临时权限**：
    ```bash
-   # In CLAUDE.md
-   ## Temporary Override (expires 2026-01-25)
-   For this feature only: infrastructure changes allowed.
-   Reason: Setting up new microservice.
+   # 在 CLAUDE.md 中
+   ## 临时覆盖（过期时间：2026-01-25）
+   仅此功能：允许基础设施变更。
+   原因：设置新微服务。
    ```
 
-2. **Create exception**:
+2. **创建例外**：
    ```json
    {
      "permissions": {
@@ -892,66 +892,66 @@ jobs:
    }
    ```
 
-3. **Review if rule is appropriate**:
-   - Solo dev blocking themselves? → Remove rule
-   - Team needs flexibility? → Use "ask" instead of "deny"
+3. **审查规则是否合适**：
+   - 独立开发者阻止了自己？→ 删除规则
+   - 团队需要灵活性？→ 使用"询问"而非"拒绝"
 
-### "How do I enforce rules across team?"
+### "如何在整个团队中强制执行规则？"
 
-**Solution**: Commit to repo, not personal config.
+**解决方案**：提交到代码库，而非个人配置。
 
 ```bash
-# Shared team rules
-/project/.claude/settings.json        # Committed
-/project/CLAUDE.md                    # Committed
+# 共享团队规则
+/project/.claude/settings.json        # 已提交
+/project/CLAUDE.md                    # 已提交
 
-# Personal overrides
-/project/.claude/settings.local.json  # Gitignored
-/project/.claude/CLAUDE.md            # Gitignored
+# 个人覆盖
+/project/.claude/settings.local.json  # 在 gitignore 中
+/project/.claude/CLAUDE.md            # 在 gitignore 中
 ```
 
-Team settings take precedence, but individuals can opt-in to stricter rules.
+团队设置优先，但个人可以选择更严格的规则。
 
 ---
 
-## See Also
+## 另见
 
-- [Ultimate Guide §9.12 Git Best Practices](#912-git-best-practices-workflows) — Commit workflow, Plan → Act pattern
-- [Security Hardening Guide](./security-hardening.md) — MCP security, secret protection, hook stack
-- [Data Privacy Guide](./data-privacy.md) — MCP database risks, retention policies
-- [Enterprise AI Governance](./enterprise-governance.md) — Org-level governance: usage charters, MCP approval workflow, guardrail tiers, compliance
-- [Adoption Approaches](../roles/adoption-approaches.md) — Team setup, shared conventions, enterprise rollout
-- [Plan Mode](#23-plan-mode) — Safe exploration before execution
-- [Permissions System](#33-settings-permissions) — Allow/deny rules, hooks
+- [终极指南 §9.12 Git 最佳实践](#912-git-best-practices-workflows) — 提交工作流、计划→执行模式
+- [安全加固指南](./security-hardening.md) — MCP 安全、密钥保护、钩子堆栈
+- [数据隐私指南](./data-privacy.md) — MCP 数据库风险、保留策略
+- [企业 AI 治理](./enterprise-governance.md) — 组织级治理：使用章程、MCP 审批流程、护栏级别、合规
+- [采用方式](../roles/adoption-approaches.md) — 团队设置、共享规范、企业发布
+- [计划模式](#23-plan-mode) — 执行前的安全探索
+- [权限系统](#33-settings-permissions) — 允许/拒绝规则、钩子
 
 ---
 
-## Quick Reference
+## 快速参考
 
-### Rule Severity
+### 规则严重级别
 
-| Rule | Severity | Breaking this causes |
+| 规则 | 严重级别 | 违反后果 |
 |------|----------|----------------------|
-| 1. Port Stability | 🔴 Critical | Team downtime, deployment failures |
-| 2. Database Safety | 🔴 Critical | Data loss, customer impact |
-| 3. Feature Completeness | 🟡 High | Production bugs, tech debt |
-| 4. Infrastructure Lock | 🟠 High | Downtime, security issues |
-| 5. Dependency Safety | 🟡 Medium | Bundle bloat, license issues |
-| 6. Pattern Following | 🟢 Low | Code inconsistency, maintenance burden |
+| 1. 端口稳定 | 🔴 关键 | 团队停机、部署失败 |
+| 2. 数据库安全 | 🔴 关键 | 数据丢失、客户影响 |
+| 3. 功能完整 | 🟡 高 | 生产 bug、技术债务 |
+| 4. 基础设施锁定 | 🟠 高 | 停机、安全问题 |
+| 5. 依赖安全 | 🟡 中 | 包体积膨胀、许可证问题 |
+| 6. 遵循模式 | 🟢 低 | 代码不一致、维护负担 |
 
-### Enforcement Methods
+### 执行方法
 
-| Method | Strictness | Setup Time | Best For |
+| 方法 | 严格程度 | 配置时间 | 最适合 |
 |--------|------------|------------|----------|
-| **Permission deny** | 100% (blocks) | 2 min | Critical rules (1, 2, 4) |
-| **Pre-tool hooks** | 100% (blocks) | 10 min | Custom logic, team-specific |
-| **CLAUDE.md rules** | ~70% (Claude respects) | 5 min | Conventions, guidelines |
-| **Post-tool warnings** | ~30% (warns only) | 5 min | Best practices, suggestions |
-| **Git hooks** | 100% (blocks commits) | 15 min | Final safety net before push |
+| **权限拒绝** | 100%（阻断） | 2 分钟 | 关键规则（1、2、4） |
+| **工具前钩子** | 100%（阻断） | 10 分钟 | 自定义逻辑、团队特定 |
+| **CLAUDE.md 规则** | ~70%（Claude 遵守） | 5 分钟 | 规范、指导方针 |
+| **工具后警告** | ~30%（仅警告） | 5 分钟 | 最佳实践、建议 |
+| **Git 钩子** | 100%（阻断提交） | 15 分钟 | 推送前最后安全防线 |
 
-### Common Patterns
+### 常见模式
 
-**Allow staging changes, block production**:
+**允许测试环境变更，阻止生产变更**：
 ```json
 {
   "permissions": {
@@ -961,7 +961,7 @@ Team settings take precedence, but individuals can opt-in to stricter rules.
 }
 ```
 
-**Require confirmation for sensitive ops**:
+**要求对敏感操作进行确认**：
 ```json
 {
   "permissions": {
@@ -970,58 +970,58 @@ Team settings take precedence, but individuals can opt-in to stricter rules.
 }
 ```
 
-**Temporary override with expiry**:
+**带到期时间的临时覆盖**：
 ```markdown
-## Temporary Override (expires 2026-02-01)
-Infrastructure changes allowed for migration project.
-After expiry: revert to standard rules.
+## 临时覆盖（过期时间：2026-02-01）
+允许为迁移项目进行基础设施变更。
+过期后：恢复标准规则。
 ```
 
 ---
 
-## Rule 6: Autonomous Loop Safety
+## 规则 6：自主循环安全
 
-### The Problem
+### 问题所在
 
-Autonomous agent loops — a Claude session running unattended for hours, processing a queue, monitoring a system — have a failure mode that's hard to debug: the process *appears* to be running but has silently stalled. No error. No exit code. Just nothing happening, consuming your API budget.
+自主智能体循环——一个无人值守运行数小时、处理队列、监控系统的 Claude 会话——有一种难以调试的失败模式：进程*看起来*在运行，但实际上已静默停止。没有错误，没有退出码，就是什么都不发生，同时消耗您的 API 预算。
 
-This happens when:
-- Claude enters a reasoning loop with no exit condition
-- A tool call hangs waiting for a resource that's gone
-- The session hits an edge case that produces no output but also no failure
+发生这种情况时：
+- Claude 进入没有退出条件的推理循环
+- 工具调用挂起等待一个已消失的资源
+- 会话触及某个不产生输出但也不失败的边界情况
 
-### The Rule
+### 规则
 
-For any autonomous session expected to run longer than a few minutes, implement a heartbeat mechanism. If the heartbeat stops, kill the entire **process group** — not just the parent process.
+对于任何预计运行时间超过几分钟的自主会话，实施心跳机制。如果心跳停止，则终止整个**进程组**——而不仅仅是父进程。
 
-**Why process group, not just parent**: Claude Code spawns child processes (shell commands, tool calls). Killing only the parent leaves orphaned children consuming resources and potentially taking actions without oversight.
+**为什么是进程组而非父进程**：Claude Code 会派生子进程（shell 命令、工具调用）。只杀死父进程会留下孤立的子进程，它们会继续消耗资源并可能在没有监督的情况下采取行动。
 
-### Implementation
+### 实现方式
 
-**Heartbeat writer** — runs inside the autonomous loop as a PostToolUse hook:
+**心跳写入器**——在自主循环内作为 PostToolUse 钩子运行：
 
 ```bash
 #!/bin/bash
 # .claude/hooks/autonomous-heartbeat.sh
-# PostToolUse hook: write timestamp after every tool use
+# PostToolUse 钩子：每次工具调用后写入时间戳
 
 HEARTBEAT_FILE="${CLAUDE_HEARTBEAT_FILE:-/tmp/claude-heartbeat-$$}"
 date +%s > "$HEARTBEAT_FILE"
 ```
 
-**Dead-man watchdog** — runs as a separate process alongside Claude:
+**死亡开关看门狗**——作为独立进程与 Claude 并行运行：
 
 ```bash
 #!/bin/bash
 # scripts/watchdog.sh
-# Usage: ./scripts/watchdog.sh <timeout_seconds> <pid>
+# 用法：./scripts/watchdog.sh <超时秒数> <pid>
 
 TIMEOUT="${1:-30}"
 TARGET_PID="${2:-}"
 HEARTBEAT_FILE="${CLAUDE_HEARTBEAT_FILE:-/tmp/claude-heartbeat-$TARGET_PID}"
 
 if [[ -z "$TARGET_PID" ]]; then
-  echo "Usage: watchdog.sh <timeout_seconds> <pid>" >&2
+  echo "用法：watchdog.sh <超时秒数> <pid>" >&2
   exit 1
 fi
 
@@ -1029,7 +1029,7 @@ while true; do
   sleep 5
 
   if ! kill -0 "$TARGET_PID" 2>/dev/null; then
-    echo "Watchdog: process $TARGET_PID has exited cleanly"
+    echo "看门狗：进程 $TARGET_PID 已正常退出"
     exit 0
   fi
 
@@ -1039,7 +1039,7 @@ while true; do
     AGE=$(( NOW - LAST_BEAT ))
 
     if [[ "$AGE" -gt "$TIMEOUT" ]]; then
-      echo "Watchdog: no heartbeat for ${AGE}s (limit: ${TIMEOUT}s) — killing process group"
+      echo "看门狗：${AGE}秒无心跳（限制：${TIMEOUT}秒）——正在终止进程组"
       kill -TERM -"$TARGET_PID" 2>/dev/null || kill -TERM "$TARGET_PID"
       sleep 2
       kill -KILL -"$TARGET_PID" 2>/dev/null || true
@@ -1050,13 +1050,13 @@ while true; do
 done
 ```
 
-**Launch script** that wires them together:
+**将它们连接在一起的启动脚本**：
 
 ```bash
 #!/bin/bash
 export CLAUDE_HEARTBEAT_FILE="/tmp/claude-heartbeat-$$"
 
-claude --print "Process the task queue in tasks.json" &
+claude --print "处理 tasks.json 中的任务队列" &
 CLAUDE_PID=$!
 
 ./scripts/watchdog.sh 30 "$CLAUDE_PID" &
@@ -1070,27 +1070,27 @@ rm -f "$CLAUDE_HEARTBEAT_FILE"
 exit "$EXIT_CODE"
 ```
 
-### Tuning the Timeout
+### 超时调整
 
-| Task type | Recommended timeout |
+| 任务类型 | 推荐超时 |
 |-----------|-------------------|
-| Simple file operations | 15–30s |
-| Web requests, API calls | 60s |
-| Code compilation, test runs | 120s |
-| Long-running research tasks | 300s |
+| 简单文件操作 | 15–30 秒 |
+| Web 请求、API 调用 | 60 秒 |
+| 代码编译、测试运行 | 120 秒 |
+| 长时间研究任务 | 300 秒 |
 
-Start at 30s and increase only when you observe legitimate pauses longer than your timeout.
+从 30 秒开始，仅在观察到合理暂停时间超过您的超时时才增加。
 
-### When NOT to Use This
+### 何时不使用此方法
 
-- Interactive sessions (you're watching) — the watchdog adds no value
-- Tasks under 5 minutes — setup overhead isn't justified
-- Pipelines where failure is expected and handled by retry logic
+- 交互式会话（您在观察）——看门狗没有额外价值
+- 5 分钟以内的任务——配置开销不值得
+- 失败是预期的且由重试逻辑处理的流水线
 
-> **Credit**: Heartbeat dead-man switch pattern for autonomous agents from [Everything Claude Code Security Guide](https://github.com/affaan-m/everything-claude-code) (Affaan Mustafa). The process-group kill and watchdog separation are their contributions.
+> **致谢**：自主智能体的心跳死亡开关模式来自 [Everything Claude Code 安全指南](https://github.com/affaan-m/everything-claude-code)（Affaan Mustafa）。进程组终止和看门狗分离是他们的贡献。
 
 ---
 
-**Version**: 1.0.0
-**Last Updated**: 2026-01-21
-**Changelog**: Initial version based on community-validated production patterns
+**版本**：1.0.0
+**最后更新**：2026-01-21
+**变更日志**：基于社区验证的生产模式的初始版本

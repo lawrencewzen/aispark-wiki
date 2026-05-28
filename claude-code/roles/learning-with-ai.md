@@ -1,339 +1,339 @@
 > 📚 **AI Spark Wiki** · Claude Code 知识库
 
 ---
-title: "Learning to Code with AI: The Conscious Developer's Guide"
-description: "Research-based guide for junior developers learning to code effectively with AI assistance"
+title: "AI 辅助编程学习：有意识开发者指南"
+description: "基于研究的指南，帮助初级开发者在 AI 辅助下有效学习编程"
 tags: [guide, workflows]
 ---
 
-# Learning to Code with AI: The Conscious Developer's Guide
+# AI 辅助编程学习：有意识开发者指南
 
-> **Confidence**: Tier 2 — Based on academic research (2023-2025) and educator feedback
+> **可信度**：Tier 2 — 基于学术研究（2023-2025 年）和教育者反馈
 >
-> **Audience**: Junior developers, CS students, bootcamp graduates, career changers
+> **受众**：初级开发者、CS 学生、训练营毕业生、职业转换者
 >
-> **Reading time**: ~15 minutes
+> **阅读时间**：约 15 分钟
 >
-> **Last updated**: March 2026
+> **最后更新**：2026 年 3 月
 
 ---
 
-## Table of Contents
+## 目录
 
-1. [Quick Self-Check (Start Here)](#quick-self-check-start-here)
-2. [The Problem in 60 Seconds](#the-problem-in-60-seconds)
-3. [The Reality of AI Productivity](#the-reality-of-ai-productivity)
-4. [The Three Patterns](#the-three-patterns)
-5. [The UVAL Protocol](#the-uval-protocol)
-6. [Claude Code for Learning](#claude-code-for-learning-not-just-producing)
-7. [Breaking Dependency (Pattern: Dependent)](#breaking-dependency)
-8. [Embracing AI Tools (Pattern: Avoidant)](#embracing-ai-tools)
-9. [Optimizing Your Flow (Pattern: Augmented)](#optimizing-your-flow)
-10. [Case Study: Hybrid Learning Principles](#case-study-hybrid-learning-principles)
-11. [Where Are You on the Agent Adoption Curve?](#where-are-you-on-the-agent-adoption-curve)
-12. [30-Day Progression Plan](#30-day-progression-plan)
-13. [For Tech Leads & Engineering Managers](#for-tech-leads--engineering-managers)
-14. [Red Flags Checklist](#red-flags-checklist)
-15. [Sources & Research](#sources--research)
-16. [See Also](#see-also)
+1. [快速自检（从这里开始）](#快速自检从这里开始)
+2. [60 秒了解问题](#60-秒了解问题)
+3. [AI 生产力的现实](#ai-生产力的现实)
+4. [三种模式](#三种模式)
+5. [UVAL 协议](#uval-协议)
+6. [Claude Code 辅助学习](#claude-code-辅助学习不只是生产)
+7. [打破依赖（模式：依赖型）](#打破依赖)
+8. [拥抱 AI 工具（模式：回避型）](#拥抱-ai-工具)
+9. [优化你的工作流（模式：增强型）](#优化你的工作流)
+10. [案例研究：混合学习原则](#案例研究混合学习原则)
+11. [你在智能体采用曲线上的位置？](#你在智能体采用曲线上的位置)
+12. [30 天进阶计划](#30-天进阶计划)
+13. [技术负责人与工程管理者指南](#技术负责人与工程管理者指南)
+14. [危险信号清单](#危险信号清单)
+15. [来源与研究](#来源与研究)
+16. [参见](#参见)
 
 ---
 
-## Quick Self-Check (Start Here)
+## 快速自检（从这里开始）
 
-Before diving in, answer honestly:
+诚实地回答：
 
-| # | Question | Yes | No |
+| # | 问题 | 是 | 否 |
 |---|----------|-----|-----|
-| 1 | Can you explain the last code that AI generated for you? | ☐ | ☐ |
-| 2 | Have you debugged code without AI this week? | ☐ | ☐ |
-| 3 | Do you know WHY the solution works (not just THAT it works)? | ☐ | ☐ |
-| 4 | Could you write the same function without assistance? | ☐ | ☐ |
-| 5 | Do you know the AI's limitations on this type of problem? | ☐ | ☐ |
+| 1 | 你能解释 AI 上次为你生成的代码吗？ | ☐ | ☐ |
+| 2 | 本周你曾在不使用 AI 的情况下调试过代码吗？ | ☐ | ☐ |
+| 3 | 你知道解决方案**为什么**有效（而不只是**知道**它有效）吗？ | ☐ | ☐ |
+| 4 | 你能在没有辅助的情况下编写相同的函数吗？ | ☐ | ☐ |
+| 5 | 你了解 AI 在这类问题上的局限性吗？ | ☐ | ☐ |
 
-### Your Score
+### 你的分数
 
-| Score | Where You Are | Jump To |
+| 分数 | 你的位置 | 跳转到 |
 |-------|--------------|---------|
-| **0-2 yes** | Dependency risk — you're outsourcing thinking | [§6 Breaking Dependency](#breaking-dependency) |
-| **3-4 yes** | On track — room for optimization | [§8 Optimizing Your Flow](#optimizing-your-flow) |
-| **5 yes** | Augmented — you're using AI correctly | [§9 Case Study](#case-study-hybrid-learning-principles) |
+| **0-2 个是** | 依赖风险——你在外包思考 | [§6 打破依赖](#打破依赖) |
+| **3-4 个是** | 进展良好——有优化空间 | [§8 优化你的工作流](#优化你的工作流) |
+| **5 个是** | 增强型——你在正确使用 AI | [§9 案例研究](#案例研究混合学习原则) |
 
-Be honest. This guide only helps if you acknowledge where you actually are.
-
----
-
-## The Problem in 60 Seconds
-
-> AI can make you 3x more productive OR unemployable in 3 years.
-> The difference? How you use it.
-
-Forget the statistics for now. Here's a simple metaphor:
-
-**AI is your GPS.**
-
-- Great for getting somewhere fast
-- Dangerous if you lose the ability to navigate without it
-- Truly useful when you understand the map AND use the GPS
-
-A developer who only copy-pastes AI output is like a driver who can't read a map. Fine until the GPS fails — or until someone asks them to explain the route.
-
-### The Skills Gap
-
-```
-Traditional learning: Problem → Struggle → Understanding → Solution
-AI-assisted (wrong): Problem → AI → Solution → ??? (no understanding)
-AI-assisted (right): Problem → Attempt → AI guidance → Understanding → Solution
-```
-
-The struggle isn't optional. It's where learning happens.
-
-### The "Vibe Coding" Trap
-
-Term coined by [Andrej Karpathy](https://x.com/karpathy/status/1886192184808149383) (Feb 2025, Collins Word of the Year 2025): coding by "fully giving in to the vibes" without understanding the generated code.
-
-> **Related**: For team and OSS contexts, see [AI Traceability](../ops/ai-traceability.md) for disclosure policies (LLVM, Ghostty, Fedora) and attribution tools.
-
-**Symptoms:**
-- Accept All without reading diffs
-- Copy-paste errors without understanding root cause
-- Debug by asking AI for random changes until it works
-
-**Karpathy's caveat:** "Not too bad for throwaway weekend projects" — but dangerous for production code you'll need to maintain.
-
-**Antidote:** The UVAL Protocol (§5) forces understanding before acceptance.
-
-> **Related**: For context management strategies that prevent vibe coding chaos, see [Anti-Pattern: Context Overload](#anti-pattern-context-overload) in the main guide (§9.8).
-
-**At team scale**, vibe coding accumulates into what some practitioners call *comprehension debt* (an emerging term, 2025-2026): the growing gap between how much code exists in a system and how much any human genuinely understands. Unlike technical debt, which surfaces through slow builds and tangled dependencies, comprehension debt breeds false confidence — velocity looks fine, tests are green, and the reckoning arrives at the worst possible moment, usually during an incident or an audit.
+诚实对待自己。这份指南只有在你承认自己真实所处位置时才有帮助。
 
 ---
 
-## The Reality of AI Productivity
+## 60 秒了解问题
 
-Before optimizing your learning approach, understand what productivity research actually shows — it's more nuanced than the marketing suggests.
+> AI 可以让你生产力提高 3 倍，也可以让你在 3 年内变得无法雇用。
+> 区别？你如何使用它。
 
-### The Productivity Curve (Not a Straight Line)
+先忘掉统计数字。这里有个简单的比喻：
 
-Most developers experience three distinct phases:
+**AI 是你的 GPS。**
 
-| Phase | Timeline | Productivity | What's Happening |
+- 非常适合快速到达某地
+- 如果你失去了不依赖它导航的能力，则很危险
+- 当你既了解地图又会使用 GPS 时，才真正有用
+
+只会复制粘贴 AI 输出的开发者，就像不会看地图的司机。没问题——直到 GPS 失效，或者有人问他们解释路线。
+
+### 技能差距
+
+```
+传统学习：问题 → 挣扎 → 理解 → 解决方案
+AI 辅助（错误）：问题 → AI → 解决方案 → ???（无理解）
+AI 辅助（正确）：问题 → 尝试 → AI 引导 → 理解 → 解决方案
+```
+
+挣扎不是可选的。它是学习发生的地方。
+
+### "凭感觉编程"的陷阱
+
+由 [Andrej Karpathy](https://x.com/karpathy/status/1886192184808149383) 创造的术语（2025 年 2 月，科林斯词典 2025 年度词语）："完全顺从感觉"编程，不理解生成的代码。
+
+> **相关**：关于团队和开源语境，见 [AI 可追溯性](../ops/ai-traceability.md) 了解披露政策（LLVM、Ghostty、Fedora）和归因工具。
+
+**症状：**
+- 不看差异对比就全部接受
+- 不理解根本原因就复制粘贴错误
+- 靠问 AI 随机修改来调试，直到有效
+
+**Karpathy 的警告：** "对于丢弃的周末项目还好"——但对于你需要维护的生产代码则很危险。
+
+**解药：** UVAL 协议（§5）在接受之前强制理解。
+
+> **相关**：关于防止凭感觉编程混乱的上下文管理策略，见主指南中的[反模式：上下文过载](#anti-pattern-context-overload)（§9.8）。
+
+**在团队规模上**，凭感觉编程积累成一些从业者称之为*理解债务*（2025-2026 年新兴术语）的东西：系统中存在的代码量与任何人真正理解的代码量之间不断扩大的差距。与技术债务不同（技术债务通过缓慢的构建和纠缠的依赖浮现），理解债务滋生出虚假的信心——速度看起来不错，测试都是绿的，清算在最糟糕的时刻到来，通常是在事故或审计期间。
+
+---
+
+## AI 生产力的现实
+
+在优化你的学习方法之前，先了解生产力研究实际显示的内容——它比营销所说的更微妙。
+
+### 生产力曲线（不是直线）
+
+大多数开发者经历三个截然不同的阶段：
+
+| 阶段 | 时间线 | 生产力 | 发生了什么 |
 |-------|----------|--------------|------------------|
-| **Wow Effect** | 0-2 weeks | ~0% gain | Excitement masks learning curve; time spent prompting offsets time saved |
-| **Targeted Gains** | 2-8 weeks | +20-50% | AI accelerates specific tasks you've learned to delegate effectively |
-| **Sustainable Plateau** | 3-6 months | +20-30% | Stable gains, but only for developers who already have strong fundamentals |
+| **哇效应** | 0-2 周 | 约 0% 提升 | 兴奋掩盖了学习曲线；提示词花费的时间抵消了节省的时间 |
+| **定向收益** | 2-8 周 | +20-50% | AI 加速了你学会有效委派的特定任务 |
+| **可持续稳定期** | 3-6 个月 | +20-30% | 稳定收益，但仅限于已有扎实基础的开发者 |
 
-**Critical nuance**: These gains are conditional. Studies show experienced developers (5+ years) see larger, sustained gains. Junior developers often see initial spikes followed by regression — because speed without understanding creates technical debt. A 2026 RCT ([Shen & Tamkin, Anthropic Fellows](https://arxiv.org/abs/2601.20245)) measured a **17% reduction in skills acquisition** when developers learned a new library with AI assistance (n=52, p=0.01) — with no significant time savings. Only ~20% of AI users (pure delegation pattern) finished faster, at the cost of learning almost nothing.
+**关键细节**：这些收益是有条件的。研究表明有经验的开发者（5 年以上）看到更大、更持续的收益。初级开发者往往看到初始峰值后出现回落——因为没有理解的速度会产生技术债务。2026 年一项随机对照试验（[Shen & Tamkin，Anthropic Fellows](https://arxiv.org/abs/2601.20245)）测量到当开发者在 AI 辅助下学习新库时，技能习得**降低 17%**（n=52，p=0.01）——没有显著的时间节省。只有约 20% 的 AI 用户（纯委派模式）完成得更快，但代价是几乎什么都没学到。
 
-**AI-specific stress factor**: Nondeterministic outputs (identical prompts → varying results) create cognitive anxiety distinct from traditional debugging. This variability can trigger "AI fatigue" — mental exhaustion from unpredictable tool behavior that compounds over extended sessions. Mitigation: Time-box sessions (30 min max), limit retry attempts (3 max before reverting to manual implementation), and recognize when tool unpredictability signals a need for context reset (`/clear`) or manual problem-solving.
+**AI 特定压力因素**：非确定性输出（相同提示词 → 不同结果）产生与传统调试不同的认知焦虑。这种可变性可能触发"AI 疲劳"——来自不可预测工具行为的心理疲惫，在延长的会话中不断积累。缓解：控制会话时间（最多 30 分钟），限制重试次数（最多 3 次后恢复手动实现），识别工具不可预测性预示着需要上下文重置（`/clear`）或手动解决问题。
 
-### Where AI Helps (And Where It Hurts)
+### AI 在哪里有帮助（以及在哪里有害）
 
-| High-Gain Tasks | Low/Negative-Gain Tasks |
+| 高收益任务 | 低/负收益任务 |
 |-----------------|-------------------------|
-| Boilerplate generation | Architecture decisions |
-| Test scaffolding | Domain-specific logic |
-| Refactoring known patterns | Deep debugging |
-| Documentation drafts | Fine-grained optimization |
-| Codebase onboarding | Security-critical code |
-| CRUD operations | Novel algorithm design |
+| 样板代码生成 | 架构决策 |
+| 测试脚手架 | 领域特定逻辑 |
+| 重构已知模式 | 深度调试 |
+| 文档草稿 | 精细优化 |
+| 代码库入职 | 安全关键代码 |
+| CRUD 操作 | 新颖算法设计 |
 
-The pattern: **AI excels at well-defined, repeatable tasks**. It struggles with ambiguous problems requiring deep context or creative judgment.
+模式：**AI 擅长明确、可重复的任务**。对于需要深度上下文或创造性判断的模糊问题则表现不佳。
 
-### Why Some Teams Get Results (And Others Don't)
+### 为什么有些团队取得成果（而其他团队停滞）
 
-**Teams that succeed**:
-- Establish clear AI usage guidelines (when to use, when not to)
-- Maintain code review standards (AI-generated code reviewed same as human code)
-- Build shared prompt libraries for common tasks
-- Pair junior developers with seniors when using AI
+**成功的团队**：
+- 为 AI 使用制定明确指南（何时使用，何时不用）
+- 维护代码审查标准（AI 生成的代码与人类代码一样被审查）
+- 为常见任务建立共享提示词库
+- 将初级开发者与高级开发者配对使用 AI
 
-**Teams that stagnate**:
-- No standards for AI-generated code quality
-- Juniors using AI without oversight
-- Measuring velocity without measuring understanding
-- Skipping code review because "AI wrote it"
+**停滞的团队**：
+- 没有 AI 生成代码质量标准
+- 初级开发者在没有监督的情况下使用 AI
+- 衡量速度而不衡量理解
+- 因为"AI 写的"就跳过代码审查
 
-The difference isn't the tool — it's the organizational discipline around it.
+区别不是工具，而是围绕工具的组织规范。
 
-**The review bottleneck has inverted.** When code was expensive to produce, senior engineers could review it faster than juniors could write it — review was a quality gate. AI flips this: a junior can now generate code faster than a senior can critically audit it. The rate-limiting factor that historically kept review meaningful has been removed. What used to be a quality gate is now a throughput problem. Teams that don't account for this end up rubber-stamping AI-generated code at scale.
+**审查瓶颈已经反转。** 当代码生产成本高昂时，高级工程师审查代码的速度可以快于初级工程师编写的速度——审查是质量关卡。AI 颠覆了这一点：初级工程师现在可以比高级工程师严格审计更快地生成代码。曾经让审查有意义的速率限制因素已被移除。曾经的质量关卡现在是吞吐量问题。不考虑这一点的团队最终会在规模上走形式审查 AI 生成的代码。
 
-> **For team leads**: If you're responsible for structuring this — onboarding, policies, growth measurement — jump to [§12 For Tech Leads & Engineering Managers](#for-tech-leads--engineering-managers).
+> **对团队负责人**：如果你负责组织这方面——入职、政策、成长测量——跳转到[§12 技术负责人与工程管理者指南](#技术负责人与工程管理者指南)。
 
-**On maintainability fear**: The concern that AI-generated code creates unmaintainable codebases is not empirically supported — downstream developers show no significant difference in evolution time or code quality (Borg et al., 2025, n=151). The real risks are skill atrophy and over-delegation, not inherent quality degradation for the next developer. ([arXiv:2507.00788](https://arxiv.org/abs/2507.00788))
+**关于可维护性恐惧**：AI 生成代码会产生不可维护代码库的担忧没有实证支持——下游开发者在进化时间或代码质量上没有显著差异（Borg 等人，2025 年，n=151）。真正的风险是技能萎缩和过度委派，而不是对下一个开发者的固有质量退化。([arXiv:2507.00788](https://arxiv.org/abs/2507.00788))
 
-### Implications for Learning
+### 对学习的影响
 
-This research shapes the rest of this guide:
+这个研究构成了本指南其余部分的基础：
 
-1. **The 70/30 rule** (§5) isn't arbitrary — it's calibrated to where AI helps vs. hurts learning
-2. **The Three Patterns** below map to these productivity outcomes
-3. **Breaking Dependency** (§6) addresses the junior developer trap specifically
+1. **70/30 规则**（§5）不是任意的——它是根据 AI 有帮助 vs 有害学习的情况校准的
+2. 下面的**三种模式**映射到这些生产力结果
+3. **打破依赖**（§6）专门解决初级开发者陷阱
 
 ---
 
-## The Three Patterns
+## 三种模式
 
-Every developer using AI falls into one of three patterns:
+每个使用 AI 的开发者都属于三种模式之一：
 
-| Pattern | Signs | Risk | This Guide |
+| 模式 | 迹象 | 风险 | 本指南 |
 |---------|-------|------|------------|
-| **Dependent** | Copy-paste without understanding, can't debug AI code, anxiety without AI | Unemployable | [§7](#breaking-dependency) |
-| **Avoidant** | Refuses AI "on principle", slower than peers, dismissive of tools | Left behind | [§8](#embracing-ai-tools) |
-| **Augmented** | Uses AI critically, understands everything, knows AI limits | Thriving | [§9](#optimizing-your-flow) |
+| **依赖型** | 不理解就复制粘贴，无法调试 AI 代码，没有 AI 就焦虑 | 变得无法雇用 | [§7](#打破依赖) |
+| **回避型** | 以"原则"拒绝 AI，比同行慢，贬低工具 | 被落下 | [§8](#拥抱-ai-工具) |
+| **增强型** | 批判性使用 AI，理解所有内容，了解 AI 局限性 | 蓬勃发展 | [§9](#优化你的工作流) |
 
-**Productivity trajectory by pattern** (based on [§3 research](#the-reality-of-ai-productivity)):
+**按模式的生产力轨迹**（基于[§3 研究](#ai-生产力的现实)）：
 
-| Pattern | 0-2 weeks | 2-8 weeks | 6+ months |
+| 模式 | 0-2 周 | 2-8 周 | 6 个月以上 |
 |---------|-----------|-----------|-----------|
-| Dependent | +50% (illusory) | +20% | -10% (debt accumulates) |
-| Avoidant | -30% | -20% | 0% (no AI leverage) |
-| Augmented | +10% | +30-50% | +20-30% (sustainable) |
+| 依赖型 | +50%（虚幻） | +20% | -10%（债务积累） |
+| 回避型 | -30% | -20% | 0%（无 AI 杠杆） |
+| 增强型 | +10% | +30-50% | +20-30%（可持续） |
 
-### Pattern 1: Dependent
+### 模式 1：依赖型
 
-**How you got here**: Started with AI from day one, never built foundational skills, deadline pressure made shortcuts appealing.
+**你如何到达这里**：从第一天就开始使用 AI，从未建立基础技能，截止日期压力使捷径变得诱人。
 
-**The trap**: You ship code you can't explain. When it breaks, you're stuck. In interviews, you freeze.
+**陷阱**：你交付无法解释的代码。当它出错时，你被困住了。在面试中，你会僵住。
 
-**What interviewers see**:
-- Can't whiteboard basic algorithms
-- Struggles with "why did you choose this approach?"
-- Asks to "look something up" for fundamental concepts
+**面试官看到的**：
+- 无法在白板上做基础算法
+- 在"你为什么选择这种方法？"时卡住
+- 对基础概念要求"查一下"
 
-### Pattern 2: Avoidant
+### 模式 2：回避型
 
-**How you got here**: Purist mindset, fear of "cheating", learned before AI tools existed, distrust of new technology.
+**你如何到达这里**：纯粹主义思维，害怕"作弊"，在 AI 工具存在之前就学习了，对新技术不信任。
 
-**The trap**: You're slower than peers. You spend hours on problems AI solves instantly. You're not learning faster by struggling more — you're just slower.
+**陷阱**：你比同行慢。你花几个小时在 AI 瞬间解决的问题上。你通过更多挣扎并没有学得更快——你只是更慢。
 
-**What teams see**:
-- Reinventing wheels unnecessarily
-- Slow on routine tasks
-- Resistance to modern tooling
+**团队看到的**：
+- 不必要地重新发明轮子
+- 常规任务上太慢
+- 对现代工具的抵制
 
-### Pattern 3: Augmented
+### 模式 3：增强型
 
-**How you got here**: Built foundations first OR consciously fixed Pattern 1/2 habits, treat AI as tool not crutch, verify everything.
+**你如何到达这里**：先建立基础，或者有意识地修正了模式 1/2 的习惯，将 AI 视为工具而非拐杖，验证一切。
 
-**The advantage**: You move fast AND understand deeply. You use AI for leverage, not replacement.
+**优势**：你行动快速**且**深刻理解。你将 AI 用于杠杆，而非替代。
 
-**What hiring managers see**:
-- Fast delivery with clear explanations
-- Can work with OR without AI
-- Uses tools appropriately for the task
+**招聘经理看到的**：
+- 快速交付并有清晰解释
+- 可以在有或没有 AI 的情况下工作
+- 为任务适当使用工具
 
 ---
 
-## The UVAL Protocol
+## UVAL 协议
 
-A systematic approach to using AI without losing your edge.
+使用 AI 而不失去优势的系统性方法。
 
-### Overview
+### 概述
 
-| Step | Action | Why It Matters |
+| 步骤 | 行动 | 为什么重要 |
 |------|--------|----------------|
-| **U** | Understand First | Ask better questions, catch wrong answers |
-| **V** | Verify | Ensure you actually learned, not just copied |
-| **A** | Apply | Transform knowledge into skill through modification |
-| **L** | Learn | Capture insights for long-term retention |
+| **U** | 先理解 | 提出更好的问题，捕捉错误答案 |
+| **V** | 验证 | 确保你真正学到了，而非只是复制 |
+| **A** | 应用 | 通过修改将知识转化为技能 |
+| **L** | 学习 | 捕捉洞察以实现长期保留 |
 
 ---
 
-### U — Understand First (The 15-Minute Rule)
+### U — 先理解（15 分钟规则）
 
-**Not just "think for 15 minutes"** — a specific protocol:
+**不只是"思考 15 分钟"**——这是一个具体的协议：
 
-#### Step 1: State the Problem (2 min)
+#### 步骤 1：陈述问题（2 分钟）
 
-Write the problem in ONE sentence. If you can't, you don't understand it yet.
-
-```
-❌ "The code doesn't work"
-✅ "The login form doesn't show validation errors when email is empty"
-```
-
-#### Step 2: Brainstorm Approaches (5 min)
-
-List 3 possible approaches, even if you're not sure they'll work:
+用一句话写出问题。如果做不到，你还不理解它。
 
 ```
-1. Add client-side validation with JavaScript
-2. Use HTML5 required attribute
-3. Add server-side validation and return errors
+❌ "代码不工作"
+✅ "当邮件为空时，登录表单没有显示验证错误"
 ```
 
-This forces you to think before asking AI.
+#### 步骤 2：头脑风暴方法（5 分钟）
 
-#### Step 2.5: Recognize Fatigue Signals (30 sec)
-
-Before moving forward, pause and assess your cognitive state:
-
-- **Session duration**: Been working >30 min? → Take a 5-min break, consider `/clear` to reset context
-- **Retry count**: Tried the same prompt 3+ times with inconsistent results? → Switch to manual implementation
-- **Frustration level**: Feeling anxious about unpredictable AI responses? → This is "AI fatigue" (nondeterminism stress), not your fault — it's the tool's inherent variability
-
-This checkpoint prevents compounding exhaustion from extended sessions with diminishing returns.
-
-#### Step 3: Identify Knowledge Gaps (3 min)
-
-What specifically do you NOT know?
+列出 3 种可能的方法，即使你不确定是否有效：
 
 ```
-- I know I need validation, but I don't know how to display inline errors in React
-- I've never used Zod before but it keeps coming up
+1. 用 JavaScript 添加客户端验证
+2. 使用 HTML5 required 属性
+3. 添加服务器端验证并返回错误
 ```
 
-#### Step 4: THEN Ask AI (5 min)
+这强制你在问 AI 之前先思考。
 
-Now your question is 10x better:
+#### 步骤 2.5：识别疲劳信号（30 秒）
+
+在继续前，暂停评估你的认知状态：
+
+- **会话持续时间**：工作超过 30 分钟了？→ 休息 5 分钟，考虑 `/clear` 重置上下文
+- **重试次数**：相同提示词尝试了 3 次以上并得到不一致结果？→ 切换到手动实现
+- **沮丧程度**：对 AI 响应的不可预测性感到焦虑？→ 这是"AI 疲劳"（非确定性压力），不是你的错——这是工具固有的可变性
+
+这个检查点防止在收益递减的延长会话中复合疲劳。
+
+#### 步骤 3：识别知识缺口（3 分钟）
+
+你具体**不**知道什么？
 
 ```
-❌ "How do I add validation?"
-✅ "I'm building a React login form. I want to:
-   1. Validate email format client-side
-   2. Show inline error messages below the input
-   3. Use Zod for schema validation
-
-   I've tried using the HTML required attribute but need custom error messages.
-   What's the idiomatic React approach?"
+- 我知道我需要验证，但我不知道如何在 React 中显示内联错误
+- 我从未用过 Zod，但它一直被提到
 ```
 
-Better questions → Better answers → Faster learning.
+#### 步骤 4：然后问 AI（5 分钟）
 
-#### Claude Code Implementation
+现在你的问题质量提高了 10 倍：
 
-Add to your `CLAUDE.md`:
+```
+❌ "我如何添加验证？"
+✅ "我在构建一个 React 登录表单。我希望：
+   1. 客户端验证邮件格式
+   2. 在输入框下方显示内联错误消息
+   3. 使用 Zod 进行 Schema 验证
+
+   我试过 HTML required 属性，但需要自定义错误消息。
+   惯用的 React 方法是什么？"
+```
+
+更好的问题 → 更好的答案 → 更快的学习。
+
+#### Claude Code 实现
+
+添加到你的 `CLAUDE.md`：
 
 ```markdown
-## Learning Mode
-Before generating code for me, ask:
-1. What approaches have I already considered?
-2. What specifically am I stuck on?
-3. What do I expect the solution to look like?
+## 学习模式
+在为我生成代码之前，先问：
+1. 我已经考虑过哪些方法？
+2. 我具体卡在哪里？
+3. 我预期解决方案是什么样的？
 
-If I skip these, remind me to think first.
+如果我跳过这些，提醒我先思考。
 ```
 
 ---
 
-### V — Verify (Explain It Back)
+### V — 验证（解释回来）
 
-**The rule**: If you can't explain the code to a colleague, you haven't learned it.
+**规则**：如果你无法向同事解释代码，你还没有学会它。
 
-#### The Rubber Duck Protocol
+#### 橡皮鸭协议
 
-After AI generates code:
+AI 生成代码后：
 
-1. Read every line out loud
-2. Explain what each part does
-3. Explain WHY it's done this way (not just what)
-4. Identify parts you don't understand
-5. Ask AI to explain those specific parts
+1. 大声朗读每一行
+2. 解释每个部分做什么
+3. 解释为什么**这样**做（不只是做什么）
+4. 识别你不理解的部分
+5. 请 AI 解释那些具体部分
 
-#### Example
+#### 示例
 
-AI generates:
+AI 生成：
 ```typescript
 const schema = z.object({
   email: z.string().email(),
@@ -344,77 +344,77 @@ const schema = z.object({
 });
 ```
 
-Your explanation:
-- Line 1: Creates a Zod schema object
-- Lines 2-3: Validates email format and password length
-- Lines 4-6: Adds custom validation... **wait, what does `refine` do?**
+你的解释：
+- 第 1 行：创建一个 Zod schema 对象
+- 第 2-3 行：验证邮件格式和密码长度
+- 第 4-6 行：添加自定义验证...**等等，`refine` 做什么？**
 
-→ Now ask AI specifically about `refine` instead of just copying the whole thing.
+→ 现在专门问 AI 关于 `refine` 的事，而不是复制整段代码。
 
-#### Claude Code Implementation
+#### Claude Code 实现
 
-Create a custom slash command `/explain-back`:
+创建自定义斜杠命令 `/explain-back`：
 
 ```markdown
-# Explain Back
+# 解释回来
 
-After I accept generated code, help me verify understanding.
+在我接受生成的代码后，帮我验证理解。
 
-## Instructions
+## 指令
 
-1. Show the code I just accepted
-2. Ask me to explain what each major section does
-3. Correct any misunderstandings
-4. If I can't explain it, break it down further
+1. 显示我刚接受的代码
+2. 要求我解释每个主要部分做什么
+3. 纠正任何误解
+4. 如果我无法解释，进一步分解
 
-## Example Prompt
+## 示例提示词
 
-"You just accepted this code. Can you explain:
-1. What problem does it solve?
-2. Why was this approach chosen?
-3. What would break if we removed line X?"
+"你刚刚接受了这段代码。你能解释吗：
+1. 它解决了什么问题？
+2. 为什么选择这种方法？
+3. 如果我们删除第 X 行会发生什么？"
 ```
 
-See [/learn:quiz command](../../examples/commands/learn/quiz.md) for a more comprehensive version.
+见 [/learn:quiz 命令](../../examples/commands/learn/quiz.md) 获取更全面的版本。
 
 ---
 
-### A — Apply (Transform, Don't Copy)
+### A — 应用（转化，而非复制）
 
-**The rule**: Never copy-paste AI code directly. Always modify something.
+**规则**：永远不要直接复制粘贴 AI 代码。始终修改某些东西。
 
-#### Why This Works
+#### 为什么这有效
 
-Modification forces engagement. Even small changes require understanding:
+修改强制参与。即使是小改动也需要理解：
 
-| Action | Cognitive Load | Learning |
+| 行动 | 认知负荷 | 学习 |
 |--------|---------------|----------|
-| Copy-paste | Zero | Zero |
-| Rename variables | Low | Some |
-| Add edge case | Medium | Good |
-| Refactor structure | High | Excellent |
+| 复制粘贴 | 零 | 零 |
+| 重命名变量 | 低 | 一些 |
+| 添加边缘情况 | 中等 | 好 |
+| 重构结构 | 高 | 优秀 |
 
-#### Minimum Viable Modifications
+#### 最小可行修改
 
-Always do at least ONE:
+始终至少做一件事：
 
-1. **Rename** — Change variable names to match your project conventions
-2. **Restructure** — Extract a helper function, change iteration method
-3. **Extend** — Add an edge case, validation, or error handling
-4. **Simplify** — Remove features you don't need
+1. **重命名** — 将变量名改为符合你项目约定的名称
+2. **重构** — 提取辅助函数，改变迭代方法
+3. **扩展** — 添加边缘情况、验证或错误处理
+4. **简化** — 删除你不需要的功能
 
-#### Example
+#### 示例
 
-AI gives you:
+AI 给你：
 ```javascript
 function calculateTotal(items) {
   return items.reduce((sum, item) => sum + item.price * item.quantity, 0);
 }
 ```
 
-You transform it:
+你的转化：
 ```javascript
-// Added: explicit type checking, edge case handling
+// 添加了：显式类型检查，边缘情况处理
 function calculateCartTotal(cartItems) {
   if (!Array.isArray(cartItems) || cartItems.length === 0) {
     return 0;
@@ -427,124 +427,124 @@ function calculateCartTotal(cartItems) {
 }
 ```
 
-Now you've engaged with the code, added your own thinking, and learned something.
+现在你参与了代码，加入了自己的思考，并学到了东西。
 
 ---
 
-### L — Learn (Capture the Insight)
+### L — 学习（捕捉洞察）
 
-**Not a daily journal** — nobody maintains those. Instead: automated capture.
+**不是每日日记**——没有人能坚持写那个。而是：自动化捕捉。
 
-#### The One-Thing Rule
+#### 一件事规则
 
-At the end of each coding session, capture ONE thing you learned. Not ten. One.
+每次编程会话结束时，捕捉**一**件你学到的事。不是十件。一件。
 
 ```markdown
 ## 2026-01-17
-**Learned**: Zod's `refine()` method for cross-field validation
-**Context**: Login form needed password ≠ email check
-**Future me**: Use refine() when validation involves multiple fields
+**学到了**：Zod 的 `refine()` 方法用于跨字段验证
+**上下文**：登录表单需要密码 ≠ 邮件的检查
+**给未来的我**：当验证涉及多个字段时使用 refine()
 ```
 
-#### Claude Code Implementation
+#### Claude Code 实现
 
-Create a session-end hook:
+创建一个会话结束 Hook：
 
 ```bash
 # .claude/hooks/bash/learning-capture.sh
-# Prompts for one learning at session end
+# 会话结束时提示记录一个学习点
 ```
 
-See [examples/hooks/bash/learning-capture.sh](../../examples/hooks/bash/learning-capture.sh) for implementation.
+见 [examples/hooks/bash/learning-capture.sh](../../examples/hooks/bash/learning-capture.sh) 获取实现。
 
-The hook asks: "What's ONE thing you learned this session?" and logs it automatically.
+Hook 会问："这次会话你学到了**一件**什么？"并自动记录。
 
 ---
 
-## Claude Code for Learning (Not Just Producing)
+## Claude Code 辅助学习（不只是生产）
 
-Claude Code has specific features that support learning. Here's how to configure them.
+Claude Code 有支持学习的特定功能。以下是如何配置它们。
 
-### Start Here: /powerup
+### 从这里开始：/powerup
 
-Before configuring anything, run `/powerup`. It's a built-in command that walks you through Claude Code's core features via interactive animated lessons — each one short, hands-on, and designed to show rather than tell. Start here if you've never done a structured onboarding of the tool.
+在配置任何东西之前，先运行 `/powerup`。这是一个内置命令，通过交互式动画课程带你了解 Claude Code 的核心功能——每个都简短、动手，设计为展示而非讲解。如果你从未进行过工具的结构化入职，从这里开始。
 
-### CLAUDE.md Configuration for Learning Mode
+### 学习模式的 CLAUDE.md 配置
 
-Create this in your `CLAUDE.md`:
+在你的 `CLAUDE.md` 中创建这个：
 
 ```markdown
-# Learning-First Configuration
+# 优先学习配置
 
-## My Learning Goals
-- I'm learning: [React hooks, TypeScript, system design, etc.]
-- My level: [beginner/intermediate] on these topics
-- I learn best when: [examples are shown first, concepts are explained, etc.]
+## 我的学习目标
+- 我正在学习：[React hooks、TypeScript、系统设计等]
+- 我的水平：这些主题的 [初学者/中级]
+- 我学习最好的方式：[先展示示例、解释概念、等]
 
-## Response Style
-- Always explain WHY, not just WHAT
-- After code blocks, ask "What questions do you have about this?"
-- Highlight concepts I should understand deeper
-- Point out common mistakes beginners make
+## 响应风格
+- 始终解释为什么，而不只是什么
+- 代码块之后，问"你对此有什么问题？"
+- 强调我应该更深入理解的概念
+- 指出初学者常犯的错误
 
-## Challenges
-- Suggest exercises to reinforce concepts after implementing
-- Point out edge cases I should consider
-- Ask me to predict output before showing it
+## 挑战
+- 在实现后建议强化概念的练习
+- 指出我应该考虑的边缘情况
+- 在展示结果之前让我预测输出
 
-## When I Ask for Help
-1. First ask what I've already tried
-2. Guide me toward the answer before giving it
-3. Explain the underlying concept, not just the fix
+## 当我寻求帮助时
+1. 首先问我已经尝试了什么
+2. 在给出答案之前引导我
+3. 解释底层概念，而非只是修复
 ```
 
-Full template: [examples/claude-md/learning-mode.md](../../examples/claude-md/learning-mode.md)
+完整模板：[examples/claude-md/learning-mode.md](../../examples/claude-md/learning-mode.md)
 
 ---
 
-### Slash Commands for Learning
+### 学习斜杠命令
 
-| Command | Purpose | When to Use |
+| 命令 | 目的 | 何时使用 |
 |---------|---------|-------------|
-| `/explain` | Explain existing code | Built-in — use on any confusing code |
-| `/learn:quiz` | Test your understanding | After implementing a new concept |
-| `/learn:alternatives` | Show other approaches | When you want to understand trade-offs |
-| `/learn:teach <concept>` | Step-by-step explanation | When learning something new |
+| `/explain` | 解释现有代码 | 内置——用于任何令人困惑的代码 |
+| `/learn:quiz` | 测试你的理解 | 实现新概念后 |
+| `/learn:alternatives` | 展示其他方法 | 当你想了解权衡时 |
+| `/learn:teach <concept>` | 逐步解释 | 学习新事物时 |
 
-> **Note**: Commands use the `/learn:` namespace. Place files in `.claude/commands/learn/`.
+> **注意**：命令使用 `/learn:` 命名空间。将文件放在 `.claude/commands/learn/` 中。
 
-#### Creating /learn:quiz
+#### 创建 /learn:quiz
 
-Create `.claude/commands/learn/quiz.md`:
+创建 `.claude/commands/learn/quiz.md`：
 
 ```markdown
-# Quiz Me
+# 测试我
 
-Test my understanding of the code I just wrote or accepted.
+测试我对刚写或接受的代码的理解。
 
-## Instructions
+## 指令
 
-1. Look at the last code I worked with
-2. Generate 3-5 questions testing:
-   - What does this code do?
-   - Why was this approach chosen?
-   - What would happen if X changed?
-   - How would you extend this?
-3. Wait for my answers
-4. Provide feedback with explanations
+1. 查看我最近使用的代码
+2. 生成 3-5 个测试题：
+   - 这段代码做什么？
+   - 为什么选择这种方法？
+   - 如果 X 改变了会发生什么？
+   - 你如何扩展这个？
+3. 等待我的回答
+4. 提供带解释的反馈
 
-$ARGUMENTS (optional: focus area like "error handling" or "performance")
+$ARGUMENTS（可选：关注领域，如"错误处理"或"性能"）
 ```
 
-Full template: [examples/commands/learn/quiz.md](../../examples/commands/learn/quiz.md)
+完整模板：[examples/commands/learn/quiz.md](../../examples/commands/learn/quiz.md)
 
 ---
 
-### Hooks That Build Habits
+### 构建习惯的 Hooks
 
-#### Learning Capture Hook (Session End)
+#### 学习捕捉 Hook（会话结束）
 
-Automatically prompts for daily learning capture:
+自动提示每日学习捕捉：
 
 ```json
 {
@@ -561,708 +561,708 @@ Automatically prompts for daily learning capture:
 
 ---
 
-### The 70/30 Weekly Split
+### 每周 70/30 分配
 
-Balance learning and producing:
+平衡学习和生产：
 
-| Activity | Time | AI Usage | Why |
+| 活动 | 时间 | AI 使用 | 原因 |
 |----------|------|----------|-----|
-| **Core learning** (new concepts) | 70% | 30% AI | Struggle builds understanding |
-| **Practice/projects** (applying known skills) | 30% | 70% AI | Leverage what you already know |
+| **核心学习**（新概念） | 70% | 30% AI | 挣扎建立理解 |
+| **练习/项目**（应用已知技能） | 30% | 70% AI | 利用你已知的 |
 
-> **Research basis**: This ratio aligns with [productivity research](#the-reality-of-ai-productivity) showing AI delivers highest gains on well-defined tasks (practice/projects) while learning new concepts requires cognitive struggle that AI can't shortcut.
+> **研究基础**：这个比率与[生产力研究](#ai-生产力的现实)相符，显示 AI 在明确任务（练习/项目）上带来最高收益，而学习新概念需要 AI 无法绕开的认知挣扎。
 
-#### Week Structure Example
+#### 周结构示例
 
 ```
-Monday:    Learn new React pattern     (minimal AI)
-Tuesday:   Learn new React pattern     (minimal AI)
-Wednesday: Apply to project            (full AI assistance)
-Thursday:  Learn testing approach      (minimal AI)
-Friday:    Apply + ship                (full AI assistance)
+周一：学习新的 React 模式    （最小 AI）
+周二：学习新的 React 模式    （最小 AI）
+周三：应用到项目              （全 AI 辅助）
+周四：学习测试方法            （最小 AI）
+周五：应用 + 交付             （全 AI 辅助）
 ```
 
-The key: Don't use AI heavily when learning NEW concepts. Use it heavily when applying concepts you already understand.
+关键：学习**新**概念时不要大量使用 AI。应用你已经理解的概念时大量使用 AI。
 
 ---
 
-## Breaking Dependency
+## 打破依赖
 
-**For Pattern 1 developers**: You've been using AI as a crutch. Here's how to rebuild your foundation.
+**针对模式 1 的开发者**：你一直将 AI 当作拐杖。以下是如何重建基础的方法。
 
-### Week 1: The Cold Turkey Period
+### 第 1 周：完全戒断期
 
-**Goal**: Prove to yourself you can code without AI.
+**目标**：向自己证明你不用 AI 也能编码。
 
-| Day | Exercise | Duration |
+| 天数 | 练习 | 时长 |
 |-----|----------|----------|
-| 1-2 | Build a simple feature WITHOUT AI | 2 hours |
-| 3-4 | Debug an issue using only documentation | 1 hour |
-| 5 | Explain code you previously AI-generated | 30 min |
+| 1-2 | **不用 AI** 构建一个简单功能 | 2 小时 |
+| 3-4 | 只用文档调试一个问题 | 1 小时 |
+| 5 | 解释你之前 AI 生成的代码 | 30 分钟 |
 
-**Expect this to feel slow and frustrating.** That's the learning happening.
+**预期会感觉缓慢和沮丧。** 那就是学习在发生。
 
-### Week 2: Guided Reintroduction
+### 第 2 周：有引导的重新引入
 
-**Goal**: Use AI as a teacher, not a generator.
+**目标**：将 AI 用作老师，而非生成器。
 
-| Day | Exercise | AI Role |
+| 天数 | 练习 | AI 角色 |
 |-----|----------|---------|
-| 1-2 | Ask AI to explain concepts, then implement yourself | Tutor |
-| 3-4 | Write code first, then ask AI for review | Reviewer |
-| 5 | Compare your solution to AI's, understand differences | Comparator |
+| 1-2 | 请 AI 解释概念，然后自己实现 | 导师 |
+| 3-4 | 先写代码，然后请 AI 审查 | 审查者 |
+| 5 | 将你的解决方案与 AI 的比较，理解差异 | 比较者 |
 
-### Week 3-4: Balanced Usage
+### 第 3-4 周：平衡使用
 
-**Goal**: Develop critical AI usage habits.
+**目标**：培养批判性 AI 使用习惯。
 
-Apply the UVAL protocol (§4) to every interaction:
+对每次交互应用 UVAL 协议（§4）：
 
-1. **Understand** — 15-minute rule before asking
-2. **Verify** — Explain every line back
-3. **Apply** — Transform, don't copy
-4. **Learn** — Capture one insight per session
+1. **理解** — 提问前的 15 分钟规则
+2. **验证** — 解释每一行
+3. **应用** — 转化，而非复制
+4. **学习** — 每次会话捕捉一个洞察
 
-### Red Flags You're Slipping
+### 倒退的危险信号
 
-| Sign | Action |
+| 迹象 | 行动 |
 |------|--------|
-| Copying without reading | Stop. Read every line first. |
-| Can't explain what code does | Use `/explain-back` command |
-| Anxiety when AI unavailable | Practice 30 min daily without AI |
-| Failed interview questions | Focus on fundamentals without AI |
+| 不读就复制 | 停止。先读每一行。 |
+| 无法解释代码做什么 | 使用 `/explain-back` 命令 |
+| AI 不可用时焦虑 | 每天练习 30 分钟不用 AI |
+| 面试问题失败 | 重点关注不用 AI 的基础知识 |
 
 ---
 
-## Embracing AI Tools
+## 拥抱 AI 工具
 
-**For Pattern 2 developers**: You've been avoiding AI. Here's why that's hurting you and how to change.
+**针对模式 2 的开发者**：你一直回避 AI。以下是为什么这会伤害你以及如何改变。
 
-### Why Avoidance Is a Problem
+### 为什么回避是个问题
 
-The job market has changed:
+就业市场已经改变：
 
-- Teams expect AI-assisted productivity
-- "Pure" coding is slower for routine tasks
-- Refusing tools signals inflexibility
+- 团队期望 AI 辅助生产力
+- "纯粹"编码对于常规任务更慢
+- 拒绝工具表示不灵活
 
-You're not cheating by using AI. You're being inefficient by not using it.
+使用 AI 不是作弊。不使用 AI 是低效的。
 
-### Week 1: Low-Stakes Introduction
+### 第 1 周：低风险引入
 
-**Goal**: Use AI for tasks that don't feel like "cheating."
+**目标**：将 AI 用于不感觉"作弊"的任务。
 
-| Task | Why It's Safe | Try It |
+| 任务 | 为什么安全 | 尝试 |
 |------|---------------|--------|
-| Generate boilerplate | Nobody learns from typing imports | "Generate React component boilerplate" |
-| Explain unfamiliar code | You'd Google this anyway | `/explain this codebase` |
-| Write documentation | Documentation isn't the skill | "Document this function" |
-| Generate test cases | Tests verify YOUR understanding | "Generate test cases for this function" |
+| 生成样板代码 | 没有人从打字导入中学到东西 | "生成 React 组件样板" |
+| 解释不熟悉的代码 | 反正你也会谷歌这个 | `/explain this codebase` |
+| 写文档 | 文档不是技能 | "记录这个函数" |
+| 生成测试用例 | 测试验证**你的**理解 | "为这个函数生成测试用例" |
 
-### Week 2: Expanded Usage
+### 第 2 周：扩展使用
 
-**Goal**: Use AI for tasks you'd normally struggle through.
+**目标**：将 AI 用于你通常会挣扎的任务。
 
-| Task | Old Way | AI-Assisted Way |
+| 任务 | 旧方法 | AI 辅助方式 |
 |------|---------|-----------------|
-| Debug error message | Stack Overflow rabbit hole | "Explain this error and likely causes" |
-| Learn new library | Read entire docs | "Show me the key patterns for X" |
-| Refactor code | Manual, error-prone | "Refactor for readability, explain changes" |
+| 调试错误信息 | Stack Overflow 兔子洞 | "解释这个错误和可能原因" |
+| 学习新库 | 阅读完整文档 | "展示 X 的关键模式" |
+| 重构代码 | 手动，容易出错 | "为可读性重构，解释变化" |
 
-### Week 3-4: Integration
+### 第 3-4 周：整合
 
-**Goal**: AI becomes part of your normal workflow.
+**目标**：AI 成为正常工作流的一部分。
 
-Apply UVAL protocol to ensure you're learning, not just generating.
+应用 UVAL 协议确保你在学习而非只是生成。
 
-### Mindset Shift
+### 思维转变
 
-**Old thinking**: "Using AI means I'm not a real developer."
+**旧思维**："使用 AI 意味着我不是真正的开发者。"
 
-**New thinking**: "AI handles routine tasks so I can focus on architecture, design, and complex problem-solving."
+**新思维**："AI 处理常规任务，所以我可以专注于架构、设计和复杂问题解决。"
 
-The best developers use every tool available. AI is a tool.
-
----
-
-## Optimizing Your Flow
-
-**For Pattern 3 developers**: You're using AI well. Here's how to level up.
-
-### Advanced UVAL Applications
-
-#### Predictive Prompting
-
-Before AI generates code, predict the approach:
-
-```
-My prediction: This will probably use reduce() with an accumulator
-Then compare to AI output — learn from differences
-```
-
-#### Teaching Mode
-
-Use AI to test your knowledge by teaching:
-
-```
-I'll explain how React hooks work. Correct my mistakes and fill gaps.
-
-useState stores state that persists between renders...
-```
-
-AI acts as a smart rubber duck that can catch errors.
-
-#### Comparative Analysis
-
-Ask for multiple approaches, then choose:
-
-```
-Show me 3 ways to implement this:
-1. Using class components
-2. Using hooks
-3. Using a state management library
-
-Explain trade-offs of each.
-```
-
-This builds architectural thinking.
+最好的开发者使用所有可用的工具。AI 是一个工具。
 
 ---
 
-### Advanced Claude Code Configuration
+## 优化你的工作流
 
-#### Dynamic Learning Mode
+**针对模式 3 的开发者**：你在正确使用 AI。以下是如何升级的方法。
+
+### 高级 UVAL 应用
+
+#### 预测性提示
+
+AI 生成代码之前，预测方法：
+
+```
+我的预测：这可能会用带累加器的 reduce()
+然后与 AI 输出比较——从差异中学习
+```
+
+#### 教学模式
+
+通过教学用 AI 测试你的知识：
+
+```
+我来解释 React hooks 如何工作。纠正我的错误并填补空白。
+
+useState 存储在渲染间持久化的状态...
+```
+
+AI 充当能捕捉错误的智能橡皮鸭。
+
+#### 比较分析
+
+请求多种方法，然后选择：
+
+```
+展示实现这个的 3 种方式：
+1. 使用类组件
+2. 使用 hooks
+3. 使用状态管理库
+
+解释每种方式的权衡。
+```
+
+这建立了架构思维。
+
+---
+
+### 高级 Claude Code 配置
+
+#### 动态学习模式
 
 ```markdown
-# Advanced Learning Configuration
+# 高级学习配置
 
-## Adaptive Responses
-- For topics I mark as "learning": explain thoroughly
-- For topics I mark as "known": be concise
-- Track my progress within this session
+## 自适应响应
+- 对我标记为"学习中"的主题：详细解释
+- 对我标记为"已知"的主题：简洁
+- 在本次会话内追踪我的进度
 
-## Challenge Mode (Optional)
-When I say "challenge mode on":
-- Don't give me complete solutions
-- Ask Socratic questions
-- Guide me to discover the answer
+## 挑战模式（可选）
+当我说"打开挑战模式"：
+- 不给我完整解决方案
+- 提苏格拉底式问题
+- 引导我发现答案
 
-## Review Mode
-After each feature, summarize:
-1. New concepts introduced
-2. Patterns worth remembering
-3. Potential interview questions from this code
+## 复盘模式
+每个功能之后，总结：
+1. 引入的新概念
+2. 值得记忆的模式
+3. 来自这段代码的潜在面试题
 ```
 
-#### Spaced Repetition Integration
+#### 间隔重复整合
 
-Track concepts for future review:
+追踪概念以供未来复习：
 
 ```bash
-# In learning-capture.sh
-# Tag concepts with review dates
+# 在 learning-capture.sh 中
+# 用复习日期标记概念
 echo "2026-01-24,zod-refine,$PROJECT" >> ~/.claude/review-queue.csv
 ```
 
-Then periodically quiz yourself on past learnings.
+然后定期测试自己的过去学习。
 
 ---
 
-## Case Study: Hybrid Learning Principles
+## 案例研究：混合学习原则
 
-What works best for learning with AI? Research and successful implementations point to the same pattern.
+AI 辅助学习什么最有效？研究和成功实践指向同一模式。
 
-### From Academic Research (2023-2025)
+### 来自学术研究（2023-2025 年）
 
-Studies on AI-assisted learning show optimal results with:
+AI 辅助学习的研究表明最优结果需要：
 
-| Component | Purpose | Without It |
+| 组成部分 | 目的 | 缺少时 |
 |-----------|---------|------------|
-| **Human supervision** | Motivation, critical feedback, accountability | Students drift, lose direction |
-| **AI assistance** | Immediate feedback, infinite patience, practice repetition | Slower iteration, less practice |
-| **Progressive autonomy** | Decreasing supervision as skill grows | Never become independent |
+| **人类监督** | 动力、批判性反馈、问责 | 学生漂移，失去方向 |
+| **AI 辅助** | 即时反馈、无限耐心、练习重复 | 迭代更慢，练习更少 |
+| **渐进式自主** | 随技能增长减少监督 | 永远无法独立 |
 
-The key insight: AI excels at **practice and feedback**, humans excel at **motivation and critical evaluation**.
+关键洞察：AI 擅长**练习和反馈**，人类擅长**动力和批判性评估**。
 
-### Real-World Implementation: Méthode Aristote
+### 真实实现：Méthode Aristote
 
-A French educational platform (middle/high school) applies these principles at scale:
+一个法国教育平台（中学/高中）在规模上应用这些原则：
 
-**Their Model**:
-- Dedicated human tutor = accountability + critical feedback
-- AI-powered exercises = structured practice, expert-validated content
-- Same tutor over time = relationship, understanding of progress
+**他们的模型**：
+- 专属人类导师 = 问责 + 批判性反馈
+- AI 驱动的练习 = 结构化练习，专家验证的内容
+- 长期同一导师 = 关系，理解进度
 
-**Transferable Principles for Developers**:
+**对开发者可迁移的原则**：
 
-| Aristote Principle | Developer Equivalent |
+| Aristote 原则 | 开发者等效 |
 |--------------------|---------------------|
-| Dedicated tutor | Mentor/senior + regular code reviews |
-| AI validated by teachers | AI + verification through tests/linter/review |
-| Level-based progression | Projects of increasing complexity |
-| Long-term relationship | Consistent feedback from same people |
+| 专属导师 | 导师/高级 + 定期代码审查 |
+| 由教师验证的 AI | AI + 通过测试/Linter/审查验证 |
+| 基于水平的进展 | 复杂度递增的项目 |
+| 长期关系 | 来自相同人的持续反馈 |
 
-**Their Philosophy**: *"Exigence, bienveillance, équité"* (Rigor, kindness, equity)
+**他们的哲学**：*"Exigence, bienveillance, équité"*（严格、善意、公平）
 
-Applied to coding:
-- **Rigor**: Don't accept code you can't explain
-- **Kindness**: AI is a tool, not a judge — use it without guilt
-- **Equity**: Everyone can learn, pace varies — don't compare yourself to others
+应用于编程：
+- **严格**：不接受你无法解释的代码
+- **善意**：AI 是工具，不是评判者——无愧疚地使用它
+- **公平**：每个人都能学习，节奏各异——不要与他人比较
 
 → [methode-aristote.fr](https://www.methode-aristote.fr/)
 
-### Building Your Own Support System
+### 构建你自己的支持系统
 
-You probably don't have a dedicated tutor, but you can create the structure:
+你可能没有专属导师，但可以创建这种结构：
 
-| Need | Solution |
+| 需求 | 解决方案 |
 |------|----------|
-| Accountability | Weekly check-ins with peer/mentor |
-| Critical feedback | Code reviews, pair programming |
-| Structured practice | Deliberate exercises, not just project work |
-| Progress tracking | Learning journal, skill assessment |
+| 问责 | 与同伴/导师的每周签到 |
+| 批判性反馈 | 代码审查、结对编程 |
+| 结构化练习 | 刻意练习，而非只是项目工作 |
+| 进度追踪 | 学习日志、技能评估 |
 
-The combination of **human accountability + AI practice** beats either alone. This mirrors [what research shows about successful teams](#why-some-teams-get-results-and-others-dont): clear guidelines, code review standards, and mentorship structures.
+**人类问责 + AI 练习**的组合胜过任何单独一种。这与[关于成功团队的研究](#为什么有些团队取得成果而其他团队停滞)结果一致：明确的指南、代码审查标准和导师结构。
 
 ---
 
-## Where Are You on the Agent Adoption Curve?
+## 你在智能体采用曲线上的位置？
 
-> **Audience**: Developers already using Claude Code who want to gauge their current sophistication — not beginners starting from scratch (use the 30-Day Plan below for that).
+> **受众**：已经在使用 Claude Code 的开发者，想要评估自己当前的成熟度——不是从零开始的初学者（对于初学者使用下面的 30 天计划）。
 
-Before picking a learning path, locate yourself. Nicolas Martignole (Principal Engineer at Back Market) proposed a 6-level maturity scale in March 2026 that maps well onto practical Claude Code usage. The levels below are adapted from his framework, with the upper half (3-5) being where most of this guide's content lives.
+在选择学习路径之前，先定位自己。Nicolas Martignole（Back Market 首席工程师）于 2026 年 3 月提出了一个 6 级成熟度量表，很好地映射到实际 Claude Code 使用。下面的级别是从他的框架改编和扩展的。
 
-| Level | Profile | Signal |
+| 级别 | 概况 | 信号 |
 |-------|---------|--------|
-| **0** | Never used AI dev tools | Using chatbots at most, nothing integrated in workflow |
-| **1** | Editor autocomplete | Cursor, Copilot, Windsurf — but no agent-level usage |
-| **2** | External LLM, copy-paste | ChatGPT or Claude in browser, pasting code manually into editor |
-| **3** | Claude Code basic user | Running Plan mode, simple prompts, reviewing everything manually |
-| **4** | Stage delegator | Handing off full development stages (research, architecture, implementation, tests) — writing less than 10% of code manually |
-| **5** | Context engineer | Designing CLAUDE.md, sub-agents, custom skills, MCP servers — building the environment for agents to operate in |
-| **6** | Orchestrator | Coordinating agent graphs, reinforcement loops, distributed agent systems |
+| **0** | 从未使用 AI 开发工具 | 最多使用聊天机器人，没有集成到工作流 |
+| **1** | 编辑器自动补全 | Cursor、Copilot、Windsurf——但没有智能体级别使用 |
+| **2** | 外部 LLM，复制粘贴 | 浏览器中的 ChatGPT 或 Claude，手动粘贴代码到编辑器 |
+| **3** | Claude Code 基础用户 | 运行计划模式，简单提示词，手动审查所有内容 |
+| **4** | 阶段委派者 | 移交完整的开发阶段（研究、架构、实现、测试）——手动编写不到 10% 的代码 |
+| **5** | 上下文工程师 | 设计 CLAUDE.md、子智能体、自定义 Skills（技能模块）、MCP 服务器——为智能体运行构建环境 |
+| **6** | 编排者 | 协调智能体图、强化循环、分布式智能体系统 |
 
-**Quick self-placement questions:**
+**快速自我定位问题：**
 
-- Can you leave Claude Code running on a feature branch for 20+ minutes without checking in? → Level 4+
-- Do you write CLAUDE.md before starting a project, not after? → Level 5
-- Have you built a custom agent or hook in the last month? → Level 5-6
-- Is your primary output prompts and system design, not code? → Level 6
+- 你能让 Claude Code 在功能分支上运行 20 分钟以上不签到吗？→ Level 4+
+- 你在启动项目之前（而不是之后）写 CLAUDE.md 吗？→ Level 5
+- 你上个月构建了自定义智能体或 Hook 吗？→ Level 5-6
+- 你的主要输出是提示词和系统设计，而不是代码吗？→ Level 6
 
-If you landed at Level 3 or below: the 30-Day Plan below is the right path. If you're at Level 4-6: skip to [Context Engineering](../core/context-engineering.md), [Agent Patterns](../../examples/agents/), or [MCP Ecosystem](../ecosystem/mcp-servers-ecosystem.md).
+如果你定位在 Level 3 或以下：下面的 30 天计划是正确的路径。如果你在 Level 4-6：跳到[上下文工程](../core/context-engineering.md)、[智能体模式](../../examples/agents/)或 [MCP 生态系统](../ecosystem/mcp-servers-ecosystem.md)。
 
-> Source: Nicolas Martignole, ["Découvrir les niveaux de maturité de l'adoption des coding agents"](https://www.touilleur-express.fr/2026/03/17/decouvrir-les-niveaux-de-maturite-de-ladoption-des-coding-agents), Le Touilleur Express, March 2026. Adapted and extended.
-
----
-
-## 30-Day Progression Plan
-
-A concrete path from wherever you are to augmented developer.
-
-### Week 1: Foundations
-
-**Focus**: Build (or rebuild) core skills without heavy AI reliance.
-
-| Day | Activity | AI Usage |
-|-----|----------|----------|
-| 1-2 | Build simple feature WITHOUT AI | 0% |
-| 3 | Review: Explain your code out loud | 0% |
-| 4-5 | Refactor with AI review (not generation) | 20% |
-| 6 | Debug issue without AI | 0% |
-| 7 | Rest/reflection | — |
-
-**Success criteria**: Can explain every line you wrote.
-
-### Week 2: Understanding
-
-**Focus**: Use AI, but force understanding.
-
-| Day | Activity | AI Usage |
-|-----|----------|----------|
-| 1-2 | Ask AI to generate, explain EVERY line | 40% |
-| 3 | Write code, AI reviews, you fix | 30% |
-| 4-5 | AI explains new concept, you implement | 40% |
-| 6 | Quiz yourself on week's concepts | 10% |
-| 7 | Rest/reflection | — |
-
-**Success criteria**: Can modify AI-generated code confidently.
-
-### Week 3: Critical Usage
-
-**Focus**: Challenge AI suggestions, find their limits.
-
-| Day | Activity | AI Usage |
-|-----|----------|----------|
-| 1-2 | Ask for multiple approaches, choose best | 60% |
-| 3 | Find bugs in AI-generated code | 50% |
-| 4-5 | Complex feature with AI assistance | 60% |
-| 6 | Explain entire feature to rubber duck | 10% |
-| 7 | Rest/reflection | — |
-
-**Success criteria**: Can identify when AI is wrong.
-
-### Week 4: Augmented
-
-**Focus**: Full productivity with maintained understanding.
-
-| Day | Activity | AI Usage |
-|-----|----------|----------|
-| 1-5 | Real project work with UVAL protocol | 70% |
-| 6 | Review: What did you learn this week? | 10% |
-| 7 | Plan next learning goals | — |
-
-**Success criteria**: Fast AND you understand everything.
+> 来源：Nicolas Martignole，["Découvrir les niveaux de maturité de l'adoption des coding agents"](https://www.touilleur-express.fr/2026/03/17/decouvrir-les-niveaux-de-maturite-de-ladoption-des-coding-agents)，Le Touilleur Express，2026 年 3 月。改编和扩展。
 
 ---
 
-## For Tech Leads & Engineering Managers
+## 30 天进阶计划
 
-> **Audience**: Engineering managers, tech leads, senior developers responsible for junior mentoring.
+从你所在的位置到增强型开发者的具体路径。
+
+### 第 1 周：基础
+
+**重点**：在不大量依赖 AI 的情况下建立（或重建）核心技能。
+
+| 天 | 活动 | AI 使用 |
+|-----|----------|----------|
+| 1-2 | **不用 AI** 构建简单功能 | 0% |
+| 3 | 复盘：大声解释你的代码 | 0% |
+| 4-5 | 用 AI 审查（而非生成）重构 | 20% |
+| 6 | 不用 AI 调试问题 | 0% |
+| 7 | 休息/反思 | — |
+
+**成功标准**：能解释你写的每一行。
+
+### 第 2 周：理解
+
+**重点**：使用 AI，但强制理解。
+
+| 天 | 活动 | AI 使用 |
+|-----|----------|----------|
+| 1-2 | 请 AI 生成，解释**每一行** | 40% |
+| 3 | 写代码，AI 审查，你修复 | 30% |
+| 4-5 | AI 解释新概念，你实现 | 40% |
+| 6 | 测试本周的概念 | 10% |
+| 7 | 休息/反思 | — |
+
+**成功标准**：能有信心地修改 AI 生成的代码。
+
+### 第 3 周：批判性使用
+
+**重点**：挑战 AI 建议，找出它们的限制。
+
+| 天 | 活动 | AI 使用 |
+|-----|----------|----------|
+| 1-2 | 请求多种方法，选择最好的 | 60% |
+| 3 | 在 AI 生成的代码中找 Bug | 50% |
+| 4-5 | 在 AI 辅助下完成复杂功能 | 60% |
+| 6 | 向橡皮鸭解释整个功能 | 10% |
+| 7 | 休息/反思 | — |
+
+**成功标准**：能识别 AI 何时错了。
+
+### 第 4 周：增强
+
+**重点**：完整生产力，同时保持理解。
+
+| 天 | 活动 | AI 使用 |
+|-----|----------|----------|
+| 1-5 | 使用 UVAL 协议的真实项目工作 | 70% |
+| 6 | 复盘：本周你学到了什么？ | 10% |
+| 7 | 规划下一个学习目标 | — |
+
+**成功标准**：快速**且**理解所有内容。
+
+---
+
+## 技术负责人与工程管理者指南
+
+> **受众**：工程管理者、技术负责人、负责初级指导的高级开发者。
 >
-> **Problem**: The rest of this guide addresses individual developers. This section addresses the people responsible for creating the conditions where good habits form — or don't.
+> **问题**：本指南的其余部分解决个人问题。本节解决组织问题：如何创造初级工程师*愿意*先思考再提示、质量不会被速度牺牲、AI 生成的债务不会在团队规模上悄悄积累的条件？
 
-The UVAL protocol solves the individual problem. The organizational problem is different: how do you create conditions where juniors *want to* think before they prompt, where quality isn't traded for velocity, and where AI-generated debt doesn't accumulate silently at team scale?
+UVAL 协议解决个人问题，组织问题不同：如何创造条件，让初级工程师在提示前先思考？
 
 ---
 
-### The Onboarding Imperative
+### 入职的必要性
 
-AI access without structured training produces poor results. A 2025 Create Future study found junior developers with no AI training achieved only 14-42% time savings on key tasks. With brief structured training, that jumped to 35-65%. The tool doesn't teach itself.
+没有结构化培训的 AI 访问效果很差。2025 年 Create Future 研究发现，没有 AI 培训的初级开发者在关键任务上只实现了 14-42% 的时间节省。有简短的结构化培训，这个数字跃升至 35-65%。工具不会自我教学。
 
-**Structured onboarding beats "here's your license":**
+**结构化入职优于"给你许可证"：**
 
-| Week | Focus | Avoid |
+| 周 | 重点 | 避免 |
 |------|-------|-------|
-| 1 | Codebase tour without AI — baseline assessment | Granting Copilot access on day one |
-| 2 | First features manually, AI as reviewer only | AI as generator before fundamentals are visible |
-| 3 | UVAL protocol introduction + supervised pair sessions | Solo AI usage without check-ins |
-| 4+ | Full AI usage with weekly understanding check-ins | Unmonitored velocity as success metric |
+| 1 | 无 AI 的代码库之旅——提供工具前的基准评估 | 第一天就授予 Copilot 访问权 |
+| 2 | 先手动完成第一个功能，AI 仅作审查者 | 基础知识可见前 AI 作生成者 |
+| 3 | UVAL 协议引入 + 监督配对会话 | 无签到的单独 AI 使用 |
+| 4+ | 每周理解检查的全 AI 使用 | 不受监控的速度作为成功指标 |
 
-Week 1 without AI isn't a punishment. It's calibration. You need to see what they actually know before AI masks the gaps. A junior who struggles week 1 needs different mentoring than one who ships confidently — and you can't distinguish them if they both use AI from day one.
-
----
-
-### Measuring What Actually Matters
-
-Velocity is a lagging indicator. It shows nothing about the skills gap forming underneath.
-
-**Metrics that reveal real growth:**
-
-| Metric | How to Measure | Red Flag |
-|--------|---------------|----------|
-| Can explain code in review | Ask "walk me through your approach" | "The AI suggested it" |
-| Debugs independently | Time to resolve self-reported blockers | Always needs AI to debug |
-| Predicts outcomes | Ask "what will this do?" before running | Can't answer without testing |
-| Proposes alternatives | In design discussions | Always defers to AI output |
-| Notices when AI is wrong | Review comment quality | Never catches AI errors |
-
-**Weekly growth question** (5 minutes, any format):
-
-> "What's one thing you understood deeply this week — not just shipped?"
-
-If they struggle to answer two weeks in a row, that's your signal to slow down.
+第 1 周没有 AI 不是惩罚，而是校准。你需要在 AI 掩盖差距之前看到他们真正知道什么。第 1 周挣扎的初级工程师需要与表现自信的不同指导——如果他们从第一天就使用 AI，你无法区分他们。
 
 ---
 
-### Scalable Mentoring Models
+### 衡量真正重要的内容
 
-The 1:1 senior/junior compagnonnage model doesn't scale past teams of 5-10. These three approaches do:
+速度是滞后指标。它对下面正在形成的技能差距一无所知。
 
-**1. Pair programming rotations (2-hour slots)**
+**揭示真正成长的指标：**
 
-Two juniors work together with AI. The constraint: neither can accept AI code they can't explain to their partner. Disagreements on the *why* are escalated to a senior. Cost: 2h/week per junior, minimal senior time.
+| 指标 | 如何衡量 | 危险信号 |
+|--------|---------------|-----------|
+| 在审查中能解释代码 | 问"带我了解你的方法" | "AI 建议的" |
+| 独立调试 | 解决自我报告阻碍的时间 | 总是需要 AI 来调试 |
+| 预测结果 | 运行前问"这会做什么？" | 不测试就无法回答 |
+| 提出替代方案 | 在设计讨论中 | 始终服从 AI 输出 |
+| 注意 AI 何时错了 | 审查评论质量 | 从不捕捉 AI 错误 |
 
-**2. Architecture "hot seat" (15 min/week)**
+**每周成长问题**（5 分钟，任何形式）：
 
-Any junior can request a 15-minute slot to explain an architectural decision they made. Senior gives one piece of feedback. No code review — just the *why* behind the choice. Scales to N juniors with O(N×15min) senior time, and forces juniors to develop architectural reasoning rather than just copy AI solutions.
+> "本周你深刻理解了什么——不只是交付了什么？"
 
-**3. Collective CLAUDE.md ownership**
-
-Juniors propose additions to the team `CLAUDE.md`. Proposals must be based on something that burned them or saved them in practice. Seniors review and accept or reject with a reason. This forces reflection, distributes knowledge horizontally, and builds shared ownership of the team's AI usage standards.
+如果他们连续两周难以回答，这是你减速的信号。
 
 ---
 
-### Team-Level Steering Metrics
+### 可扩展的指导模型
 
-"Measuring What Actually Matters" covers individual growth signals. This section covers what you look at weekly and monthly to steer the whole team, not just assess individual developers.
+1 对 1 的高级/初级师徒关系无法扩展到 5-10 人以上的团队。以下三种方法可以：
 
-Two levels, each with a distinct purpose.
+**1. 结对编程轮换（2 小时段）**
 
-**Level 1 — Delivery health (DORA-derived)**
+两个初级工程师一起工作，用 AI 辅助。约束：没有人可以接受他们无法向搭档解释的 AI 代码。对*为什么*的分歧上报给高级工程师。成本：每周每人 2 小时，最少的高级时间。
 
-| Metric | What It Tells You |
+**2. 架构"热座"（每周 15 分钟）**
+
+任何初级工程师可以请求 15 分钟的时间段来解释他们做出的架构决策。高级工程师给出一条反馈。不是代码审查——只是选择背后的*为什么*。对 N 个初级工程师扩展到 O(N×15分钟) 的高级时间，并迫使初级工程师培养架构推理，而非只是复制 AI 解决方案。
+
+**3. 集体 CLAUDE.md 所有权**
+
+初级工程师提议添加到团队 `CLAUDE.md`。提议必须基于他们在实践中学到的痛苦教训或节省的东西。高级工程师审查并带理由接受或拒绝。这强制反思，水平分发知识，并建立对团队 AI 使用标准的共同所有权。
+
+---
+
+### 团队级指导指标
+
+"衡量真正重要的内容"涵盖个人成长信号。本节涵盖你每周和每月查看的内容以指导整个团队，而非只是评估个别开发者。
+
+两个级别，各有不同目的。
+
+**级别 1 — 交付健康（DORA 衍生）**
+
+| 指标 | 告诉你什么 |
 |--------|------------------|
-| Deployment Frequency | Are we shipping consistently or in bursts? |
-| Cycle Time (commit to deploy) | Where is work stalling? |
-| Bug Escape Rate | What fraction of bugs reach production? |
+| 部署频率 | 我们是持续交付还是突发交付？ |
+| 周期时间（提交到部署） | 工作在哪里停滞？ |
+| Bug 逃逸率 | 什么比例的 Bug 到达生产？ |
 
-These are standard. Track them regardless of AI usage. The problem is they're not enough.
+这些是标准指标。无论 AI 使用情况如何都要追踪。问题是它们还不够。
 
-**Level 2 — AI adoption quality**
+**级别 2 — AI 采用质量**
 
-| Metric | How to Measure |
+| 指标 | 如何衡量 |
 |--------|---------------|
-| % AI-assisted PRs reviewed with understanding | Spot-check: ask "explain this block" in 1 out of 5 junior PRs |
-| PR review time on AI PRs vs manual PRs | Time from "ready for review" to merge, segmented by PR origin |
-| "Can explain in review" pass rate | Track how often the answer to "walk me through this" is satisfying vs evasive |
+| 有理解审查的 AI 辅助 PR 百分比 | 抽查：在每 5 个初级 PR 中有 1 个问"解释这块" |
+| AI PR vs 手动 PR 的 PR 审查时间 | 从"准备审查"到合并的时间，按 PR 来源分段 |
+| "审查中能解释"通过率 | 追踪"带我了解"的答案是令人满意还是回避的 |
 
-These three tell you whether the team is using AI to move faster with understanding, or rubber-stamping output and shipping debt.
+这三个指标告诉你团队是否在用 AI 以更快速度更深理解，还是在走形式审查输出并交付债务。
 
-**The Velocity Trap**
+**速度陷阱**
 
-Teams using AI often hit DORA "high performer" thresholds faster than expected. Deployment frequency goes up, cycle time drops. This looks like success. It isn't if Level 2 metrics are degrading simultaneously. Velocity is not a proxy for skill retention when AI writes the code. A team can ship faster every sprint while understanding their own codebase less each month. Watch both levels together, not either one in isolation.
+使用 AI 的团队往往比预期更快达到 DORA"高绩效者"阈值。部署频率上升，周期时间下降。这看起来像成功。如果级别 2 指标同时退化，则不是。当 AI 写代码时，速度不是技能保留的代理指标。团队可以每个 Sprint 交付得更快，同时每个月对自己的代码库理解更少。同时观察两个级别，而非单独观察任何一个。
 
-**Weekly Monday ritual (3 numbers, 5 minutes)**
+**每周周一仪式（3 个数字，5 分钟）**
 
-1. Deployment frequency this week vs last week
-2. Open PRs older than 24 hours (count only)
-3. Bugs escaped to production this week
+1. 本周 vs 上周部署频率
+2. 超过 24 小时的开放 PR（只计数）
+3. 本周生产中逃逸的 Bug
 
-If any of the three is trending wrong for two consecutive weeks, that's your trigger to investigate, not a reason to immediately change process. Patterns matter, not individual data points.
+如果这三个中的任何一个连续两周趋势恶化，这是调查的触发器，而非立即改变流程的理由。模式重要，而非单个数据点。
 
-For the full framework with dashboards and alerting thresholds, see `ops/team-metrics.md`.
+完整的带仪表板和告警阈值的框架见 `ops/team-metrics.md`。
 
 ---
 
-### Team-Level AI Policy (CLAUDE.md for Teams)
+### 团队级 AI 政策（团队的 CLAUDE.md）
 
-Individual `CLAUDE.md` configuration (§6) is for one developer. Team-level policy goes in the root `CLAUDE.md` of your shared repo. Keep it short enough that people actually read it:
+个人 `CLAUDE.md` 配置（§6）是针对一个开发者的。团队级政策在你的共享仓库的根 `CLAUDE.md` 中。保持足够短以让人们真正阅读：
 
 ```markdown
-## Team AI Usage Policy
+## 团队 AI 使用政策
 
-### Required before using AI on a feature
-- Write the function signature yourself
-- Write at least one test case before asking AI to implement
+### 在功能上使用 AI 前必须
+- 自己写函数签名
+- 在请求 AI 实现之前至少写一个测试用例
 
-### Required after AI generates code
-- All AI-generated code undergoes the same code review as human code
-- Reviewer asks: "Can you explain this section?" for junior PRs — not optional
+### AI 生成代码后必须
+- 所有 AI 生成的代码接受与人类代码相同的代码审查
+- 审查者对初级 PR 问："你能解释这部分吗？"——不是可选的
 
-### Prohibited patterns
-- Accepting AI changes without reading the diff
-- AI-generated code in security-critical paths without explicit senior sign-off
-- Using "AI wrote it" as explanation for any architectural decision in a PR
+### 禁止的模式
+- 不看差异对比就接受 AI 修改
+- 安全关键路径中没有明确高级签字的 AI 生成代码
+- 在 PR 的架构决策中使用"AI 写的"作为解释
 ```
 
-Start minimal. Add rules only when a pattern becomes a problem. A six-page policy nobody reads is worse than a three-rule policy that shapes behavior.
+从最小值开始。只有当模式成为问题时才添加规则。没有人读的六页政策比三条塑造行为的规则更糟糕。
 
 ---
 
-### Warning Signs at Team Level
+### 团队级警告信号
 
-| Pattern | What It Means | Response |
+| 模式 | 意味着什么 | 响应 |
 |---------|---------------|----------|
-| PRs merged faster each week, quality dropping | Probably skipping review | Add mandatory "explain this" checklist for junior PRs |
-| Juniors never ask architectural questions | Over-delegating thinking to AI | Architecture hot seat (see above) |
-| Bugs consistently blamed on "AI-generated code" | No code ownership | Review acceptance policy — who's responsible for what they ship? |
-| Senior devs increasingly vocal about code quality | Debt accumulating silently | Slow down — introduce "explain this" gates before merge |
-| Same fundamental question asked every sprint | Not retaining, just re-prompting | Require learning log, review at 1:1s |
-| Junior velocity rises but interview performance falls | The Shen & Tamkin effect at team scale | Reset with week of no-AI exercises on known fundamentals |
+| 每周 PR 合并更快，质量下降 | 可能跳过审查 | 为初级 PR 添加强制"解释这个"清单 |
+| 初级工程师从不问架构问题 | 将思考过度委派给 AI | 架构热座（见上文） |
+| Bug 持续归因于"AI 生成的代码" | 没有代码所有权 | 审查接受政策——谁对他们交付的内容负责？ |
+| 高级开发者越来越发声抱怨代码质量 | 债务悄悄积累 | 减速——在合并前引入"解释这个"关卡 |
+| 相同的基础问题每个 Sprint 都被问到 | 没有保留，只是重新提示 | 要求学习日志，在 1 对 1 中审查 |
+| 初级速度上升但面试表现下降 | 团队规模的 Shen & Tamkin 效应 | 用已知基础知识的无 AI 练习重置 |
 
 ---
 
-### Quick Checklist
+### 快速清单
 
 ```
-Onboarding
-☐ Week 1: no AI, baseline skills visible before tooling provided
-☐ Structured AI training included (not just tool access)
-☐ UVAL protocol introduced by week 3
+入职
+☐ 第 1 周：无 AI，提供工具前基准技能可见
+☐ 包含结构化 AI 培训（不只是工具访问）
+☐ 第 3 周引入 UVAL 协议
 
-Ongoing
-☐ Code reviews include "explain this" for junior PRs
-☐ Weekly growth question asked (not just velocity reviewed)
-☐ Architecture hot seat or equivalent ritual active
+持续进行
+☐ 代码审查包含初级 PR 的"解释这个"
+☐ 每周成长问题被问到（不只是审查速度）
+☐ 架构热座或等效仪式活跃中
 
-Team Policy
-☐ CLAUDE.md with AI usage guidelines exists in repo
-☐ Prohibited patterns documented and known
-☐ Someone owns updating the policy as patterns evolve
+团队政策
+☐ 仓库中存在带 AI 使用指南的 CLAUDE.md
+☐ 禁止的模式有记录且已知
+☐ 有人负责随模式演进更新政策
 
-Warning Signs
-☐ Velocity tracked separately from understanding signals
-☐ Debt accumulation monitored (not just feature throughput)
-☐ Juniors can explain code they shipped last sprint
+警告信号
+☐ 速度与理解信号分开追踪
+☐ 债务积累受监控（不只是功能吞吐量）
+☐ 初级工程师能解释他们上个 Sprint 交付的代码
 ```
 
 ---
 
-### Regulatory Exposure (Regulated Industries)
+### 监管暴露（受监管行业）
 
-For teams shipping AI-generated code into healthcare, finance, or government systems, comprehension debt is no longer just a quality risk — it is a compliance risk.
+对于将 AI 生成代码交付到医疗、金融或政府系统的团队，理解债务不再只是质量风险——而是合规风险。
 
-The **EU AI Act** classifies healthcare AI systems as high-risk, with mandatory human oversight requirements active since August 2, 2025 for general-purpose AI models and fully applicable from August 2, 2026 (medical devices: August 2027). Non-compliance carries penalties up to 6% of global annual turnover. The requirement for "meaningful human oversight" of AI outputs creates an implicit obligation to actually understand what your team is shipping — "the model wrote it" does not satisfy the standard.
+**EU AI 法案**将医疗 AI 系统分类为高风险，对通用 AI 模型有强制性人类监督要求，自 2025 年 8 月 2 日起对通用 AI 模型生效，自 2026 年 8 月 2 日起全面适用（医疗设备：2027 年 8 月）。不合规会导致最高全球年营业额 6% 的罚款。"对 AI 输出的有意义人类监督"的要求隐含了真正理解你的团队正在交付什么的义务——"模型写的"不满足这一标准。
 
-The **FDA's January 2025 draft guidance** for AI-enabled device software functions mandates AI Bill of Materials (AIBOMs), data lineage documentation, and post-market monitoring plans. The June 2025 cybersecurity guidance adds third-party component transparency requirements. A team that cannot explain the behavior of AI-generated code in a medical device submission is not compliant with this guidance.
+**FDA 2025 年 1 月草案指南**关于 AI 启用设备软件功能要求 AI 物料清单（AIBOM）、数据谱系文档和上市后监控计划。2025 年 6 月网络安全指南增加了第三方组件透明度要求。无法解释医疗设备提交中 AI 生成代码行为的团队不符合本指南。
 
-**Practical consequence for tech leads**: If your team is building in a regulated space, the "explain this" gate in code review is not a learning exercise — it is a documentation requirement. Reviewers who rubber-stamp AI-generated code are creating liability, not just technical risk. This is worth stating explicitly in your team AI policy.
+**对技术负责人的实际结果**：如果你的团队在受监管的空间中构建，代码审查中的"解释这个"关卡不是学习练习——而是文档要求。走形式审查 AI 生成代码的审查者在制造责任，而非只是技术风险。这值得在团队 AI 政策中明确说明。
 
 ---
 
-## Red Flags Checklist
+## 危险信号清单
 
-Warning signs you're becoming dependent, and what to do:
+你变得依赖的警告信号，以及该做什么：
 
-| Red Flag | What's Happening | Immediate Action |
+| 危险信号 | 发生了什么 | 立即行动 |
 |----------|-----------------|------------------|
-| Can't start without AI | Outsourced problem decomposition | Code 30 min daily without AI |
-| Don't understand AI's code | Copying without learning | Use `/explain-back` on EVERYTHING |
-| Can't debug AI errors | Never learned debugging | Deliberately break code, fix manually |
-| Anxiety without AI | Emotional dependence | It's a tool, not a lifeline — practice without |
-| Rejected in interviews | Fundamentals atrophied | Practice whiteboard problems without AI |
-| Always ask "how" never "why" | Surface-level usage | Force yourself to ask "why this approach?" |
-| Every solution looks the same | AI has patterns, you need variety | Study multiple implementations manually |
-| Task feels easy but you can't explain it | **Perception gap** — AI users rate tasks easier while scoring 17% lower ([Shen & Tamkin 2026](https://arxiv.org/abs/2601.20245)) | After each task, explain the solution without looking at code |
-| Prolonged sessions without breaks | **Session fatigue** — identical prompts yield varying outputs, causing anxiety | Time-box sessions: 30 min limit, max 3 attempts before manual implementation |
+| 没有 AI 就不能开始 | 将问题分解外包了 | 每天不用 AI 编程 30 分钟 |
+| 不理解 AI 的代码 | 复制而非学习 | 对**所有内容**使用 `/explain-back` |
+| 无法调试 AI 错误 | 从未学过调试 | 故意破坏代码，手动修复 |
+| 没有 AI 时焦虑 | 情感依赖 | 这是工具，不是生命线——练习没有它 |
+| 面试被拒绝 | 基础萎缩了 | 不用 AI 练习白板问题 |
+| 总问"如何"而非"为什么" | 表面使用 | 强迫自己问"为什么是这种方法？" |
+| 每个解决方案看起来都一样 | AI 有模式，你需要多样性 | 手动研究多种实现 |
+| 任务感觉简单但你无法解释 | **感知差距**——AI 用户将任务评为更简单，但得分低 17%（[Shen & Tamkin 2026](https://arxiv.org/abs/2601.20245)） | 每个任务后，不看代码解释解决方案 |
+| 没有休息的长时间会话 | **会话疲劳**——相同提示词产生不同输出，引发焦虑 | 控制会话时间：30 分钟上限，3 次尝试后手动实现 |
 
-### Weekly Self-Audit
+### 每周自我审计
 
-Every Friday, ask:
+每个周五问：
 
-1. What did I learn this week that I didn't know before?
-2. Could I have done this week's work without AI?
-3. Did I understand everything I shipped?
-4. Am I faster than last month? Am I smarter?
+1. 本周我学到了什么我以前不知道的？
+2. 我能在没有 AI 的情况下完成本周的工作吗？
+3. 我理解我交付的所有内容吗？
+4. 我比上个月更快吗？我更聪明吗？
 
-If you're faster but not smarter, you're building dependency.
-
----
-
-## Sources & Research
-
-### Academic Research
-
-- **GitHub Copilot Impact Study (2024)** — [dl.acm.org](https://dl.acm.org/doi/10.1145/3613904.3642394) — Found productivity gains but identified skill atrophy risks in junior developers
-- **Student Dependency Patterns in AI-Assisted Learning** — IACIS 2024 — Documented "learned helplessness" in students over-reliant on AI
-- **Junior Developer Career Trajectories with AI Tools** — Software Engineering Institute — 3-year longitudinal study on skill development
-- **AI Impacts on Skill Formation (Shen & Tamkin, 2026)** — [arXiv:2601.20245](https://arxiv.org/abs/2601.20245) — Anthropic Fellows RCT (52 devs learning Python Trio with/without GPT-4o): AI group scored 17% lower on skills quiz (Cohen's d=0.738, p=0.01) with no significant speed gain. Identified 6 interaction patterns — 3 preserving learning (conceptual inquiry, hybrid explanation, generation-then-comprehension) via active cognitive engagement.
-
-### Industry Reports
-
-- **Stack Overflow Developer Survey 2025** — AI tool adoption and perceived impact on learning
-- **State of Developer Ecosystem 2025** — JetBrains — AI usage patterns by experience level
-- **GitHub Octoverse 2025** — Code generation adoption rates and practices
-
-### Productivity Research
-
-Sources for [§3 The Reality of AI Productivity](#the-reality-of-ai-productivity):
-
-- **GitHub Copilot Productivity Study (2024)** — [GitHub Blog](https://github.blog/news-insights/research/research-quantifying-github-copilots-impact-in-the-enterprise-with-accenture/) — Enterprise productivity measurements with Accenture
-- **McKinsey Developer Productivity Report (2024)** — [mckinsey.com](https://www.mckinsey.com/capabilities/mckinsey-digital/our-insights/unleashing-developer-productivity-with-generative-ai) — Comprehensive analysis of AI impact across dev workflows
-- **Stack Overflow 2024: AI Sentiment** — [stackoverflow.co](https://stackoverflow.co/labs/developer-sentiment-ai-ml/) — Developer attitudes toward AI tools, productivity perceptions
-- **Uplevel Engineering Intelligence (2024)** — Burnout and productivity metrics with AI coding tools
-- **METR Experienced Developer RCT (2025)** — [arXiv:2507.09089](https://arxiv.org/abs/2507.09089) — Randomized controlled trial (16 experienced devs, 246 issues, repos 1M+ lines): AI tools made developers 19% slower on familiar codebases, despite perceiving themselves 20% faster (39-point perception gap). Strongest evidence for skill atrophy risk in experienced developers.
-- **Borg et al. "Echoes of AI" RCT (2025)** — [arXiv:2507.00788](https://arxiv.org/abs/2507.00788) — 2-phase blind RCT (151 participants, 95% professional developers): AI users 30.7% faster (median), habitual users ~55.9% faster. Phase 2: downstream developers evolving AI-generated code showed no significant difference in evolution time or code quality vs. human-generated code. First RCT to explicitly target maintainability of AI-assisted code. Co-authored by Dave Farley ("Continuous Delivery"). Note: arXiv preprint (v2 Dec 2025), not yet published in peer-reviewed proceedings.
-- **DORA/Google DevOps Research (2024)** — AI tool adoption impact on team performance
-
-### Team & Organizational Research
-
-- **Create Future: AI Training Impact on Junior Developers (2025)** — Structured AI training raises junior time savings from 14-42% (untrained) to 35-65% (trained) on key tasks. Source for [§12 Onboarding Imperative](#the-onboarding-imperative).
-- **Stanford Digital Economy Study (2025)** — Software developer employment for ages 22-25 declined ~20% by July 2025. Context for the urgency of structured junior development. [understandingai.org analysis](https://www.understandingai.org/p/new-evidence-strongly-suggest-ai)
-- **LeadDev: Tech CEOs reckon with AI impact on junior developers (2025)** — [leaddev.com](https://leaddev.com/leadership/tech-ceos-reckon-with-impact-junior-developers) — Organizational perspectives from engineering leaders on structuring junior growth in AI-heavy teams.
-- **Stack Overflow: AI vs Gen Z (2025)** — [stackoverflow.blog](https://stackoverflow.blog/2025/12/26/ai-vs-gen-z/) — Career pathway shifts for junior developers with AI adoption data by experience level.
-
-### Practitioner Perspectives
-
-- **Anthropic Claude Code Best Practices** — [anthropic.com](https://www.anthropic.com/engineering/claude-code-best-practices) — Official guidance on effective usage
-- **ThoughtWorks Technology Radar** — AI-assisted development maturity model
-- **Martin Fowler on AI Pair Programming** — Patterns for effective human-AI collaboration
-- **OCTO Technology: Le développement à l'ère des agents IA** — [blog.octo.com](https://blog.octo.com/le-developpement-logiciel-a-l-ere-des-agents-ia) — Organizational perspective on AI-augmented development: pairs as minimal team unit (bus factor), bottleneck shifts from technical to functional requirements, junior developer integration via pair programming and deliberate practice. Managerial focus — useful context for team leads.
-- **Matteo Collina: The Human in the Loop** — [adventures.nodeland.dev](https://adventures.nodeland.dev/archive/the-human-in-the-loop/) — Node.js TSC Chair on the bottleneck shift from coding to reviewing. Response to Arnaldi's "Death of Software Development." Key thesis: AI amplifies productivity, but judgment and accountability remain human responsibilities. Quote: "The human in the loop isn't a limitation. It's the point." See [detailed analysis](../ecosystem/ai-ecosystem.md#matteo-collina-nodejs-tsc-chair).
-
-### Educational Frameworks
-
-- **Méthode Aristote** — [methode-aristote.fr](https://www.methode-aristote.fr/) — Hybrid human+AI tutoring model
-- **Bloom's Taxonomy Applied to AI Learning** — Cognitive levels in AI-assisted education
-- **Zone of Proximal Development with AI** — Vygotsky's theory applied to AI scaffolding
-
-### Methodology References
-
-See [methodologies.md](../core/methodologies.md) for:
-- TDD with AI assistance
-- Spec-Driven Development
-- Eval-Driven Development for AI outputs
-
-### Community Experiences
-
-Practitioner reports from real-world usage provide empirical validation of theoretical patterns. Croce (2025)[^croce2025] documents efficiency gains for isolated algorithmic tasks (90s vs 60min average on Advent of Code puzzles), but highlights collaboration trade-offs during solo challenges: decreased team engagement, fewer creative discussions, and reduced diverse approach sharing.
-
-**Caveat**: These findings are based on N=1 self-reports in competitive programming contexts (Advent of Code), not peer-reviewed research or representative production environments. The collaboration cost observed may be specific to solo challenge contexts rather than team development workflows.
-
-[^croce2025]: Steve Croce, ["What I Learned Challenging Claude to a Coding Competition"](https://www.anaconda.com/blog/challenging-claude-code-coding-competition), Anaconda Blog, Jan 16, 2026. Field CTO perspective from 12 days of Advent of Code competition (human vs Claude Code). Reported metrics: Claude 90s/puzzle average, human 60min/puzzle average, no debugging until day 6. Note: Single-participant study on algorithmic puzzles, not production development.
+如果你更快但不更聪明，你在建立依赖。
 
 ---
 
-## See Also
+## 来源与研究
 
-### In This Guide
+### 学术研究
 
-- [AI Roles & Career Paths](./ai-roles.md) — Map of emerging AI roles (Prompt Engineer → Harness Engineer) with career matrix and salary benchmarks
-- [Methodologies: TDD with Claude](../core/methodologies.md#tier-5-implementation) — Write tests first, then implement
-- [Workflows: Spec-First](../workflows/spec-first.md) — Understand requirements before code
-- [Workflows: Plan-Driven](../workflows/plan-driven.md) — Use /plan mode for complex work
-- [Ultimate Guide: Mental Models](#26-mental-model) — How to think about Claude interactions
+- **GitHub Copilot 影响研究（2024）** — [dl.acm.org](https://dl.acm.org/doi/10.1145/3613904.3642394) — 发现生产力收益但识别出初级开发者的技能萎缩风险
+- **AI 辅助学习中的学生依赖模式** — IACIS 2024 — 记录过度依赖 AI 的学生中的"习得性无助"
+- **AI 工具初级开发者职业轨迹** — 软件工程研究所 — 技能发展的 3 年纵向研究
+- **AI 对技能形成的影响（Shen & Tamkin，2026）** — [arXiv:2601.20245](https://arxiv.org/abs/2601.20245) — Anthropic Fellows 随机对照试验（52 名开发者用/不用 GPT-4o 学习 Python Trio）：AI 组技能测试得分低 17%（Cohen's d=0.738，p=0.01），没有显著速度收益。识别了 6 种交互模式——3 种通过主动认知参与保留学习（概念探究、混合解释、先生成再理解）。
 
-### Templates & Examples
+### 行业报告
 
-- [Learning Mode CLAUDE.md](../../examples/claude-md/learning-mode.md) — Configuration template
-- [/learn:quiz Command](../../examples/commands/learn/quiz.md) — Self-testing slash command
-- [/learn:teach Command](../../examples/commands/learn/teach.md) — Step-by-step concept explanations
-- [/learn:alternatives Command](../../examples/commands/learn/alternatives.md) — Compare different approaches
-- [Learning Capture Hook](../../examples/hooks/bash/learning-capture.sh) — Automated insight logging
+- **Stack Overflow 开发者调查 2025** — AI 工具采用和对学习的感知影响
+- **开发者生态系统状态 2025** — JetBrains — 按经验水平分类的 AI 使用模式
+- **GitHub Octoverse 2025** — 代码生成采用率和实践
 
-### External Resources
+### 生产力研究
 
-- [Anthropic Prompt Engineering Guide](https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/overview) — Better prompts = better learning
-- [The Pragmatic Programmer](https://pragprog.com/titles/tpp20/the-pragmatic-programmer-20th-anniversary-edition/) — Timeless principles for deliberate practice
-- [AI for Engineers](https://leerob.com/ai) — AI fundamentals (ML, transformers, tokenization)
-- [Step by Token](https://www.stepbytoken.com/en) — 21-chapter interactive guide explaining how LLMs work mechanically, from tokenization through agents and KV cache. Free, in 8 languages. Pairs well with the prompt engineering and agents sections of this guide.
+[§3 AI 生产力的现实](#ai-生产力的现实)的来源：
 
----
+- **GitHub Copilot 生产力研究（2024）** — [GitHub 博客](https://github.blog/news-insights/research/research-quantifying-github-copilots-impact-in-the-enterprise-with-accenture/) — 与埃森哲的企业生产力测量
+- **麦肯锡开发者生产力报告（2024）** — [mckinsey.com](https://www.mckinsey.com/capabilities/mckinsey-digital/our-insights/unleashing-developer-productivity-with-generative-ai)
+- **Stack Overflow 2024：AI 情感** — [stackoverflow.co](https://stackoverflow.co/labs/developer-sentiment-ai-ml/)
+- **Uplevel 工程智能（2024）** — AI 编程工具的倦怠和生产力指标
+- **METR 有经验开发者随机对照试验（2025）** — [arXiv:2507.09089](https://arxiv.org/abs/2507.09089) — 随机对照试验（16 名有经验开发者，246 个 issue，100 万行以上仓库）：AI 工具使开发者在熟悉代码库上慢了 19%，尽管他们感觉自己快了 20%（39 点感知差距）。
+- **Borg 等人"AI 的回声"随机对照试验（2025）** — [arXiv:2507.00788](https://arxiv.org/abs/2507.00788) — 2 阶段盲法随机对照试验（151 名参与者，95% 专业开发者）：AI 用户快 30.7%（中位数），习惯性用户约快 55.9%。阶段 2：进化 AI 生成代码的下游开发者在进化时间或代码质量上与人类生成代码没有显著差异。
+- **DORA/Google DevOps 研究（2024）** — AI 工具采用对团队绩效的影响
 
-## Quick Reference Card
+### 团队与组织研究
 
-### UVAL Protocol Summary
+- **Create Future：AI 培训对初级开发者的影响（2025）** — 结构化 AI 培训将初级时间节省从 14-42%（未培训）提高到 35-65%（已培训）。
+- **斯坦福数字经济研究（2025）** — 22-25 岁软件开发者就业到 2025 年 7 月下降约 20%。
+- **LeadDev：科技 CEO 应对 AI 对初级开发者的影响（2025）** — [leaddev.com](https://leaddev.com/leadership/tech-ceos-reckon-with-impact-junior-developers)
+- **Stack Overflow：AI vs Gen Z（2025）** — [stackoverflow.blog](https://stackoverflow.blog/2025/12/26/ai-vs-gen-z/)
 
-```
-U — UNDERSTAND FIRST
-    State → Brainstorm → Identify gaps → THEN ask AI
+### 实践者观点
 
-V — VERIFY
-    Read every line → Explain out loud → Ask about gaps
+- **Anthropic Claude Code 最佳实践** — [anthropic.com](https://www.anthropic.com/engineering/claude-code-best-practices)
+- **ThoughtWorks 技术雷达** — AI 辅助开发成熟度模型
+- **Martin Fowler 关于 AI 结对编程** — 有效人机协作的模式
+- **OCTO Technology：Le développement à l'ère des agents IA** — [blog.octo.com](https://blog.octo.com/le-developpement-logiciel-a-l-ere-des-agents-ia)
+- **Matteo Collina：循环中的人** — [adventures.nodeland.dev](https://adventures.nodeland.dev/archive/the-human-in-the-loop/) — Node.js TSC 主席关于从编码到审查的瓶颈转移。关键论点：AI 放大生产力，但判断和问责仍是人类的责任。引用："循环中的人不是限制，而是重点。"
 
-A — APPLY
-    Never copy raw → Rename/Restructure/Extend/Simplify
+### 教育框架
 
-L — LEARN
-    One insight per session → Log it → Review later
-```
+- **Méthode Aristote** — [methode-aristote.fr](https://www.methode-aristote.fr/)
+- **Bloom 分类法应用于 AI 学习** — AI 辅助教育中的认知层次
+- **AI 脚手架中的最近发展区** — Vygotsky 理论应用于 AI 脚手架
 
-### The 70/30 Rule
+### 方法论参考
 
-```
-Learning new things: 70% struggle, 30% AI
-Applying known skills: 30% struggle, 70% AI
-```
+见 [methodologies.md](../core/methodologies.md) 了解：
+- TDD 与 AI 辅助
+- 规格驱动开发（SDD）
+- AI 输出的评估驱动开发
 
-### Daily Minimums
+### 社区经验
 
-```
-☐ 15 min: Code something without AI
-☐ 5 min: Explain one piece of code out loud
-☐ 1 min: Log one thing you learned
-```
+实践者报告提供了理论模式的实证验证。Croce（2025）[^croce2025] 记录了孤立算法任务的效率收益（Advent of Code 谜题平均 90 秒 vs 60 分钟），但强调了单独挑战期间的协作权衡：团队参与减少、创意讨论减少以及多样化方法分享减少。
 
-### Claude Code Commands for Learning
+**注意**：这些发现基于竞争性编程场景（Advent of Code）中 N=1 的自我报告，而非同行评审研究或代表性生产环境。观察到的协作成本可能特定于单独挑战场景，而非团队开发工作流。
 
-```
-/explain              — Understand existing code
-/learn:quiz           — Test your understanding
-/learn:teach <topic>  — Learn something new
-/learn:alternatives   — Compare approaches
-```
+[^croce2025]: Steve Croce，["What I Learned Challenging Claude to a Coding Competition"](https://www.anaconda.com/blog/challenging-claude-code-coding-competition)，Anaconda 博客，2026 年 1 月 16 日。来自 12 天 Advent of Code 竞赛的 Field CTO 视角（人类 vs Claude Code）。报告指标：Claude 平均每题 90 秒，人类平均每题 60 分钟，直到第 6 天才需要调试。注意：单参与者的算法题研究，非生产开发。
 
 ---
 
-*This guide is part of the [Claude Code Ultimate Guide](../ultimate-guide.md). For questions or contributions, see the main repository.*
+## 参见
+
+### 在本指南中
+
+- [AI 角色与职业路径](./ai-roles.md) — 新兴 AI 角色地图（提示词工程师 → 框架工程师），带职业矩阵和薪资基准
+- [方法论：Claude 的 TDD（测试驱动开发）](../core/methodologies.md#tier-5-implementation) — 先写测试，再实现
+- [工作流：规格优先](../workflows/spec-first.md) — 在代码之前理解需求
+- [工作流：计划驱动](../workflows/plan-driven.md) — 对复杂工作使用 /plan 模式
+- [终极指南：思维模型](#26-mental-model) — 如何思考与 Claude 的交互
+
+### 模板与示例
+
+- [学习模式 CLAUDE.md](../../examples/claude-md/learning-mode.md) — 配置模板
+- [/learn:quiz 命令](../../examples/commands/learn/quiz.md) — 自测斜杠命令
+- [/learn:teach 命令](../../examples/commands/learn/teach.md) — 逐步概念解释
+- [/learn:alternatives 命令](../../examples/commands/learn/alternatives.md) — 比较不同方法
+- [学习捕捉 Hook](../../examples/hooks/bash/learning-capture.sh) — 自动化洞察记录
+
+### 外部资源
+
+- [Anthropic 提示词工程指南](https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/overview) — 更好的提示词 = 更好的学习
+- [实用程序员](https://pragprog.com/titles/tpp20/the-pragmatic-programmer-20th-anniversary-edition/) — 刻意练习的永恒原则
+- [AI for Engineers](https://leerob.com/ai) — AI 基础（ML、Transformer、分词）
+- [Step by Token](https://www.stepbytoken.com/en) — 21 章交互式指南，从分词到智能体和 KV 缓存，机械地解释 LLM 如何工作。免费，8 种语言。与本指南的提示词工程和智能体章节配合良好。
+
+---
+
+## 快速参考卡
+
+### UVAL 协议摘要
+
+```
+U — 先理解
+    陈述 → 头脑风暴 → 识别缺口 → 然后问 AI
+
+V — 验证
+    读每一行 → 大声解释 → 问缺口
+
+A — 应用
+    永远不要原始复制 → 重命名/重构/扩展/简化
+
+L — 学习
+    每次会话一个洞察 → 记录 → 稍后复习
+```
+
+### 70/30 规则
+
+```
+学习新事物：70% 挣扎，30% AI
+应用已知技能：30% 挣扎，70% AI
+```
+
+### 每日最低标准
+
+```
+☐ 15 分钟：不用 AI 写一些代码
+☐ 5 分钟：大声解释一段代码
+☐ 1 分钟：记录一个你学到的东西
+```
+
+### 学习的 Claude Code 命令
+
+```
+/explain              — 理解现有代码
+/learn:quiz           — 测试你的理解
+/learn:teach <topic>  — 学习新事物
+/learn:alternatives   — 比较方法
+```
+
+---
+
+*本指南是 [Claude Code 终极指南](../ultimate-guide.md) 的一部分。如有问题或贡献，见主仓库。*

@@ -1,38 +1,38 @@
 > 📚 **AI Spark Wiki** · Claude Code 知识库
 
 ---
-title: "Claude Code — Enterprise Governance Diagrams"
-description: "Governance risk tiers, MCP approval workflow, guardrail tier selection"
-tags: [security, enterprise, governance, compliance, mcp]
+title: "Claude Code — 企业治理图表"
+description: "治理风险层级、MCP 审批工作流、护栏层级选择"
+tags: [安全, 企业, 治理, 合规, MCP]
 ---
 
-# Enterprise Governance
+# 企业治理
 
-Org-level patterns for teams deploying Claude Code at scale — usage tiers, MCP approval workflows, and guardrail configurations.
+在组织层面大规模部署 Claude Code 的模式——使用层级、MCP 审批工作流和护栏配置。
 
-> **Audience**: Tech leads, engineering managers, security officers. For individual dev security see [Security & Production](./08-security-and-production.md).
+> **受众**：技术负责人、工程经理、安全官员。个人开发者安全请参见 [安全与生产环境](./08-security-and-production.md)。
 
 ---
 
-### Governance Risk Tiers — What to Control and When
+### 治理风险层级 — 何时控制什么
 
-Not everything needs heavy governance. This decision tree routes your context to the right control level based on actual risk — from personal dev workflow (minimal) to regulated environments (full compliance stack).
+并非所有场景都需要严格治理。这个决策树根据实际风险将你的场景路由到正确的控制级别——从个人开发工作流（最低控制）到受监管环境（完整合规栈）。
 
 ```mermaid
 flowchart TD
-    A([What are you governing?]) --> B{Usage context?}
+    A([你在治理什么？]) --> B{使用场景？}
 
-    B --> P["Personal dev workflow<br/>Local, throwaway code<br/>One developer only"]
-    B --> T["Team codebase<br/>Shared repo, not production<br/>5–20 developers"]
-    B --> PR["Production system<br/>Customer-facing, real data<br/>Any team size"]
-    B --> REG["Regulated environment<br/>HIPAA, SOC2, PCI, finance<br/>Legal/compliance obligations"]
+    B --> P["个人开发工作流<br/>本地、临时代码<br/>仅一名开发者"]
+    B --> T["团队代码库<br/>共享仓库，非生产<br/>5-20 名开发者"]
+    B --> PR["生产系统<br/>面向客户，真实数据<br/>任意团队规模"]
+    B --> REG["受监管环境<br/>HIPAA、SOC2、PCI、金融<br/>法律/合规义务"]
 
-    P --> TIER1(["Tier 1: Starter<br/>CLAUDE.md guidelines<br/>+ dangerous-actions-blocker hook<br/>10 min setup"])
-    T --> TIER2(["Tier 2: Standard<br/>Shared settings.json + MCP registry<br/>+ PR gates + audit log<br/>~2 hours setup"])
-    PR --> TIER3(["Tier 3: Strict<br/>Full permission deny list<br/>+ approval workflow<br/>+ session audit trail"])
-    REG --> TIER4(["Tier 4: Regulated<br/>All of above<br/>+ compliance audit trail<br/>+ SOC2/ISO27001 controls"])
+    P --> TIER1(["第 1 级：入门<br/>CLAUDE.md 指南<br/>+ 危险操作拦截 Hook<br/>10 分钟配置"])
+    T --> TIER2(["第 2 级：标准<br/>共享 settings.json + MCP 注册表<br/>+ PR 关卡 + 审计日志<br/>~2 小时配置"])
+    PR --> TIER3(["第 3 级：严格<br/>完整权限拒绝列表<br/>+ 审批工作流<br/>+ 会话审计跟踪"])
+    REG --> TIER4(["第 4 级：受监管<br/>以上所有<br/>+ 合规审计跟踪<br/>+ SOC2/ISO27001 控制"])
 
-    NOTE["You CAN control: MCP servers, tool permissions,<br/>CLAUDE.md content, hooks, CI/CD gates<br/>You CANNOT control: personal ~/.claude settings,<br/>models on personal API keys, personal projects"] -.-> B
+    NOTE["你能控制的：MCP 服务器、工具权限、<br/>CLAUDE.md 内容、Hooks、CI/CD 关卡<br/>你无法控制的：个人 ~/.claude 设置、<br/>个人 API 密钥上的模型选择、个人项目"] -.-> B
 
     style A fill:#F5E6D3,color:#333
     style B fill:#E87E2F,color:#fff
@@ -46,128 +46,128 @@ flowchart TD
     style TIER4 fill:#E85D5D,color:#fff
     style NOTE fill:#F5E6D3,color:#333
 
-    click A href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/security/enterprise-governance.md#1-local-vs-shared-the-governance-split" "What are you governing?"
-    click B href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/security/enterprise-governance.md#1-local-vs-shared-the-governance-split" "Usage context?"
-    click P href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/security/enterprise-governance.md#4-guardrail-tiers" "Personal dev workflow"
-    click T href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/security/enterprise-governance.md#4-guardrail-tiers" "Team codebase"
-    click PR href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/security/enterprise-governance.md#4-guardrail-tiers" "Production system"
-    click REG href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/security/enterprise-governance.md#4-guardrail-tiers" "Regulated environment"
-    click TIER1 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/security/enterprise-governance.md#4-guardrail-tiers" "Tier 1: Starter"
-    click TIER2 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/security/enterprise-governance.md#4-guardrail-tiers" "Tier 2: Standard"
-    click TIER3 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/security/enterprise-governance.md#4-guardrail-tiers" "Tier 3: Strict"
-    click TIER4 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/security/enterprise-governance.md#4-guardrail-tiers" "Tier 4: Regulated"
-    click NOTE href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/security/enterprise-governance.md#12-what-you-can-and-cant-control" "What you can/cannot control"
+    click A href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/security/enterprise-governance.md#1-local-vs-shared-the-governance-split" "你在治理什么？"
+    click B href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/security/enterprise-governance.md#1-local-vs-shared-the-governance-split" "使用场景？"
+    click P href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/security/enterprise-governance.md#4-guardrail-tiers" "个人开发工作流"
+    click T href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/security/enterprise-governance.md#4-guardrail-tiers" "团队代码库"
+    click PR href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/security/enterprise-governance.md#4-guardrail-tiers" "生产系统"
+    click REG href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/security/enterprise-governance.md#4-guardrail-tiers" "受监管环境"
+    click TIER1 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/security/enterprise-governance.md#4-guardrail-tiers" "第 1 级：入门"
+    click TIER2 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/security/enterprise-governance.md#4-guardrail-tiers" "第 2 级：标准"
+    click TIER3 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/security/enterprise-governance.md#4-guardrail-tiers" "第 3 级：严格"
+    click TIER4 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/security/enterprise-governance.md#4-guardrail-tiers" "第 4 级：受监管"
+    click NOTE href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/security/enterprise-governance.md#12-what-you-can-and-cant-control" "能控制/不能控制的内容"
 ```
 
 <details>
-<summary>ASCII version</summary>
+<summary>ASCII 版本</summary>
 
 ```
-Usage context?
-├─ Personal dev workflow      → Tier 1: Starter     (CLAUDE.md + basic hooks, 10 min)
-├─ Team codebase              → Tier 2: Standard    (shared settings.json + MCP registry + PR gates)
-├─ Production system          → Tier 3: Strict      (full deny list + approval + audit trail)
-└─ Regulated (HIPAA/SOC2/PCI) → Tier 4: Regulated  (all above + compliance audit trail)
+使用场景？
+├─ 个人开发工作流      → 第 1 级：入门     （CLAUDE.md + 基础 Hooks，10 分钟）
+├─ 团队代码库          → 第 2 级：标准     （共享 settings.json + MCP 注册表 + PR 关卡）
+├─ 生产系统            → 第 3 级：严格     （完整拒绝列表 + 审批 + 审计跟踪）
+└─ 受监管（HIPAA/SOC2/PCI）→ 第 4 级：受监管 （以上所有 + 合规审计跟踪）
 
-You CAN control: settings.json in repo, CLAUDE.md, hooks, CI/CD gates, MCP registry
-You CANNOT control: personal ~/.claude, personal API key model choice, personal projects
+你能控制的：仓库中的 settings.json、CLAUDE.md、Hooks、CI/CD 关卡、MCP 注册表
+你无法控制的：个人 ~/.claude、个人 API 密钥模型选择、个人项目
 ```
 
 </details>
 
-> **Source**: [Enterprise Governance](../security/enterprise-governance.md) — §1 Governance Split, §4 Guardrail Tiers
+> **来源**：[企业治理](../security/enterprise-governance.md) — 第 1 节治理拆分，第 4 节护栏层级
 
 ---
 
-### MCP Governance Workflow
+### MCP 治理工作流
 
-Individual MCP vetting takes 5 minutes. Organizational MCP governance is the 5-step pipeline that ensures approved servers stay approved, versions are pinned, and risk is classified before deployment.
+单个 MCP 审查需要 5 分钟。组织级 MCP 治理是 5 步流水线，确保已批准的服务器持续合规、版本已锁定、部署前完成风险分级。
 
 ```mermaid
 sequenceDiagram
-    participant DEV as Developer
-    participant TL as Tech Lead + Security
-    participant REG as MCP Registry<br/>.claude/mcp-registry.yaml
-    participant REPO as Shared Config Repo<br/>settings.json
+    participant DEV as 开发者
+    participant TL as 技术负责人 + 安全团队
+    participant REG as MCP 注册表<br/>.claude/mcp-registry.yaml
+    participant REPO as 共享配置仓库<br/>settings.json
 
-    DEV->>TL: Submit MCP request<br/>Name, source URL, use case, data scope
+    DEV->>TL: 提交 MCP 申请<br/>名称、来源 URL、使用场景、数据范围
 
-    TL->>TL: 5-min security audit<br/>Stars >50? Recent commits?<br/>CVEs? Dangerous flags?
-    TL->>TL: Classify risk: LOW / MEDIUM / HIGH
+    TL->>TL: 5 分钟安全审查<br/>Star 数 >50？最近有提交？<br/>CVE？危险标志？
+    TL->>TL: 风险分级：低 / 中 / 高
 
-    alt LOW risk
-        TL->>REG: Approve — add to registry<br/>Pin version, set 6-month expiry
-    else MEDIUM or HIGH risk
-        TL->>TL: 2-week sandbox trial<br/>+ Security team sign-off
-        TL->>REG: Approve with restrictions<br/>Shorter expiry (3 months)
-    else HIGH risk (unacceptable)
-        TL->>DEV: Denied — document reason in registry
+    alt 低风险
+        TL->>REG: 批准 — 添加到注册表<br/>锁定版本，设置 6 个月到期
+    else 中风险或高风险
+        TL->>TL: 2 周沙盒试用<br/>+ 安全团队签字
+        TL->>REG: 附加限制条件批准<br/>缩短到期时间（3 个月）
+    else 高风险（不可接受）
+        TL->>DEV: 拒绝 — 在注册表中记录原因
     end
 
-    REG->>REPO: Deploy via committed settings.json<br/>No local overrides for approved MCPs
-    Note over REPO: Version-pinned, team-wide, auditable
+    REG->>REPO: 通过已提交的 settings.json 部署<br/>已批准 MCP 无本地覆盖
+    Note over REPO: 版本已锁定，全团队，可审计
 
-    REPO->>TL: Monitor every 30 days<br/>Patch bumps: auto re-approve<br/>Minor+ bumps: manual re-review<br/>Quarterly: full registry audit
+    REPO->>TL: 每 30 天监控一次<br/>补丁版本升级：自动重新批准<br/>次要版本以上升级：手动重新审查<br/>每季度：完整注册表审计
 ```
 
 <details>
-<summary>ASCII version</summary>
+<summary>ASCII 版本</summary>
 
 ```
-Developer submits MCP request (name, source, use case, data scope)
+开发者提交 MCP 申请（名称、来源、使用场景、数据范围）
     │
-Tech Lead: 5-min security audit (stars, commits, CVEs, flags)
+技术负责人：5 分钟安全审查（Star 数、提交、CVE、标志）
     │
-Classify risk: LOW / MEDIUM / HIGH
+风险分级：低 / 中 / 高
     │
 ┌───┴────────────────────────────┐
-LOW                             MED/HIGH
-Approve immediately             2-week sandbox trial
-                                + Security team sign-off
+低                               中/高
+立即批准                        2 周沙盒试用
+                                + 安全团队签字
     │
-Add to registry (.claude/mcp-registry.yaml)
-  - Pin exact version
-  - Set expiry (6 months for LOW, 3 months for MED)
-  - Document approved scope
+添加到注册表（.claude/mcp-registry.yaml）
+  - 锁定精确版本
+  - 设置到期时间（低风险 6 个月，中风险 3 个月）
+  - 记录已批准的范围
     │
-Deploy via committed settings.json (no local overrides)
+通过已提交的 settings.json 部署（无本地覆盖）
     │
-Monitor every 30 days:
-  - Check security advisories
-  - Patch bumps: auto | Minor+ bumps: manual re-review
-  - Quarterly: full registry audit
+每 30 天监控：
+  - 检查安全公告
+  - 补丁版本升级：自动 | 次要版本以上：手动重新审查
+  - 每季度：完整注册表审计
 ```
 
 </details>
 
-> **Source**: [MCP Governance Workflow](../security/enterprise-governance.md#3-mcp-governance-workflow) — §3.1 Approval Workflow
+> **来源**：[MCP 治理工作流](../security/enterprise-governance.md#3-mcp-governance-workflow) — 第 3.1 节审批工作流
 
 ---
 
-### Data Classification & Claude Code Access Rules
+### 数据分类与 Claude Code 访问规则
 
-Data classification determines what Claude Code is allowed to read and process. Getting this wrong is the highest-impact governance failure. Four levels, clear rules, no exceptions for RESTRICTED.
+数据分类决定 Claude Code 被允许读取和处理的内容。搞错这一点是影响最大的治理失误。四个级别，明确规则，RESTRICTED 级别无例外。
 
 ```mermaid
 flowchart LR
-    subgraph PUBLIC["🟢 PUBLIC"]
-        PU1["Open source code<br/>Public documentation<br/>Shared blog content"]
-        PU2(["Allowed — no restrictions"])
+    subgraph PUBLIC["🟢 公开（PUBLIC）"]
+        PU1["开源代码<br/>公开文档<br/>共享博客内容"]
+        PU2(["允许 — 无限制"])
     end
 
-    subgraph INTERNAL["🔵 INTERNAL"]
-        IN1["Internal tools<br/>Non-sensitive code<br/>Team documentation"]
-        IN2(["Allowed — standard config"])
+    subgraph INTERNAL["🔵 内部（INTERNAL）"]
+        IN1["内部工具<br/>非敏感代码<br/>团队文档"]
+        IN2(["允许 — 标准配置"])
     end
 
-    subgraph CONFIDENTIAL["🟠 CONFIDENTIAL"]
-        CO1["Internal business secrets<br/>Non-regulated IP<br/>Architecture docs"]
-        CO2(["Enterprise plan only<br/>Zero Data Retention required"])
+    subgraph CONFIDENTIAL["🟠 机密（CONFIDENTIAL）"]
+        CO1["内部商业秘密<br/>非受监管 IP<br/>架构文档"]
+        CO2(["仅限企业版<br/>需要零数据保留"])
     end
 
-    subgraph RESTRICTED["🔴 RESTRICTED"]
-        RE1["Customer PII<br/>PCI card data / PHI<br/>Credentials & API keys"]
-        RE2(["NEVER in AI context<br/>Block via permissions.deny<br/>No exceptions"])
+    subgraph RESTRICTED["🔴 受限（RESTRICTED）"]
+        RE1["客户 PII<br/>PCI 卡数据 / PHI<br/>凭证与 API 密钥"]
+        RE2(["绝不进入 AI 上下文<br/>通过 permissions.deny 阻止<br/>无例外"])
     end
 
     PU1 --> PU2
@@ -181,30 +181,30 @@ flowchart LR
     style RE2 fill:#E85D5D,color:#fff
     style RE1 fill:#E85D5D,color:#fff
 
-    click PU1 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/security/enterprise-governance.md#2-ai-usage-charter" "PUBLIC data"
-    click IN1 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/security/enterprise-governance.md#2-ai-usage-charter" "INTERNAL data"
-    click CO1 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/security/enterprise-governance.md#2-ai-usage-charter" "CONFIDENTIAL data"
-    click RE1 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/security/enterprise-governance.md#2-ai-usage-charter" "RESTRICTED data"
-    click PU2 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/security/enterprise-governance.md#2-ai-usage-charter" "PUBLIC: allowed"
-    click IN2 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/security/enterprise-governance.md#2-ai-usage-charter" "INTERNAL: standard config"
-    click CO2 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/security/enterprise-governance.md#2-ai-usage-charter" "CONFIDENTIAL: Enterprise only"
-    click RE2 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/security/enterprise-governance.md#2-ai-usage-charter" "RESTRICTED: never in AI context"
+    click PU1 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/security/enterprise-governance.md#2-ai-usage-charter" "公开数据"
+    click IN1 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/security/enterprise-governance.md#2-ai-usage-charter" "内部数据"
+    click CO1 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/security/enterprise-governance.md#2-ai-usage-charter" "机密数据"
+    click RE1 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/security/enterprise-governance.md#2-ai-usage-charter" "受限数据"
+    click PU2 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/security/enterprise-governance.md#2-ai-usage-charter" "公开：允许"
+    click IN2 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/security/enterprise-governance.md#2-ai-usage-charter" "内部：标准配置"
+    click CO2 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/security/enterprise-governance.md#2-ai-usage-charter" "机密：仅限企业版"
+    click RE2 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/security/enterprise-governance.md#2-ai-usage-charter" "受限：绝不进入 AI 上下文"
 ```
 
 <details>
-<summary>ASCII version</summary>
+<summary>ASCII 版本</summary>
 
 ```
-PUBLIC       → Allowed, no restrictions
-INTERNAL     → Allowed, standard config
-CONFIDENTIAL → Enterprise plan only (Zero Data Retention required)
-RESTRICTED   → NEVER in AI context (PII, PCI, PHI, credentials)
-               Block via: permissions.deny Read(.env, *.key, *.pem, secrets/**)
+公开（PUBLIC）   → 允许，无限制
+内部（INTERNAL） → 允许，标准配置
+机密（CONFIDENTIAL） → 仅限企业版（需要零数据保留）
+受限（RESTRICTED）   → 绝不进入 AI 上下文（PII、PCI、PHI、凭证）
+               通过以下方式阻止：permissions.deny Read(.env, *.key, *.pem, secrets/**)
 
-Hard rule: RESTRICTED data never enters a context window.
-Not in prompts, not in files Claude reads, not as examples.
+硬性规则：受限数据绝不进入上下文窗口。
+不在提示词中，不在 Claude 读取的文件中，不作为示例。
 ```
 
 </details>
 
-> **Source**: [AI Usage Charter](../security/enterprise-governance.md#2-ai-usage-charter) — §2.1 Data Classification
+> **来源**：[AI 使用章程](../security/enterprise-governance.md#2-ai-usage-charter) — 第 2.1 节数据分类

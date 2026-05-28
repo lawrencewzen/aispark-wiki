@@ -1,476 +1,473 @@
 > 📚 **AI Spark Wiki** · Claude Code 知识库
 
 ---
-title: "Context Engineering"
-description: "Comprehensive guide to filling Claude's context window with the right information at the right time — configuration hierarchy, budget management, modular architecture, team assembly, and quality measurement"
+title: "上下文工程"
+description: "全面指南：如何在正确的时间将正确的信息填入 Claude 的上下文窗口——配置层级、预算管理、模块化架构、团队配置组装与质量度量"
 tags: [context, configuration, architecture, team, advanced]
 ---
 
-# Context Engineering
+# 上下文工程
 
-> **Confidence**: Tier 1 — Based on official documentation, measured production data, and community validation.
+> **可信度**：一级——基于官方文档、实测生产数据及社区验证。
 >
-> **Last updated**: March 2026
+> **最后更新**：2026 年 3 月
 
-"Context engineering is the art of filling the context window with the right information at the right time." — Andrej Karpathy
+"上下文工程是一门艺术：在正确的时间，将正确的信息填入上下文窗口。"——Andrej Karpathy
 
-This guide covers everything from the token math behind context budgets to building modular, team-scale configuration systems. It is a companion to the broader configuration sections in the ultimate guide — where those sections show individual techniques, this document shows how to compose them into a coherent system.
-
----
-
-## Table of Contents
-
-1. [What is Context Engineering](#1-what-is-context-engineering)
-2. [The Context Budget](#2-the-context-budget)
-3. [Configuration Hierarchy](#3-configuration-hierarchy)
-4. [Modular Architecture](#4-modular-architecture)
-5. [Team Assembly](#5-team-assembly)
-6. [Context Lifecycle](#6-context-lifecycle)
-7. [Quality Measurement](#7-quality-measurement)
-8. [Context Reduction Techniques](#8-context-reduction-techniques)
-9. [Maturity Assessment](#9-maturity-assessment)
-10. [Token Audit Workflow](#10-token-audit-workflow)
-11. [Research Patterns](#11-research-patterns-what-the-literature-shows)
-12. [Attention Mechanics & Reliability](#17-attention-mechanics--reliability)
-13. [Token Compression Tools](#18-token-compression-tools)
+本指南涵盖从上下文预算的 Token 数学，到构建模块化、团队规模的配置系统的全部内容。它是终极指南中更广泛配置章节的配套文档——那些章节介绍单项技术，本文档则展示如何将它们组合成一个连贯的系统。
 
 ---
 
-## 1. What is Context Engineering
+## 目录
 
-### The Definition
-
-Andrej Karpathy coined the phrase: **"Context engineering is the art of filling the context window with the right information at the right time."**
-
-That single sentence contains three non-obvious requirements:
-
-- **Filling**: the context window should be populated deliberately, not accidentally. Leaving it mostly empty wastes the model's capacity; leaving it chaotically full wastes your tokens and degrades output quality.
-- **Right information**: not all information is equal. Architecture decisions are more valuable than linting preferences. Negative constraints ("never return raw SQL errors to the client") are more actionable than aspirational goals ("write clean code").
-- **Right time**: path-scoped rules for backend code have no value when editing a frontend component. Loading everything always is the lazy approach that degrades adherence.
-
-### Prompt Engineering vs. Context Engineering
-
-These terms are often conflated. The distinction matters:
-
-| Dimension | Prompt Engineering | Context Engineering |
-|-----------|-------------------|---------------------|
-| Scope | One request | Entire session or system |
-| Duration | Single interaction | Persistent across interactions |
-| Effort | Per-request crafting | Upfront system design |
-| Scale | Individual | Team-wide or organization-wide |
-| Artifact | A prompt string | A configuration system |
-
-**Prompt engineering** is about crafting the right question for one task. **Context engineering** is the system that ensures Claude has the right background knowledge before any task begins. You can have excellent prompts on top of poor context engineering and still get mediocre results — because the model lacks the structural understanding of your project, conventions, and constraints.
-
-A practical analogy: prompt engineering is writing a good email to a contractor. Context engineering is the onboarding process, code style guide, architecture documentation, and team norms that ensure the contractor understands the project before reading a single email.
-
-### Context Engineering vs. Context Optimization
-
-Both terms appear in the literature and are sometimes used interchangeably. They are not the same.
-
-| Dimension | Context Engineering | Context Optimization |
-|-----------|--------------------|--------------------|
-| Core question | What information should be in context? | What is the minimum set of high-signal tokens that maximizes the outcome? |
-| Goal | Completeness and correctness | Efficiency and signal density |
-| Method | Identify what the model needs to know | Remove everything it does not need to know |
-| Failure mode | Missing critical information | Overshooting — too much irrelevant content |
-| Output | A context system | A trimmed, high-fidelity prompt or config |
-
-A useful mental model: context engineering answers "what to include," context optimization answers "what to cut."
-
-In practice, you do both. The engineering pass builds the complete picture: architecture decisions, conventions, constraints. The optimization pass prunes it: removes redundancy, compresses verbose rules, archives outdated entries, path-scopes subsystem-specific content. The reduction techniques in Section 8 are the optimization pass.
-
-**Synthesis vs. reasoning**
-
-A related distinction worth naming explicitly:
-
-- **Context synthesis** is stateful and iterative. It accumulates knowledge across sessions, updates when conventions change, and reflects project history. CLAUDE.md is context synthesis.
-- **Reasoning** is ephemeral and disposable. Each inference step uses the context to produce an output, then discards the intermediate state. Claude's chain-of-thought is reasoning.
-
-Treating reasoning artifacts (intermediate thoughts, debug traces, error outputs) as context synthesis material is a common mistake. It pollutes the context with ephemeral state and accelerates context rot. Separate what should persist (synthesis) from what should be discarded (reasoning noise).
-
-### Why It Matters
-
-LLMs are context-window computers. The quality of output is bounded by the quality of input. This is not a soft claim — it has a hard technical basis:
-
-1. The model has no persistent memory between sessions (without explicit tooling). Every session starts from zero unless context is deliberately provided.
-2. The model cannot infer unstated conventions. If you want TypeScript interfaces instead of `type` aliases, that must be stated. If you want errors logged before being thrown, that must be stated.
-3. Models are sensitive to instruction placement and framing. An instruction buried in line 400 of a 500-line CLAUDE.md is less likely to be followed than one in the first 50 lines.
-
-Teams that invest in context engineering consistently report fewer revision cycles, better adherence to conventions, and more predictable outputs. The investment is front-loaded (building the system), but the returns compound across every interaction.
-
-A useful diagnostic reframe: **most AI output failures are context failures, not model failures.** When Claude generates a generic response, ignores a convention, or produces code that doesn't match your stack, the model is almost never broken — the context it received was incomplete, contradictory, or missing the right information at the right time. This reframe shifts troubleshooting from "the AI is bad at this" to "what is missing from the context?"
-
-### The Three Layers
-
-Context engineering in Claude Code operates across three distinct layers:
-
-| Layer | Mechanism | Scope | When Loaded |
-|-------|-----------|-------|-------------|
-| **Global config** | `~/.claude/CLAUDE.md` | All projects | Always |
-| **Project config** | `./CLAUDE.md` + path-scoped modules | Current project | Per session |
-| **Session** | Inline instructions, `/add`, flags | Current session only | Runtime |
-
-Each layer has different tradeoffs. Global config is always-on but cannot reference project-specific details. Session instructions are flexible but ephemeral. Project config is the workhorse: structured, versioned, reviewable.
-
-Good context engineering means putting each piece of information in the right layer — not cramming everything into one file, and not leaving critical knowledge in the session layer where it evaporates after every conversation.
-
-### Static vs. Dynamic Context
-
-The three-layer system above is *static context* — configuration files that are assembled before a session begins and remain stable throughout. Claude Code is primarily a static context system, which is why CLAUDE.md structure and path-scoping matter so much.
-
-As you move toward agent workflows, a second category appears: *dynamic context*, assembled at inference time as the agent operates.
-
-| Type | How assembled | Examples in Claude Code |
-|------|--------------|-------------------------|
-| **Static** | Before session, from files | CLAUDE.md, path-scoped modules, skills |
-| **Dynamic** | At runtime, from tools | Tool outputs, file reads, web fetches, MCP data |
-
-In practice, every Claude Code session uses both. The static context (your configuration) sets the behavioral envelope; the dynamic context (files Claude reads, tool results it processes) provides the specific information for each task. Context engineering covers both, but the failure modes differ: static context problems manifest as consistent convention violations; dynamic context problems manifest as Claude acting on stale or incomplete information mid-task.
-
-For teams building automated pipelines and agents, Anthropic's September 2025 engineering post ["Effective context engineering for AI agents"](https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents) covers the dynamic side in depth.
-
-### Why Context Rot is Structural, Not Accidental
-
-Transformer models attend to all tokens pairwise. That means the number of attention relationships in a context window grows as n², not n. Double the context length and you quadruple the number of relationships the model must weigh. At 200K tokens, this means billions of pairwise computations, and the model's attention becomes increasingly diffuse.
-
-This is not a bug that future models will eliminate. It is a consequence of the architecture itself. Context rot, the progressive degradation of instruction adherence as context grows, is structurally baked in. The implication: you cannot solve context rot by relying on a larger context window. You solve it by keeping context lean and loading information just in time.
-
-**Just-in-time retrieval vs. pre-loading**
-
-There are two strategies for giving Claude the information it needs:
-
-| Strategy | Mechanism | When to use |
-|----------|-----------|-------------|
-| **Pre-loading (RAG)** | Retrieve and inject all potentially relevant context before inference | Known, stable context requirements |
-| **Just-in-time retrieval** | Retrieve context on demand, exactly when and only when needed | Dynamic, task-specific context |
-
-Pre-loading is the familiar RAG pattern: build a retrieval index, pull relevant chunks into the prompt upfront. It works when you know in advance what information the model will need.
-
-Just-in-time retrieval is more demanding to implement but more effective at scale: the model retrieves information dynamically as the task demands it, using tool calls, MCP servers, or file reads. Only the information needed for the current step is in context.
-
-Claude Code's behavior reflects this pattern: CLAUDE.md loads upfront (pre-loaded, always relevant), while file contents and tool results are retrieved at inference time via `read_file`, `glob`, `grep`, and MCP calls. The glob and grep tools are the JIT retrieval layer. They put specific file contents into context only when a task touches those files.
-
-**Memory tool (beta)**
-
-As of Claude Sonnet 4.5, Anthropic released a Memory tool in public beta. It allows Claude to store and retrieve persistent facts across sessions without manual CLAUDE.md management. The tool maintains a structured knowledge store that Claude queries when relevant context is needed.
-
-This is distinct from CLAUDE.md: CLAUDE.md is static configuration (always loaded), while the Memory tool is dynamic retrieval (queried on demand). For teams building agents, the Memory tool reduces the need to manually encode knowledge in config files.
-
-**Chain-of-thought in long tasks**
-
-Chain-of-thought (CoT) prompting improves model reasoning on isolated tasks. However, Anthropic's engineering data shows it can hurt performance in long agentic tasks. The mechanism: CoT generates additional tokens, which extend context length, which accelerates context rot for subsequent steps. On tasks spanning 20+ tool calls, this effect is measurable.
-
-The practical rule: use CoT for complex isolated reasoning steps, not as a blanket strategy for agentic workflows. In long runs, prefer compressed intermediate outputs over extended reasoning traces.
+1. [什么是上下文工程](#1-what-is-context-engineering)
+2. [上下文预算](#2-the-context-budget)
+3. [配置层级](#3-configuration-hierarchy)
+4. [模块化架构](#4-modular-architecture)
+5. [团队配置组装](#5-team-assembly)
+6. [上下文生命周期](#6-context-lifecycle)
+7. [质量度量](#7-quality-measurement)
+8. [上下文缩减技术](#8-context-reduction-techniques)
+9. [成熟度评估](#9-maturity-assessment)
+10. [Token 审计工作流](#10-token-audit-workflow)
+11. [研究模式](#11-research-patterns-what-the-literature-shows)
+12. [注意力机制与可靠性](#17-attention-mechanics--reliability)
+13. [Token 压缩工具](#18-token-compression-tools)
 
 ---
 
-## 2. The Context Budget
+## 1. 什么是上下文工程
 
-### Token Math
+### 定义
 
-A concrete baseline for a mid-size project:
+Andrej Karpathy 创造了这个说法：**"上下文工程是一门艺术：在正确的时间，将正确的信息填入上下文窗口。"**
 
-| Source | Typical Token Range |
-|--------|---------------------|
-| Global CLAUDE.md | 1,000 – 3,000 tokens |
-| Project CLAUDE.md (root) | 2,000 – 8,000 tokens |
-| Path-scoped modules (all active) | 1,000 – 5,000 tokens |
-| Imported skills / commands | 500 – 3,000 tokens |
-| **Total always-on context** | **~5,000 – 20,000 tokens** |
+这句话包含三个不那么显而易见的要求：
 
-Claude Sonnet 4.6 has a 200K token context window. That means even a large always-on configuration budget (20K tokens) occupies about 10% of the window — leaving 180K tokens for actual work: code files, conversation history, tool outputs.
+- **填充**：上下文窗口应当经过有意识的填充，而非随机堆砌。大部分留空是浪费模型能力；杂乱塞满则浪费 Token 并降低输出质量。
+- **正确的信息**：并非所有信息都同等重要。架构决策比代码风格偏好更有价值。负面约束（"永远不要将原始 SQL 错误返回给客户端"）比宏观目标（"写干净的代码"）更具可操作性。
+- **正确的时间**：针对后端代码的路径范围规则，在编辑前端组件时毫无价值。凡事都加载的懒惰做法会降低遵循质量。
 
-The practical rule: **always-on context should stay below 5% of the context window.** Beyond that, you are displacing actual task content, which matters more per token than standing instructions.
+### 提示工程 vs. 上下文工程
 
-### The 150-Instruction Ceiling
+这两个术语经常被混淆，但区别很重要：
 
-Empirical observation from teams running large CLAUDE.md files: beyond approximately 150 distinct rules, models begin selectively ignoring some of them. This is not a hard cutoff — it depends on rule complexity, overlap, and placement — but it is a reliable signal that more rules does not equal better adherence.
+| 维度 | 提示工程 | 上下文工程 |
+|------|---------|-----------|
+| 范围 | 单次请求 | 整个会话或系统 |
+| 持续时间 | 单次交互 | 跨交互持久存在 |
+| 投入方式 | 逐请求设计 | 前期系统设计 |
+| 规模 | 个人 | 团队或组织级别 |
+| 产出物 | 一个提示字符串 | 一个配置系统 |
 
-The mechanism is attention diffusion: when a prompt contains hundreds of potentially relevant constraints, the model's attention is split across them. High-salience rules (recent, strongly worded, placed early) crowd out lower-salience ones.
+**提示工程**是为单一任务设计正确的问题。**上下文工程**是确保 Claude 在任何任务开始前就具备正确背景知识的系统。即使提示写得再好，底层上下文工程薄弱，结果依然平庸——因为模型缺乏对项目结构、规范和约束的整体理解。
 
-HumanLayer's production data shows teams with structured context — fewer, more specific rules, organized hierarchically — see 15-25% better adherence than teams with undifferentiated long rule lists.
+一个实用的类比：提示工程是给承包商写一封好邮件；上下文工程是确保承包商在读第一封邮件之前就理解项目的入职流程、代码风格指南、架构文档和团队规范。
 
-Implication: **rule quality beats rule quantity.** Twenty specific, actionable rules outperform 200 generic aspirational ones.
+### 上下文工程 vs. 上下文优化
 
-### Adherence Degradation by File Size
+两个术语在文献中都有出现，有时可以互换，但它们并不相同。
+
+| 维度 | 上下文工程 | 上下文优化 |
+|------|-----------|-----------|
+| 核心问题 | 哪些信息应该在上下文中？ | 能最大化结果的最小高信号 Token 集是什么？ |
+| 目标 | 完整性与正确性 | 效率与信号密度 |
+| 方法 | 识别模型需要知道什么 | 删除它不需要知道的内容 |
+| 失败模式 | 遗漏关键信息 | 过度填充——太多无关内容 |
+| 产出物 | 一个上下文系统 | 一个经过精简的高保真提示或配置 |
+
+一个有用的心智模型：上下文工程回答"包含什么"，上下文优化回答"删除什么"。
+
+实践中两者都要做。工程阶段构建完整图景：架构决策、规范、约束。优化阶段进行修剪：去除冗余、压缩冗长规则、归档过时条目、将子系统特定内容限定路径范围。第 8 节中的缩减技术就是优化阶段。
+
+**综合 vs. 推理**
+
+一个值得明确提出的相关区别：
+
+- **上下文综合**是有状态的、迭代的。它跨会话积累知识，在规范变更时更新，并反映项目历史。CLAUDE.md 就是上下文综合。
+- **推理**是短暂的、可丢弃的。每个推理步骤使用上下文产生输出，然后丢弃中间状态。Claude 的链式思维就是推理。
+
+将推理产物（中间想法、调试痕迹、错误输出）当作上下文综合材料是一个常见错误。这会用短暂状态污染上下文，加速上下文退化。要分清什么应当持久保存（综合），什么应当丢弃（推理噪声）。
+
+### 为什么重要
+
+大语言模型本质上是上下文窗口计算机。输出质量受限于输入质量。这不是软性说法——它有硬性技术依据：
+
+1. 模型在会话之间没有持久记忆（不借助专门工具的话）。除非有意提供上下文，每次会话都从零开始。
+2. 模型无法推断未明确说明的规范。如果你想要 TypeScript 接口而非 `type` 别名，必须明确说明。如果你想在抛出错误前先记录日志，也必须明确说明。
+3. 模型对指令的位置和表述方式很敏感。一条埋在 500 行 CLAUDE.md 第 400 行的指令，比前 50 行的指令被遵循的可能性要低得多。
+
+投入上下文工程的团队普遍反映修改轮次减少、规范遵循更好、输出更可预测。投入是前期的（构建系统），但回报在每次交互中复利积累。
+
+一个有用的诊断视角转换：**大多数 AI 输出失败是上下文失败，而非模型失败。** 当 Claude 生成泛泛回应、忽视规范或产出不匹配你的技术栈的代码时，模型几乎从来都没有问题——是它接收到的上下文不完整、相互矛盾，或者在错误时机缺少正确信息。这一视角转换将故障排查从"AI 不擅长这个"转变为"上下文中缺少什么？"
+
+### 三个层次
+
+Claude Code 中的上下文工程在三个不同层次上运作：
+
+| 层次 | 机制 | 范围 | 加载时机 |
+|------|------|------|---------|
+| **全局配置** | `~/.claude/CLAUDE.md` | 所有项目 | 始终 |
+| **项目配置** | `./CLAUDE.md` + 路径范围模块 | 当前项目 | 每次会话 |
+| **会话** | 内联指令、`/add`、标志位 | 仅当前会话 | 运行时 |
+
+每个层次都有不同的权衡。全局配置始终开启，但无法引用项目特定细节。会话指令灵活但短暂。项目配置是主力：结构化、可版本控制、可审查。
+
+良好的上下文工程意味着将每条信息放在正确的层次——不是把所有东西塞进一个文件，也不是将关键知识留在会话层次，每次对话结束后就消失殆尽。
+
+### 静态上下文 vs. 动态上下文
+
+上述三层系统是*静态上下文*——在会话开始前组装的配置文件，在整个会话过程中保持稳定。Claude Code 主要是一个静态上下文系统，这也是为什么 CLAUDE.md 的结构和路径范围如此重要。
+
+随着向智能体工作流演进，第二类出现了：*动态上下文*，在智能体运行时于推理阶段动态组装。
+
+| 类型 | 组装方式 | Claude Code 中的示例 |
+|------|---------|---------------------|
+| **静态** | 会话前从文件加载 | CLAUDE.md、路径范围模块、技能文件 |
+| **动态** | 运行时通过工具获取 | 工具调用输出、文件读取、网络请求、MCP 数据 |
+
+实践中，每次 Claude Code 会话都同时使用两者。静态上下文（你的配置）设定行为边界；动态上下文（Claude 读取的文件、工具结果）为每个任务提供具体信息。上下文工程涵盖两者，但失败模式不同：静态上下文问题表现为持续性的规范违反；动态上下文问题表现为 Claude 在任务中途基于过时或不完整信息行动。
+
+对于构建自动化流水线和智能体的团队，Anthropic 2025 年 9 月的工程博文 ["Effective context engineering for AI agents"](https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents) 深入介绍了动态上下文侧。
+
+### 为什么上下文退化是结构性的，而非偶然的
+
+Transformer 模型对所有 Token 进行两两注意力计算。这意味着上下文窗口中注意力关系的数量以 n² 增长，而非线性增长。上下文长度翻倍，关系数量翻四倍。在 20 万 Token 时，这意味着数十亿次两两计算，模型的注意力变得越来越分散。
+
+这不是未来模型会消除的 bug，而是架构本身的必然结果。上下文退化——随着上下文增长，指令遵循质量逐渐下降——在结构上是内置的。其含义：你无法靠更大的上下文窗口解决上下文退化问题。解决方案是保持上下文精简，并在需要时才加载信息。
+
+**即时检索 vs. 预加载**
+
+有两种策略为 Claude 提供所需信息：
+
+| 策略 | 机制 | 适用场景 |
+|------|------|---------|
+| **预加载（RAG）** | 在推理前检索并注入所有可能相关的上下文 | 已知的、稳定的上下文需求 |
+| **即时检索** | 按需检索上下文，仅在需要时才检索 | 动态的、任务特定的上下文 |
+
+预加载是熟悉的 RAG（检索增强生成）模式：构建检索索引，提前将相关片段注入提示。当你事先知道模型需要什么信息时，这种方式有效。
+
+即时检索实现起来更复杂，但在规模上更有效：模型使用工具调用、MCP 服务器或文件读取，在任务需要时动态检索信息。上下文中只有当前步骤所需的信息。
+
+Claude Code 的行为体现了这一模式：CLAUDE.md 提前加载（预加载，始终相关），而文件内容和工具结果则在推理时通过 `read_file`、`glob`、`grep` 和 MCP 调用即时检索。glob 和 grep 工具是即时检索层——只有在任务涉及某些文件时，才将这些文件的内容放入上下文。
+
+**Memory 工具（测试版）**
+
+从 Claude Sonnet 4.5 开始，Anthropic 发布了公开测试版的 Memory 工具。它允许 Claude 跨会话存储和检索持久性事实，无需手动管理 CLAUDE.md。该工具维护一个结构化知识库，Claude 在需要相关上下文时进行查询。
+
+这与 CLAUDE.md 不同：CLAUDE.md 是静态配置（始终加载），而 Memory 工具是动态检索（按需查询）。对于构建智能体的团队，Memory 工具减少了在配置文件中手动编码知识的需求。
+
+**长任务中的链式思维**
+
+链式思维（CoT）提示能改善孤立任务的模型推理能力。然而，Anthropic 的工程数据表明它可能在长智能体循环任务中降低性能。原因：CoT 会生成额外 Token，延长上下文，从而加速后续步骤的上下文退化。在跨越 20+ 次工具调用的任务中，这一效应是可测量的。
+
+实践规则：将 CoT 用于复杂的孤立推理步骤，而非作为智能体工作流的通用策略。在长时运行中，优先使用压缩后的中间输出，而非延伸的推理链。
+
+---
+
+## 2. 上下文预算
+
+### Token 数学
+
+一个中等规模项目的具体基准：
+
+| 来源 | 典型 Token 范围 |
+|------|---------------|
+| 全局 CLAUDE.md | 1,000 – 3,000 Token |
+| 项目 CLAUDE.md（根目录）| 2,000 – 8,000 Token |
+| 路径范围模块（所有已激活）| 1,000 – 5,000 Token |
+| 导入的技能/命令 | 500 – 3,000 Token |
+| **始终开启的上下文总计** | **~5,000 – 20,000 Token** |
+
+Claude Sonnet 4.6 有 20 万 Token 的上下文窗口。这意味着即使是较大的始终开启配置预算（2 万 Token）也只占窗口的约 10%——剩余 18 万 Token 可用于实际工作：代码文件、对话历史、工具输出。
+
+实践规则：**始终开启的上下文应保持在上下文窗口的 5% 以下。** 超过这个比例，你在占用实际任务内容的空间，而任务内容每 Token 的价值远高于常驻指令。
+
+### 150 条指令上限
+
+来自运行大型 CLAUDE.md 文件的团队的经验性观察：超过约 150 条独立规则后，模型开始选择性忽略其中一些。这不是硬性截断——它取决于规则复杂度、重叠程度和位置——但这是一个可靠的信号：更多规则并不等于更好的遵循。
+
+机制是注意力分散：当提示包含数百个潜在相关的约束时，模型的注意力会被分散。高显著性规则（位置靠前、措辞强烈、近期添加的）会挤占低显著性规则。
+
+HumanLayer 的生产数据显示，使用结构化上下文的团队——规则更少、更具体、层级组织——比使用无差别长规则列表的团队有 15-25% 更好的遵循率。
+
+含义：**规则质量胜过规则数量。** 二十条具体可操作的规则胜过两百条泛泛的愿景性规则。
+
+### 按文件大小估算遵循率下降趋势
 
 ```
-Lines in CLAUDE.md    Adherence (estimated)
+CLAUDE.md 行数        遵循率（估算）
 ─────────────────     ─────────────────────
 1 – 100               ~95%
 100 – 200             ~88%
 200 – 400             ~75%
 400 – 600             ~60%
-600+                  ~45% and falling
+600+                  ~45% 且持续下降
 ```
 
-These are estimated baselines, not guarantees. Path-scoping and modular architecture can maintain higher adherence at larger total rule counts by ensuring that only relevant rules are in context at any given time.
+这些是估算基准，不是保证值。路径范围划定和模块化架构可以在更大的规则总量下保持更高的遵循率，因为它确保在任何给定时刻上下文中只有相关规则。
 
-### Signs of Context Overload
+### 上下文过载的迹象
 
-When always-on context becomes too large or too noisy, you see predictable failure modes:
+当始终开启的上下文过大或过于嘈杂时，你会看到可预测的失败模式：
 
-- **Rule silencing**: Claude follows 80% of conventions consistently but ignores specific rules that should apply.
-- **Contradictory behavior**: Claude applies a rule in some files but not others, or applies contradictory rules depending on phrasing.
-- **Slow first responses**: The model spends more time processing a large context before generating output (observable in longer latency for simple tasks).
-- **Generic outputs**: Instead of applying project-specific patterns, Claude falls back to generic best practices — a sign that project context is not being retained.
+- **规则被静默忽略**：Claude 持续遵循 80% 的规范，但忽略本应适用的特定规则。
+- **行为矛盾**：Claude 在某些文件中应用某条规则，在其他文件中却不应用；或根据措辞应用相互矛盾的规则。
+- **首次响应缓慢**：模型在生成输出前需要更多时间处理大型上下文（在简单任务中表现为更长的延迟）。
+- **泛泛输出**：Claude 退回到通用最佳实践，而非应用项目特定模式——这是项目上下文未被保留的信号。
 
-When you see these patterns, the diagnostic is: run a context audit (see Section 7), not more instructions.
+当你看到这些模式时，诊断方向是：进行上下文审计（参见第 7 节），而不是添加更多指令。
 
-### MECW: Maximum Effective Context Window
+### MECW：最大有效上下文窗口
 
-The advertised context window and the effective context window are not the same number. Enterprise context engineering deployments consistently find that meaningful accuracy degradation begins before the stated limit is reached. The commonly cited figure from production experience: approximately 92% of the advertised limit.
+宣传的上下文窗口与实际有效的上下文窗口并不相同。企业级上下文工程部署持续发现，在达到官方限制之前，有意义的准确性下降就已开始。来自生产经验的常见数据：约为宣传限制的 92%。
 
-For Claude Opus 4 (200K advertised), this puts the practical ceiling at approximately 185K tokens before accuracy measurably degrades on complex reasoning tasks. The mechanism is the n² attention scaling described in Section 1 (Why Context Rot is Structural): as the context grows, attention operations scale quadratically, and mid-window positions receive diminishing effective weight.
+对于 Claude Opus 4（宣传 20 万 Token），这将实际上限设定在约 18.5 万 Token，超过这个值，复杂推理任务的准确性会出现可测量的下降。机制是第 1 节（为什么上下文退化是结构性的）描述的 n² 注意力缩放：随着上下文增长，注意力操作呈平方级缩放，窗口中间位置的有效权重递减。
 
-Context rot degrades accuracy by 30%+ in mid-window positions under heavy context load. The practical implication: a 128K-token context window with high-quality, well-maintained content outperforms a 1M-token window with stale, accumulated content. The 1M window does not eliminate the problem; it delays it while increasing the cost of each request.
+在重度上下文负载下，上下文退化在中间窗口位置会将准确性降低 30% 以上。实践含义：一个 12.8 万 Token、内容优质且维护良好的上下文窗口，胜过一个 100 万 Token、充斥过时堆积内容的窗口。100 万 Token 的窗口并不消除问题，只是推迟它，同时增加每次请求的成本。
 
-The question "should I just use the 1M context window?" is really a question about signal-to-noise, not capability. A larger window that accumulates tool output noise, expired conversation turns, and redundant instructions is not more powerful than a smaller, curated one. It is just more expensive and slower.
+"我应该直接用 100 万 Token 的上下文窗口吗？"这个问题实质上是关于信噪比，而非能力。一个堆积了工具输出噪声、过期对话轮次和冗余指令的大窗口，并不比一个精心维护的小窗口更强大，只是更贵、更慢。
 
-**Practical MECW targets**:
+**实用 MECW 目标**：
 
-| Window | Advertised | Practical ceiling (92%) | When rot degrades accuracy |
-|--------|-----------|------------------------|--------------------------|
+| 窗口 | 宣传值 | 实际上限（92%） | 退化开始影响准确性的位置 |
+|------|--------|----------------|------------------------|
 | Claude Sonnet 4.6 | 200K | ~184K | ~150K+ |
 | Claude Opus 4 | 200K | ~185K | ~150K+ |
 
-These are engineering estimates, not guaranteed values. Treat them as planning figures: if your session regularly approaches 150K tokens, it is time to implement compaction, graduated offloading, or path-scoping before accuracy becomes a problem, not after.
+这些是工程估算值，不是保证值。将其作为规划数字：如果你的会话经常接近 15 万 Token，应在准确性成为问题之前就实施压缩、渐进式卸载或路径范围划定，而不是等到问题出现后才处理。
 
-### Path-Scoping and Budget Efficiency
+### 路径范围与预算效率
 
-Path-scoping is the most effective single technique for reducing always-on context. Instead of loading all rules for all parts of the codebase, you load only the rules relevant to the files currently in context.
+路径范围划定是减少始终开启上下文最有效的单项技术。它不是为整个代码库加载所有规则，而是只加载与当前上下文中的文件相关的规则。
 
-A typical project without path-scoping:
-
-```
-Always-on: root CLAUDE.md with backend + frontend + database + API rules = 8,000 tokens
-```
-
-The same project with path-scoping:
+没有路径范围划定的典型项目：
 
 ```
-Always-on: root CLAUDE.md with shared rules = 2,000 tokens
-Active when in src/api/: api module = +1,500 tokens
-Active when in src/components/: frontend module = +1,200 tokens
-Active when in prisma/: database module = +800 tokens
+始终开启：包含后端 + 前端 + 数据库 + API 规则的根 CLAUDE.md = 8,000 Token
 ```
 
-Result: 40-50% reduction in always-on context, with no loss of coverage. Each subsystem gets its full rule set, but only when working in that subsystem.
+采用路径范围划定的相同项目：
+
+```
+始终开启：包含共享规则的根 CLAUDE.md = 2,000 Token
+在 src/api/ 中工作时激活：api 模块 = +1,500 Token
+在 src/components/ 中工作时激活：frontend 模块 = +1,200 Token
+在 prisma/ 中工作时激活：database 模块 = +800 Token
+```
+
+结果：始终开启上下文减少 40-50%，覆盖范围没有任何损失。每个子系统在工作于该子系统时获得完整的规则集。
 
 ---
 
-## 3. Configuration Hierarchy
+## 3. 配置层级
 
-### The Three-Layer Stack
+### 三层架构
 
 ```
 ┌──────────────────────────────────────────────┐
-│  Global (~/.claude/CLAUDE.md)                │
-│  Identity, tone, universal tools, cross-      │
-│  project conventions                          │
+│  全局（~/.claude/CLAUDE.md）                  │
+│  身份标识、语气、通用工具、跨项目规范          │
 ├──────────────────────────────────────────────┤
-│  Project (./CLAUDE.md + path modules)         │
-│  Architecture decisions, stack conventions,   │
-│  team rules, deployment procedures            │
+│  项目（./CLAUDE.md + 路径模块）               │
+│  架构决策、技术栈规范、团队规则、部署流程      │
 ├──────────────────────────────────────────────┤
-│  Session (inline instructions, flags)         │
-│  Ad-hoc overrides, experiment constraints,    │
-│  one-off task parameters                      │
+│  会话（内联指令、标志位）                     │
+│  临时覆盖、实验约束、一次性任务参数            │
 └──────────────────────────────────────────────┘
 ```
 
-Later layers override earlier ones. A session instruction can override a project rule; a project rule can override a global default. This gives you escape hatches without requiring permanent changes to shared configuration.
+后面的层次覆盖前面的层次。会话指令可以覆盖项目规则；项目规则可以覆盖全局默认值。这为你提供了逃生通道，无需永久修改共享配置。
 
-### Global Configuration
+### 全局配置
 
-**Location**: `~/.claude/CLAUDE.md`
+**位置**：`~/.claude/CLAUDE.md`
 
-**What belongs here**:
-- Identity and communication style preferences
-- Universal tool preferences (RTK, preferred CLI tools)
-- Cross-project coding conventions (commit message format, PR style)
-- Security constraints that apply everywhere
-- Tone and output format defaults
+**适合放这里的内容**：
+- 身份标识和沟通风格偏好
+- 通用工具偏好（RTK、偏好的 CLI 工具）
+- 跨项目编码规范（提交消息格式、PR 风格）
+- 适用于所有地方的安全约束
+- 语气和输出格式默认值
 
-**What does not belong here**:
-- Project-specific architecture decisions
-- Stack-specific rules (React hooks, Prisma patterns)
-- Deployment or environment specifics
-- Anything that changes per project
+**不适合放这里的内容**：
+- 项目特定的架构决策
+- 技术栈特定的规则（React hooks、Prisma 模式）
+- 部署或环境细节
+- 随项目变化的任何内容
 
-**Size target**: Keep global configuration under 200 lines. This is your always-on overhead for every session in every project. Bloating it hurts all projects equally.
+**大小目标**：全局配置保持在 200 行以内。这是你在每个项目的每次会话中都始终开启的开销。把它搞大会对所有项目造成同等损害。
 
 ```markdown
-# Example: Minimal effective global CLAUDE.md
+# 示例：简洁有效的全局 CLAUDE.md
 
-## Communication
-- Respond in the same language the user writes in
-- Prefer direct answers over preamble
-- No em dashes in written output
+## 沟通
+- 用用户写作时使用的语言回应
+- 直接给出答案，不要冗长铺垫
+- 书面输出中不使用破折号
 
 ## Git
-- Commit messages: imperative mood, <72 chars subject line
-- Never commit without being asked
+- 提交消息：祈使语气，主题行不超过 72 字符
+- 未经要求不提交
 
-## Code Style
-- Prefer explicit error handling over silent failure
-- Add TODO comments only when referencing a tracked issue
+## 代码风格
+- 偏好显式错误处理，而非静默失败
+- 仅在引用已追踪 issue 时添加 TODO 注释
 ```
 
-### Project Configuration
+### 项目配置
 
-**Location**: `./CLAUDE.md` (project root)
+**位置**：`./CLAUDE.md`（项目根目录）
 
-**What belongs here**:
-- Technology stack and versions in use
-- Architecture decisions and their rationale
-- Team conventions specific to this codebase
-- File organization patterns
-- Testing requirements and coverage targets
-- Security constraints specific to this project
-- Path-scope imports for subsystem modules
+**适合放这里的内容**：
+- 使用的技术栈和版本
+- 架构决策及其原因
+- 本代码库特有的团队规范
+- 文件组织模式
+- 测试要求和覆盖率目标
+- 本项目特有的安全约束
+- 子系统模块的路径范围导入
 
-**Structure pattern**:
+**结构模式**：
 
 ```markdown
-# Project: [Name]
+# 项目：[名称]
 
-## Stack
-- Language: TypeScript 5.3
-- Framework: Next.js 14 (App Router)
-- Database: PostgreSQL 16 via Prisma
-- Testing: Vitest + React Testing Library
+## 技术栈
+- 语言：TypeScript 5.3
+- 框架：Next.js 14（App Router）
+- 数据库：通过 Prisma 使用 PostgreSQL 16
+- 测试：Vitest + React Testing Library
 
-## Architecture
-- Server Components by default; use `"use client"` only when interactivity requires it
-- API routes in /app/api; no business logic in route handlers
-- Business logic in /lib/services; each service is a plain function module
+## 架构
+- 默认使用 Server Components；仅在需要交互性时使用 `"use client"`
+- API 路由放在 /app/api；路由处理器中不含业务逻辑
+- 业务逻辑放在 /lib/services；每个 service 是一个普通函数模块
 
-## Conventions
-- File naming: kebab-case for files, PascalCase for React components
-- Error handling: wrap service calls in Result<T, E> pattern (see lib/result.ts)
-- Never expose raw database IDs in API responses; use UUIDs
+## 规范
+- 文件命名：文件用 kebab-case，React 组件用 PascalCase
+- 错误处理：将 service 调用包裹在 Result<T, E> 模式中（见 lib/result.ts）
+- API 响应中不暴露原始数据库 ID；使用 UUID
 
-## Path-Scoped Modules
+## 路径范围模块
 @src/api/CLAUDE-api.md
 @src/components/CLAUDE-components.md
 @prisma/CLAUDE-db.md
 ```
 
-**The Goldilocks problem: altitude**
+**金发女孩问题：抽象层级**
 
-Two failure modes appear consistently in production CLAUDE.md files:
+生产环境 CLAUDE.md 文件中持续出现两种失败模式：
 
-**Too vague**: "Write clean code," "Follow best practices," "Keep functions small." These instructions pass through the model without changing behavior. The model already has a concept of "clean code" that predates your instruction, and it defaults to that concept, which may not match what your project needs. Aspirational rules are ignored.
+**过于模糊**："写干净的代码"、"遵循最佳实践"、"保持函数短小"。这些指令对模型没有任何影响。模型对"干净的代码"有自己的概念，早在你的指令存在之前就有了，它会默认使用那个概念，而那个概念可能与你的项目需求不符。愿景性规则会被忽略。
 
-**Too granular**: "Use 2-space indentation," "Add a blank line after import blocks," "Prefix private methods with underscore." These are linter rules, not cognitive decisions. They belong in `.eslintrc`, `.editorconfig`, or `prettier.config.js`, enforced deterministically by tools, not probabilistically by an LLM. Putting them in CLAUDE.md wastes context budget and produces unreliable enforcement.
+**过于细粒度**："使用 2 空格缩进"、"导入块后加空行"、"私有方法名以下划线开头"。这些是 linter 规则，不是认知决策。它们应该放在 `.eslintrc`、`.editorconfig` 或 `prettier.config.js` 中，由工具确定性地执行，而非由大语言模型概率性地遵循。放在 CLAUDE.md 中浪费上下文预算，且执行效果不可靠。
 
-**The productive altitude**: Capture decisions the model would make differently without the instruction. The test is: "Would Claude, with no project context, reasonably do something different here?" If yes, the rule belongs in CLAUDE.md. If the answer is aspirational, cut it. If a linter enforces it, cut it.
+**有效的抽象层级**：捕捉如果没有该指令，模型会做出不同决策的情况。测试标准是："Claude 在没有项目上下文的情况下，这里是否会合理地做一些不同的事情？"如果是，则这条规则属于 CLAUDE.md。如果答案是愿景性的，删掉它。如果 linter 已经执行了它，也删掉它。
 
-| Altitude | Example | Verdict |
-|----------|---------|---------|
-| Too vague | "Write clean code" | Cut — model ignores, no behavior change |
-| Too vague | "Follow best practices for security" | Cut — replace with specific constraints |
-| Productive | "Never expose raw database IDs in API responses; use UUIDs" | Keep — specific, model would default otherwise |
-| Productive | "Use the Result<T, E> pattern for service functions, not try/catch" | Keep — specific, overrides a common default |
-| Too granular | "Use 2-space indentation" | Cut — delegate to Prettier |
-| Too granular | "Add JSDoc comments to every function" | Cut — delegate to a lint rule |
+| 层级 | 示例 | 判定 |
+|------|------|------|
+| 过于模糊 | "写干净的代码" | 删除——模型会忽略，无行为变化 |
+| 过于模糊 | "遵循安全最佳实践" | 删除——用具体约束替代 |
+| 有效 | "API 响应中永不暴露原始数据库 ID；使用 UUID" | 保留——具体，否则模型会采用其他默认值 |
+| 有效 | "service 函数使用 Result<T, E> 模式，而非 try/catch" | 保留——具体，覆盖了常见默认值 |
+| 过于细粒度 | "使用 2 空格缩进" | 删除——交给 Prettier |
+| 过于细粒度 | "每个函数都加 JSDoc 注释" | 删除——交给 lint 规则 |
 
-The architecture choices, quality standards, and explicit "what not to do and why" rules are the productive altitude. The aspirational and the mechanical are noise.
+架构选择、质量标准和"不要做什么及其原因"的明确规则是有效层级。愿景性的和机械性的都是噪声。
 
-### Session Configuration
+### 会话配置
 
-**Mechanism**: Inline instructions, `/add-dir`, or system prompt flags for the current session.
+**机制**：当前会话的内联指令、`/add-dir` 或系统提示标志位。
 
-**What belongs here**:
-- One-off task constraints ("For this refactor, do not change the public API surface")
-- Experiment parameters ("Use the new error format I'm testing in this file")
-- Debug constraints ("Log every tool call for this session")
-- Temporary overrides of project conventions
+**适合放这里的内容**：
+- 一次性任务约束（"本次重构中，不要更改公共 API 接口"）
+- 实验参数（"在这个文件中使用我正在测试的新错误格式"）
+- 调试约束（"本次会话中记录每次工具调用"）
+- 项目规范的临时覆盖
 
-Session instructions are not persisted. They evaporate when the session ends. Any instruction that you find yourself repeating across sessions belongs in the project config, not the session layer.
+会话指令不会持久化。会话结束时就消失了。任何发现自己在多次会话中重复使用的指令，都应该放到项目配置中，而不是会话层次。
 
-### Decision Tree: Where Does This Rule Go?
+### 决策树：这条规则应该放在哪里？
 
 ```
-Is this rule relevant to every project I work on?
-├── Yes → Global CLAUDE.md
-└── No ↓
+这条规则与我工作的每个项目都相关吗？
+├── 是 → 全局 CLAUDE.md
+└── 否 ↓
 
-Is this rule relevant to specific files or subsystems?
-├── Yes → Path-scoped module (e.g., src/api/CLAUDE-api.md)
-└── No ↓
+这条规则与特定文件或子系统相关吗？
+├── 是 → 路径范围模块（如 src/api/CLAUDE-api.md）
+└── 否 ↓
 
-Is this rule relevant to the whole project?
-├── Yes → Project CLAUDE.md (root)
-└── No ↓
+这条规则与整个项目相关吗？
+├── 是 → 项目 CLAUDE.md（根目录）
+└── 否 ↓
 
-Does this rule apply only to the current task or session?
-├── Yes → Inline session instruction
-└── No → Revisit: is it really a rule, or just a one-time preference?
+这条规则只适用于当前任务或会话吗？
+├── 是 → 内联会话指令
+└── 否 → 重新思考：这真的是规则，还是一次性偏好？
 ```
 
-### Import Chain and Override Semantics
+### 导入链和覆盖语义
 
-The import chain flows: `global → project root → path-scoped modules → session`.
+导入链流向：`全局 → 项目根目录 → 路径范围模块 → 会话`。
 
-When conflicts exist:
-- More specific overrides less specific (path-scoped beats root, root beats global)
-- Later-declared beats earlier-declared at the same level
-- Session instructions override all persistent config
+存在冲突时：
+- 更具体的覆盖不那么具体的（路径范围优先于根目录，根目录优先于全局）
+- 同一层次中，后声明的覆盖先声明的
+- 会话指令覆盖所有持久配置
 
-**Practical example**: Your global config says "use two-space indentation." Your project config says "use four-space indentation for Python." Your session says "match the existing file style." The session instruction wins for this session, with four-space default for Python files, two-space for everything else.
+**实际示例**：你的全局配置说"使用 2 空格缩进"。你的项目配置说"Python 使用 4 空格缩进"。你的会话说"匹配现有文件风格"。本次会话中，会话指令胜出，Python 文件默认 4 空格，其他所有内容 2 空格。
 
-Document your overrides explicitly. An undocumented override that contradicts a parent rule creates confusion during audits.
+明确记录你的覆盖。一个与父级规则相矛盾但未记录的覆盖，会在审计时造成困惑。
 
 ---
 
-## 4. Modular Architecture
+## 4. 模块化架构
 
-### The Problem with Monolithic Config
+### 单体配置的问题
 
-A 600-line CLAUDE.md with no structure is the most common failure mode in production contexts. Symptoms:
+没有结构的 600 行 CLAUDE.md 是生产环境中最常见的失败模式。症状：
 
-1. Rules from different domains mix together — a React component convention sits next to a database migration rule
-2. Claude reads all 600 lines but the attention budget means rules on page 5 get less weight than rules on page 1
-3. New team members can't find relevant rules quickly
-4. Updates require scanning the entire file to find related rules before editing
-5. Adherence degrades progressively as the file grows
+1. 来自不同领域的规则混在一起——React 组件规范紧挨着数据库迁移规则
+2. Claude 读完全部 600 行，但注意力预算意味着第 5 页的规则比第 1 页的权重低
+3. 新团队成员无法快速找到相关规则
+4. 更新需要扫描整个文件以找到相关规则，然后才能编辑
+5. 随文件增长，遵循率持续下降
 
-The fix is architectural: decompose the monolith into focused modules, then use path-scoping to load each module only when relevant.
+解决方案是架构性的：将单体文件分解为专注的模块，然后使用路径范围划定，仅在相关时才加载每个模块。
 
-### Path-Scoping Pattern
+### 路径范围模式
 
-**Mechanism**: Claude Code supports `@path/to/file.md` imports in CLAUDE.md. When a path-scoped import is active, rules from that module are added to context only when files under the specified path are in scope.
+**机制**：Claude Code 在 CLAUDE.md 中支持 `@path/to/file.md` 导入。当路径范围导入激活时，该模块的规则只有在指定路径下的文件处于范围内时才会添加到上下文中。
 
-**File structure**:
+**文件结构**：
 
 ```
 project/
-├── CLAUDE.md                       # Root config, shared rules + @imports
+├── CLAUDE.md                       # 根配置，共享规则 + @导入
 ├── src/
 │   ├── api/
-│   │   └── CLAUDE-api.md           # API-specific rules
+│   │   └── CLAUDE-api.md           # API 特定规则
 │   ├── components/
-│   │   └── CLAUDE-components.md    # React/UI-specific rules
+│   │   └── CLAUDE-components.md    # React/UI 特定规则
 │   └── lib/
-│       └── CLAUDE-lib.md           # Utility/shared library rules
+│       └── CLAUDE-lib.md           # 工具/共享库规则
 ├── prisma/
-│   └── CLAUDE-db.md                # Database and migration rules
+│   └── CLAUDE-db.md                # 数据库和迁移规则
 └── tests/
-    └── CLAUDE-tests.md             # Testing conventions
+    └── CLAUDE-tests.md             # 测试规范
 ```
 
-**Root CLAUDE.md with imports**:
+**带导入的根 CLAUDE.md**：
 
 ```markdown
-# Project Config
+# 项目配置
 
-## Shared Rules
-[...shared rules here...]
+## 共享规则
+[...此处放共享规则...]
 
-## Subsystem Modules
+## 子系统模块
 @src/api/CLAUDE-api.md
 @src/components/CLAUDE-components.md
 @src/lib/CLAUDE-lib.md
@@ -478,92 +475,92 @@ project/
 @tests/CLAUDE-tests.md
 ```
 
-**Example path-scoped module** (`src/api/CLAUDE-api.md`):
+**路径范围模块示例**（`src/api/CLAUDE-api.md`）：
 
 ```markdown
-# API Rules
+# API 规则
 
-- Route handlers in /app/api only; no business logic inline
-- All endpoints must validate input with Zod before processing
-- Error responses use the standard format: { error: string, code: string }
-- Never log request bodies that may contain PII; log IDs only
-- Rate limiting headers must be present on all public endpoints
-- Authentication: verify JWT in middleware, not in individual handlers
+- 路由处理器只放在 /app/api；不在其中内联业务逻辑
+- 所有端点必须在处理前用 Zod 验证输入
+- 错误响应使用标准格式：{ error: string, code: string }
+- 永远不要记录可能包含 PII 的请求体；只记录 ID
+- 所有公共端点必须带有限流响应头
+- 认证：在中间件中验证 JWT，而非在单个处理器中
 ```
 
-This module's 6 rules are in context only when working in `src/api/`. They do not consume context budget when working in `src/components/`.
+该模块的 6 条规则仅在 `src/api/` 中工作时才在上下文中。在 `src/components/` 中工作时，它们不消耗上下文预算。
 
-### Skills vs. Rules
+### 技能 vs. 规则
 
-This distinction is underused and matters:
+这一区分使用不足，但很重要：
 
-| Dimension | Rules | Skills |
-|-----------|-------|--------|
-| Nature | Constraints, standards, conventions | Capabilities, procedures, workflows |
-| When active | Always enforced | Invoked on demand |
-| Example | "Never use `any` in TypeScript" | "How to add a new API endpoint" |
-| Location | CLAUDE.md | `.claude/skills/` |
-| Token cost | Always-on | Loaded only when invoked |
+| 维度 | 规则 | 技能 |
+|------|------|------|
+| 本质 | 约束、标准、规范 | 能力、流程、工作流 |
+| 激活时机 | 始终执行 | 按需调用 |
+| 示例 | "TypeScript 中永不使用 `any`" | "如何添加新的 API 端点" |
+| 位置 | CLAUDE.md | `.claude/skills/` |
+| Token 成本 | 始终开启 | 仅在调用时加载 |
 
-**Rules** define what Claude should and should not do by default. They set the boundaries of acceptable output.
+**规则**定义 Claude 默认应该做什么和不应该做什么。它们设定可接受输出的边界。
 
-**Skills** define how to do complex multi-step tasks that require specific knowledge of your project's patterns. They are loaded when Claude needs to perform a specific type of task, not always.
+**技能**定义如何执行需要了解你项目特定模式的复杂多步骤任务。它们在 Claude 需要执行特定类型任务时加载，而非始终加载。
 
-**Practical example**: A rule says "API endpoints must have Zod validation." A skill says "Here is the step-by-step pattern for creating a new API endpoint in this project, including the Zod schema pattern, the error handling wrapper, the auth middleware hook, and the test file structure."
+**实际示例**：规则说"API 端点必须有 Zod 验证"。技能说"这是在本项目中创建新 API 端点的逐步模式，包括 Zod schema 模式、错误处理包装器、认证中间件钩子和测试文件结构"。
 
-Putting the endpoint creation procedure in a rule would mean loading 40 lines of procedural instructions for every session, even when you're not creating endpoints. Putting it in a skill means loading those 40 lines only when creating an endpoint.
+把端点创建流程放在规则里，意味着每次会话都要加载 40 行流程指令，即便你根本不在创建端点。把它放在技能里，意味着只在创建端点时才加载这 40 行。
 
-**Rule**: `Never expose raw database IDs in API responses.`
-**Skill**: `How to generate and use UUID-based public identifiers for entities.`
+**规则**：`永不在 API 响应中暴露原始数据库 ID。`
+**技能**：`如何为实体生成并使用基于 UUID 的公开标识符。`
 
-**Community skill libraries**
+**社区技能库**
 
-Pre-built skill collections reduce the upfront investment in modular context engineering:
+预构建的技能集合降低了模块化上下文工程的初始投入：
 
-- `anthropics/claude-code-skills` (official): Anthropic-maintained skill templates covering common development workflows
-- `ibelick/ui-skills`: UI component and design system skills for frontend projects
+- `anthropics/claude-code-skills`（官方）：Anthropic 维护的技能模板，涵盖常见开发工作流
+- `ibelick/ui-skills`：用于前端项目的 UI 组件和设计系统技能
 
-These can be cloned, inspected, and adapted to your project conventions rather than built from scratch. Treat them as starting points — fork and modify to match your stack and naming conventions rather than using them verbatim.
+这些可以克隆、检查并根据你的项目规范进行调整，而非从零开始构建。将它们作为起点——fork 并修改以匹配你的技术栈和命名规范，而非直接照搬使用。
 
-### Progressive Disclosure
+### 渐进式按需加载
 
-The principle: don't load everything upfront. Load what is needed for the task at hand.
+原则：不要提前加载所有内容。只加载当前任务所需的内容。
 
-**Core config (always-on)**:
-- Architecture decisions and their rationale
-- Coding standards and naming conventions
-- Security constraints
-- Tool preferences
+**核心配置（始终开启）**：
+- 架构决策及其原因
+- 编码标准和命名规范
+- 安全约束
+- 工具偏好
 
-**Contextual modules (loaded per task)**:
-- Deployment procedures (load when deploying)
-- API patterns (load when working in API layer)
-- Test templates (load when writing tests)
-- Database migration procedures (load when touching schema)
+**上下文模块（按任务加载）**：
+- 部署流程（部署时加载）
+- API 模式（在 API 层工作时加载）
+- 测试模板（编写测试时加载）
+- 数据库迁移流程（修改 schema 时加载）
 
-**Implementation pattern using skills**:
+**使用技能的实现模式**：
 
 ```
 .claude/
 ├── skills/
-│   ├── deploy-production.md      # Loaded when: "deploy this"
-│   ├── add-api-endpoint.md       # Loaded when: "add endpoint for X"
-│   ├── write-migration.md        # Loaded when: "add DB column"
-│   └── create-component.md      # Loaded when: "create component for X"
+│   ├── deploy-production.md      # 加载时机："部署这个"
+│   ├── add-api-endpoint.md       # 加载时机："为 X 添加端点"
+│   ├── write-migration.md        # 加载时机："添加数据库列"
+│   └── create-component.md      # 加载时机："为 X 创建组件"
 ```
 
-Each skill file contains the step-by-step procedure with project-specific patterns. Claude loads it when the task type is detected, not proactively.
+每个技能文件包含带有项目特定模式的逐步流程。Claude 在检测到任务类型时加载它，而非主动预加载。
 
-**MCP tool count and context budget**
+**MCP 工具数量与上下文预算**
 
-MCP servers inject tool definitions into the system prompt. Each server adds its tool schemas, which consume context budget before any user content appears. Anthropic's engineering guidance recommends:
+MCP 服务器将工具定义注入系统提示。每个服务器添加其工具 schema，在任何用户内容出现之前就消耗上下文预算。Anthropic 的工程指南建议：
 
-- Fewer than 10 MCP servers active per project
-- Fewer than 80 total tools across all active servers
+- 每个项目激活的 MCP 服务器少于 10 个
+- 所有激活服务器的工具总数少于 80 个
 
-Beyond these thresholds, tool definition overhead measurably reduces the tokens available for actual task content. At 80+ tools, you are burning 15-20K tokens on tool schemas alone — budget that would otherwise go to code context, conversation history, and file contents.
+超过这些阈值，工具定义开销会明显减少实际任务内容可用的 Token 数。在 80+ 个工具时，你仅在工具 schema 上就消耗了 1.5-2 万 Token——这些预算原本可以用于代码上下文、对话历史和文件内容。
 
-The progressive disclosure principle applies to MCP servers as much as to rules. Load MCP servers contextually rather than activating all available servers for every project:
+渐进式按需加载原则对 MCP 服务器同样适用。按需加载 MCP 服务器，而非为每个项目激活所有可用服务器：
 
 ```json
 {
@@ -574,89 +571,89 @@ The progressive disclosure principle applies to MCP servers as much as to rules.
 }
 ```
 
-Resist the pattern of adding every available MCP server to a project's settings "just in case." Each inactive-but-loaded server is pure overhead. If a server is used in fewer than 20% of sessions in a project, it should not be in the default project config.
+抵制"以防万一"就把所有可用 MCP 服务器添加到项目设置的冲动。每个已加载但不活跃的服务器都是纯粹的开销。如果某个服务器在项目中不足 20% 的会话中被使用，它不应该出现在默认项目配置中。
 
-### Anti-Pattern: The Monolithic CLAUDE.md
+### 反模式：单体 CLAUDE.md
 
-**What it looks like**:
-
-```markdown
-# CLAUDE.md (600 lines)
-
-## Rules
-1. Use TypeScript
-2. No any types
-3. Run tests before committing
-4. API endpoints need auth
-5. Use Prisma for DB queries
-6. React components in PascalCase
-7. Deploy with ./scripts/deploy.sh
-8. Check OWASP Top 10 before shipping
-[...492 more rules...]
-```
-
-**Why it fails**:
-
-- Rules 1-20 get ~95% attention weight; rules 500+ get ~30%
-- Frontend dev reads backend DB rules they don't need and vice versa
-- No logical grouping means finding relevant rules requires reading everything
-- Adding a new rule requires checking the entire file for conflicts
-- Adherence degrades continuously as the file grows
-
-**The fix**:
-
-1. Extract rules by domain into path-scoped modules
-2. Keep the root CLAUDE.md to shared rules + import declarations
-3. Move procedural knowledge to skills
-4. Target root CLAUDE.md at under 150 lines after extraction
-
-### Structural Metadata Files
-
-Rules and structure are two different types of context. Conflating them produces files that are too large to load always-on but too important to skip.
-
-**Rules context** answers: *how should I work in this project?* It lives in CLAUDE.md and path-scoped modules. It is relatively stable and almost always relevant.
-
-**Structural context** answers: *what is the shape of this project?* How many API routes exist, which domains have components, where do the nested CLAUDE.md files live, how many Prisma models are there. This information is only needed for implementation tasks — creating a new file, adding a route, navigating an unfamiliar domain — and is irrelevant for debugging, documentation, or code review sessions.
-
-Loading structural context always wastes tokens. Not having it at all means Claude browses the filesystem manually at the start of every implementation task, consuming turns and generating noise.
-
-The pattern: a small, auto-generated YAML file (~1K tokens) that captures the structural shape of the codebase, registered in CLAUDE.md as a pointer rather than auto-imported.
-
-**What to include** — five sections, nothing more:
-
-| Section | Contents | Example |
-|---------|----------|---------|
-| `layers` | Architecture tiers with root paths and file counts | `routers: { root: "src/api", count: 33 }` |
-| `component_domains` | Feature domains with paths and component counts | `{ name: "chat", count: 66 }` |
-| `nested_contexts` | All CLAUDE.md / AI_INSTRUCTIONS.md under src/, with line count and focus | `{ path: "src/server/CLAUDE.md", lines: 45 }` |
-| `stats` | Aggregate numbers: total files, test counts, schema model count | `total_ts_files: 543` |
-| `key_paths` | Canonical paths Claude frequently gets wrong | `prisma_schema: "src/server/db/prisma/schema.prisma"` |
-
-Keep the file below 1K tokens. Beyond that, you are adding detail that belongs in the actual source files.
-
-**The pointer registration pattern**
-
-Do not auto-load this file with `@machine-readable/code-map.yaml` in CLAUDE.md. Instead, register it in a reference table that tells Claude what the file contains and when to reach for it:
+**它的样子**：
 
 ```markdown
-## Context Indexes (load on demand)
+# CLAUDE.md（600 行）
 
-| File | Contents | When to load |
-|------|----------|--------------|
-| machine-readable/code-map.yaml | Architecture layers (counts + roots), component domains, nested context files, project stats | Before any implementation task: new file, new route, new component |
-| machine-readable/ai-config.yaml | Full AI tooling config: rules, skills, commands, agents, hooks | When auditing or modifying AI configuration |
-| PROJECT_INDEX.md | Detailed architecture narrative, ADRs, domain glossary | Deep architectural work only |
+## 规则
+1. 使用 TypeScript
+2. 禁止 any 类型
+3. 提交前运行测试
+4. API 端点需要认证
+5. 用 Prisma 查询数据库
+6. React 组件用 PascalCase
+7. 用 ./scripts/deploy.sh 部署
+8. 发布前检查 OWASP Top 10
+[...492 条更多规则...]
 ```
 
-This pattern scales: Claude reads the table at session start, knows what reference files exist and why, and loads them only when the current task warrants it. A debugging session never touches the code map. An implementation task loads it in one tool call.
+**为何失败**：
 
-**What "auto-generated" means in practice**
+- 规则 1-20 获得约 95% 的注意力权重；规则 500+ 只获得约 30%
+- 前端开发者读到他们不需要的后端数据库规则，反之亦然
+- 没有逻辑分组意味着找到相关规则需要通读所有内容
+- 添加新规则需要检查整个文件是否有冲突
+- 随文件增长，遵循率持续下降
 
-The generation script should do only three things: call `readdirSync` on each layer root to count files, walk the src tree to total `.ts`/`.tsx` files, and glob for nested CLAUDE.md files to populate `nested_contexts`. No AST parsing, no database queries, no network calls. The whole script runs in under a second. Add it to your `pnpm ai:sync` (or equivalent) task.
+**解决方案**：
 
-The key design constraint: **never add hand-curated content to this file.** The moment you do, you have a file that can drift. Auto-generated files cannot lie about the current state of the codebase; files with manual content can and will.
+1. 按领域将规则提取到路径范围模块中
+2. 根 CLAUDE.md 只保留共享规则和导入声明
+3. 将流程知识移至技能文件
+4. 提取后，目标是根 CLAUDE.md 在 150 行以内
 
-**Production example** (Méthode Aristote EdTech platform, ~1,300 source files):
+### 结构性元数据文件
+
+规则和结构是两种不同类型的上下文。将它们混在一起会产生既太大无法始终加载、又太重要不能跳过的文件。
+
+**规则上下文**回答的是：*在这个项目中我应该怎么工作？* 它存在于 CLAUDE.md 和路径范围模块中。它相对稳定，几乎始终相关。
+
+**结构性上下文**回答的是：*这个项目的形态是什么？* 有多少 API 路由、哪些领域有组件、嵌套的 CLAUDE.md 文件在哪里、有多少 Prisma 模型。这些信息只在实施任务时需要——创建新文件、添加路由、探索陌生领域——在调试、编写文档或代码审查时无关紧要。
+
+始终加载结构性上下文是 Token 的浪费。完全没有它意味着 Claude 在每次实施任务开始时都要手动浏览文件系统，消耗对话轮次并产生噪声。
+
+解决方案：一个小型、自动生成的 YAML 文件（约 1K Token），捕捉代码库的结构形态，在 CLAUDE.md 中作为指针注册，而非自动导入。
+
+**包含什么**——五个部分，不多不少：
+
+| 部分 | 内容 | 示例 |
+|------|------|------|
+| `layers` | 架构层级，包含根路径和文件数量 | `routers: { root: "src/api", count: 33 }` |
+| `component_domains` | 功能领域，包含路径和组件数量 | `{ name: "chat", count: 66 }` |
+| `nested_contexts` | src/ 下的所有 CLAUDE.md / AI_INSTRUCTIONS.md，包含行数和重点 | `{ path: "src/server/CLAUDE.md", lines: 45 }` |
+| `stats` | 汇总数字：总文件数、测试数量、schema 模型数 | `total_ts_files: 543` |
+| `key_paths` | Claude 经常出错的关键路径 | `prisma_schema: "src/server/db/prisma/schema.prisma"` |
+
+将文件保持在 1K Token 以下。超过这个数，你添加的细节应该属于实际源文件。
+
+**指针注册模式**
+
+不要在 CLAUDE.md 中用 `@machine-readable/code-map.yaml` 自动加载这个文件。而是将其注册在一个引用表中，告诉 Claude 文件包含什么以及何时使用它：
+
+```markdown
+## 上下文索引（按需加载）
+
+| 文件 | 内容 | 何时加载 |
+|------|------|---------|
+| machine-readable/code-map.yaml | 架构层级（数量 + 根路径）、组件领域、嵌套上下文文件、项目统计 | 任何实施任务之前：新文件、新路由、新组件 |
+| machine-readable/ai-config.yaml | 完整 AI 工具配置：规则、技能、命令、智能体、Hooks | 审计或修改 AI 配置时 |
+| PROJECT_INDEX.md | 详细架构叙述、ADR、领域词汇表 | 仅在深度架构工作时 |
+```
+
+这个模式可扩展：Claude 在会话开始时读取表格，知道存在哪些参考文件及其用途，只在当前任务需要时才加载它们。调试会话永远不会触碰代码地图；实施任务通过一次工具调用就能加载它。
+
+**"自动生成"在实践中意味着什么**
+
+生成脚本只需要做三件事：对每个层根调用 `readdirSync` 统计文件数量，遍历 src 树统计 `.ts`/`.tsx` 文件总数，以及 glob 查找嵌套的 CLAUDE.md 文件以填充 `nested_contexts`。无需 AST 解析、数据库查询或网络调用。整个脚本运行时间不到一秒。将其添加到你的 `pnpm ai:sync`（或等效）任务中。
+
+关键设计约束：**绝不在此文件中添加手工整理的内容。** 一旦这样做，你就有了一个可能产生漂移的文件。自动生成的文件不会对代码库的当前状态撒谎；含有手工内容的文件会并且确实会撒谎。
+
+**生产示例**（Méthode Aristote EdTech 平台，约 1,300 个源文件）：
 
 ```yaml
 version: "1.0.0"
@@ -665,15 +662,15 @@ architecture: "Client → tRPC → Router → Service → Repository → Prisma"
 layers:
   routers:
     root: "src/server/api/routers"
-    description: "Tier 1 — Zod validation, delegate to service"
+    description: "第一层 — Zod 验证，委托给 service"
     count: 33
   services:
     root: "src/server/api/services"
-    description: "Tier 2 — business logic, enforcePermission()"
+    description: "第二层 — 业务逻辑，enforcePermission()"
     count: 61
   repositories:
     root: "src/server/api/repositories"
-    description: "Tier 3 — CRUD Prisma only"
+    description: "第三层 — 仅 CRUD Prisma"
     count: 38
 
 stats:
@@ -683,31 +680,31 @@ stats:
   unit_tests: 268
 ```
 
-With this file registered as a pointer, Claude answers "how many tRPC routers exist?" in a single lookup rather than walking `src/server/api/routers/` manually. For the implementation task "add a payment router", it immediately knows the correct root, the count, and the architectural constraint — before reading a single source file.
+将此文件注册为指针后，Claude 通过一次查找就能回答"有多少个 tRPC 路由？"，而无需手动遍历 `src/server/api/routers/`。对于实施任务"添加支付路由"，它能立即知道正确的根路径、数量和架构约束——无需读取一个源文件。
 
-A ready-to-use template is available at [`examples/context-engineering/code-map-template.yaml`](../../examples/context-engineering/code-map-template.yaml).
+可在 [`examples/context-engineering/code-map-template.yaml`](../../examples/context-engineering/code-map-template.yaml) 获取即用模板。
 
 ---
 
-## 5. Team Assembly
+## 5. 团队配置组装
 
-### The N × M × P Problem
+### N × M × P 问题
 
-At team scale, context engineering faces a combinatorial challenge:
+在团队规模下，上下文工程面临组合挑战：
 
-- **N developers**: different roles, tools, communication preferences
-- **M projects**: different stacks, conventions, deployment targets
-- **P configurations**: each developer × each project needs a configuration
+- **N 位开发者**：不同的角色、工具、沟通偏好
+- **M 个项目**：不同的技术栈、规范、部署目标
+- **P 个配置**：每位开发者 × 每个项目都需要一个配置
 
-Maintaining N × M individual CLAUDE.md files manually is not sustainable. When a shared convention changes, you update N × M files. When a new project is created, you build from scratch. When a developer changes roles, you rebuild their configurations.
+手动维护 N × M 个独立的 CLAUDE.md 文件是不可持续的。共享规范变更时，你需要更新 N × M 个文件。创建新项目时，需要从零开始构建。开发者角色变更时，需要重建配置。
 
-The solution is **profile-based assembly**: a single shared base of modules, with individual profiles that specify which modules to include and what personal preferences to overlay.
+解决方案是**基于配置文件的组装**：一套共享的模块基础，加上指定要包含哪些模块和覆盖哪些个人偏好的个人配置文件。
 
-N × M × P becomes N profiles × 1 shared module base — manageable.
+N × M × P 变成了 N 个配置文件 × 1 个共享模块基础——可管理。
 
-### Profile YAML Structure
+### 配置文件 YAML 结构
 
-Each team member has a profile YAML that declaratively specifies their configuration:
+每位团队成员有一个声明式指定其配置的 YAML 配置文件：
 
 ```yaml
 # profiles/alice.yaml
@@ -778,18 +775,18 @@ overrides:
   - "Always measure before optimizing; profile first"
 ```
 
-### Module Library Structure
+### 模块库结构
 
-The shared module library lives in the repository and is version-controlled:
+共享模块库存在于仓库中并进行版本控制：
 
 ```
 .claude/
 ├── modules/
 │   ├── shared/
-│   │   ├── core-rules.md           # Universal team standards
-│   │   ├── git-conventions.md      # Commit and PR conventions
-│   │   ├── security-baseline.md    # Non-negotiable security rules
-│   │   └── testing-standards.md   # Coverage and test quality rules
+│   │   ├── core-rules.md           # 通用团队标准
+│   │   ├── git-conventions.md      # 提交和 PR 规范
+│   │   ├── security-baseline.md    # 不可妥协的安全规则
+│   │   └── testing-standards.md   # 覆盖率和测试质量规则
 │   ├── frontend/
 │   │   ├── react-patterns.md
 │   │   ├── tailwind-conventions.md
@@ -812,9 +809,9 @@ The shared module library lives in the repository and is version-controlled:
     └── assemble-context.sh
 ```
 
-### Assembly Script
+### 组装脚本
 
-The assembly script reads a profile and concatenates the specified modules into a CLAUDE.md:
+组装脚本读取配置文件并将指定的模块拼接成 CLAUDE.md：
 
 ```bash
 #!/usr/bin/env bash
@@ -839,7 +836,7 @@ if [[ ! -f "$PROFILE_FILE" ]]; then
   exit 1
 fi
 
-# Parse profile with yq or python
+# 用 yq 或 python 解析配置文件
 MODULES=$(python3 -c "
 import yaml
 with open('$PROFILE_FILE') as f:
@@ -848,7 +845,7 @@ for m in profile['modules']['include']:
     print(m)
 ")
 
-# Assemble output
+# 组装输出
 ASSEMBLED=$(mktemp)
 
 echo "# Claude Code Configuration" > "$ASSEMBLED"
@@ -867,7 +864,7 @@ while IFS= read -r module; do
   fi
 done <<< "$MODULES"
 
-# Append personal overrides
+# 追加个人覆盖
 python3 -c "
 import yaml
 with open('$PROFILE_FILE') as f:
@@ -896,30 +893,30 @@ mv "$ASSEMBLED" "$OUTPUT_FILE"
 echo "Assembled CLAUDE.md from profile: $PROFILE"
 ```
 
-**Usage**:
+**用法**：
 
 ```bash
-# Generate CLAUDE.md from a profile
+# 从配置文件生成 CLAUDE.md
 ./scripts/assemble-context.sh alice
 
-# Check for drift (used in CI)
+# 检查漂移（用于 CI）
 ./scripts/assemble-context.sh alice --check
 ```
 
-### CI Drift Detection
+### CI 漂移检测
 
-Team members regenerate their CLAUDE.md from profiles, but base modules evolve over time. Without drift detection, a developer may be running an outdated configuration — one that predates a security rule addition or a convention update.
+团队成员从配置文件重新生成 CLAUDE.md，但基础模块会随时间演进。没有漂移检测，开发者可能运行着过时的配置——一个早于某条安全规则的添加或某项规范更新的版本。
 
-A GitHub Actions job detects this:
+一个 GitHub Actions 任务可以检测到这种情况：
 
 ```yaml
 # .github/workflows/context-drift.yml
 
-name: Context Drift Detection
+name: 上下文漂移检测
 
 on:
   schedule:
-    - cron: '0 9 * * 1'   # Weekly, Monday 9am UTC
+    - cron: '0 9 * * 1'   # 每周一上午 9 点（UTC）
   push:
     paths:
       - '.claude/modules/**'
@@ -930,10 +927,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install dependencies
+      - name: 安装依赖
         run: pip install pyyaml
 
-      - name: Check all profiles for drift
+      - name: 检查所有配置文件是否有漂移
         run: |
           DRIFT=0
           for profile_file in .claude/profiles/*.yaml; do
@@ -946,7 +943,7 @@ jobs:
           done
           exit $DRIFT
 
-      - name: Notify on drift
+      - name: 漂移时发送通知
         if: failure()
         uses: actions/github-script@v7
         with:
@@ -954,132 +951,132 @@ jobs:
             github.rest.issues.create({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              title: 'Context drift detected — CLAUDE.md needs regeneration',
-              body: 'One or more team profiles are out of sync with the current module library. Run `./scripts/assemble-context.sh <profile>` to regenerate.',
+              title: '检测到上下文漂移——CLAUDE.md 需要重新生成',
+              body: '一个或多个团队配置文件与当前模块库不同步。运行 `./scripts/assemble-context.sh <profile>` 重新生成。',
               labels: ['context-engineering']
             })
 ```
 
-### Onboarding with Profiles
+### 使用配置文件入职
 
-For new team members, the onboarding sequence becomes:
+对于新团队成员，入职流程变成：
 
 ```bash
-# 1. Copy a starter profile appropriate for your role
+# 1. 复制适合你角色的入门配置文件
 cp .claude/profiles/template-frontend.yaml .claude/profiles/yourname.yaml
 
-# 2. Edit the profile for your preferences
+# 2. 根据你的偏好编辑配置文件
 vim .claude/profiles/yourname.yaml
 
-# 3. Generate your CLAUDE.md
+# 3. 生成你的 CLAUDE.md
 ./scripts/assemble-context.sh yourname
 
-# 4. Verify the output
+# 4. 验证输出
 cat CLAUDE.md
 
-# 5. Commit your profile (not the generated CLAUDE.md — it's gitignored)
+# 5. 提交你的配置文件（不是生成的 CLAUDE.md——它在 .gitignore 中）
 git add .claude/profiles/yourname.yaml
 git commit -m "chore: add context profile for yourname"
 ```
 
-Add `CLAUDE.md` to `.gitignore` at the project root. The profile YAML is the source of truth, not the generated file.
+在项目根目录的 `.gitignore` 中添加 `CLAUDE.md`。YAML 配置文件才是真实来源，而非生成的文件。
 
 ---
 
-## 6. Context Lifecycle
+## 6. 上下文生命周期
 
-### Instruction Debt
+### 指令债务
 
-Rules accumulate. They are rarely removed. This is instruction debt: the gradual accumulation of rules that are outdated, redundant, or contradictory — each still consuming context budget.
+规则会积累，却很少被删除。这就是指令债务：过时、冗余或相互矛盾的规则逐渐堆积——每条规则仍在消耗上下文预算。
 
-Signs of instruction debt:
+指令债务的迹象：
 
-- A rule refers to a library you stopped using six months ago
-- Two rules say opposite things about the same pattern
-- A rule covers an edge case that only applied during a specific migration
-- The same constraint is stated three times in different sections
-- Developers comment out or ignore specific rules because they conflict with current practice
+- 某条规则引用了你六个月前就停止使用的库
+- 两条规则对同一模式说法相反
+- 某条规则只适用于特定迁移期间的一个边缘情况
+- 同一约束在不同部分被重述了三次
+- 开发者注释掉或忽略特定规则，因为它们与当前实践冲突
 
-Instruction debt has compounding costs: each conflicting or irrelevant rule displaces a useful one, and models behave unpredictably when rules conflict.
+指令债务的成本是复利式的：每条冲突或无关规则都会排挤一条有用规则，而当规则冲突时模型行为会变得不可预测。
 
-**Quarterly audit rhythm**: Schedule a context audit every quarter (or after major project milestones). The audit prompt:
+**季度审计节奏**：每季度（或在重大项目里程碑后）安排一次上下文审计。审计提示：
 
 ```
-Review every rule in CLAUDE.md for:
-1. Relevance: Does this still apply to the current stack and patterns?
-2. Specificity: Is this actionable, or is it too vague to enforce?
-3. Conflicts: Does this contradict another rule?
-4. Coverage: Is this already covered by a more general rule?
+审查 CLAUDE.md 中的每条规则：
+1. 相关性：这条规则仍适用于当前的技术栈和模式吗？
+2. 具体性：这条规则是否可操作，还是太模糊无法执行？
+3. 冲突：这条规则与另一条规则相矛盾吗？
+4. 覆盖：这条规则是否已被另一条更通用的规则覆盖？
 
-For each rule, classify as: KEEP | UPDATE | ARCHIVE | DELETE
+对每条规则，分类为：保留 | 更新 | 归档 | 删除
 ```
 
-Run this as an actual Claude session, feeding the current CLAUDE.md and asking for a structured audit.
+以实际 Claude 会话的形式运行此审计，提供当前 CLAUDE.md 并要求进行结构化审计。
 
-### The Update Loop
+### 更新循环
 
-The most common mistake after a bad Claude output is to fix the output manually and move on. This is a wasted learning opportunity.
+在 Claude 输出错误后，最常见的错误是手动修复输出然后继续。这是浪费了学习机会。
 
-**Bad loop**:
+**坏循环**：
 ```
-Claude generates wrong pattern
-→ Developer manually fixes it
-→ Next session: Claude generates wrong pattern again
-→ Developer manually fixes it again
-→ Repeat indefinitely
-```
-
-**Good loop**:
-```
-Claude generates wrong pattern
-→ Developer identifies the root cause (missing rule? vague rule? conflicting rules?)
-→ Developer updates CLAUDE.md with a corrected or new rule
-→ Next session: Claude generates correct pattern
-→ Rule stays in config permanently
+Claude 生成错误模式
+→ 开发者手动修复
+→ 下次会话：Claude 再次生成错误模式
+→ 开发者再次手动修复
+→ 无限循环
 ```
 
-The update loop is how your configuration system learns from experience. Each bad output is a signal that something is missing or broken in your context engineering. Treat it as a bug report against CLAUDE.md, not just a one-off failure.
+**好循环**：
+```
+Claude 生成错误模式
+→ 开发者确认根本原因（缺少规则？规则模糊？规则冲突？）
+→ 开发者用更正的或新的规则更新 CLAUDE.md
+→ 下次会话：Claude 生成正确模式
+→ 规则永久保留在配置中
+```
 
-**Practical format for rule updates**:
+更新循环是你的配置系统从经验中学习的方式。每次错误输出都是信号，表明上下文工程中有什么缺失或损坏。将其视为针对 CLAUDE.md 的 bug 报告，而非一次性失败。
 
-When adding a rule from a failure, include the rationale inline:
+**规则更新的实用格式**：
+
+从失败案例添加规则时，包含内联的原因说明：
 
 ```markdown
-- Use the `Result<T, E>` type for service functions, not try/catch
-  (Rationale: try/catch at service level hides error types from callers;
-   Result forces explicit error handling at the call site)
+- 为 service 函数使用 `Result<T, E>` 类型，而非 try/catch
+  （原因：service 层的 try/catch 对调用者隐藏了错误类型；
+   Result 强制在调用点进行显式错误处理）
 ```
 
-The rationale serves two purposes: it helps future auditors understand why the rule exists, and it gives Claude better context for applying the rule correctly.
+原因说明有两个目的：帮助未来的审计者理解规则存在的原因，以及给 Claude 更好的上下文来正确应用规则。
 
-### Knowledge Feeding After Sprints
+### Sprint 后的知识输入
 
-At the end of each sprint or release cycle, run a brief knowledge feeding session:
+在每个 sprint 或发布周期结束时，进行一个简短的知识输入会话：
 
-1. **New patterns**: "We standardized on X approach for Y type of problem in this sprint. Add this to CLAUDE.md."
-2. **Anti-patterns discovered**: "We tried X and it caused Y. Add a rule to avoid it."
-3. **Architecture decisions**: "We decided to use X over Y because Z. Document this so Claude doesn't suggest Y."
-4. **Deprecated patterns**: "We're moving away from X. Add a rule to use Y instead and flag existing X usages."
+1. **新模式**："本 sprint 中，我们为 Y 类问题标准化了 X 方法。将其添加到 CLAUDE.md。"
+2. **发现的反模式**："我们尝试了 X，它导致了 Y。添加规则以避免它。"
+3. **架构决策**："我们决定使用 X 而非 Y，因为 Z。记录这一点，这样 Claude 就不会建议 Y。"
+4. **已弃用的模式**："我们正在从 X 迁移走。添加规则使用 Y 代替，并标记现有的 X 用法。"
 
-This keeps the context system current without requiring large periodic overhauls.
+这保持上下文系统的时效性，无需定期大规模改动。
 
-### The ACE Pipeline
+### ACE 流水线
 
-For teams that run Claude Code in automated or semi-automated workflows, the ACE pipeline provides a structured execution model. This is a config-persistence loop operating across sessions. It is distinct from arXiv:2510.04618 (Stanford/SambaNova, Oct 2025), which uses the same acronym for an inference-time context evolution technique. For the operational improvements that build on this pipeline, see Section 10 (Signal Taxonomy) and Section 11 (Loop Closure).
+对于在自动化或半自动化工作流中运行 Claude Code 的团队，ACE 流水线提供了结构化执行模型。这是一个跨会话运行的配置持久化循环。它与 arXiv:2510.04618（Stanford/SambaNova，2025 年 10 月）不同，后者使用同一缩写词表示推理时上下文演化技术。关于基于此流水线的操作改进，参见第 10 节（信号分类）和第 11 节（循环闭合）。
 
 ```
-Assemble → Check → Execute
+组装（Assemble）→ 检查（Check）→ 执行（Execute）
 ```
 
-**Assemble**: Build context from the team profile + project modules. Produces a CLAUDE.md specific to the developer and task context.
+**组装**：从团队配置文件和项目模块构建上下文。产出特定于开发者和任务上下文的 CLAUDE.md。
 
-**Check**: Run canary validation — a set of 3-5 test prompts that verify key behaviors before the actual task. If canary checks fail, fix the context issue before proceeding.
+**检查**：运行金丝雀验证——一组 3-5 个测试提示，在实际任务前验证关键行为。如果金丝雀检查失败，在继续之前修复上下文问题。
 
-**Execute**: Run Claude with the validated context on the actual task.
+**执行**：用经过验证的上下文对实际任务运行 Claude。
 
 ```bash
 #!/usr/bin/env bash
-# ace.sh — Assemble, Check, Execute
+# ace.sh — 组装、检查、执行
 
 PROFILE="${1:-}"
 TASK="${2:-}"
@@ -1089,111 +1086,111 @@ if [[ -z "$PROFILE" || -z "$TASK" ]]; then
   exit 1
 fi
 
-echo "=== ASSEMBLE ==="
+echo "=== 组装 ==="
 ./scripts/assemble-context.sh "$PROFILE"
 
-echo "=== CHECK ==="
+echo "=== 检查 ==="
 ./scripts/run-canaries.sh
 CANARY_EXIT=$?
 
 if [[ $CANARY_EXIT -ne 0 ]]; then
-  echo "Canary checks failed. Fix context issues before executing."
+  echo "金丝雀检查失败。在执行前修复上下文问题。"
   exit 1
 fi
 
-echo "=== EXECUTE ==="
+echo "=== 执行 ==="
 claude "$TASK"
 ```
 
-### Session Retrospective
+### 会话回顾
 
-At the end of each Claude Code session, before closing, ask:
-
-```
-Looking at what we built or changed in this session:
-1. What patterns did we use that aren't in CLAUDE.md?
-2. What did I have to correct that could become a rule?
-3. What decisions did we make that should be documented?
-
-Generate 3-5 candidate rules for CLAUDE.md based on this session.
-```
-
-This takes 2-3 minutes and generates concrete improvement candidates. You review them and decide which to add. Over time, this is how configuration systems accumulate genuine project knowledge rather than just generic rules.
-
-### Context Chaining
-
-Context chaining is a pattern where the output of one context window becomes the structured input of the next. Each session builds on the previous one, passing a curated summary forward rather than discarding state.
-
-This is distinct from the Session-per-Concern pipeline (in the Fresh Context Pattern section), which separates concerns into isolated sessions. Context chaining allows perspectives to accumulate: each session's insights enrich the next session's starting context.
-
-**Pattern structure**:
+每次 Claude Code 会话结束时，关闭之前请问：
 
 ```
-Session 1:
-  Input: Task definition + CLAUDE.md
-  Work: Research, exploration, initial implementation
-  Output: summary.md (decisions, open questions, validated patterns)
+回顾本次会话构建或修改的内容：
+1. 我们使用了哪些不在 CLAUDE.md 中的模式？
+2. 我必须纠正什么，可以变成规则？
+3. 我们做了哪些应该记录的决策？
 
-Session 2:
-  Input: Task definition + CLAUDE.md + summary.md from Session 1
-  Work: Implementation building on Session 1 findings
-  Output: updated summary.md + code artifacts
-
-Session 3:
-  Input: Task definition + CLAUDE.md + updated summary.md
-  Work: Review, refinement, integration
-  Output: final artifacts + lessons.md for CLAUDE.md update
+基于本次会话生成 3-5 条 CLAUDE.md 候选规则。
 ```
 
-The key discipline: the summary passed forward must be curated, not a raw transcript. Raw transcripts reintroduce context rot. A curated summary is 200-500 tokens of distilled findings: decisions made, approaches validated, dead ends marked.
+这需要 2-3 分钟，并生成具体的改进候选项。你审查并决定添加哪些。随着时间推移，这就是配置系统积累真正项目知识而非仅仅泛泛规则的方式。
 
-**When to use**:
-- Multi-day tasks where rebuilding context from scratch each session would be expensive
-- Research tasks where early sessions produce findings that constrain later sessions
-- Iterative design tasks where accumulated understanding matters across sessions
+### 上下文链式传递
 
-**When not to use**:
-- Tasks with clean atomic boundaries (one session, one deliverable, fresh start next)
-- Situations where early session assumptions turned out wrong and you want a clean break
+上下文链式传递是一种模式，其中一个上下文窗口的输出成为下一个的结构化输入。每次会话在前一次的基础上构建，向前传递经过整理的摘要，而非丢弃状态。
 
-Context chaining extends context intentionally. It is the opposite of the Ralph Loop, which discards state. Use chaining when accumulated understanding is an asset; use the Ralph Loop when accumulated state is a liability.
+这与会话分关注点流水线（在新鲜上下文模式部分）不同，后者将关注点隔离到独立会话中。上下文链式传递允许视角积累：每次会话的洞见丰富下一次会话的起始上下文。
+
+**模式结构**：
+
+```
+会话 1：
+  输入：任务定义 + CLAUDE.md
+  工作：研究、探索、初始实现
+  输出：summary.md（决策、待解问题、验证的模式）
+
+会话 2：
+  输入：任务定义 + CLAUDE.md + 会话 1 的 summary.md
+  工作：基于会话 1 发现的实现
+  输出：更新的 summary.md + 代码产物
+
+会话 3：
+  输入：任务定义 + CLAUDE.md + 更新的 summary.md
+  工作：审查、精化、集成
+  输出：最终产物 + CLAUDE.md 更新用的 lessons.md
+```
+
+关键纪律：向前传递的摘要必须经过整理，而非原始记录。原始记录会重新引入上下文退化。经过整理的摘要是 200-500 Token 的精炼发现：已做决策、已验证方法、已标记死路。
+
+**适用场景**：
+- 多天任务，每次会话从头重建上下文代价高昂
+- 早期会话产生制约后期会话的发现的研究任务
+- 跨会话积累的理解很重要的迭代设计任务
+
+**不适用场景**：
+- 有明确原子边界的任务（一次会话、一个交付物、下次从新开始）
+- 早期会话假设被证明错误，需要彻底重来的情况
+
+上下文链式传递是有意扩展上下文的。它与 Ralph Loop 相反，后者丢弃状态。当积累的理解是资产时使用链式传递；当积累的状态是负担时使用 Ralph Loop。
 
 ---
 
-## 7. Quality Measurement
+## 7. 质量度量
 
-### Self-Evaluation Questions
+### 自我评估问题
 
-Run these questions against your CLAUDE.md periodically (quarterly at minimum):
+定期（至少每季度）对你的 CLAUDE.md 进行这些问题的审查：
 
-**Relevance**:
-- Does this rule still apply to the current stack, libraries, and team practices?
-- Was this rule written for a problem that no longer exists?
-- Would a new team member understand why this rule exists?
+**相关性**：
+- 这条规则仍适用于当前的技术栈、库和团队实践吗？
+- 这条规则是为一个已不存在的问题而写的吗？
+- 新团队成员能理解这条规则存在的原因吗？
 
-**Specificity**:
-- Is this rule specific enough for Claude to know when it applies?
-- Does this rule have at least one concrete example or counter-example?
-- Could two developers interpret this rule differently?
+**具体性**：
+- 这条规则是否足够具体，让 Claude 知道何时适用？
+- 这条规则是否至少有一个具体示例或反例？
+- 两位开发者是否可能对这条规则有不同理解？
 
-**Conflicts**:
-- Does this rule contradict another rule in the same file?
-- Does this rule contradict a rule in a path-scoped module?
-- Does this rule contradict a global rule without explicitly overriding it?
+**冲突**：
+- 这条规则与同一文件中的另一条规则相矛盾吗？
+- 这条规则与路径范围模块中的规则相矛盾吗？
+- 这条规则与全局规则相矛盾，却没有明确覆盖它吗？
 
-**Coverage**:
-- Is this rule a specific case of a more general rule that already exists?
-- Is this rule already implied by the architecture decisions stated elsewhere?
+**覆盖**：
+- 这条规则是否是已存在的更通用规则的特例？
+- 这条规则是否已被其他地方陈述的架构决策所隐含？
 
-A rule that fails more than one of these checks is a candidate for update or removal.
+未能通过一个以上这些检查的规则，就是更新或删除的候选项。
 
-### Canary Checks
+### 金丝雀检查
 
-Canary checks are simple test prompts that verify Claude follows key conventions. Run them before and after major changes to CLAUDE.md to catch regressions.
+金丝雀检查是简单的测试提示，用于验证 Claude 遵循关键规范。在对 CLAUDE.md 进行重大更改前后运行它们，以捕获回归。
 
-**Structure**: 3-5 prompts that are simple enough to answer quickly, but specific enough to reveal adherence failures.
+**结构**：3-5 个提示，足够简单可以快速回答，但足够具体可以揭示遵循失败。
 
-**Example canary set for a React/TypeScript project**:
+**React/TypeScript 项目的示例金丝雀集**：
 
 ```bash
 # scripts/run-canaries.sh
@@ -1219,302 +1216,301 @@ check() {
   fi
 }
 
-check "TypeScript interfaces" \
-  "Generate a React component that accepts a name and age prop" \
+check "TypeScript 接口" \
+  "生成一个接受 name 和 age prop 的 React 组件" \
   "interface.*Props"
 
-check "Named exports" \
-  "Create a utility function that formats a date" \
+check "命名导出" \
+  "创建一个格式化日期的工具函数" \
   "^export (function|const)"
 
-check "No any type" \
-  "Write a function that processes user data" \
+check "禁止 any 类型" \
+  "写一个处理用户数据的函数" \
   "^((?!: any).)*$"
 
-check "Error result type" \
-  "Write a service function that fetches user data from an API" \
+check "错误结果类型" \
+  "写一个从 API 获取用户数据的 service 函数" \
   "Result<"
 
 echo ""
-echo "Canaries: $PASS passed, $FAIL failed"
+echo "金丝雀：$PASS 通过，$FAIL 失败"
 [[ $FAIL -eq 0 ]]
 ```
 
-**When to run canaries**:
-- Before merging changes to CLAUDE.md
-- After adding a new path-scoped module
-- When a team member reports unexpected Claude behavior
-- As part of the CI drift detection job
+**何时运行金丝雀**：
+- 合并 CLAUDE.md 更改之前
+- 添加新的路径范围模块之后
+- 团队成员报告意外的 Claude 行为时
+- 作为 CI 漂移检测任务的一部分
 
-### Adherence Tracking
+### 遵循率追踪
 
-Informal but effective: for each key rule in CLAUDE.md, track how often Claude violates it across 10 consecutive interactions where the rule should apply.
+非正式但有效：对于 CLAUDE.md 中的每条关键规则，追踪在 10 次连续的、该规则应适用的交互中，Claude 违反它的频率。
 
-| Rule | Violations / 10 | Status |
-|------|----------------|--------|
-| TypeScript interfaces for props | 1/10 | Healthy |
-| Result type for service functions | 0/10 | Healthy |
-| No raw database IDs in API responses | 3/10 | Review rule |
-| Structured logging with request context | 5/10 | Rule too vague |
-| OWASP Top 10 check before shipping | 8/10 | Not actionable as stated |
+| 规则 | 违反次数/10 | 状态 |
+|------|-----------|------|
+| Props 使用 TypeScript 接口 | 1/10 | 健康 |
+| Service 函数使用 Result 类型 | 0/10 | 健康 |
+| API 响应中不暴露原始数据库 ID | 3/10 | 审查规则 |
+| 带请求上下文的结构化日志 | 5/10 | 规则太模糊 |
+| 发布前检查 OWASP Top 10 | 8/10 | 无法操作 |
 
-Rules with >20% violation rate are broken in one of three ways:
-1. Too vague to apply consistently
-2. Conflicting with another rule
-3. Placed too late in the file to receive enough attention
+违反率 >20% 的规则以以下三种方式之一失效：
+1. 太模糊无法一致应用
+2. 与另一条规则冲突
+3. 在文件中位置太靠后，无法获得足够注意力
+**"太模糊"的修复方案**：添加一个合规示例和一个违规反例。
 
-**Fix for "too vague"**: Add a concrete example of compliance and a counter-example of violation.
+**"冲突"的修复方案**：找到冲突，决定哪条规则应该胜出，更新或删除失败的规则，并添加明确说明。
 
-**Fix for "conflicting"**: Find the conflict, decide which rule should win, update or remove the losing rule, and add an explicit note.
+**"位置太靠后"的修复方案**：将规则移至文件的前三分之一，或其所在部分更显眼的位置。
 
-**Fix for "placed too late"**: Move the rule to the top third of the file, or to a more prominent position in its section.
+### 上下文债务分数
 
-### Context Debt Score
-
-A single metric for the health of your context engineering system:
+你的上下文工程系统健康状态的单一指标：
 
 ```
-Context Debt Score = (total_rules / 150) × (conflicts_found / total_rules) × 100
+上下文债务分数 = (total_rules / 150) × (conflicts_found / total_rules) × 100
 ```
 
-Where:
-- `total_rules` = count of distinct rules across all loaded config files
-- `150` = the approximate attention ceiling
-- `conflicts_found` = rules that contradict another rule
+其中：
+- `total_rules` = 所有已加载配置文件中独立规则的数量
+- `150` = 近似注意力上限
+- `conflicts_found` = 与另一条规则相矛盾的规则数量
 
-| Score Range | Status | Action |
-|-------------|--------|--------|
-| < 30 | Healthy | Standard quarterly audit |
-| 30 – 60 | Degraded | Prune and deduplicate; fix conflicts |
-| 60 – 80 | Poor | Major restructure needed |
-| > 80 | Critical | Start from scratch with top 30 rules |
+| 分数范围 | 状态 | 行动 |
+|---------|------|------|
+| < 30 | 健康 | 标准季度审计 |
+| 30 – 60 | 退化 | 修剪和去重；修复冲突 |
+| 60 – 80 | 差 | 需要大规模重构 |
+| > 80 | 危急 | 从最重要的 30 条规则重新开始 |
 
-**Running the score calculation**:
+**运行分数计算**：
 
 ```bash
-# Count rules (approximate: lines starting with -)
+# 统计规则数量（近似：以 - 开头的行）
 TOTAL_RULES=$(grep -c "^- " CLAUDE.md 2>/dev/null || echo 0)
 
-# Count conflicts requires manual review or an LLM audit pass
-# Use: claude "Scan CLAUDE.md and count rules that contradict each other. Return the count."
+# 统计冲突需要人工审查或使用大语言模型审计
+# 使用：claude "扫描 CLAUDE.md 并统计相互矛盾的规则数量。返回数量。"
 
-echo "Total rules: $TOTAL_RULES"
-echo "Run conflict audit manually or with Claude"
+echo "总规则数：$TOTAL_RULES"
+echo "手动或用 Claude 运行冲突审计"
 ```
 
-### Context Drift Detection
+### 上下文漂移检测
 
-The existing adherence metrics (canary checks, violation rates) require human interpretation: you know a rule is being violated when you notice it. Systematic drift detection is a complementary layer that detects behavioral shifts automatically, before they surface as bad outputs.
+现有的遵循指标（金丝雀检查、违反率）需要人工解读：当你注意到时才知道规则被违反。系统性漂移检测是一个补充层，在出现糟糕输出之前自动检测行为变化。
 
-These methods come from ML observability. They are more relevant for teams running Claude in automated pipelines than for interactive use, but the concepts apply in both contexts.
+这些方法来自机器学习可观测性领域。它们对在自动化流水线中运行 Claude 的团队更相关，但概念同样适用于交互式使用。
 
-**Cosine distance method**
+**余弦距离方法**
 
-The simplest production-ready approach. Embed model outputs (responses to fixed probe prompts) and measure cosine distance from a known-good baseline embedding.
+最简单的生产就绪方法。对模型输出（对固定探测提示的响应）进行嵌入，并测量与已知良好基线嵌入的余弦距离。
 
-1. Define 5-10 fixed probe prompts that test key conventions (equivalent to canary prompts).
-2. At a stable point ("golden baseline"), capture outputs and compute their embeddings.
-3. On each subsequent run, compute outputs for the same prompts and measure cosine distance from baseline.
-4. Alert when average distance exceeds a threshold (typically 0.15-0.20 for sentence-level embeddings).
+1. 定义 5-10 个固定探测提示，测试关键规范（等同于金丝雀提示）。
+2. 在稳定时间点（"黄金基线"），捕获输出并计算其嵌入。
+3. 在每次后续运行中，计算相同提示的输出并测量与基线的余弦距离。
+4. 当平均距离超过阈值时发出警报（句子级嵌入通常为 0.15-0.20）。
 
-What this catches: gradual style drift, convention erosion, changes in output structure — all before violation rates increase.
+能捕获什么：渐进的风格漂移、规范侵蚀、输出结构变化——所有这些都在违反率增加之前。
 
-**Share of drifted features**
+**漂移特征比例**
 
-More granular than cosine distance. Instead of a single distance metric, track which specific embedding dimensions have shifted beyond a threshold. This tells you which aspects of the output have changed (length, formality, code style) rather than just that something changed.
+比余弦距离更细粒度。不是单一距离指标，而是追踪哪些特定嵌入维度超过了阈值变化。这告诉你输出的哪些方面发生了变化（长度、正式程度、代码风格），而不仅仅是某些东西发生了变化。
 
-Practical implementation requires an embedding model and a monitoring store. Start with cosine distance; add feature-level tracking only if you need to diagnose what is drifting.
+实际实现需要嵌入模型和监控存储。从余弦距离开始；只有在需要诊断什么在漂移时才添加特征级追踪。
 
-**Maximum Mean Discrepancy (MMD)**
+**最大均值差异（MMD）**
 
-A kernel-based method for comparing two distributions of outputs. MMD answers: "Are the outputs from this period statistically different from the baseline period?" It handles high-dimensional embeddings robustly and does not require specifying which features to track.
+一种基于核的方法，用于比较两个输出分布。MMD 回答的问题是："这段时间的输出与基线时段在统计上有显著差异吗？"它能稳健处理高维嵌入，不需要指定要追踪哪些特征。
 
-MMD is more setup cost than cosine distance but produces fewer false positives when output variance is naturally high. Relevant for teams with significant output volume (hundreds of Claude runs per day).
+MMD 比余弦距离设置成本更高，但在输出方差自然较高时产生的误报更少。适用于有大量输出量的团队（每天数百次 Claude 运行）。
 
-**Statistical distance thresholds**
+**统计距离阈值**
 
-Regardless of method, thresholds matter:
+无论使用哪种方法，阈值都很重要：
 
-| Distance metric | Alert threshold | Note |
-|----------------|-----------------|------|
-| Cosine distance | > 0.15 | Works for most sentence embeddings |
-| Euclidean distance | Varies by dimensionality | Normalize embeddings first |
-| Manhattan distance | Varies by dimensionality | More robust to outliers than Euclidean |
+| 距离指标 | 警报阈值 | 说明 |
+|---------|---------|------|
+| 余弦距离 | > 0.15 | 适用于大多数句子嵌入 |
+| 欧氏距离 | 因维度而异 | 先对嵌入进行归一化 |
+| 曼哈顿距离 | 因维度而异 | 比欧氏距离对异常值更稳健 |
 
-These are starting points. Calibrate against your baseline variance: if your outputs naturally vary widely (creative tasks), use a looser threshold.
+这些是起点。根据你的基线方差进行校准：如果你的输出自然变化很大（创意任务），使用更宽松的阈值。
 
-**When to use drift detection**
+**何时使用漂移检测**
 
-- Automated pipelines where human review is not per-output
-- After CLAUDE.md changes, to verify behavior stayed stable
-- When upgrading Claude model versions (behavior shifts between versions)
-- Regression detection after any context configuration change
+- 不进行逐输出人工审查的自动化流水线
+- CLAUDE.md 更改后，验证行为是否保持稳定
+- 升级 Claude 模型版本时（版本间行为会变化）
+- 任何上下文配置更改后的回归检测
 
-For interactive development with regular human review, canary checks and violation rate tracking (already above) are sufficient.
+对于有定期人工审查的交互式开发，金丝雀检查和违反率追踪（已在上文介绍）就已足够。
 
-### Useful Metrics to Track Over Time
+### 随时间追踪的有用指标
 
-| Metric | How to Measure | Target |
-|--------|---------------|--------|
-| Always-on context size | `wc -w CLAUDE.md ~/.claude/CLAUDE.md` | < 5,000 words |
-| Rule count | `grep -c "^- " CLAUDE.md` | < 150 |
-| File age | `git log --follow -p CLAUDE.md | head -20` | Major review every 6 months |
-| Violation rate per key rule | Manual spot checks | < 20% violation |
-| Canary pass rate | `./scripts/run-canaries.sh` | 100% (all pass) |
+| 指标 | 如何测量 | 目标 |
+|------|---------|------|
+| 始终开启的上下文大小 | `wc -w CLAUDE.md ~/.claude/CLAUDE.md` | < 5,000 词 |
+| 规则数量 | `grep -c "^- " CLAUDE.md` | < 150 |
+| 文件年龄 | `git log --follow -p CLAUDE.md \| head -20` | 每 6 个月进行一次主要审查 |
+| 关键规则违反率 | 手动抽查 | < 20% 违反 |
+| 金丝雀通过率 | `./scripts/run-canaries.sh` | 100%（全部通过）|
 
 ---
 
-## 8. Context Reduction Techniques
+## 8. 上下文缩减技术
 
-### Path-Scoping: The Highest-Leverage Technique
+### 路径范围划定：最高杠杆的技术
 
-Path-scoping reduces always-on context by 40-50% with no loss of coverage. It is the single most impactful structural change for projects beyond ~200 lines of configuration.
+路径范围划定在不损失覆盖的情况下将始终开启上下文减少 40-50%。对于超过约 200 行配置的项目，这是最有影响力的单一结构性改变。
 
-Implementation steps:
+实施步骤：
 
-1. Identify natural domain boundaries in your codebase (API, frontend, database, tests, infrastructure)
-2. For each domain, create a `CLAUDE-{domain}.md` file in the domain directory
-3. Move domain-specific rules from root CLAUDE.md to the appropriate module
-4. Replace moved content in root CLAUDE.md with `@path/to/CLAUDE-domain.md` imports
-5. Verify adherence with canary checks
+1. 识别代码库中的自然领域边界（API、前端、数据库、测试、基础设施）
+2. 为每个领域在领域目录中创建 `CLAUDE-{domain}.md` 文件
+3. 将根 CLAUDE.md 中特定领域的规则移至相应模块
+4. 用 `@path/to/CLAUDE-domain.md` 导入替换根 CLAUDE.md 中移动的内容
+5. 用金丝雀检查验证遵循情况
 
-Target after refactor: root CLAUDE.md at under 150 lines (shared rules + import declarations only).
+重构后目标：根 CLAUDE.md 在 150 行以内（仅共享规则和导入声明）。
 
-### Negative Constraints
+### 负面约束
 
-Empirically, negative constraints ("never do X") outperform positive instructions ("do X") by 15-25% for preventing bad patterns. This is counterintuitive — you might expect "do X" to be clearer. But in practice, the model needs to actively resist a temptation to do the wrong thing; explicitly naming the wrong thing and saying "never" is more salient.
+根据经验，负面约束（"永不做 X"）在防止错误模式方面比正面指令（"做 X"）效果好 15-25%。这违反直觉——你可能认为"做 X"更清晰。但在实践中，模型需要主动抵制做错事的倾向；明确说出错误的事情并说"永不"更显著。
 
-| Pattern | Formulation | Adherence |
-|---------|-------------|-----------|
-| Positive (weaker) | "Use structured logging for all backend services" | ~75% |
-| Negative (stronger) | "Never use console.log in backend services; use the structured logger (pino)" | ~90% |
+| 模式 | 表述 | 遵循率 |
+|------|------|--------|
+| 正面（较弱）| "所有后端服务使用结构化日志" | ~75% |
+| 负面（较强）| "后端服务中永不使用 console.log；使用结构化日志（pino）" | ~90% |
 
-**Technique**: For any rule where the wrong pattern is a common default (raw try/catch, console.log, default exports, any types), frame the rule as a negative constraint naming the specific pattern to avoid.
+**技术**：对于任何错误模式是常见默认值的规则（原始 try/catch、console.log、默认导出、any 类型），将规则表述为命名要避免的具体模式的负面约束。
 
-### Rule Compression
+### 规则压缩
 
-Long explanatory rules consume tokens and dilute attention. Compress explanations to their essence:
+冗长的解释性规则消耗 Token 并分散注意力。将解释压缩至本质：
 
-**Before** (verbose, 38 words):
+**之前**（冗长，38 词）：
 ```markdown
-- When creating React components, always make sure to use TypeScript interfaces
-  for props, and define them before the component declaration, not inline, to
-  improve readability and enable reuse.
+- 创建 React 组件时，务必为 props 使用 TypeScript 接口，
+  并在组件声明之前定义它们，而非内联，
+  以提高可读性并支持复用。
 ```
 
-**After** (compressed, 9 words):
+**之后**（压缩，9 词）：
 ```markdown
-- React props: TypeScript interface, declared before component, never inline.
+- React props：TypeScript 接口，声明在组件之前，永不内联。
 ```
 
-The compressed version has higher adherence — shorter rules are processed with more attention weight per rule. Save explanations for the rationale format when they're truly needed for understanding.
+压缩后的版本遵循率更高——更短的规则以更高的注意力权重处理。在真正需要理解时，将解释保存为原因说明格式。
 
-**Compression heuristic**: If a rule takes more than one line, ask whether the extra content is a constraint or an explanation. Move explanations to comments (prefixed with `#` or a `>` blockquote) or rationale annotations. Keep the enforced constraint to one line.
+**压缩启发式**：如果一条规则需要超过一行，问自己额外内容是约束还是解释。将解释移至注释（以 `#` 或 `>` 引用前缀）或原因注解。将执行的约束保持在一行以内。
 
-### Deduplication
+### 去重
 
-The same constraint stated multiple times (in different words) does not reinforce it — it dilutes the total attention budget. Find and remove semantic duplicates.
+同一约束多次陈述（用不同措辞）不会强化它——而是分散总注意力预算。找到并删除语义重复项。
 
-**Common sources of duplication**:
-- One rule in a general section, one more specific version in a path-scoped module
-- A rule added to fix a problem, without removing the vaguer original rule it supersedes
-- Rules copied from different team members' configs during a merge
+**重复的常见来源**：
+- 一条规则在通用部分，一条更具体的版本在路径范围模块中
+- 为修复问题添加了规则，却没有删除它取代的更模糊的原始规则
+- 在合并期间从不同团队成员的配置中复制的规则
 
-**Deduplication workflow**:
+**去重工作流**：
 
 ```
-Scan CLAUDE.md for semantic duplicates. Two rules are duplicates if they
-constrain the same behavior, even if worded differently. List all duplicate
-pairs and recommend which version to keep based on specificity and clarity.
+扫描 CLAUDE.md 中的语义重复项。如果两条规则约束相同行为，
+即使措辞不同，也视为重复。列出所有重复对，
+并根据具体性和清晰度建议保留哪个版本。
 ```
 
-Run this as a Claude prompt against your CLAUDE.md. Review the suggestions and merge.
+将此作为 Claude 提示针对你的 CLAUDE.md 运行。审查建议并合并。
 
-### The Archive Pattern
+### 归档模式
 
-When removing a rule, you lose the knowledge of why it existed. That institutional memory can be valuable — six months later, someone may try to reintroduce the same pattern the rule was preventing.
+删除规则时，你会丢失它存在原因的知识。那些制度记忆可能很有价值——六个月后，有人可能会尝试重新引入该规则所防止的同一模式。
 
-Instead of deleting obsolete rules, archive them:
+与其删除过时规则，不如将它们归档：
 
 ```
 .claude/
-├── CLAUDE.md              # Active rules
-└── CLAUDE-archive.md      # Historical rules with retirement notes
+├── CLAUDE.md              # 活跃规则
+└── CLAUDE-archive.md      # 带退休说明的历史规则
 ```
 
-**Archive entry format**:
+**归档条目格式**：
 
 ```markdown
-## Archived Rules
+## 已归档规则
 
-### [Retired 2026-01] Use MongoDB for session storage
-Replaced by: Use PostgreSQL with the sessions table for session storage.
-Reason: Standardized on single database; MongoDB was only used for sessions and added operational complexity.
+### [2026-01 退役] 使用 MongoDB 存储会话
+替换为：使用 PostgreSQL 的 sessions 表存储会话。
+原因：统一使用单一数据库；MongoDB 仅用于会话且增加了运维复杂性。
 ```
 
-The archive is not loaded by Claude — it is reference documentation for humans. It prevents the same debates and mistakes from recurring.
+归档文件不由 Claude 加载——它是给人类的参考文档。它防止相同的争论和错误重复发生。
 
-### The 80/20 Rule for Rules
+### 规则的 80/20 原则
 
-Across most production configurations, 20% of rules account for 80% of Claude's consequential decisions. The other 80% of rules cover edge cases, stylistic preferences, and situations that rarely arise.
+在大多数生产配置中，20% 的规则占 Claude 重要决策的 80%。其余 80% 的规则涵盖边缘情况、风格偏好和很少出现的情况。
 
-Identifying your top 20%:
+识别你的前 20%：
 
-1. List every rule in CLAUDE.md
-2. For each rule, estimate: "How often does this rule meaningfully change Claude's output in a session?"
-3. Rules that apply daily: keep, prioritize, place early
-4. Rules that apply weekly: keep, place in middle
-5. Rules that apply monthly: consider archiving or moving to a loaded-on-demand skill
-6. Rules that apply rarely: archive
+1. 列出 CLAUDE.md 中的每条规则
+2. 对每条规则估计："这条规则在会话中有多频繁地有意义地改变 Claude 的输出？"
+3. 每天都适用的规则：保留、优先级高、放在靠前位置
+4. 每周都适用的规则：保留，放在中间
+5. 每月才适用的规则：考虑归档或移至按需加载的技能
+6. 很少适用的规则：归档
 
-The goal is not to eliminate coverage — it's to ensure that the rules that matter most are not diluted by the rules that matter least.
+目标不是消除覆盖——而是确保最重要的规则不会被最不重要的规则所稀释。
 
-**Placement matters**: Place your top 20% rules in the first third of CLAUDE.md. Attention weight is not uniform across a long document — early content has higher salience.
+**位置很重要**：将你前 20% 的规则放在 CLAUDE.md 的前三分之一处。注意力权重在长文档中并不均匀——早期内容具有更高显著性。
 
-### Think in Code
+### 用代码思考
 
-Named by context-mode v1.0.64 and independently described by Contieri in April 2026 as "Ask for the Analyst, Not the Analysis," this pattern addresses a common source of token waste in exploration tasks.
+这一模式由 context-mode v1.0.64 命名，并由 Contieri 于 2026 年 4 月独立描述为"寻求分析师而非分析"，它解决了探索任务中 Token 浪费的常见来源。
 
-**The problem**: To answer "which files import module X?", a naive agent opens and reads files one by one. With 30 candidate files, that's 30 tool calls and potentially 15,000+ tokens of file content loaded into context, the vast majority irrelevant to the actual question.
+**问题**：要回答"哪些文件导入了模块 X？"，一个朴素的智能体会逐一打开并读取文件。30 个候选文件意味着 30 次工具调用和可能超过 15,000 Token 的文件内容进入上下文，其中绝大多数与实际问题无关。
 
-**The pattern**: Instead of reading files, instruct the agent to write and run a small script (bash, Python, jq) that queries, counts, or filters, then return only the result. The result is 1 tool call and approximately 50 tokens rather than 30 calls and 15,000 tokens.
+**模式**：不要读取文件，而是指示智能体编写并运行一个小脚本（bash、Python、jq）来查询、统计或过滤，然后只返回结果。结果是 1 次工具调用和约 50 Token，而非 30 次调用和 15,000 Token。
 
-**Examples**:
+**示例**：
 
-Finding which files import a module:
+查找哪些文件导入了某个模块：
 ```bash
 grep -r "import X" src/ --include="*.ts" | wc -l
 ```
 
-Identifying files over a size threshold:
+识别超过大小阈值的文件：
 ```bash
 find src/ -name "*.ts" -size +50k | sort
 ```
 
-Counting test coverage by directory:
+按目录统计测试覆盖率：
 ```bash
 find src/ -name "*.test.ts" | sed 's|/[^/]*$||' | sort | uniq -c | sort -rn
 ```
 
-**When to apply it**: Any task that is "explore and report" rather than "edit." Discovery tasks, counting, pattern matching, dependency analysis, and finding files by content are all candidates. If you find yourself writing agent instructions that describe reading many files to gather statistics, the "Think in Code" pattern usually applies.
+**何时应用**：任何"探索并报告"而非"编辑"的任务。发现任务、统计、模式匹配、依赖分析和按内容查找文件都是候选项。如果你发现自己在编写描述读取许多文件以收集统计数据的智能体指令，"用代码思考"模式通常适用。
 
-**Relationship to sub-agents**: Sub-agents execute in isolation with their own context budget. "Think in Code" keeps everything in the main agent but uses scripts as the exploration mechanism. Both approaches avoid loading irrelevant file content into context. For tasks that genuinely require reading file contents (edits, code review, understanding logic), sub-agents are the better fit. For pure discovery tasks that reduce to counts or lists, a single script call is faster and cheaper.
+**与子智能体的关系**：子智能体在隔离环境中以自己的上下文预算执行。"用代码思考"将所有内容保留在主智能体中，但使用脚本作为探索机制。两种方法都避免将无关文件内容加载到上下文中。对于真正需要读取文件内容（编辑、代码审查、理解逻辑）的任务，子智能体更合适。对于可化简为统计或列表的纯发现任务，单次脚本调用更快更便宜。
 
-### Graduated Context Offloading
+### 渐进式上下文卸载
 
-From LangGraph's Deep Agents SDK research into long-running agents, this three-tier cascade addresses context accumulation over time without losing access to the information.
+来自 LangGraph 的 Deep Agents SDK 对长时运行智能体的研究，这个三层级联解决了随时间积累上下文的问题，同时不失去对信息的访问。
 
-**The problem**: A long-running agent that processes many files, API calls, and tool results accumulates context that grows until it hits window limits or degrades accuracy through context rot. Neither truncation (loses data) nor unlimited accumulation (loses accuracy) is correct.
+**问题**：处理许多文件、API 调用和工具结果的长时运行智能体积累的上下文会不断增长，直到触及窗口限制或通过上下文退化降低准确性。截断（丢失数据）和无限积累（降低准确性）都不正确。
 
-**The three-tier cascade**:
+**三层级联**：
 
-**Tier 1 — Large tool outputs (threshold: 20K tokens)**: Offload to filesystem. Write the full output to a temp file and inject only the file path and a 10-line preview into context. The agent can request the full content if needed.
+**第一层——大型工具输出（阈值：2 万 Token）**：卸载到文件系统。将完整输出写入临时文件，只将文件路径和 10 行预览注入上下文。智能体可以在需要时请求完整内容。
 
-**Tier 2 — Accumulated tool call arguments (threshold: context approaching mid-point)**: Offload old tool invocations. Keep only the most recent N tool calls in full; summarize or drop arguments for older calls. Tool results are more valuable than tool call arguments for continuing the task.
+**第二层——积累的工具调用参数（阈值：上下文接近中间点）**：卸载旧工具调用。仅保留最近 N 次工具调用的完整内容；对较旧调用的参数进行摘要或删除。工具结果比工具调用参数更有价值，用于继续任务。
 
-**Tier 3 — Message history (threshold: context near limit)**: Lossy summarization of message history. Last resort only — this introduces the risks described in Section 11 (Progressive Summarization Risks). Apply only when Tiers 1 and 2 are exhausted.
+**第三层——消息历史（阈值：上下文接近限制）**：对消息历史进行有损摘要。仅作为最后手段——这会引入第 11 节（渐进式摘要风险）中描述的风险。仅在第一层和第二层耗尽后才应用。
 
-**Claude Code equivalent using a PostToolUse hook**:
+**使用 PostToolUse Hook 的 Claude Code 等效实现**：
 
 ```json
 {
@@ -1537,7 +1533,7 @@ import json, sys, tempfile, os
 data = json.load(sys.stdin)
 output = data.get("tool_result", {}).get("content", "")
 
-THRESHOLD = 20_000  # characters, roughly 5K tokens
+THRESHOLD = 20_000  # 字符数，大约 5K Token
 
 if len(output) > THRESHOLD:
     tmp = tempfile.NamedTemporaryFile(
@@ -1550,9 +1546,9 @@ if len(output) > THRESHOLD:
     print(json.dumps({
         "tool_result": {
             "content": (
-                f"[Output too large — saved to {tmp.name}]\n"
-                f"Preview (first 10 lines):\n{preview}\n"
-                f"Use: cat {tmp.name}"
+                f"[输出太大——已保存至 {tmp.name}]\n"
+                f"预览（前 10 行）：\n{preview}\n"
+                f"使用：cat {tmp.name}"
             )
         }
     }))
@@ -1560,123 +1556,123 @@ else:
     print(json.dumps(data))
 ```
 
-This hook transparently intercepts large bash outputs, writes them to a temp file, and injects the path with a preview. The agent sees a compact summary and knows where to find the full content if it needs it. The same pattern applies to any tool type: MCP tool results, file reads, or API responses can all be offloaded to filesystem and referenced by path.
+此 Hook 透明地拦截大型 bash 输出，将其写入临时文件，并注入包含预览的路径。智能体看到紧凑摘要，并知道在需要时在哪里找到完整内容。同样的模式适用于任何工具类型：MCP 工具结果、文件读取或 API 响应都可以卸载到文件系统并通过路径引用。
 
-### Summary: Reduction Techniques by Impact
+### 摘要：按影响分类的缩减技术
 
-| Technique | Context Reduction | Effort | Adherence Impact |
-|-----------|------------------|--------|-----------------|
-| Path-scoping | 40-50% | Medium | +15-25% |
-| Negative constraints | 0% (reformulation) | Low | +15-25% per rule |
-| Rule compression | 20-30% | Low | +5-10% |
-| Deduplication | 10-20% | Low | +5-15% |
-| Archive pattern | 10-30% | Low | +5-10% |
-| 80/20 prioritization | 0% (reordering) | Low | +10-20% |
-| Think in Code | 90%+ on exploration tasks | Low | N/A (replaces calls) |
-| Graduated offloading | Variable (tier-dependent) | Medium | Prevents rot |
+| 技术 | 上下文缩减 | 难度 | 遵循率影响 |
+|------|-----------|------|-----------|
+| 路径范围划定 | 40-50% | 中等 | +15-25% |
+| 负面约束 | 0%（重新表述）| 低 | 每条规则 +15-25% |
+| 规则压缩 | 20-30% | 低 | +5-10% |
+| 去重 | 10-20% | 低 | +5-15% |
+| 归档模式 | 10-30% | 低 | +5-10% |
+| 80/20 优先级排序 | 0%（重新排序）| 低 | +10-20% |
+| 用代码思考 | 探索任务 90%+ | 低 | 不适用（替代调用）|
+| 渐进式卸载 | 可变（取决于层级）| 中等 | 防止退化 |
 
-The highest-leverage sequence for a project with context debt:
+针对存在上下文债务项目的最高杠杆操作序列：
 
-1. Path-scope (biggest structural win)
-2. Deduplicate (removes noise)
-3. Compress (sharpens remaining rules)
-4. Archive (clears obsolete rules safely)
-5. Reorder (prioritizes the rules that matter most)
-6. Graduated offloading (for long-running or multi-step agent workflows)
-
----
-
-## 9. Maturity Assessment
-
-Context engineering capability develops in stages. Most teams reach Level 2 and stop — not because higher levels are complex, but because the failures at Level 2 are invisible. Output quality is acceptable, so the pressure to go further never appears. This assessment makes the gap visible.
-
-### The Six Levels
-
-| Level | Name | What exists | Failure mode |
-|-------|------|-------------|--------------|
-| **0** | No configuration | LLM with no CLAUDE.md | Generic outputs, zero project awareness |
-| **1** | Flat config | Single CLAUDE.md, no structure | Rules pile up, adherence degrades after ~100 lines |
-| **2** | Structured config | Sections, clear organization, global/project separation | Works solo, breaks at team scale |
-| **3** | Modular config | Path-scoped modules, deliberate layering | Rules maintained but no verification |
-| **4** | Measured config | Canary tests, adherence tracking, lifecycle management | System works but drifts silently over time |
-| **5** | Engineered system | Profiles, CI drift detection, ACE pipeline, quarterly audit rhythm | — |
-
-### Self-Assessment
-
-Answer each question. Stop at the first "No" — that is your current level.
-
-**Level 0 → 1**: Do you have a CLAUDE.md file in your project?
-
-**Level 1 → 2**: Does your configuration distinguish between global conventions (in `~/.claude/CLAUDE.md`) and project-specific rules (in `./CLAUDE.md`)? Are sections clearly separated?
-
-**Level 2 → 3**: Are subsystem-specific rules in path-scoped modules rather than the root CLAUDE.md? Does your root CLAUDE.md stay under 150 lines?
-
-**Level 3 → 4**: Do you have canary checks that verify key conventions? Do you track violation rates for your most important rules? Do you run a context audit after major milestones?
-
-**Level 4 → 5**: Do team members assemble their CLAUDE.md from profiles rather than editing it directly? Is there CI drift detection that alerts when configuration diverges from source modules? Do you run session retrospectives to feed new patterns back into configuration?
-
-### What to Do at Each Level
-
-| Your level | Next action |
-|------------|-------------|
-| 0 | Create a minimal CLAUDE.md with 5-10 rules. See §3 for what belongs there. |
-| 1 | Split global and project config. Move cross-project preferences to `~/.claude/CLAUDE.md`. |
-| 2 | Identify the 2-3 highest-traffic subsystems. Create path-scoped modules for them. |
-| 3 | Write 3-5 canary prompts for your most violated rules. Automate them. |
-| 4 | Introduce profiles for team members. Add CI drift detection. Start session retrospectives. |
-| 5 | Maintain quarterly audits. The system is built — the work is ongoing calibration. |
-
-Most teams move from Level 0 to Level 2 in a single afternoon. Moving from Level 3 to Level 4 requires a measurement habit, not more configuration. The bottleneck at the higher levels is not knowledge — it is the discipline to treat configuration as a living system rather than a one-time setup.
+1. 路径范围划定（最大结构性收益）
+2. 去重（消除噪声）
+3. 压缩（锐化剩余规则）
+4. 归档（安全清除过时规则）
+5. 重新排序（优先级排序最重要的规则）
+6. 渐进式卸载（用于长时运行或多步骤智能体工作流）
 
 ---
 
-## 10. Signal Taxonomy and Causal Attribution
+## 9. 成熟度评估
 
-A flat friction score (errors × 3 + retries × 2) tells you how much friction happened but not which part of your configuration caused it. On a project running an ACE-v1 loop for ten weeks, this gap produced a misleading priority queue: Bash tool generated 3,377 retries vs 597 for Read vs 254 for Edit. Raw volume pointed at Bash as the problem, but the actual pattern was missing batching instructions, not a bad Bash rule. Without typed signals, a curator fixes the wrong layer.
+上下文工程能力分阶段发展。大多数团队到达第 2 级就停止了——不是因为更高级别很复杂，而是第 2 级的失败是不可见的。输出质量可以接受，所以继续推进的压力从未出现。这个评估使差距变得可见。
 
-> A note on naming: arXiv:2510.04618 (Stanford/SambaNova, Oct 2025) uses "ACE" for an inference-time context evolution technique. The ACE described here is a config-persistence loop operating across sessions, not within them. Different concept, same acronym. The v2 improvements below apply to this guide's definition.
+### 六个级别
 
-### Signal Categories
+| 级别 | 名称 | 存在什么 | 失败模式 |
+|------|------|---------|---------|
+| **0** | 无配置 | 没有 CLAUDE.md 的大语言模型 | 泛泛输出，零项目感知 |
+| **1** | 扁平配置 | 单一 CLAUDE.md，无结构 | 规则堆积，约 100 行后遵循率下降 |
+| **2** | 结构化配置 | 有章节、清晰组织，全局/项目分离 | 个人使用有效，团队规模使用时崩溃 |
+| **3** | 模块化配置 | 路径范围模块，刻意分层 | 规则有维护但没有验证 |
+| **4** | 可度量配置 | 金丝雀测试、遵循率追踪、生命周期管理 | 系统有效，但随时间悄悄漂移 |
+| **5** | 工程化系统 | 配置文件、CI 漂移检测、ACE 流水线、季度审计节奏 | — |
 
-Replace the flat score with a five-category taxonomy. Each event gets a category and an attribution candidate.
+### 自我评估
 
-| Category | Definition | Example |
-|---|---|---|
-| **syntactic** | Tool error, parse failure, malformed call | `Invalid JSON in tool call` |
-| **semantic** | Output rejected by user, retry with clarification | "No, I meant the other format" |
-| **procedural** | Rule conflict, missing step, wrong execution phase | Write-before-Read violation |
-| **alignment** | Tone violation, out-of-scope change, hallucinated claim | Claude adds unrequested refactoring |
-| **performance** | Token overrun, context overflow, `/compact` forced mid-task | Session degrading at 85% context |
+回答每个问题。在第一个"否"处停止——那就是你当前的级别。
 
-Weighting should reflect impact, not frequency. A single alignment violation in a production-critical flow costs more than 50 syntactic retries on a local script.
+**第 0 → 1 级**：你的项目中有 CLAUDE.md 文件吗？
 
-### Causal Attribution
+**第 1 → 2 级**：你的配置是否区分了全局规范（在 `~/.claude/CLAUDE.md` 中）和项目特定规则（在 `./CLAUDE.md` 中）？章节是否清晰分隔？
 
-For each friction event, capture the active context: which rule files were loaded, which skills were invoked, and which profile was active. This lets the Curator build a rule-to-friction correlation table without running LLM-as-judge over the full session history.
+**第 2 → 3 级**：子系统特定规则是否在路径范围模块中，而非根 CLAUDE.md 中？你的根 CLAUDE.md 是否保持在 150 行以内？
+
+**第 3 → 4 级**：你是否有验证关键规范的金丝雀检查？你是否追踪最重要规则的违反率？你是否在重大里程碑后运行上下文审计？
+
+**第 4 → 5 级**：团队成员是否从配置文件组装 CLAUDE.md，而非直接编辑？是否有 CI 漂移检测，当配置偏离源模块时发出警报？你是否进行会话回顾，将新模式反馈到配置中？
+
+### 各级别应做什么
+
+| 你的级别 | 下一步行动 |
+|---------|-----------|
+| 0 | 创建一个包含 5-10 条规则的最小 CLAUDE.md。参见第 3 节了解放什么。|
+| 1 | 分离全局和项目配置。将跨项目偏好移至 `~/.claude/CLAUDE.md`。|
+| 2 | 识别 2-3 个访问量最高的子系统。为它们创建路径范围模块。|
+| 3 | 为违反最多的规则编写 3-5 个金丝雀提示。自动化它们。|
+| 4 | 为团队成员引入配置文件。添加 CI 漂移检测。开始会话回顾。|
+| 5 | 维护季度审计。系统已构建——工作是持续校准。|
+
+大多数团队在一个下午就能从第 0 级升至第 2 级。从第 3 级升至第 4 级需要建立度量习惯，而非更多配置。更高级别的瓶颈不是知识——而是将配置视为活系统而非一次性设置的纪律。
+
+---
+
+## 10. 信号分类与因果归因
+
+扁平的摩擦分数（错误 × 3 + 重试 × 2）告诉你发生了多少摩擦，但不告诉你是你配置的哪个部分造成的。在一个运行 ACE-v1 循环十周的项目上，这个差距产生了误导性的优先级队列：Bash 工具产生了 3,377 次重试，而 Read 是 597 次，Edit 是 254 次。原始数量指向 Bash 是问题所在，但实际模式是缺少批处理指令，而非错误的 Bash 规则。没有类型化信号，策划者会修复错误的层次。
+
+> 命名说明：arXiv:2510.04618（Stanford/SambaNova，2025 年 10 月）使用"ACE"表示推理时上下文演化技术。这里描述的 ACE 是跨会话操作的配置持久化循环，而非在会话内部。不同概念，相同缩写。以下 v2 改进适用于本指南的定义。
+
+### 信号类别
+
+用五类分类法替换扁平分数。每个事件获得一个类别和一个归因候选项。
+
+| 类别 | 定义 | 示例 |
+|------|------|------|
+| **语法** | 工具错误、解析失败、格式错误的调用 | `工具调用中的无效 JSON` |
+| **语义** | 输出被用户拒绝，通过澄清重试 | "不，我的意思是另一种格式" |
+| **流程** | 规则冲突、缺失步骤、错误执行阶段 | 先写后读违规 |
+| **对齐** | 语气违规、超出范围的更改、幻觉声明 | Claude 添加了未请求的重构 |
+| **性能** | Token 超限、上下文溢出、任务中强制 `/compact` | 会话在 85% 上下文时退化 |
+
+权重应反映影响，而非频率。生产关键流程中的单次对齐违规，比本地脚本上的 50 次语法重试成本更高。
+
+### 因果归因
+
+对于每个摩擦事件，捕获活跃上下文：加载了哪些规则文件、调用了哪些技能、哪个配置文件处于活跃状态。这让策划者可以构建规则-摩擦相关性表，而无需对完整会话历史运行大语言模型评判。
 
 ```yaml
-# friction-event schema
+# 摩擦事件 schema
 id: evt_20260519_bash_batching_001
 timestamp: "2026-05-19T14:32:00Z"
 session_id: "2094ff6d"
 category: procedural
 tool: Bash
 retry_count: 4
-description: "Three sequential Bash calls where one batched call would have sufficed"
+description: "三次顺序 Bash 调用，一次批量调用本可完成"
 active_rules:
   - .claude/rules/lean-ctx.md
   - .claude/rules/bash-safety.md
 active_skills: []
 profile: default
-suspected_cause: "lean-ctx.md missing explicit Bash batching instruction"
+suspected_cause: "lean-ctx.md 缺少明确的 Bash 批处理指令"
 resolved: false
 ```
 
-Store events as append-only YAML files or newline-delimited JSON. They are the raw material for the Curator; keep them local and gitignore them by default unless your team chooses a shared signal store (see Section 11).
+将事件存储为仅追加的 YAML 文件或换行分隔的 JSON。它们是策划者的原材料；默认保存在本地并在 .gitignore 中，除非你的团队选择共享信号存储（参见第 11 节）。
 
-### Per-Pattern Tracking
+### 按模式追踪
 
-Beyond individual events, track friction by pattern over time. Replace a weekly total with a dict:
+除个别事件外，还要随时间按模式追踪摩擦。用一个字典替换每周总计：
 
 ```yaml
 friction_patterns:
@@ -1688,30 +1684,30 @@ friction_patterns:
   permission_denied_hook: 12
 ```
 
-The pattern time series is what lets you measure whether a merged rule had any effect. Without it, you are guessing.
+模式时间序列让你能够衡量合并的规则是否产生了任何效果。没有它，你只是在猜测。
 
 ---
 
-## 11. Loop Closure: PR-Based Curation
+## 11. 循环闭合：基于 PR 的策划
 
-The hidden failure mode at Level 5 is the open loop: the Curator generates suggestions but nothing gets merged. On the Aristote project over ten weeks of ACE-v1 operation, two curator reports separated by ten weeks proposed the same two rule candidates. Neither was merged. The loop was open, and the system produced reports instead of progress.
+第 5 级的隐藏失败模式是开放循环：策划者生成建议但没有任何东西被合并。在 Aristote 项目的十周 ACE-v1 操作中，两份相隔十周的策划报告提出了相同的两个规则候选项。两者都没有被合并。循环是开放的，系统生产报告而非进展。
 
-Closing the loop requires making the Curator's output easy to act on. The mechanism: the Curator generates a Git PR rather than a plain report.
+闭合循环需要让策划者的输出易于执行。机制：策划者生成 Git PR 而非普通报告。
 
-### PR Anatomy
+### PR 解剖
 
-Each Curator PR contains four things:
+每个策划者 PR 包含四个内容：
 
-1. **Config diff**: the exact rule or skill change proposed (a `git diff`-ready patch, not prose)
-2. **Friction evidence**: the 3-5 friction events that drove the suggestion, with event IDs linking back to the signal files
-3. **Canary results**: a before/after comparison on 10-20 probe prompts (see below)
-4. **Escalation note**: if this suggestion was already proposed in a previous report and not acted on, the PR includes a counter ("This suggestion appeared in 2 prior reports without action")
+1. **配置差异**：提议的确切规则或技能更改（一个 `git diff` 就绪的补丁，而非散文）
+2. **摩擦证据**：驱动建议的 3-5 个摩擦事件，带有链接回信号文件的事件 ID
+3. **金丝雀结果**：10-20 个探测提示的前后对比（见下文）
+4. **升级说明**：如果此建议已在之前的报告中提出但未被执行，PR 包含一个计数器（"此建议出现在之前的 2 份报告中，未采取行动"）
 
-A human reviews and merges or closes. The Curator never modifies rules directly. This is the "Augmented" in a mature context engineering workflow: the loop closes through human judgment, not automation.
+人类审查并合并或关闭。策划者永远不会直接修改规则。这就是成熟上下文工程工作流中"增强"的含义：循环通过人类判断而非自动化关闭。
 
-### A/B Canary Probes
+### A/B 金丝雀探测
 
-Before proposing a change, the Curator runs a small set of probe prompts against both the current config and the proposed config. Probes are simple, task-representative inputs that exercise the rule being changed.
+在提出更改之前，策划者对当前配置和提议配置运行一小组探测提示。探测是简单的、有代表性的输入，用于测试被更改的规则。
 
 ```bash
 # canary-ab.sh
@@ -1727,114 +1723,114 @@ for probe in $(yq '.probes[].id' "$PROBES_FILE"); do
 done
 ```
 
-Ten to twenty probes per PR is sufficient. Use cosine similarity for a first pass; run LLM-as-judge only on probes where similarity drops below 0.85. This keeps canary costs near zero for most PRs and reserving judgment for the edge cases that actually warrant it.
+每个 PR 10 到 20 个探测就足够了。使用余弦相似度进行初步筛选；只对相似度低于 0.85 的探测运行大语言模型评判。这使大多数 PR 的金丝雀成本接近零，并将判断保留给真正需要它的边缘情况。
 
-### Multi-timescale Operation
+### 多时间尺度操作
 
-Running the Curator on a single cadence produces two failure modes: too frequent and you overwhelm reviewers, too infrequent and friction accumulates invisibly. Use three loops:
+在单一节奏上运行策划者会产生两种失败模式：过于频繁会使审阅者不堪重负，过于稀疏则摩擦会无形地积累。使用三个循环：
 
-| Loop | Trigger | Action |
-|---|---|---|
-| Real-time | PostStop hook fires | Append friction event to local signal store |
-| Weekly | Cron (Saturday 02:00) | Curator aggregates the week, generates PR if signal threshold met |
-| Quarterly | Manual | Constitutional audit: check rule overlap, archive dormant skills, review profile consolidation candidates |
+| 循环 | 触发条件 | 操作 |
+|------|---------|------|
+| 实时 | PostStop Hook 触发 | 将摩擦事件追加到本地信号存储 |
+| 每周 | Cron（周六 02:00）| 策划者汇总本周，如果信号阈值满足则生成 PR |
+| 季度 | 手动 | 宪法审计：检查规则重叠、归档休眠技能、审查配置文件整合候选项 |
 
-The quarterly loop is not automatable in any useful way. It requires reading the system's actual behavior, not just its logged signals.
+季度循环无法以任何有意义的方式自动化。它需要阅读系统的实际行为，而非仅仅其记录的信号。
 
-### Signal Locality Decision
+### 信号本地化决策
 
-Where friction signals live determines what the Curator can access. Three options:
+摩擦信号存储在哪里决定了策划者可以访问什么。三个选项：
 
-| Option | How it works | Best for |
-|---|---|---|
-| **A. Local cron** | Signals stay on the developer's machine; Curator runs as a macOS launchd job or local cron | Solo dev, privacy-first, no infra to maintain |
-| **B. Pushed signal store** | PostStop hook pushes anonymized signals to a private repo or S3 bucket; Curator runs in CI | Teams of 5+, multi-dev reconciliation required (Section 14) |
-| **C. Hosted dev env** | Signals land in a shared environment (Codespaces, Coder) by default | Teams already on hosted dev infrastructure |
+| 选项 | 工作方式 | 最适合 |
+|------|---------|--------|
+| **A. 本地 Cron** | 信号保留在开发者机器上；策划者作为 macOS launchd 任务或本地 Cron 运行 | 单人开发、隐私优先、无需维护基础设施 |
+| **B. 推送信号存储** | PostStop Hook 将匿名化信号推送到私有仓库或 S3 存储桶；策划者在 CI 中运行 | 5 人以上团队，需要多开发者协调（第 14 节）|
+| **C. 托管开发环境** | 信号默认落入共享环境（Codespaces、Coder）| 已因其他原因使用托管开发环境的团队 |
 
-Option A is the right default for solo developers. Option B is necessary for any team that wants cross-developer pattern analysis or multi-dev profile reconciliation; the signal store should be a private repo, not a SaaS platform, to keep sensitive path and tooling data off third-party servers. Option C is only worth considering if the team is already committed to hosted dev environments for other reasons.
+选项 A 是单人开发者的正确默认值。选项 B 对于任何想要跨开发者模式分析或多开发者配置文件协调的团队是必要的；信号存储应该是私有仓库，而非 SaaS 平台，以防敏感路径和工具数据落入第三方服务器。只有当团队出于其他原因已经致力于托管开发环境时，选项 C 才值得考虑。
 
-### Suggestion Suppression
+### 建议压制
 
-A suggestion that appears in three consecutive reports without any action taken should change state: it either moves to "pending human decision" with a blocking flag in the next PR, or it gets closed as "won't fix" with a documented reason. Allowing suggestions to repeat silently is the same failure mode as the open loop, just more subtle.
-
----
-
-## 12. Ejection: Disciplined De-engineering
-
-Every part of the context engineering stack helps you add more: more rules, more skills, more profile sections. None of it helps you remove what stopped working. This is the missing half of the discipline, and its absence is the reason Level 5 systems silently degrade.
-
-Context debt accumulates through addition. A rule written for a sprint six months ago may conflict with three newer rules, fire on edge cases the author never anticipated, and generate friction on every session. Without an ejection mechanism, it stays forever because removing it feels risky and auditing it takes time nobody has.
-
-### Ejection Heuristics
-
-Three metrics drive ejection candidates:
-
-**Activation threshold**: rules that have not fired in the past N months are likely dead weight. The signal: if the pattern they prevent hasn't appeared in the friction log, either the rule is working perfectly or nobody writes code that triggers it. Both cases suggest dormancy. Default: 3 months for skills, 6 months for rules.
-
-**ROI tracking**: skills where the friction they produce (from overly strict enforcement, wrong-context triggers) exceeds the friction they prevent. The signal: the skill appears in `active_skills` fields of friction events more often than it appears in "resolved" events. Negative ROI over 4+ weeks is an ejection candidate.
-
-**Profile overlap**: when a rule appears in more than 80% of individual developer profiles, it belongs in the shared config rather than in each profile. This is a consolidation proposal, not an ejection, but it reduces duplicate maintenance surface.
-
-### Ejection vs. Archive
-
-Ejection does not mean deletion. The Archive Pattern (Section 8) established the institutional memory reason for keeping retired rules with a retirement note. Ejection is the *automated detection* of what should be archived. The Curator flags candidates; a human makes the final call and moves the rule to `CLAUDE-archive.md` with a date and reason.
-
-No commercial observability tool (Braintrust, Langfuse, Helicone, LangSmith) implements this pattern. They track what happened; they do not track what your configuration contains nor suggest removing the parts of it that are causing harm. The ejection mechanism is the discipline that commercial tools skip because it requires knowing your config schema, not just your prompt history.
+在三份连续报告中出现但未采取任何行动的建议应该改变状态：它要么移至"待人工决策"状态，并在下一个 PR 中带有阻塞标志，要么以"不会修复"状态关闭，并附有有记录的原因。允许建议静默重复与开放循环是相同的失败模式，只是更微妙。
 
 ---
 
-## 13. Constitutional and Self-consistency Audits
+## 12. 弹出：有纪律的反工程化
 
-A config that grows without constraint eventually contradicts itself. Rule A says "always use ESLint for formatting". Rule B says "prefer Biome for speed". A new developer reads both and does neither, because the rules conflict and the system gives no signal that they conflict. Constitutional audits catch this before it compounds.
+上下文工程栈的每个部分都帮助你添加更多：更多规则、更多技能、更多配置文件部分。没有任何部分帮助你删除停止工作的内容。这是这门学科缺失的一半，其缺失是第 5 级系统悄悄退化的原因。
 
-### Constitutional Audit
+上下文债务通过添加而积累。六个月前为某个 sprint 写的规则可能与三条更新的规则冲突，在作者从未预料到的边缘情况下触发，并在每次会话中产生摩擦。没有弹出机制，它永远保留，因为删除它感觉有风险，审计它没人有时间。
 
-Before each Curator PR lands, run a constraint check against two targets: the proposed change vs. the existing rule set, and the proposed change vs. an explicit `constitution.md`.
+### 弹出启发式
+
+三个指标驱动弹出候选项：
+
+**激活阈值**：在过去 N 个月内未触发的规则很可能是无效负载。信号：如果它们防止的模式没有出现在摩擦日志中，要么规则运作得很好，要么没有人写触发它的代码。两种情况都表明休眠。默认：技能 3 个月，规则 6 个月。
+
+**ROI 追踪**：产生的摩擦（来自过于严格的执行、错误上下文触发）超过预防的摩擦的技能。信号：技能在摩擦事件的 `active_skills` 字段中出现的频率，多于在"已解决"事件中出现的频率。连续 4 周以上的负 ROI 是弹出候选项。
+
+**配置文件重叠**：当规则出现在超过 80% 的个人开发者配置文件中时，它属于共享配置而非每个配置文件中。这是整合建议，而非弹出，但它减少了重复维护面。
+
+### 弹出 vs. 归档
+
+弹出不意味着删除。归档模式（第 8 节）建立了保留带退休说明的退役规则的制度记忆原因。弹出是应该归档的内容的*自动检测*。策划者标记候选项；人类做出最终决定，并将规则移至 `CLAUDE-archive.md`，附上日期和原因。
+
+没有商业可观测性工具（Braintrust、Langfuse、Helicone、LangSmith）实现这种模式。它们追踪发生了什么；它们不追踪你的配置包含什么，也不建议删除其中造成伤害的部分。弹出机制是商业工具跳过的纪律，因为它需要了解你的配置 schema，而不仅仅是你的提示历史。
+
+---
+
+## 13. 宪法和自我一致性审计
+
+在没有约束的情况下增长的配置最终会自相矛盾。规则 A 说"始终使用 ESLint 进行格式化"。规则 B 说"优选速度更快的 Biome"。新开发者读了两条都不做，因为规则冲突而系统没有发出信号。宪法审计在这种情况复合之前捕获它。
+
+### 宪法审计
+
+在每个策划者 PR 落地之前，针对两个目标运行约束检查：提议的更改 vs. 现有规则集，以及提议的更改 vs. 明确的 `constitution.md`。
 
 ```yaml
-# .claude/constitution.md (example)
+# .claude/constitution.md（示例）
 invariants:
   - id: no-auto-commit
-    rule: "Never commit without explicit user request"
-    rationale: "2024-incident: automated commit bypassed review gate"
+    rule: "未经明确用户请求，永不提交"
+    rationale: "2024-事件：自动提交绕过了审查门"
   - id: no-destructive-without-confirm
-    rule: "Never run rm, DROP, or force-push without confirmation"
-    rationale: "Production safety baseline"
+    rule: "未经确认，永不运行 rm、DROP 或 force-push"
+    rationale: "生产安全基线"
   - id: diff-before-merge
-    rule: "Always show diff before applying multi-file changes"
-    rationale: "Preserves human review in the loop"
+    rule: "在应用多文件更改之前，始终显示差异"
+    rationale: "保持人工审查在循环中"
 ```
 
-The constitutional check is two queries: does the proposed rule contradict any invariant, and does it conflict with any existing rule in `.claude/rules/`? Both queries can run as Claude prompts with the constitution and rule list as context. This costs a few hundred tokens per Curator run and prevents rule conflicts from silently accumulating.
+宪法检查是两个查询：提议的规则是否与任何不变量相矛盾，以及它是否与 `.claude/rules/` 中的任何现有规则冲突？两个查询都可以作为 Claude 提示运行，以宪法和规则列表作为上下文。每次策划者运行花费几百 Token，并防止规则冲突悄悄积累。
 
-The lineage of this pattern is Constitutional AI (Anthropic, 2022) and RLAIF: using a high-level value document to constrain a lower-level generation process. The transposition here is from output alignment (checking a model's responses) to config alignment (checking a rule system's internal consistency). The mechanism is simpler because the inputs are shorter and fully deterministic.
+这种模式的谱系是宪法 AI（Anthropic，2022 年）和 RLAIF：使用高层价值文档来约束低层生成过程。这里的转置是从输出对齐（检查模型的响应）到配置对齐（检查规则系统的内部一致性）。机制更简单，因为输入更短且完全确定。
 
-### Self-consistency Check
+### 自我一致性检查
 
-Systems that modify themselves accumulate a specific failure mode: the documentation claims a state that no longer matches reality. On a production ACE installation, the file `ace-improvement-loop.md` claimed "skills versioning 100% complete as of 2026-03-04". The actual state, measured six weeks later, was 20 out of 114 skills versioned (17%). The gap persisted because nobody audited the claims the system made about itself.
+自我修改的系统积累一种特定的失败模式：文档声称的状态不再与现实相符。在生产 ACE 安装中，文件 `ace-improvement-loop.md` 声称"技能版本控制于 2026-03-04 100% 完成"。六周后测量的实际状态是 114 个技能中有 20 个已版本控制（17%）。差距持续存在，因为没有人审计系统对自身所做的声明。
 
-The self-consistency check runs weekly, separately from the Curator. It reads the claims in your ACE documentation and verifies them against the measured state:
+自我一致性检查每周单独运行，与策划者无关。它读取你的 ACE 文档中的声明，并根据测量状态进行验证：
 
-| Claim type | How to verify |
-|---|---|
-| "N rules active" | `find .claude/rules -name "*.md" \| wc -l` |
-| "Skills versioning X% complete" | `grep -l "^version:" .claude/skills/*/SKILL.md \| wc -l` divided by total skills |
-| "Last curator run: date" | Check the most recent Curator PR creation date in git log |
-| "Friction trending down" | Compare 4-week moving average from signal store |
+| 声明类型 | 如何验证 |
+|---------|---------|
+| "N 条活跃规则" | `find .claude/rules -name "*.md" \| wc -l` |
+| "技能版本控制 X% 完成" | `grep -l "^version:" .claude/skills/*/SKILL.md \| wc -l` 除以技能总数 |
+| "上次策划者运行：日期" | 检查 git log 中最近的策划者 PR 创建日期 |
+| "摩擦趋于下降" | 比较信号存储中的 4 周移动平均 |
 
-When a claim diverges from the measured state by more than 10%, the check appends a "Self-consistency violations" section to the next Curator report. This is not a failure state; it is the system doing its job. Documentation rot is normal. Catching it weekly is not.
+当声明与测量状态偏差超过 10% 时，检查在下一份策划者报告中追加"自我一致性违规"部分。这不是失败状态；这是系统在做它应该做的事。文档退化是正常的。每周捕获它不是。
 
 ---
 
-## 14. Multi-dev Profile Reconciliation
+## 14. 多开发者配置文件协调
 
-Profile-based assembly (Section 5) solves the N-devs × M-tools fragmentation problem by giving each developer a personal profile. Over time, a new problem emerges: individual profiles diverge. Developer A's profile adds a rule preventing direct production database access. Developer B adds the same rule two weeks later, worded slightly differently. Developer C never adds it. The rule that should be in the shared config ends up duplicated, inconsistent, and unenforceable.
+基于配置文件的组装（第 5 节）通过给每位开发者一个个人配置文件，解决了 N 开发者 × M 工具碎片化问题。随着时间推移，一个新问题出现：个人配置文件产生分歧。开发者 A 的配置文件添加了防止直接访问生产数据库的规则。开发者 B 两周后添加了同一条规则，措辞略有不同。开发者 C 从未添加它。本应在共享配置中的规则最终被复制、不一致且无法执行。
 
-This is specific to hierarchical config systems like Claude Code's three-tier structure (user `~/.claude/CLAUDE.md` + project `CLAUDE.md` + plugin rules). No commercial LLMOps tool solves this because none of them operates at the granularity of individual rule files across a team's config hierarchy.
+这对于 Claude Code 的三层配置结构（用户 `~/.claude/CLAUDE.md` + 项目 `CLAUDE.md` + 插件规则）等层级配置系统是特有的。没有商业 LLMOps 工具解决这个问题，因为没有一个在团队配置层级的单个规则文件粒度上操作。
 
-### Detection
+### 检测
 
-The reconciliation check scans all active developer profiles and identifies rules that appear in more than 50% of them:
+协调检查扫描所有活跃开发者配置文件，并识别出现在超过 50% 中的规则：
 
 ```bash
 # profile-reconcile.sh
@@ -1849,92 +1845,92 @@ while IFS= read -r line; do
   rule=$(echo "$line" | awk '{print $2}')
   ratio=$(echo "scale=2; $count / $total_profiles" | bc)
   if (( $(echo "$ratio >= $THRESHOLD" | bc -l) )); then
-    echo "HOIST CANDIDATE ($count/$total_profiles profiles): $rule"
+    echo "提升候选项（$count/$total_profiles 个配置文件）：$rule"
   fi
 done <<< "$all_rules"
 ```
 
-A rule that appears in 4 out of 5 developer profiles belongs in the project-level `CLAUDE.md`, not in four separate profiles.
+出现在 5 个开发者配置文件中的 4 个的规则，应该放在项目级 `CLAUDE.md` 中，而非 4 个独立的配置文件中。
 
-### Preservation
+### 保护
 
-Not everything should be hoisted. Personal preferences stay personal: tone settings, verbosity levels, preferred explanation depth, language choices. The reconciliation check distinguishes behavioral rules (what Claude does) from preference rules (how Claude communicates). Behavioral rules above the threshold are hoist candidates; preference rules are never touched.
+不是所有东西都应该被提升。个人偏好保持个人：语气设置、详细程度、首选解释深度、语言选择。协调检查区分行为规则（Claude 做什么）和偏好规则（Claude 如何沟通）。超过阈值的行为规则是提升候选项；偏好规则永远不会被触碰。
 
-For a team of 5 or more developers, run the reconciliation check monthly. For teams above 10, run it as part of the quarterly constitutional audit. The output is a list of hoist candidates with a proposed diff for the shared config; a human reviews and applies. The check does not modify any file automatically.
+对于 5 人或以上的团队，每月运行协调检查。对于超过 10 人的团队，将其作为季度宪法审计的一部分运行。输出是包含共享配置提议差异的提升候选项列表；人类审查并应用。检查不会自动修改任何文件。
 
 ---
 
-## 15. Token Audit Workflow
+## 15. Token 审计工作流
 
-Context engineering theory only converts to real gains once you measure your actual overhead. Most developers discover they are loading 40-60K tokens of fixed context before any user task begins: configuration files, rules, hooks output, memory files, and the Claude Code system prompt all compound. This section provides a reproducible audit workflow that takes under five minutes and produces an actionable plan.
+上下文工程理论只有在你测量实际开销后才能转化为真实收益。大多数开发者发现，在任何用户任务开始之前，他们就加载了 4-6 万 Token 的固定上下文：配置文件、规则、Hook 输出、记忆文件和 Claude Code 系统提示都在叠加。本节提供一个可重复的审计工作流，耗时不到五分钟，并产生可执行的计划。
 
-### Real-World Session Benchmarks
+### 真实世界会话基准
 
-Before auditing your overhead, calibrate against what practitioners observe on real codebases. The figures below come from heavy users on Max 200 plans running Opus 4.7 at high effort. Treat them as upper-range references: the same tasks at Sonnet-level effort run 30-50% lower.
+在审计你的开销之前，先以从业者在真实代码库上观察到的数据进行校准。以下数据来自在 Max 200 计划上高强度使用 Opus 4.7 的用户。将它们作为上限参考：相同任务在 Sonnet 级别的使用量低 30-50%。
 
-**Per-turn (input + output combined)**
+**每轮（输入 + 输出合计）**
 
-| Task type | Typical range |
-|-----------|---------------|
-| Simple question, 1-2 tool calls | 10-30K tokens |
-| Targeted edit with file reads | 30-80K tokens |
-| Feature implementation with exploration | 100-300K tokens |
-| Heavy investigation (MCP, multi-agent, Datadog) | 300K-1M+ tokens |
+| 任务类型 | 典型范围 |
+|---------|---------|
+| 简单问题，1-2 次工具调用 | 1-3 万 Token |
+| 带文件读取的定向编辑 | 3-8 万 Token |
+| 带探索的功能实现 | 10-30 万 Token |
+| 深度调查（MCP、多智能体、Datadog）| 30 万 -100 万+ Token |
 
-**Per-session (full conversation)**
+**每次会话（完整对话）**
 
-| Session type | Typical range |
-|--------------|---------------|
-| Quick fix | 100-300K tokens |
-| Complete PR with tests | 500K-2M tokens |
-| Long session with compaction | 5M-20M+ tokens |
+| 会话类型 | 典型范围 |
+|---------|---------|
+| 快速修复 | 10-30 万 Token |
+| 完整 PR（含测试）| 50 万 -200 万 Token |
+| 带压缩的长会话 | 500 万 -2000 万+ Token |
 
-The dominant cost driver is input tokens, not output. A 1,000-line file re-read five times in the same session adds roughly 50K input tokens on its own. MCP tools that return verbose JSON (Notion, Datadog, GitHub API responses) compound this quickly: a single Datadog query can push 20-50K tokens into context before the model even processes the data.
+主要成本驱动因素是输入 Token，而非输出。同一个 1,000 行文件在同一会话中重读 5 次，光这一项就会增加约 5 万个输入 Token。返回冗长 JSON 的 MCP 工具（Notion、Datadog、GitHub API 响应）会迅速叠加：单次 Datadog 查询就可以在模型处理数据之前将 2-5 万 Token 推入上下文。
 
-Team-level perspective: in a Slack community survey of Claude Code power users (May 2026), individual heavy users reported 300-430M tokens per day on complex agentic workflows; median team usage ran closer to 40K tokens per request across a mixed team (simple and complex tasks combined), with heavy users reaching 85K+.
+团队视角：在 Claude Code 重度用户的 Slack 社区调查（2026 年 5 月）中，个人重度用户在复杂智能体工作流中每天报告 3-4.3 亿 Token；混合团队（简单和复杂任务混合）的中位数每请求约 4 万 Token，重度用户可达 8.5 万+。
 
-Sub-agents shift the math. Each sub-agent operates in a shorter, focused context window, so per-agent token cost is lower. Total cost across all agents in a complex workflow is typically higher than a single long session because you are spawning many agents. What improves is quality and parallelism, not raw token efficiency.
+子智能体改变了数学。每个子智能体在更短、更专注的上下文窗口中操作，因此每个智能体的 Token 成本更低。在复杂工作流中跨所有智能体的总成本通常高于单一长会话，因为你在产生许多智能体。改善的是质量和并行性，而非原始 Token 效率。
 
-### What Counts as Fixed Context
+### 什么算作固定上下文
 
-Every session starts with a baseline of tokens that Claude loads before processing a single user message:
+每次会话在 Claude 处理第一条用户消息之前，都从基线 Token 开始：
 
-| Component | Loaded when | Typical size |
-|-----------|-------------|--------------|
-| `~/.claude/CLAUDE.md` + `@imports` | Always | 5-15K tokens |
-| Project `CLAUDE.md` | Always | 2-8K tokens |
-| `.claude/rules/*.md` (auto-loaded) | Always | 5-40K tokens |
-| `MEMORY.md` (project memory) | Always | 1-3K tokens |
-| Claude Code system prompt | Always | ~7,500 tokens |
-| Hook output | Per tool call | 0.1-2K tokens × call frequency |
-| `.claude/commands/*.md` | On invocation only | 0 by default |
-| `.claude/agents/*.md` | On invocation only | 0 by default |
+| 组件 | 加载时机 | 典型大小 |
+|------|---------|---------|
+| `~/.claude/CLAUDE.md` + `@imports` | 始终 | 5-15K Token |
+| 项目 `CLAUDE.md` | 始终 | 2-8K Token |
+| `.claude/rules/*.md`（自动加载）| 始终 | 5-40K Token |
+| `MEMORY.md`（项目记忆）| 始终 | 1-3K Token |
+| Claude Code 系统提示 | 始终 | ~7,500 Token |
+| Hook 输出 | 每次工具调用 | 0.1-2K Token × 调用频率 |
+| `.claude/commands/*.md` | 仅在调用时 | 默认 0 |
+| `.claude/agents/*.md` | 仅在调用时 | 默认 0 |
 
-The critical distinction: `.claude/rules/` loads every `.md` file at session start regardless of relevance. Commands and agents are lazy-loaded — they cost nothing until invoked. Rules files are the most common source of unexpected overhead.
+关键区别：`.claude/rules/` 在会话开始时加载每个 `.md` 文件，无论相关性如何。命令和智能体是懒加载的——直到调用才消耗成本。规则文件是意外开销最常见的来源。
 
-### Step 1 — Measure the Components
+### 步骤 1——测量各组件
 
-Run these commands from your project root to get a breakdown by component:
+从你的项目根目录运行这些命令，按组件获取分解：
 
 ```bash
-# Project CLAUDE.md
-echo "=== PROJECT CLAUDE.md ===" && wc -c CLAUDE.md
+# 项目 CLAUDE.md
+echo "=== 项目 CLAUDE.md ===" && wc -c CLAUDE.md
 
-# Rules files sorted by size (your biggest opportunity)
-echo "=== RULES FILES ===" && find .claude/rules -name "*.md" 2>/dev/null \
+# 按大小排序的规则文件（你最大的优化机会）
+echo "=== 规则文件 ===" && find .claude/rules -name "*.md" 2>/dev/null \
   | xargs wc -c 2>/dev/null | sort -rn | head -20
 
-# Global config files
-echo "=== GLOBAL ~/.claude ===" && ls -la ~/.claude/*.md 2>/dev/null \
+# 全局配置文件
+echo "=== 全局 ~/.claude ===" && ls -la ~/.claude/*.md 2>/dev/null \
   | awk '{print $5, $9}' | sort -rn
 ```
 
-### Step 2 — Calculate Your Token Budget
+### 步骤 2——计算你的 Token 预算
 
-Tokens ≈ characters ÷ 4 (rough but reliable for English/code mix).
+Token ≈ 字符 ÷ 4（对于英语/代码混合内容，粗糙但可靠）。
 
 ```bash
-# Full budget estimate
+# 完整预算估算
 GLOBAL=$(cat ~/.claude/CLAUDE.md ~/.claude/*.md 2>/dev/null | wc -c)
 PROJECT=$(wc -c < CLAUDE.md 2>/dev/null || echo 0)
 RULES=$(find .claude/rules -name "*.md" 2>/dev/null | xargs cat | wc -c)
@@ -1942,50 +1938,49 @@ MEMORY=$(find ~/.claude/projects -name "MEMORY.md" -path "*$(pwd | tr '/' '-')*"
   2>/dev/null | xargs cat 2>/dev/null | wc -c || echo 0)
 TOTAL=$(( GLOBAL + PROJECT + RULES + MEMORY + 30000 ))
 
-echo "Global ~/.claude   : ~$(( GLOBAL / 4 )) tokens"
-echo "Project CLAUDE.md  : ~$(( PROJECT / 4 )) tokens"
-echo "Rules (auto-loaded): ~$(( RULES / 4 )) tokens"
-echo "MEMORY.md          : ~$(( MEMORY / 4 )) tokens"
-echo "System prompt      : ~7,500 tokens (estimate)"
+echo "全局 ~/.claude      : ~$(( GLOBAL / 4 )) Token"
+echo "项目 CLAUDE.md      : ~$(( PROJECT / 4 )) Token"
+echo "规则（自动加载）    : ~$(( RULES / 4 )) Token"
+echo "MEMORY.md           : ~$(( MEMORY / 4 )) Token"
+echo "系统提示            : ~7,500 Token（估算）"
 echo "---"
-echo "TOTAL              : ~$(( TOTAL / 4 )) tokens"
+echo "总计                : ~$(( TOTAL / 4 )) Token"
 ```
 
-For context: Claude's window is 200K tokens. A 60K fixed overhead means 30% consumed before any work begins. Against a typical coding task that uses 20-40K additional tokens, that leaves less than half the window for actual output.
+供参考：Claude 的窗口是 20 万 Token。6 万的固定开销意味着在任何工作开始前就消耗了 30%。对于通常使用额外 2-4 万 Token 的典型编码任务，实际输出可用的空间不到窗口的一半。
 
-### Step 3 — Classify Rules by Usage Frequency
+### 步骤 3——按使用频率分类规则
 
-The rules files are usually where the biggest savings live. For each file in `.claude/rules/`, ask one question: how often is this relevant in a typical session?
+规则文件通常是节省空间最大的地方。对于 `.claude/rules/` 中的每个文件，问一个问题：这在典型会话中有多频繁是相关的？
 
-| Class | Definition | Action |
-|-------|------------|--------|
-| **Always critical** | Applies to every task (coding conventions, output format, safety rules) | Keep auto-loaded |
-| **Sometimes needed** | Relevant in 20-40% of sessions (debugging methodology, task management) | Keep auto-loaded if small; consider on-demand if large |
-| **Rarely needed** | Relevant in under 10% of sessions (Figma workflow, Windows compatibility, design system) | Remove from auto-load |
-| **Never needed** | Outdated, covered elsewhere, or not relevant to this project | Delete or archive |
+| 类别 | 定义 | 操作 |
+|------|------|------|
+| **始终关键** | 适用于每个任务（编码规范、输出格式、安全规则）| 保持自动加载 |
+| **有时需要** | 在 20-40% 的会话中相关（调试方法、任务管理）| 如果小就保持自动加载；如果大考虑按需加载 |
+| **很少需要** | 在不到 10% 的会话中相关（Figma 工作流、Windows 兼容性、设计系统）| 从自动加载中移除 |
+| **从不需要** | 过时、在其他地方已覆盖，或与本项目无关 | 删除或归档 |
 
-Run this classification as a prompt:
+将此分类作为提示运行：
 
 ```
-Read every file in .claude/rules/. For each file, classify it as:
-- ALWAYS: applies to most tasks in a typical session
-- SOMETIMES: applies in 20-40% of sessions
-- RARELY: applies in under 10% of sessions
+读取 .claude/rules/ 中的每个文件。对每个文件，分类为：
+- 始终：适用于典型会话中的大多数任务
+- 有时：在 20-40% 的会话中适用
+- 很少：在不到 10% 的会话中适用
 
-Output a table: | File | Size (chars) | Class | Reasoning |
-Sort by size descending within each class.
-Calculate: total chars that could be removed from auto-load if RARELY files
-are excluded.
+输出一个表格：| 文件 | 大小（字符）| 类别 | 理由 |
+在每个类别内按大小降序排序。
+计算：如果排除"很少"文件，可以从自动加载中移除多少字符。
 ```
 
-### Step 4 — Audit Hook Overhead
+### 步骤 4——审计 Hook 开销
 
-Hooks that fire on `PreToolUse` or `PostToolUse` run on every tool call. Each invocation injects its stdout into the context. A hook that outputs 500 characters per call, running 150 times per session, adds 75K characters (~19K tokens) to the session context.
+在 `PreToolUse` 或 `PostToolUse` 上触发的 Hook 在每次工具调用时运行。每次调用将其 stdout 注入上下文。一个每次调用输出 500 字符、每次会话运行 150 次的 Hook，会向会话上下文添加 75,000 字符（约 1.9 万 Token）。
 
-To check your hooks:
+检查你的 Hooks：
 
 ```bash
-# List all hooks and their event types
+# 列出所有 Hook 及其事件类型
 cat ~/.claude/settings.json | python3 -c "
 import json, sys
 data = json.load(sys.stdin)
@@ -1997,232 +1992,231 @@ for event, hook_list in hooks.items():
 "
 ```
 
-For each `PreToolUse` or `PostToolUse` hook, estimate its output size by running it manually and measuring stdout. Multiply by your average tool calls per session (check `/cost` after a typical session to get the tool call count).
+对于每个 `PreToolUse` 或 `PostToolUse` Hook，通过手动运行并测量 stdout 来估算其输出大小。乘以你每次会话的平均工具调用次数（在典型会话后检查 `/cost` 获取工具调用计数）。
 
-**High-overhead patterns to look for:**
-- Hooks that `cat` files or print multi-line summaries on every call
-- Hooks that run `git status` or `git log` unconditionally
-- `echo` statements used for debugging that were never removed
+**要注意的高开销模式**：
+- 每次调用都 `cat` 文件或打印多行摘要的 Hook
+- 无条件运行 `git status` 或 `git log` 的 Hook
+- 从未删除的用于调试的 `echo` 语句
 
-### Step 5 — Build the Action Plan
+### 步骤 5——构建行动计划
 
-Typical savings without RAG or custom infrastructure:
+没有 RAG 或自定义基础设施的典型节省：
 
-| Action | Effort | Risk | Typical savings |
-|--------|--------|------|----------------|
-| Remove "auto-loaded" from rarely-used rules | 30 min | Low | 5-20K tokens |
-| Split large rules files into core + detail | 1-2h | Low | 3-8K tokens |
-| Trim hook stdout to essential fields | 1h | Low | 2-10K tokens |
-| Compress verbose rules (see §8) | 1-2h | Low | 2-5K tokens |
-| Archive outdated MEMORY.md entries | 30 min | Low | 1-2K tokens |
+| 操作 | 难度 | 风险 | 典型节省 |
+|------|------|------|---------|
+| 从很少使用的规则中移除"自动加载" | 30 分钟 | 低 | 5-20K Token |
+| 将大型规则文件拆分为核心 + 详细 | 1-2 小时 | 低 | 3-8K Token |
+| 将 Hook stdout 精简到必要字段 | 1 小时 | 低 | 2-10K Token |
+| 压缩冗长规则（见第 8 节）| 1-2 小时 | 低 | 2-5K Token |
+| 归档过时的 MEMORY.md 条目 | 30 分钟 | 低 | 1-2K Token |
 
-A realistic first pass typically yields 30-50% reduction in fixed context without touching anything that requires infrastructure.
+第一轮现实的节省通常是固定上下文减少 30-50%，无需触碰任何需要基础设施的内容。
 
-### The RAG Question
+### RAG 问题
 
-You may encounter advice to move rules files into a vector database and retrieve them dynamically (RAG). This is a valid optimization at scale — it converts fixed overhead into per-query retrieval and enables precise lazy-loading.
+你可能会遇到建议将规则文件移入向量数据库并动态检索（RAG）的建议。这是大规模情况下的有效优化——它将固定开销转换为按查询检索，并实现精确的懒加载。
 
-Before investing in that infrastructure, verify the math honestly:
+在投入那些基础设施之前，请诚实地验证数学：
 
-- How many tokens would you actually save? (Measure first with Steps 1-3)
-- What is the setup cost? A pgvector or Chroma setup with a custom MCP server is a 1-2 week project for a working team
-- At what point does the break-even occur? If your fixed context is already under 20K tokens after simple cleanup, RAG adds complexity for marginal gain
+- 你实际上能节省多少 Token？（先用步骤 1-3 测量）
+- 设置成本是多少？带自定义 MCP 服务器的 pgvector 或 Chroma 设置对于工作团队是 1-2 周的项目
+- 盈亏平衡点在哪里？如果简单清理后你的固定上下文已经在 2 万 Token 以下，RAG 增加的复杂性带来的边际收益很小
 
-For most individual developers and small teams, classification-based lazy loading (removing the auto-load tag from rarely-used files) achieves 80% of the gains at 2% of the infrastructure cost. RAG earns its complexity when you have 50+ rule files and need automated, intent-based loading.
+对于大多数个人开发者和小团队，基于分类的懒加载（从很少使用的文件中移除自动加载标记）以 2% 的基础设施成本实现了 80% 的收益。当你有 50+ 个规则文件并需要自动的、基于意图的加载时，RAG 才值得其复杂性。
 
-### Audit Prompt Template
+### 审计提示模板
 
-The following prompt produces a complete audit report when run inside a project. Replace the path variables as needed:
+以下提示在项目内部运行时会生成完整的审计报告。根据需要替换路径变量：
 
 ```
-# Token Audit — [PROJECT NAME]
+# Token 审计——[项目名称]
 
-Audit this Claude Code project configuration for token overhead.
-Be systematic and exhaustive, not superficial.
+审计此 Claude Code 项目配置的 Token 开销。
+要系统全面，而非流于表面。
 
-**Step 1 — Inventory**
-List every file that is loaded at session start:
-- ~/.claude/CLAUDE.md and all @imported files (with line counts)
-- ./CLAUDE.md (line count)
-- .claude/rules/*.md (all files, sorted by size)
-- Project MEMORY.md (line count)
+**步骤 1——清单**
+列出会话开始时加载的每个文件：
+- ~/.claude/CLAUDE.md 及所有 @imported 文件（带行数）
+- ./CLAUDE.md（行数）
+- .claude/rules/*.md（所有文件，按大小排序）
+- 项目 MEMORY.md（行数）
 
-For each file, note: lines, approximate tokens (chars ÷ 4), and one-sentence
-description of what it contains.
+对每个文件，注明：行数、近似 Token（字符 ÷ 4）以及一句话
+描述其内容。
 
-**Step 2 — Budget calculation**
-Calculate: total fixed-context tokens before any user task.
-Show the breakdown by component. Express as % of Claude's 200K window.
+**步骤 2——预算计算**
+计算：任何用户任务开始前的总固定上下文 Token 数。
+按组件显示分解。以 Claude 20 万 Token 窗口的百分比表示。
 
-**Step 3 — Signal/noise classification**
-For every rules file, classify as ALWAYS / SOMETIMES / RARELY based on how
-often it would apply in a typical session on this project.
-Flag any file over 5K chars that is classified SOMETIMES or RARELY.
+**步骤 3——信号/噪声分类**
+对每个规则文件，根据其在此项目典型会话中的适用频率，
+分类为 始终/有时/很少。
+标记任何分类为 有时 或 很少 但超过 5K 字符的文件。
 
-**Step 4 — Hook audit**
-Read .claude/settings.json (and ~/.claude/settings.json).
-For each hook: event type, command, estimated stdout per invocation, and
-whether it fires on every tool call or only at session boundaries.
-Flag hooks that inject more than 200 chars per PreToolUse or PostToolUse call.
+**步骤 4——Hook 审计**
+读取 .claude/settings.json（以及 ~/.claude/settings.json）。
+对每个 Hook：事件类型、命令、每次调用的估算 stdout，以及
+它是在每次工具调用时触发还是仅在会话边界触发。
+标记每次 PreToolUse 或 PostToolUse 调用注入超过 200 字符的 Hook。
 
-**Step 5 — Action plan**
-Produce a prioritized table:
-| Action | Estimated token savings | Effort | Risk |
-Sort by: savings descending, then effort ascending.
-Include only actions achievable without external infrastructure (no RAG, no
-vector databases, no custom MCP servers).
+**步骤 5——行动计划**
+生成一个优先级表：
+| 操作 | 估算 Token 节省 | 难度 | 风险 |
+按节省降序，然后难度升序排序。
+只包括不需要外部基础设施（无 RAG、无向量数据库、无自定义 MCP 服务器）即可实现的操作。
 
-**Step 6 — RAG verdict**
-Based on the remaining savings after Step 5, calculate whether RAG would be
-worth it: estimate residual savings, estimate setup cost in hours, and state
-clearly whether the infrastructure investment is justified.
+**步骤 6——RAG 结论**
+基于步骤 5 后的剩余节省，计算 RAG 是否值得：
+估算剩余节省，估算以小时计的设置成本，并明确说明
+基础设施投入是否合理。
 ```
 
 ---
 
-## 16. Research Patterns: What the Literature Shows
+## 16. 研究模式：文献表明什么
 
-Applied context engineering draws from academic research on how language models process long inputs. Four findings have practical implications for how you structure context in production agents.
+应用上下文工程从关于语言模型如何处理长输入的学术研究中获取知识。四个发现对你在生产智能体中构建上下文的方式有实践意义。
 
-### The Lost-in-the-Middle Effect
+### 迷失在中间效应
 
-**Source**: Liu et al. (2023), Stanford — "Lost in the Middle: How Language Models Use Long Contexts"
+**来源**：Liu 等人（2023 年），Stanford——"Lost in the Middle: How Language Models Use Long Contexts"
 
-Performance on retrieval and reasoning tasks degrades when relevant information is placed in the middle of a long context window. Models perform best when critical information appears at the beginning (primacy) or end (recency) of the context, and worst when it's buried in the middle.
+当相关信息被放置在长上下文窗口的中间时，检索和推理任务的性能会下降。模型在关键信息出现在上下文开头（首要性）或结尾（近因性）时表现最好，在埋在中间时表现最差。
 
-The effect is consistent across model sizes and context lengths. A 20-document retrieval task can drop from ~70% accuracy when the answer is at position 1 to ~40% when it's at position 10, rising back toward 70% at position 20.
+这一效应在模型大小和上下文长度上是一致的。在一个 20 文档检索任务中，当答案在位置 1 时准确率约为 70%，在位置 10 时降至约 40%，在位置 20 时又回升至约 70%。
 
-**Practical implications for agents:**
+**对智能体的实践意义**：
 
-- Put the most decision-critical information at the start or end of your system prompt, not in the middle of a long CLAUDE.md
-- When summarizing multiple sources, lead with the most relevant finding, not the most recent
-- If you have a list of tool results, the first and last results will be recalled more reliably than those in the middle
-- For evaluation tasks where Claude reviews N items, split into smaller batches rather than sending everything at once
+- 将最关键的决策信息放在系统提示的开头或结尾，而非长 CLAUDE.md 的中间
+- 总结多个来源时，以最相关的发现开头，而非最近的
+- 如果你有一列工具结果，第一个和最后一个结果比中间的更可靠地被回忆
+- 对于 Claude 审查 N 个项目的评估任务，分成较小批次而非一次发送所有内容
 
-The implication isn't that you should make contexts shorter — it's that position within the context window is a design variable, not an accident.
+这不是说你应该让上下文更短——而是上下文窗口中的位置是一个设计变量，而非偶然。
 
-### Progressive Summarization Risks
+### 渐进式摘要的风险
 
-Summarization pipelines that compress summaries of summaries lose information in ways that are invisible to the model. Each compression pass removes details, but the model's confidence doesn't decrease proportionally. By the third or fourth compression pass, the model can answer questions about the original content fluently, but the answers may no longer be accurate — it's confabulating based on what typically follows the compressed patterns it retained.
+压缩摘要的摘要的摘要流水线，以对模型不可见的方式丢失信息。每次压缩都会删除细节，但模型的置信度不会按比例降低。到第三或第四次压缩后，模型可以流畅地回答关于原始内容的问题，但答案可能不再准确——它在基于它保留的压缩模式的典型后续内容进行臆造。
 
-**The specific risks:**
+**具体风险**：
 
-- **Transactional facts disappear first**: Specific numbers, dates, names, and conditions get abstracted away in early compression passes while narrative structure is preserved
-- **Confidence stays high**: The model doesn't know it's working from compressed information; it answers with the same certainty as if it had access to the original
-- **No retrieval signal**: Unlike RAG, where a failed retrieval is visible, summarization failures are silent — the model produces fluent text regardless
+- **事务性事实首先消失**：具体的数字、日期、名称和条件在早期压缩中被抽象化，而叙事结构被保留
+- **置信度保持不变**：模型不知道它在基于压缩信息工作；它以与拥有原始内容时同样的确定性回答
+- **没有检索信号**：与 RAG 不同，检索失败是可见的，摘要失败是静默的——无论如何模型都会产生流畅的文本
 
-**Mitigations:**
+**缓解措施**：
 
 ```markdown
-<!-- In CLAUDE.md for research/summarization agents -->
-## Summarization Rules
-- Always retain exact numbers, dates, and proper nouns in summaries — never paraphrase them
-- Mark summaries with their compression level: [summary-level-1], [summary-level-2]
-- If you cannot find a specific fact in the summary you have access to, say so — do not reconstruct from plausible inference
+<!-- 研究/摘要智能体的 CLAUDE.md 内容 -->
+## 摘要规则
+- 在摘要中始终保留确切的数字、日期和专有名词——永不释义它们
+- 用压缩级别标记摘要：[summary-level-1]、[summary-level-2]
+- 如果你在你拥有的摘要中找不到特定事实，请说出来——不要从合理推断中重建
 ```
 
-For multi-step agents that compress context to stay within budget, limit the chain to 2 compression passes before going back to source material.
+对于压缩上下文以保持在预算内的多步骤智能体，在回到源材料之前将链限制为 2 次压缩。
 
-### Stratified Sampling for Calibration
+### 校准的分层抽样
 
-When evaluating whether a context-engineering setup is working, random sampling misses systematic failures. A random sample from a 100-item test set might show 85% accuracy — but if the 15 failures cluster in a specific difficulty tier (long documents, ambiguous instructions, edge cases), you won't detect the pattern.
+在评估上下文工程设置是否有效时，随机抽样会遗漏系统性失败。从 100 项测试集中随机抽样可能显示 85% 的准确率——但如果 15 次失败集中在特定难度层（长文档、模糊指令、边缘情况），你不会检测到这种模式。
 
-Stratified sampling divides the evaluation set into strata by a relevant attribute (document length, instruction ambiguity, source quality) and tests each stratum independently.
+分层抽样按相关属性（文档长度、指令模糊度、来源质量）将评估集分成层，并独立测试每层。
 
-**For context engineering specifically:**
+**特别针对上下文工程**：
 
-| Stratum | Why it matters |
-|---------|----------------|
-| Short context (< 5K tokens) | Baseline — should be near 100% |
-| Medium context (5K–50K) | Where most real work happens |
-| Long context (50K+) | Where degradation first appears |
-| Position-critical (key info in middle) | Tests lost-in-the-middle directly |
-| High-instruction density | Tests the 150-instruction ceiling |
+| 层 | 为什么重要 |
+|---|-----------|
+| 短上下文（< 5K Token）| 基线——应接近 100% |
+| 中等上下文（5K–50K）| 大多数真实工作发生的地方 |
+| 长上下文（50K+）| 退化首次出现的地方 |
+| 位置关键（关键信息在中间）| 直接测试迷失在中间 |
+| 高指令密度 | 测试 150 条指令上限 |
 
-If your accuracy on the long-context stratum is 20 points below the short-context stratum, that's a signal — add position-based structuring or implement chunked processing. Aggregate metrics would have hidden that gap.
+如果你的长上下文层准确率比短上下文层低 20 个百分点，这是一个信号——添加基于位置的结构或实施分块处理。汇总指标会隐藏这个差距。
 
-### Claim-Source Mapping (Provenance Tracking)
+### 声明-来源映射（溯源追踪）
 
-In agents that synthesize information from multiple sources (web search, file reads, tool results), claims in the final output should be traceable to their source. Without provenance tracking, hallucinations are indistinguishable from accurate synthesis, and errors compound across agent steps.
+在从多个来源（网络搜索、文件读取、工具结果）综合信息的智能体中，最终输出中的声明应该可以追溯到其来源。没有溯源追踪，幻觉与准确综合无法区分，错误在智能体步骤中复合。
 
-**What claim-source mapping looks like:**
+**声明-来源映射的样子**：
 
-Rather than letting the agent produce a summary with no source attribution, structure the intermediate representation to keep claims linked to their source:
+与其让智能体生成没有来源归因的摘要，不如将中间表示结构化，保持声明与来源的链接：
 
 ```python
-# Each synthesis step preserves provenance
+# 每个综合步骤保留溯源信息
 claims = [
-    {"claim": "The API rate limit is 1000 req/min", "source": "tool:get_api_docs", "confidence": "direct"},
-    {"claim": "The rate limit was increased in v2.3", "source": "web:release-notes-url", "confidence": "direct"},
-    {"claim": "Rate limits reset every 60 seconds", "source": "inferred", "confidence": "inferred"},
+    {"claim": "API 速率限制是每分钟 1000 次请求", "source": "tool:get_api_docs", "confidence": "direct"},
+    {"claim": "速率限制在 v2.3 中增加", "source": "web:release-notes-url", "confidence": "direct"},
+    {"claim": "速率限制每 60 秒重置", "source": "inferred", "confidence": "inferred"},
 ]
 ```
 
-Claims tagged as "inferred" or lacking a source should be flagged as uncertain in the final output, not presented with the same confidence as directly-sourced claims.
+标记为"推断"或缺少来源的声明在最终输出中应标记为不确定，而非以与直接来源声明相同的置信度呈现。
 
-**Implementation pattern for multi-step agents:**
+**多步骤智能体的实现模式**：
 
 ```markdown
-<!-- In research agent system prompt -->
-For every factual claim you include in your response:
-- Tag it with the source (tool name, file path, URL, or "inferred")
-- If you cannot identify the source, mark the claim as uncertain
-- Do not present inferred conclusions with the same certainty as directly-observed facts
+<!-- 研究智能体系统提示内容 -->
+对于你在响应中包含的每个事实声明：
+- 用来源标记它（工具名称、文件路径、URL 或"推断"）
+- 如果你无法识别来源，将声明标记为不确定
+- 不要以与直接观察事实相同的确定性呈现推断结论
 ```
 
-The difference between claim-source mapping as a QA mechanism vs as a compliance mechanism: compliance tracking asks "did we use authorized sources?", QA tracking asks "is this specific claim accurate?" — both are valuable but for different failure modes. Agents that handle factual queries or generate reports need the QA version.
+声明-来源映射作为质量保证机制与合规机制的区别：合规追踪问"我们是否使用了授权来源？"，质量保证追踪问"这个具体声明准确吗？"——两者对于不同的失败模式都有价值。处理事实查询或生成报告的智能体需要质量保证版本。
 
 ---
 
-## 17. Attention Mechanics & Reliability
+## 17. 注意力机制与可靠性
 
-Claude's attention is not uniform across the context window. Position within the prompt measurably affects whether information is used. This section covers the mechanics, the evidence behind them, and the patterns that compensate.
-
----
-
-### The Lost-in-the-Middle Problem
-
-Research by Liu et al. (2023, arXiv:2307.03172) examined how large language models use information at different positions within long contexts. The finding: retrieval accuracy follows a U-shaped curve. Information placed at the start or end of a long context is recalled significantly more accurately than information placed in the middle.
-
-For Claude specifically, NIAH (Needle-in-a-Haystack) benchmarks on the 100K context window showed that passage retrieval accuracy dropped from 98% for documents placed at the start or end to 27% for documents placed in the middle, a 71-point gap. Subsequent model releases improved middle-context recall, but the U-shaped bias persists at scale.
-
-**Practical consequence:** Any information the model needs to use reliably should not be buried in the middle of a long context.
+Claude 的注意力在上下文窗口中并不均匀。在提示中的位置会显著影响信息是否被使用。本节涵盖其机制、背后的证据以及补偿策略。
 
 ---
 
-### Primacy and Recency Placement
+### 迷失在中间的问题
 
-The two high-attention zones are the beginning (primacy) and the end (recency) of the context window. The sandwich pattern exploits both:
+Liu 等人（2023 年，arXiv:2307.03172）的研究检验了大型语言模型如何使用长上下文中不同位置的信息。发现：检索准确率呈 U 形曲线。放置在长上下文开头或结尾的信息比放置在中间的信息被回忆得更准确。
+
+具体到 Claude，在 10 万 Token 上下文窗口上的 NIAH（针中草堆）基准测试显示，放置在开头或结尾的文档段落检索准确率为 98%，而放置在中间的降至 27%，相差 71 个百分点。后续模型版本改善了中间上下文的回忆能力，但 U 形偏差在大规模情况下仍然存在。
+
+**实践后果**：模型需要可靠使用的任何信息都不应埋在长上下文的中间。
+
+---
+
+### 首要性和近因性定位
+
+两个高注意力区域是上下文窗口的开头（首要性）和结尾（近因性）。三明治模式利用了两者：
 
 ```
-[System prompt — persistent constraints, persona, critical rules]
-[User's long document or retrieved context — middle zone]
-[End of user message — restate the task + any constraints that must hold]
+[系统提示——持久约束、角色、关键规则]
+[用户的长文档或检索到的上下文——中间区域]
+[用户消息末尾——重申任务 + 必须满足的任何约束]
 ```
 
-For documents long enough that the middle-zone penalty matters (roughly above 20,000 tokens), place the most critical information at both ends:
+对于长到中间区域惩罚明显的文档（大致超过 20,000 Token），在两端都放置最关键的信息：
 
 ```python
 def build_analysis_prompt(document: str, critical_facts: list[str]) -> str:
     facts_block = "\n".join(f"- {f}" for f in critical_facts)
     
-    return f"""CRITICAL FACTS (reference throughout your analysis):
+    return f"""关键事实（分析全程参考）：
 {facts_block}
 
-DOCUMENT TO ANALYZE:
+待分析文档：
 {document}
 
-REMINDER — apply these critical facts in your analysis:
+提醒——在你的分析中应用这些关键事实：
 {facts_block}
 
-Now produce the analysis."""
+现在生成分析。"""
 ```
 
-Repeating critical facts at the end is not redundant. It compensates for the middle-zone attention drop on the primary document.
+在末尾重复关键事实并非多余。它补偿了主文档的中间区域注意力下降。
 
-**Per-section passes for very long documents:**
+**非常长文档的逐章节处理**：
 
-For documents above 50,000 tokens, a single-pass analysis risks missing content in the middle sections. The per-section + integration pattern:
+对于超过 5 万 Token 的文档，单次分析有遗漏中间章节内容的风险。逐章节 + 整合模式：
 
 ```python
 def analyze_long_document(client, document: str, section_size: int = 8000) -> str:
@@ -2236,17 +2230,17 @@ def analyze_long_document(client, document: str, section_size: int = 8000) -> st
             messages=[{
                 "role": "user",
                 "content": (
-                    f"Analyze section {i+1} of {len(sections)}:\n\n{section}\n\n"
-                    f"Focus on key facts, risks, and obligations. "
-                    f"Note: this is one section of a longer document."
+                    f"分析第 {i+1} 章节，共 {len(sections)} 章节：\n\n{section}\n\n"
+                    f"关注关键事实、风险和义务。"
+                    f"注意：这是较长文档的一个章节。"
                 )
             }]
         )
         section_analyses.append(response.content[0].text)
     
-    # Integration pass with all section summaries in scope
+    # 对所有章节摘要进行整合处理
     integration_prompt = "\n\n".join([
-        f"SECTION {i+1} ANALYSIS:\n{analysis}"
+        f"第 {i+1} 章节分析：\n{analysis}"
         for i, analysis in enumerate(section_analyses)
     ])
     
@@ -2256,8 +2250,8 @@ def analyze_long_document(client, document: str, section_size: int = 8000) -> st
         messages=[{
             "role": "user",
             "content": (
-                f"You have {len(sections)} section analyses from a single document. "
-                f"Synthesize them into a complete analysis:\n\n{integration_prompt}"
+                f"你有同一文档的 {len(sections)} 个章节分析。"
+                f"将它们综合成一个完整分析：\n\n{integration_prompt}"
             )
         }]
     )
@@ -2265,55 +2259,55 @@ def analyze_long_document(client, document: str, section_size: int = 8000) -> st
     return final_response.content[0].text
 ```
 
-Each section analysis is short and keeps the relevant content in the primacy position. The integration pass works on summaries rather than the full document, keeping everything within high-attention range.
+每个章节分析都很短，并将相关内容保留在首要性位置。整合处理在摘要上而非完整文档上进行，将所有内容保持在高注意力范围内。
 
 ---
 
-### Context Window Size vs Attention Quality
+### 上下文窗口大小 vs. 注意力质量
 
-Larger context windows do not mean better comprehension of large inputs. Attention quality degrades before the context window fills. In practice:
+更大的上下文窗口不意味着对大型输入的更好理解。注意力质量在上下文窗口填满之前就会退化。实践中：
 
-- Claude 3.5 Sonnet: noticeable quality degradation begins around 50,000-70,000 tokens of effective content
-- Claude 3 Opus: similar degradation threshold, with a stronger middle-zone penalty
-- Models with 1M-token windows: the window size enables more data to be present, not necessarily better use of that data
+- Claude 3.5 Sonnet：有效内容约 50,000-70,000 Token 时开始出现明显质量退化
+- Claude 3 Opus：类似的退化阈值，中间区域惩罚更强
+- 100 万 Token 窗口的模型：窗口大小允许更多数据存在，不一定更好地使用这些数据
 
-The misconception is treating context window size as a quality guarantee. A 200K-token input does not get the same per-token attention quality as a 10K-token input. For tasks requiring precise use of scattered facts, a well-structured 30K prompt often outperforms a raw-dump 200K prompt.
+误解是将上下文窗口大小视为质量保证。20 万 Token 的输入不会获得与 1 万 Token 输入相同的每 Token 注意力质量。对于需要精确使用分散事实的任务，一个结构良好的 3 万 Token 提示通常优于一个原始倾倒的 20 万 Token 提示。
 
-**Design rule:** fit the context to the task, not the task to the context.
+**设计规则**：让上下文适应任务，而非让任务适应上下文。
 
 ---
 
-### Persistent Facts Block
+### 持久事实块
 
-The persistent facts block is a structured section, placed at the start of the system prompt, containing facts the model must reference throughout the conversation. Unlike retrieval, it is verbatim inclusion: the facts are always in the primacy position, always in scope, and compatible with prompt caching.
+持久事实块是一个结构化部分，放置在系统提示的开头，包含模型在整个对话过程中必须引用的事实。与检索不同，它是逐字包含的：事实始终处于首要性位置，始终在范围内，与提示缓存兼容。
 
 ```python
 PERSISTENT_FACTS = """
-## Reference: Company Context
+## 参考：公司背景
 
-Entity: Acme Corp (Delaware C-Corp, EIN: 12-3456789)
-Fiscal year end: December 31
-Applicable law: Delaware corporate law, US federal regulations
-Jurisdiction for disputes: Court of Chancery, Delaware
-Authorized shares: 10,000,000 common @ $0.001 par
+实体：Acme Corp（特拉华州 C 类公司，EIN：12-3456789）
+财政年度结束：12 月 31 日
+适用法律：特拉华州公司法、美国联邦法规
+争议管辖：特拉华州大法官法院
+授权股份：10,000,000 普通股 @ $0.001 面值
 """
 
 system_prompt = f"""{PERSISTENT_FACTS}
 
-You are a contract analysis assistant. Use the company context above for all entity references.
-[rest of system prompt]
+你是合同分析助手。对所有实体引用使用上述公司背景。
+[系统提示其余部分]
 """
 ```
 
-Persistent facts blocks are prompt-cache friendly: because they appear at a fixed position with static content, Anthropic's prompt caching will cache them after the first call, reducing cost and latency on subsequent turns.
+持久事实块对提示缓存友好：因为它们以固定位置和静态内容出现，Anthropic 的提示缓存将在第一次调用后缓存它们，减少后续轮次的成本和延迟。
 
-Keep the persistent facts block under 500 tokens. Beyond that, retrieval with re-ranking is more effective because the block itself starts falling into the middle zone.
+将持久事实块保持在 500 Token 以下。超过这个数，带重排序的检索更有效，因为块本身开始落入中间区域。
 
 ---
 
-### Scratchpad Pattern
+### 草稿纸模式
 
-The scratchpad pattern gives the model persistent working memory across turns without relying on context accumulation. A synthetic assistant message at the start of the conversation holds structured state; the orchestrator updates it programmatically after each turn.
+草稿纸模式在轮次间给模型持久的工作记忆，而无需依赖上下文积累。对话开头的合成助手消息保存结构化状态；编排器在每次轮次后以编程方式更新它。
 
 ```python
 def initialize_scratchpad(task_spec: dict) -> str:
@@ -2335,13 +2329,13 @@ def update_scratchpad(scratchpad: str, updates: dict) -> str:
         )
     return scratchpad
 
-# Conversation structure:
+# 对话结构：
 messages = [
     {"role": "assistant", "content": initialize_scratchpad(task)},
-    {"role": "user", "content": "Continue the task from your scratchpad."}
+    {"role": "user", "content": "从你的草稿纸继续任务。"}
 ]
 
-# After each turn, update the scratchpad with new state
+# 每次轮次后，用新状态更新草稿纸
 new_scratchpad = update_scratchpad(
     messages[0]["content"],
     {
@@ -2353,18 +2347,18 @@ new_scratchpad = update_scratchpad(
 messages[0]["content"] = new_scratchpad
 ```
 
-The scratchpad stays in the primacy position (it is the first message) across all turns. Working notes accumulate there rather than growing the conversation history.
+草稿纸在所有轮次中保持在首要性位置（它是第一条消息）。工作笔记积累在那里，而非增长对话历史。
 
-**Scratchpad vs rolling summary:** Use a scratchpad when you need structured state with programmatic update. Use rolling summaries when the accumulated context is unstructured conversation and you need to compress it.
+**草稿纸 vs. 滚动摘要**：当你需要有结构化状态并进行编程更新时使用草稿纸。当积累的上下文是非结构化对话且需要压缩时使用滚动摘要。
 
 ---
 
-### Rolling Context Summaries
+### 滚动上下文摘要
 
-As conversation history grows, older turns lose relevance but consume tokens. Rolling context summaries compress completed phases into a compact record before they drift into the middle zone.
+随着对话历史增长，较旧的轮次失去相关性但消耗 Token。滚动上下文摘要在完成的阶段漂移到中间区域之前将其压缩成紧凑记录。
 
 ```python
-SUMMARY_TRIGGER_RATIO = 0.65  # summarize when context reaches 65% capacity
+SUMMARY_TRIGGER_RATIO = 0.65  # 当上下文达到 65% 容量时摘要
 
 def maybe_summarize_history(
     client,
@@ -2375,12 +2369,12 @@ def maybe_summarize_history(
     if current_tokens / context_limit < SUMMARY_TRIGGER_RATIO:
         return messages
     
-    # Separate messages to summarize from recent messages to keep verbatim
-    keep_recent = 4  # keep last 4 turns verbatim
+    # 分离要摘要的消息和要逐字保留的近期消息
+    keep_recent = 4  # 逐字保留最后 4 轮
     to_summarize = messages[:-keep_recent]
     to_keep = messages[-keep_recent:]
     
-    # Extract key facts before summarizing
+    # 摘要前提取关键事实
     facts_response = client.messages.create(
         model="claude-haiku-4-5",
         max_tokens=512,
@@ -2388,8 +2382,8 @@ def maybe_summarize_history(
             {
                 "role": "user",
                 "content": (
-                    f"Extract key facts, decisions, and open items from this conversation "
-                    f"history as a compact list:\n\n"
+                    f"将以下对话历史中的关键事实、决策和待解事项"
+                    f"提取为紧凑列表：\n\n"
                     + "\n".join(f"{m['role']}: {m['content']}" for m in to_summarize)
                 )
             }
@@ -2405,125 +2399,125 @@ def maybe_summarize_history(
     return [summary_message] + to_keep
 ```
 
-Extract key facts before summarizing, not from the summary. Summaries lose edge cases and boundary conditions that often matter. A facts extraction pass with a smaller model (Haiku) is cheap and preserves more signal.
+在摘要之前提取关键事实，而非从摘要中提取。摘要会丢失边缘情况和边界条件，而这些通常很重要。使用较小模型（Haiku）进行事实提取是廉价的，并保留更多信号。
 
-Trigger at 65% of the context limit rather than waiting for the 80% auto-compact threshold. Proactive compression keeps you in control of what is preserved.
-
----
-
-## 18. Token Compression Tools
-
-The previous sections focus on what to put in context. This section covers tooling that compresses what enters context at the pipeline level — reducing token volume before Claude ever processes it. These tools complement CLAUDE.md authorship: good context engineering reduces noise at design time, compression tools reduce volume at runtime.
-
-Two independent tools operate at different layers of the Claude Code tool pipeline.
+在上下文限制的 65% 而非等待 80% 的自动压缩阈值时触发。主动压缩让你掌控保留什么。
 
 ---
 
-### Layer 1 — CLI Output: RTK
+## 18. Token 压缩工具
 
-RTK (Rust Token Killer) is a CLI proxy that intercepts shell command output and compresses it before Claude reads it. It operates via a `PreToolUse` hook that rewrites commands like `git log` to `rtk git log`.
+前面的章节关注在上下文中放什么。本节涵盖在流水线层级压缩进入上下文的内容的工具——在 Claude 处理之前减少 Token 数量。这些工具补充了 CLAUDE.md 的编写工作：良好的上下文工程在设计时减少噪声，压缩工具在运行时减少数量。
 
-**What it compresses**: git, cargo, npm, pnpm, tsc, vitest, playwright, docker, kubectl, and more. Measured savings: 60-90% on supported commands.
+两个独立的工具在 Claude Code 工具流水线的不同层次上运行。
 
-**What it does not compress**: file reads, MCP tool results, anything not going through a Bash tool call.
+---
+
+### 第一层——CLI 输出：RTK
+
+RTK（Rust Token Killer）是一个 CLI 代理，它拦截 shell 命令输出并在 Claude 读取之前压缩它。它通过 `PreToolUse` Hook 运行，将 `git log` 等命令重写为 `rtk git log`。
+
+**它压缩什么**：git、cargo、npm、pnpm、tsc、vitest、playwright、docker、kubectl 等。测量节省：支持命令 60-90%。
+
+**它不压缩什么**：文件读取、MCP 工具结果、任何不通过 Bash 工具调用的内容。
 
 ```bash
-brew install rtk-ai/tap/rtk   # or: cargo install rtk
-rtk init --global              # installs PreToolUse hook + settings.json patch
-rtk gain                       # dashboard: tokens saved per command
+brew install rtk-ai/tap/rtk   # 或：cargo install rtk
+rtk init --global              # 安装 PreToolUse Hook + settings.json 补丁
+rtk gain                       # 仪表板：每个命令节省的 Token
 ```
 
-> **Cross-ref**: Full command reference and TOML filter DSL at [third-party-tools.md §RTK](../ecosystem/third-party-tools.md#rtk-rust-token-killer).
+> **交叉引用**：完整命令参考和 TOML 过滤 DSL 在 [third-party-tools.md §RTK](../ecosystem/third-party-tools.md#rtk-rust-token-killer)。
 
 ---
 
-### Layer 2 — File Reads and Session Memory: lean-ctx
+### 第二层——文件读取和会话记忆：lean-ctx
 
-lean-ctx operates as a global MCP server that intercepts Read calls and Bash calls at the tool level, below RTK's shell hook. It uses tree-sitter AST parsing to extract only the relevant structure of a file rather than sending the full content.
+lean-ctx 作为全局 MCP 服务器运行，在工具级别拦截 Read 调用和 Bash 调用，位于 RTK 的 shell Hook 之下。它使用 tree-sitter AST 解析来提取文件的相关结构，而非发送完整内容。
 
-**Installation** (one-time, global):
+**安装**（一次性，全局）：
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/yvgude/lean-ctx/main/skills/lean-ctx/scripts/install.sh | bash
-lean-ctx setup   # registers MCP server + hooks in ~/.claude.json and ~/.claude/settings.json
+lean-ctx setup   # 在 ~/.claude.json 和 ~/.claude/settings.json 中注册 MCP 服务器 + Hooks
 ```
 
-No per-project setup required.
+无需每个项目单独设置。
 
-**The 10 read modes**
+**10 种读取模式**
 
-| Mode | What it returns | Best for |
-|------|----------------|----------|
-| `signatures` | Type and function signatures only | Large TypeScript/Rust files read for context |
-| `map` | Exports and import dependencies | Understanding module relationships |
-| `auto` | System selects based on file type and context usage | Default, safe for most cases |
-| `full` | Full file, cached | Files you are about to edit |
-| `diff` | Changed lines only | Re-reading a file after an edit |
-| `lines:N-M` | Specific line range | Targeted inspection |
-| `aggressive` | Maximum compression, syntax-stripped | Large files needed only for reference |
-| `entropy` | High-entropy fragments only | Scanning for anomalies |
-| `task` | Task-relevant lines | Active task set defined |
+| 模式 | 返回内容 | 最适合 |
+|------|---------|--------|
+| `signatures` | 仅类型和函数签名 | 为上下文读取的大型 TypeScript/Rust 文件 |
+| `map` | 导出和导入依赖 | 理解模块关系 |
+| `auto` | 系统根据文件类型和上下文使用情况选择 | 默认，大多数情况下安全 |
+| `full` | 完整文件，已缓存 | 即将编辑的文件 |
+| `diff` | 仅变更行 | 编辑后重新读取文件 |
+| `lines:N-M` | 特定行范围 | 定向检查 |
+| `aggressive` | 最大压缩，语法已剥除 | 仅作参考的大型文件 |
+| `entropy` | 仅高熵片段 | 扫描异常 |
+| `task` | 任务相关行 | 已定义活跃任务集 |
 
-**Rule**: use `full` for files you will edit. Use `signatures` or `map` for files you are reading for context. The difference on a 2364-line file: `full` costs ~19,000 tokens, `signatures` costs ~200 tokens.
+**规则**：对即将编辑的文件使用 `full`。对为上下文读取的文件使用 `signatures` 或 `map`。一个 2364 行文件的差异：`full` 约 19,000 Token，`signatures` 约 200 Token。
 
-**Cache**: re-reading an unchanged file costs ~13 tokens regardless of file size. The cache is invalidated by file mtime.
+**缓存**：重新读取未更改的文件无论文件大小均约 13 Token。缓存通过文件 mtime 失效。
 
-**CCP (Context Continuity Protocol)**: on session end, lean-ctx writes a ~400-token summary of what was read, found, and decided. The next session loads it automatically, eliminating the cold-start cost of re-reading prior context.
+**CCP（上下文连续性协议）**：会话结束时，lean-ctx 写入一个约 400 Token 的摘要，记录读取、发现和决策内容。下次会话自动加载它，消除重新读取先前上下文的冷启动成本。
 
-**Measured benchmarks (TypeScript/T3 monorepo, 2455 files, 7063-node graph)**
+**测量基准（TypeScript/T3 monorepo，2455 个文件，7063 节点图）**
 
-| Metric | Value |
-|--------|-------|
-| Overall compression rate | 57.8% |
-| ctx_read savings rate | 86% |
-| Tokens saved in one day | 1.3M |
-| schema.prisma 2364L → signatures | ~200 tokens (99%) |
-| File re-read (cache hit) | 13 tokens |
+| 指标 | 值 |
+|------|---|
+| 整体压缩率 | 57.8% |
+| ctx_read 节省率 | 86% |
+| 一天节省的 Token | 130 万 |
+| schema.prisma 2364 行 → 签名 | ~200 Token（99%）|
+| 文件重读（缓存命中）| 13 Token |
 
-**Monitoring your efficiency**
+**监控你的效率**
 
 ```bash
-lean-ctx gain            # overall dashboard
-lean-ctx gain --daily    # day-by-day savings
-lean-ctx cep             # CEP score /100: compression, cache hit rate, consistency, mode diversity
-lean-ctx sessions list   # session history with token counts
+lean-ctx gain            # 整体仪表板
+lean-ctx gain --daily    # 每日节省
+lean-ctx cep             # CEP 分数 /100：压缩率、缓存命中率、一致性、模式多样性
+lean-ctx sessions list   # 带 Token 计数的会话历史
 ```
 
-The `/lean-ctx-audit` slash command runs all of the above in one pass and synthesizes a report. Add it to `~/.claude/commands/lean-ctx-audit.md` to make it available in every project.
+`/lean-ctx-audit` 斜杠命令一次运行以上所有命令并综合报告。将其添加到 `~/.claude/commands/lean-ctx-audit.md`，使其在每个项目中可用。
 
 ---
 
-### Choosing between the two
+### 如何选择
 
-RTK and lean-ctx do not overlap meaningfully. Their actual savings distribution from measured sessions:
+RTK 和 lean-ctx 没有太多重叠。来自测量会话的实际节省分布：
 
-| Source | Tool | % of total savings |
-|--------|------|--------------------|
-| File reads (AST) | lean-ctx | ~85% |
-| Search results | lean-ctx | ~5% |
-| Shell output | RTK | remainder |
-| Shell output via lean-ctx | lean-ctx | <1% (RTK is better here) |
+| 来源 | 工具 | 占总节省的百分比 |
+|------|------|----------------|
+| 文件读取（AST）| lean-ctx | ~85% |
+| 搜索结果 | lean-ctx | ~5% |
+| Shell 输出 | RTK | 剩余部分 |
+| 通过 lean-ctx 的 Shell 输出 | lean-ctx | <1%（RTK 在此更好）|
 
-Install both. RTK handles CLI output; lean-ctx handles file reads and session memory.
+两者都安装。RTK 处理 CLI 输出；lean-ctx 处理文件读取和会话记忆。
 
-**When lean-ctx adds the most value**: TypeScript, Rust, Python projects where large source files are read repeatedly, sessions run long enough that context fills before completion, and cross-session continuity matters.
+**lean-ctx 价值最大时**：TypeScript、Rust、Python 项目，大型源文件被反复读取，会话运行时间足够长以致上下文在完成前填满，以及跨会话连续性很重要。
 
-**When lean-ctx adds less value**: Markdown-heavy documentation repos. The AST parser finds code examples embedded in Markdown rather than source structure. Gains exist but are lower than on code-first projects.
+**lean-ctx 价值较小时**：以 Markdown 为主的文档仓库。AST 解析器在 Markdown 中找到嵌入的代码示例而非源结构。收益存在但低于以代码为主的项目。
 
-> **Cross-ref**: Full tool profiles at [third-party-tools.md §Context Compression](../ecosystem/third-party-tools.md#context-compression).
-
----
-
-## Cross-References
-
-- Architecture and project structure patterns: `guide/core/architecture.md`
-- Methodology frameworks for AI-assisted development: `guide/core/methodologies.md`
-- Hooks and automation for context management: `guide/ultimate-guide.md` §5 (Hooks)
-- MCP server integration for extended context: `guide/ultimate-guide.md` §7 (MCP)
-- Security considerations for context content: `guide/security/`
-- Path-scoped module examples: `examples/` directory
-- PRP methodology (Product Requirements Prompt, 5-layer structure): community framework by Wirasm/Widing — `guide/core/methodologies.md` for the full summary, or search the guide for "PRP" to see practical examples
+> **交叉引用**：完整工具介绍在 [third-party-tools.md §上下文压缩](../ecosystem/third-party-tools.md#context-compression)。
 
 ---
 
-*Part of the Claude Code Ultimate Guide. For the full reference, see `guide/ultimate-guide.md`.*
+## 交叉引用
+
+- 架构和项目结构模式：`guide/core/architecture.md`
+- AI 辅助开发的方法论框架：`guide/core/methodologies.md`
+- 用于上下文管理的 Hooks（钩子）和自动化：`guide/ultimate-guide.md` 第 5 节（Hooks）
+- 扩展上下文的 MCP 服务器集成：`guide/ultimate-guide.md` 第 7 节（MCP）
+- 上下文内容的安全注意事项：`guide/security/`
+- 路径范围模块示例：`examples/` 目录
+- PRP 方法论（产品需求提示，5 层结构）：Wirasm/Widing 的社区框架——`guide/core/methodologies.md` 查看完整摘要，或在指南中搜索"PRP"查看实际示例
+
+---
+
+*Claude Code 终极指南的一部分。完整参考请见 `guide/ultimate-guide.md`。*

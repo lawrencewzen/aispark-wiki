@@ -1,48 +1,48 @@
 > 📚 **AI Spark Wiki** · Claude Code 知识库
 
 ---
-title: "Talk Preparation Pipeline: From Idea to Slides with AI"
-description: "6-stage skill pipeline that transforms raw material into a conference talk with AI-generated slides"
+title: "演讲准备流水线：从构思到幻灯片的 AI 辅助全流程"
+description: "六阶段 Skills（技能模块）流水线，将原始素材转化为带有 AI 生成幻灯片的会议演讲"
 tags: [workflow, skills, pipeline, presentation, ai-handoff]
 ---
 
-# Talk Preparation Pipeline: From Idea to Slides with AI
+# 演讲准备流水线：从构思到幻灯片的 AI 辅助全流程
 
-> **Confidence**: Tier 2 — Validated in production on real conference talks (DevWithAI Lyon, 2026).
+> **可信度**：Tier 2 — 已在真实会议演讲（DevWithAI Lyon, 2026）中生产验证。
 
-Transform a raw article, transcript, or notes into a complete conference talk — including a Kimi-ready prompt for AI-generated slides. Six stages, two modes, one human-in-the-loop checkpoint.
+将原始文章、对话记录或笔记，转化为完整的会议演讲——包含为 AI 生成幻灯片准备的 Kimi-ready 提示词。六个阶段，两种模式，一个人工审核检查点。
 
 ---
 
-## Table of Contents
+## 目录
 
 1. [TL;DR](#tldr)
-2. [When to Use](#when-to-use)
-3. [Prerequisites](#prerequisites)
-4. [Pipeline Overview](#pipeline-overview)
-5. [Stage-by-Stage Guide](#stage-by-stage-guide)
-6. [The Kimi Handoff](#the-kimi-handoff)
-7. [Human-in-the-Loop Checkpoints](#human-in-the-loop-checkpoints)
-8. [Adapting the Pipeline](#adapting-the-pipeline)
-9. [Real-World Example](#real-world-example)
-10. [Common Pitfalls](#common-pitfalls)
-11. [Design Patterns Showcased](#design-patterns-showcased)
-12. [See Also](#see-also)
+2. [适用场景](#适用场景)
+3. [前置条件](#前置条件)
+4. [流水线概览](#流水线概览)
+5. [阶段详解](#阶段详解)
+6. [Kimi 交接](#kimi-交接)
+7. [人工审核检查点](#人工审核检查点)
+8. [流水线适配](#流水线适配)
+9. [真实案例](#真实案例)
+10. [常见陷阱](#常见陷阱)
+11. [展示的设计模式](#展示的设计模式)
+12. [延伸阅读](#延伸阅读)
 
 ---
 
 ## TL;DR
 
 ```
-Source Material (article / transcript / notes)
+源素材（文章 / 对话记录 / 笔记）
         │
         ▼
-[Stage 1] EXTRACT ─────────────── {slug}-summary.md
+[阶段 1] 提取 ─────────────── {slug}-summary.md
         │
         ├──────────────────────────────────────┐
         │                                      │
-        ▼ (--rex only)                         ▼
-[Stage 2] RESEARCH               [Stage 3] CONCEPTS
+        ▼ (仅 --rex)                            ▼
+[阶段 2] 研究               [阶段 3] 概念
   git-archaeology.md              concepts.md
   changelog-analysis.md           concepts-enriched.md
   timeline.md                         │
@@ -50,79 +50,79 @@ Source Material (article / transcript / notes)
         └──────────────┬──────────────┘
                        │
                        ▼
-              [Stage 4] POSITION
+              [阶段 4] 定位
                 angles.md
                 titre.md
                 descriptions.md
                 feedback-draft.md
                        │
-                  [CHECKPOINT]
-             User selects angle + title
+                  [检查点]
+             用户选择角度 + 标题
                        │
                        ▼
-              [Stage 5] SCRIPT
+              [阶段 5] 脚本
                 pitch.md
                 slides.md
-                kimi-prompt.md ──► Copy-paste into Kimi.com
+                kimi-prompt.md ──► 复制粘贴到 Kimi.com
                        │
                        ▼
-             [Stage 6] REVISION
+             [阶段 6] 修订
               revision-sheets.md
 ```
 
-Two modes: **REX** (talk with real-world proof — git history, metrics) and **Concept** (idea/thesis-based — skips Stage 2).
+两种模式：**REX**（带真实证据的演讲——git 历史、指标数据）和**概念**（基于想法/论点——跳过阶段 2）。
 
 ---
 
-## When to Use
+## 适用场景
 
-This pipeline fits when you have a talk to prepare and either:
+以下情况适合使用此流水线：
 
-- **A REX to tell**: You built something, shipped it, have real metrics — and want to turn that into a structured conference talk
-- **A concept to develop**: You have an article, notes, or ideas you want to turn into a structured presentation
+- **要讲述 REX**：你构建了某个项目，已交付上线，拥有真实指标——想将其转化为结构化的会议演讲
+- **要发展一个概念**：你有一篇文章、笔记或想法，想将其转化为结构化的演示文稿
 
-Suitable formats:
-- Conference talks (20-45 min)
-- Meetup presentations (15-30 min)
-- Internal tech talks
-- Workshop openings
+适用格式：
+- 会议演讲（20-45 分钟）
+- 技术 Meetup（15-30 分钟）
+- 内部技术分享
+- 工作坊开场
 
-Not suited for: slide-deck updates for recurring meetings, short lightning talks under 10 min, or situations where you have no existing material to work from.
-
----
-
-## Prerequisites
-
-**Required**:
-- Claude Code with skills installed (see [examples/skills/talk-pipeline/](../../examples/skills/talk-pipeline/))
-- Source material: article `.mdx`, transcript `.md`, notes, or mix
-- Talk metadata: slug, event name, date, duration, audience description
-
-**For REX mode only**:
-- Access to the git repository you want to analyze
-- Optional: `CHANGELOG.md` path if different from repo root
-
-**For Kimi slide generation (Stage 5 output)**:
-- Free account at [kimi.com](https://kimi.com) (no API needed — just copy-paste)
-
-**Optional but recommended**:
-- `talks/` directory in your project root for output files
-- 1-2 trusted peers available for the feedback draft (Stage 4)
+不适用：用于周期性会议的幻灯片更新、10 分钟以内的闪电演讲，或完全没有现有素材的情况。
 
 ---
 
-## Pipeline Overview
+## 前置条件
 
-### Output files per mode
+**必需**：
+- 已安装 Skills（技能模块）的 Claude Code（参见 [examples/skills/talk-pipeline/](../../examples/skills/talk-pipeline/)）
+- 源素材：文章 `.mdx`、对话记录 `.md`、笔记，或混合格式
+- 演讲元数据：slug、活动名称、日期、时长、受众描述
 
-| File | Stage | REX | Concept |
+**仅 REX 模式需要**：
+- 待分析的 git 仓库访问权限
+- 可选：若 `CHANGELOG.md` 不在仓库根目录，需提供路径
+
+**用于 Kimi 幻灯片生成（阶段 5 输出）**：
+- [kimi.com](https://kimi.com) 免费账号（无需 API——直接复制粘贴）
+
+**可选但推荐**：
+- 项目根目录中的 `talks/` 目录用于存放输出文件
+- 1-2 位可信同行可用于审阅反馈草稿（阶段 4）
+
+---
+
+## 流水线概览
+
+### 各模式的输出文件
+
+| 文件 | 阶段 | REX | 概念 |
 |------|-------|-----|---------|
 | `{slug}-summary.md` | 1 | ✓ | ✓ |
 | `{slug}-git-archaeology.md` | 2 | ✓ | — |
 | `{slug}-changelog-analysis.md` | 2 | ✓ | — |
 | `{slug}-timeline.md` | 2 | ✓ | — |
 | `{slug}-concepts.md` | 3 | ✓ | ✓ |
-| `{slug}-concepts-enriched.md` | 3 | ✓ (if repo) | — |
+| `{slug}-concepts-enriched.md` | 3 | ✓（有仓库时） | — |
 | `{slug}-angles.md` | 4 | ✓ | ✓ |
 | `{slug}-titre.md` | 4 | ✓ | ✓ |
 | `{slug}-descriptions.md` | 4 | ✓ | ✓ |
@@ -132,11 +132,11 @@ Not suited for: slide-deck updates for recurring meetings, short lightning talks
 | `{slug}-kimi-prompt.md` | 5 | ✓ | ✓ |
 | `{slug}-revision-sheets.md` | 6 | ✓ | ✓ |
 
-REX mode: 13-14 files. Concept mode: 10 files.
+REX 模式：13-14 个文件。概念模式：10 个文件。
 
-### Naming convention
+### 命名规范
 
-All outputs follow `talks/{YYYY}-{slug}-{stage-label}.md`. Example for slug `devwithai` in 2026:
+所有输出遵循 `talks/{YYYY}-{slug}-{stage-label}.md`。以 2026 年 slug `devwithai` 为例：
 
 ```
 talks/2026-devwithai-summary.md
@@ -148,394 +148,394 @@ talks/2026-devwithai-angles.md
 
 ---
 
-## Stage-by-Stage Guide
+## 阶段详解
 
-### Stage 1: Extract
+### 阶段 1：提取
 
-**What it does**: Reads the source material and produces a structured summary — narrative arc, key metrics, main themes, gaps.
+**功能**：读取源素材并生成结构化摘要——叙事弧、关键指标、主要主题、内容缺口。
 
 | | |
 |--|--|
-| **Input** | Source file + metadata (slug, event, date, duration, audience, mode) |
-| **Output** | `{slug}-summary.md` |
-| **Tools used** | Read, Write, AskUserQuestion |
-| **Mode** | REX + Concept |
+| **输入** | 源文件 + 元数据（slug、活动、日期、时长、受众、模式） |
+| **输出** | `{slug}-summary.md` |
+| **使用工具** | 读取工具、写入工具、AskUserQuestion |
+| **模式** | REX + 概念 |
 
-**Key rules**:
-- Auto-detects source type (REX vs Concept) based on signals (dates, metrics, "I shipped" vs "I think")
-- Extracts every measurable metric with its source — no invented numbers
-- Flags gaps explicitly rather than hiding them
+**关键规则**：
+- 根据信号自动检测源类型（REX vs 概念）（日期、指标、"我发布了" vs "我认为"）
+- 提取每项可测量指标及其来源——不凭空编造数字
+- 明确标记内容缺口，而非隐藏
 
-**Invocation**:
+**调用方式**：
 ```
 /talk-stage1-extract
 ```
 
-Or via the orchestrator:
+或通过编排器：
 ```
 /talk-pipeline --stage=extract --slug=my-talk --event="Conf 2026" --date=2026-06-15 --duration=30 --audience="senior devs"
 ```
 
-**Review before moving on**:
-- Arc narrative is coherent (not generic: "this talk is about AI...")
-- All metrics have an explicit source
-- Gaps are listed (even if it's "no major gaps")
-- Type detection is correct (REX / Concept / Hybrid)
+**进入下一阶段前请检查**：
+- 叙事弧连贯（不通用：「这个演讲关于 AI……」）
+- 所有指标均有明确来源
+- 缺口已列出（即使是「没有重大缺口」）
+- 类型检测正确（REX / 概念 / 混合）
 
 ---
 
-### Stage 2: Research (REX mode only)
+### 阶段 2：研究（仅 REX 模式）
 
-**What it does**: Git archaeology — extracts velocity metrics, cross-references CHANGELOG, builds a factual timeline verified by git (not estimated).
+**功能**：Git 考古——提取速度指标、交叉参照 CHANGELOG、构建经 git 验证（非估算）的事实时间线。
 
 | | |
 |--|--|
-| **Input** | `{slug}-summary.md` + repo path |
-| **Output** | `git-archaeology.md`, `changelog-analysis.md`, `timeline.md` |
-| **Tools used** | Bash (read-only git commands), Read, Write |
-| **Mode** | REX only — **automatically skipped in Concept mode** |
+| **输入** | `{slug}-summary.md` + 仓库路径 |
+| **输出** | `git-archaeology.md`、`changelog-analysis.md`、`timeline.md` |
+| **使用工具** | Bash 工具（只读 git 命令）、读取工具、写入工具 |
+| **模式** | 仅 REX——**概念模式自动跳过** |
 
-**Key rules**:
-- Read-only git commands only — never modifies the repository
-- Dates not found in git are marked "unverified" — never estimated
-- Contradictions between sources are flagged, not silently resolved
+**关键规则**：
+- 仅使用只读 git 命令——绝不修改仓库
+- git 中未找到的日期标记为「未验证」——绝不估算
+- 来源之间的矛盾需标记，不静默解决
 
-**Git commands used** (read-only):
+**使用的 git 命令**（只读）：
 ```bash
-git log --pretty=format:"%Y-%m" | sort | uniq -c   # velocity by month
-git shortlog -sn --no-merges                         # contributors
-git tag --sort=version:refname                       # releases
-git log --merges --oneline | wc -l                   # PRs merged
+git log --pretty=format:"%Y-%m" | sort | uniq -c   # 按月统计提交速度
+git shortlog -sn --no-merges                         # 贡献者
+git tag --sort=version:refname                       # 发布版本
+git log --merges --oneline | wc -l                   # 合并的 PR 数
 ```
 
-**Review before moving on**:
-- Timeline covers the full period from summary
-- No estimated dates — all verified
-- Velocity peaks have contextual notes
+**进入下一阶段前请检查**：
+- 时间线覆盖摘要中的完整时间段
+- 无估算日期——全部经过验证
+- 速度峰值有上下文说明
 
 ---
 
-### Stage 3: Concepts
+### 阶段 3：概念
 
-**What it does**: Builds a numbered, scored catalogue of all concepts in the material. Each concept gets a talk-potential score (HIGH / MEDIUM / LOW).
+**功能**：构建素材中所有概念的编号评分目录。每个概念获得一个演讲潜力评分（HIGH / MEDIUM / LOW）。
 
 | | |
 |--|--|
-| **Input** | `{slug}-summary.md` + `{slug}-timeline.md` (optional) |
-| **Output** | `{slug}-concepts.md`, `{slug}-concepts-enriched.md` (if repo available) |
-| **Tools used** | Read, Write |
-| **Mode** | REX + Concept |
+| **输入** | `{slug}-summary.md` + `{slug}-timeline.md`（可选） |
+| **输出** | `{slug}-concepts.md`、`{slug}-concepts-enriched.md`（有仓库时） |
+| **使用工具** | 读取工具、写入工具 |
+| **模式** | REX + 概念 |
 
-**Score criteria**:
-- **HIGH**: Demonstrable, counter-intuitive, has verified numbers, actionable in 30 seconds
-- **MEDIUM**: Useful but expected, missing proof or numbers
-- **LOW**: Too abstract, over-covered, hard to illustrate in a slide
+**评分标准**：
+- **HIGH（高）**：可演示、反直觉、有验证数字、30 秒内可操作
+- **MEDIUM（中）**：有用但符合预期，缺乏证明或数字
+- **LOW（低）**：过于抽象、被过度讨论、难以用幻灯片呈现
 
-**Scoring discipline**: Maximum 30% HIGH — being selective is the point.
+**评分纪律**：最多 30% 的 HIGH——有选择性才是重点。
 
-**Review before moving on**:
-- 15+ concepts identified (20+ for REX with repo access)
-- Scores are calibrated (not all HIGH, not all LOW)
-- Each concept has a 1-2 sentence concrete description
+**进入下一阶段前请检查**：
+- 识别出 15+ 个概念（有仓库访问的 REX 模式 20+ 个）
+- 评分经过校准（不全是 HIGH，也不全是 LOW）
+- 每个概念有 1-2 句具体描述
 
 ---
 
-### Stage 4: Position + CHECKPOINT
+### 阶段 4：定位 + 检查点
 
-**What it does**: Generates strategic angles, titles, descriptions, and a peer-feedback draft. Then **stops and waits** for your angle + title choice.
+**功能**：生成战略角度、标题、描述和同行反馈草稿。然后**停止并等待**你的角度 + 标题选择。
 
 | | |
 |--|--|
-| **Input** | `{slug}-summary.md` + `{slug}-concepts.md` + event constraints |
-| **Output** | `angles.md`, `titre.md`, `descriptions.md`, `feedback-draft.md` |
-| **Tools used** | Read, Write, AskUserQuestion |
-| **Mode** | REX + Concept |
+| **输入** | `{slug}-summary.md` + `{slug}-concepts.md` + 活动限制条件 |
+| **输出** | `angles.md`、`titre.md`、`descriptions.md`、`feedback-draft.md` |
+| **使用工具** | 读取工具、写入工具、AskUserQuestion |
+| **模式** | REX + 概念 |
 
-**What gets generated**:
-- **3-4 angles**: each with forces, weaknesses, audience fit, verdict (scored /5)
-- **Recommendation**: one clear choice with structured justification
-- **3-5 titles** per angle
-- **Description short** (~100 words abstract) + **description long** (~250 words CFP)
-- **Feedback draft**: ready-to-send message for peer validation (3 formats: Slack DM, email, LinkedIn post)
+**生成内容**：
+- **3-4 个角度**：每个包含优势、劣势、受众适配度、评分（/5）
+- **推荐**：一个明确的选择及结构化理由
+- **每个角度 3-5 个标题**
+- **简短描述**（约 100 字摘要）+ **详细描述**（约 250 字 CFP 投稿）
+- **反馈草稿**：可直接发送给同行验证的消息（3 种格式：Slack DM、邮件、LinkedIn 帖子）
 
-**CHECKPOINT display** (mandatory before Stage 5):
+**检查点显示**（阶段 5 前强制执行）：
 
 ```
 ---
-CHECKPOINT : Choix angle + titre
+检查点：角度 + 标题选择
 
-J'ai généré 4 fichiers :
-- talks/{YYYY}-{slug}-angles.md    → {n} angles analysés
-- talks/{YYYY}-{slug}-titre.md     → {n} options de titre
+我已生成 4 个文件：
+- talks/{YYYY}-{slug}-angles.md    → {n} 个分析角度
+- talks/{YYYY}-{slug}-titre.md     → {n} 个标题选项
 - talks/{YYYY}-{slug}-descriptions.md
 - talks/{YYYY}-{slug}-feedback-draft.md
 
-Avant de lancer le script (Stage 5), j'ai besoin de ton choix :
+在启动脚本（阶段 5）之前，我需要你的选择：
 
-1. Quel angle tu retiens ? (recommandé : Angle {X} — {nom})
-2. Quel titre tu préfères ? (recommandé : "{titre}")
+1. 你选择哪个角度？（推荐：角度 {X} — {名称}）
+2. 你偏好哪个标题？（推荐：「{标题}」）
 
-Tu peux aussi modifier, mixer, ou proposer quelque chose d'autre.
+你也可以修改、混合，或提出完全不同的方案。
 ---
 ```
 
-**Stage 5 cannot start without explicit user confirmation.**
+**没有用户的明确确认，阶段 5 无法启动。**
 
-**Review before confirming**:
-- You've read the feedback draft and optionally sent it to a peer
-- The recommended angle can sustain the full duration without repetition
-- The title is concrete (no jargon, no click-bait)
+**确认前请检查**：
+- 你已阅读反馈草稿，并可选择发送给同行
+- 推荐角度能在不重复的情况下支撑完整时长
+- 标题具体（无术语，无标题党）
 
 ---
 
-### Stage 5: Script
+### 阶段 5：脚本
 
-**What it does**: Builds the complete talk in 5 acts with speaker notes, the slide specification, and the Kimi prompt.
+**功能**：以 5 幕形式构建完整演讲，包含演讲者备注、幻灯片规格和 Kimi 提示词。
 
 | | |
 |--|--|
-| **Input** | summary + concepts + timeline (optional) + **validated angle + title** |
-| **Output** | `{slug}-pitch.md`, `{slug}-slides.md`, `{slug}-kimi-prompt.md` |
-| **Tools used** | Read, Write |
-| **Mode** | REX + Concept |
+| **输入** | 摘要 + 概念 + 时间线（可选）+ **验证后的角度 + 标题** |
+| **输出** | `{slug}-pitch.md`、`{slug}-slides.md`、`{slug}-kimi-prompt.md` |
+| **使用工具** | 读取工具、写入工具 |
+| **模式** | REX + 概念 |
 
-**Three deliverables**:
+**三个交付物**：
 
-1. **`pitch.md`**: The 5-act narrative with speaker notes, timing, key moments. What you say — not what you read from slides.
+1. **`pitch.md`**：5 幕叙事与演讲者备注、时间节点、关键时刻。你要说的话——而非从幻灯片上读的内容。
 
-2. **`slides.md`**: Slide-by-slide spec: title, visual description, key text (≤30 words), speaker notes, duration, act number. Ready to hand to a designer or pass to Kimi.
+2. **`slides.md`**：逐张幻灯片规格：标题、视觉描述、关键文字（≤30 词）、演讲者备注、时长、幕次编号。可直接交给设计师或传递给 Kimi。
 
-3. **`kimi-prompt.md`**: Complete prompt for [kimi.com](https://kimi.com) — includes design system, color palette, typography specs, full slide content, and screenshot placeholders. Copy-paste ready.
+3. **`kimi-prompt.md`**：给 [kimi.com](https://kimi.com) 的完整提示词——包含设计系统、配色方案、字体规格、完整幻灯片内容和截图占位符。可直接复制粘贴。
 
-**1-idea-per-slide rule**: If a slide needs an "and" to describe it, split it.
+**每张幻灯片一个想法规则**：如果需要用「和」才能描述一张幻灯片，就拆分它。
 
-**Review before moving on**:
-- Timing check: total ≤ duration + 10% buffer
-- Speaker notes read naturally out loud (test this)
-- Kimi prompt has no `{PLACEHOLDER}` left unfilled
+**进入下一阶段前请检查**：
+- 时间检查：总时长 ≤ 设定时长 + 10% 缓冲
+- 演讲者备注朗读自然（请实际测试）
+- Kimi 提示词中没有未填充的 `{PLACEHOLDER}`
 
 ---
 
-### Stage 6: Revision
+### 阶段 6：修订
 
-**What it does**: Produces revision sheets for during and after the talk — quick navigation by act, master concept table, Q&A cheat-sheet, glossary.
+**功能**：生成用于演讲中及演讲后的修订表——按幕快速导航、概念主表、问答备忘单、术语表。
 
 | | |
 |--|--|
-| **Input** | `pitch.md` + `slides.md` + `concepts.md` |
-| **Output** | `{slug}-revision-sheets.md` |
-| **Tools used** | Read, Write |
-| **Mode** | REX + Concept |
+| **输入** | `pitch.md` + `slides.md` + `concepts.md` |
+| **输出** | `{slug}-revision-sheets.md` |
+| **使用工具** | 读取工具、写入工具 |
+| **模式** | REX + 概念 |
 
-**What's in the revision sheets**:
-- **Navigation** with anchor links by act
-- **Per-act breakdown**: key concepts + metrics + anecdotes + probable Q&A
-- **Master table**: concept → 1-2 sentence definition → URL to share
-- **Q&A cheat-sheet**: 6-10 probable questions with short answers (≤20 sec to say)
-- **Metrics block**: all numbers in one place
-- **External resources**: links mentioned in the talk
-- **Glossary**: technical terms, max 10 words each
+**修订表内容**：
+- **导航**，带按幕的锚链接
+- **逐幕分解**：关键概念 + 指标 + 轶事 + 可能的问答
+- **主表**：概念 → 1-2 句定义 → 可分享的 URL
+- **问答备忘单**：6-10 个可能的问题及简短回答（≤20 秒可说完）
+- **指标模块**：所有数字集中呈现
+- **外部资源**：演讲中提到的链接
+- **术语表**：技术术语，每条最多 10 个词
 
-**Purpose**: Someone asks a question → find the section → share the URL in 5 seconds.
-
----
-
-## The Kimi Handoff
-
-Stage 5 generates `{slug}-kimi-prompt.md` — a complete prompt for [kimi.com](https://kimi.com).
-
-**What to do with it**:
-1. Open the generated file
-2. Verify no `{PLACEHOLDER}` remains (search the file)
-3. Go to [kimi.com](https://kimi.com) — free account, no API needed
-4. Start a new conversation
-5. Copy-paste the entire prompt
-6. Kimi generates the presentation (PowerPoint or PDF)
-
-**Iterating with Kimi**:
-- After the first generation, review slides against your `slides.md` spec
-- Add follow-up messages for individual adjustments: "Slide 7: make the number larger, remove the bullet list"
-- For screenshots: replace `SCREENSHOT AREA` placeholders manually after export
-
-**The design system** embedded in the template:
-- Dark theme (#0a0a0a background)
-- Orange accent (#f97316) for key numbers and CTAs
-- Inter/SF Pro typography
-- Max 30 words per slide, numbers as heroes
-- WCAG AA contrast ratio (projector-safe)
-
-**Why Kimi?** At the time of writing, Kimi produces higher-quality conference presentations from detailed prompts than most alternatives. The template is Kimi-tuned but the design system and slide structure work with any AI presentation tool.
+**用途**：有人提问 → 找到对应章节 → 5 秒内分享 URL。
 
 ---
 
-## Human-in-the-Loop Checkpoints
+## Kimi 交接
 
-The pipeline has two human checkpoints:
+阶段 5 生成 `{slug}-kimi-prompt.md`——一个给 [kimi.com](https://kimi.com) 的完整提示词。
 
-### Checkpoint 1: Stage 1 metadata collection
+**使用方法**：
+1. 打开生成的文件
+2. 确认没有残留的 `{PLACEHOLDER}`（搜索文件）
+3. 访问 [kimi.com](https://kimi.com)——免费账号，无需 API
+4. 开启新对话
+5. 复制粘贴整个提示词
+6. Kimi 生成演示文稿（PowerPoint 或 PDF）
 
-If talk metadata (slug, event, date, duration, audience, mode) isn't provided upfront, Stage 1 uses `AskUserQuestion` to collect them before proceeding. This avoids generating a summary you'd discard.
+**与 Kimi 迭代**：
+- 第一次生成后，对照 `slides.md` 规格检查幻灯片
+- 针对单张幻灯片发送后续消息调整：「第 7 张：把数字放大，去掉项目列表」
+- 对于截图：导出后手动替换 `SCREENSHOT AREA` 占位符
 
-### Checkpoint 2: Stage 4 — Angle + Title selection (mandatory)
+**模板内嵌的设计系统**：
+- 深色主题（背景 #0a0a0a）
+- 橙色强调（#f97316）用于关键数字和 CTA
+- Inter/SF Pro 字体
+- 每张幻灯片最多 30 个词，数字作为主角
+- WCAG AA 对比度（适合投影仪）
 
-This is the pipeline's critical gate. Stage 5 cannot start without an explicit human choice.
-
-**Why this matters**: The angle and title determine everything that follows — the 5-act structure, which concepts surface, the Kimi prompt tone. An automated choice here would produce a generic talk. This is the one decision that must be yours.
-
-**What to do at the checkpoint**:
-1. Read `angles.md` — don't skip it, the recommendation may be wrong for your context
-2. Optionally send `feedback-draft.md` to a trusted peer (takes 10 minutes, saves 2 hours of rework)
-3. Reply with your choice (can be the recommendation, a modification, or something entirely different)
-
----
-
-## Adapting the Pipeline
-
-### Lightning talk (10-15 min)
-
-- Keep Stages 1, 3, 4, 5 — skip Stage 2 even in REX mode
-- In Stage 3: limit to 8-10 concepts (filter ruthlessly to HIGH only)
-- In Stage 4: generate 2 angles maximum
-- In Stage 5: target ~8-10 slides, ~2 min/slide
-- Skip Stage 6 (not needed for short format)
-
-### 45-minute talk
-
-- Full pipeline, all stages
-- In Stage 3: target 25-35 concepts (gives you enough to fill 5 solid acts)
-- In Stage 5: 20-25 slides, allow 3 min/slide average
-- Stage 6 becomes critical (Q&A lasts 10-15 min)
-
-### Workshop (90+ min)
-
-- Run the pipeline up to Stage 4
-- In Stage 5: replace slides.md with an activities spec (exercises, timing, breakout groups)
-- The Kimi prompt section becomes optional (less relevant for workshop materials)
-
-### No git repo available (REX without code)
-
-- Use `--rex` mode if you have metrics from other sources (analytics, dashboards, incident reports)
-- In Stage 2: replace git commands with manual data collection from those sources
-- Be stricter about sourcing — "unverified" metrics don't survive the talk
+**为什么选 Kimi？** 在撰写时，Kimi 从详细提示词生成高质量会议演示文稿的能力优于大多数替代方案。该模板针对 Kimi 优化，但设计系统和幻灯片结构适用于任何 AI 演示工具。
 
 ---
 
-## Real-World Example
+## 人工审核检查点
 
-**Talk**: "Dev with AI" REX — How we shipped a complex project in 7 months with AI tooling
+流水线有两个人工检查点：
 
-**Mode**: REX
-**Event**: DevWithAI Lyon, February 2026
-**Duration**: 30 minutes
-**Source material**: 12,000-word article in `.mdx`
+### 检查点 1：阶段 1 元数据收集
 
-**Files generated (16 total)**:
+如果演讲元数据（slug、活动、日期、时长、受众、模式）未预先提供，阶段 1 使用 `AskUserQuestion` 在继续前收集。这避免生成你会丢弃的摘要。
+
+### 检查点 2：阶段 4——角度 + 标题选择（强制）
+
+这是流水线的关键门控。没有人工的明确选择，阶段 5 无法启动。
+
+**为何重要**：角度和标题决定了后续一切——5 幕结构、哪些概念被突出、Kimi 提示词的语气。自动化选择在此会产生一个通用演讲。这是唯一必须由你做出的决定。
+
+**检查点应做什么**：
+1. 阅读 `angles.md`——不要跳过，推荐方案可能不适合你的具体情境
+2. 可选：将 `feedback-draft.md` 发给可信同行（花 10 分钟，省 2 小时返工）
+3. 回复你的选择（可以是推荐方案、修改版，或完全不同的方案）
+
+---
+
+## 流水线适配
+
+### 闪电演讲（10-15 分钟）
+
+- 保留阶段 1、3、4、5——即使是 REX 模式也跳过阶段 2
+- 阶段 3：限制在 8-10 个概念（只保留 HIGH）
+- 阶段 4：最多生成 2 个角度
+- 阶段 5：目标约 8-10 张幻灯片，约 2 分钟/张
+- 跳过阶段 6（短格式无需）
+
+### 45 分钟演讲
+
+- 完整流水线，所有阶段
+- 阶段 3：目标 25-35 个概念（提供足够内容填满 5 个实质性的幕）
+- 阶段 5：20-25 张幻灯片，平均 3 分钟/张
+- 阶段 6 变得关键（问答环节持续 10-15 分钟）
+
+### 工作坊（90+ 分钟）
+
+- 运行流水线至阶段 4
+- 阶段 5：用活动规格（练习、时间节点、分组）替换 slides.md
+- Kimi 提示词部分变为可选（对工作坊材料不那么相关）
+
+### 没有 git 仓库的 REX（无代码的 REX）
+
+- 如果你有其他来源的指标（分析数据、仪表盘、事故报告），使用 `--rex` 模式
+- 阶段 2：用这些来源的手动数据收集替换 git 命令
+- 对来源要求更严格——「未验证」的指标无法通过演讲考验
+
+---
+
+## 真实案例
+
+**演讲**：「Dev with AI」REX——我们如何在 7 个月内用 AI 工具交付复杂项目
+
+**模式**：REX
+**活动**：DevWithAI Lyon，2026 年 2 月
+**时长**：30 分钟
+**源素材**：12,000 词的 `.mdx` 文章
+
+**生成的文件（共 16 个）**：
 
 ```
-talks/2026-devwithai-summary.md              (Stage 1)
-talks/2026-devwithai-git-archaeology.md      (Stage 2)
-talks/2026-devwithai-changelog-analysis.md   (Stage 2)
-talks/2026-devwithai-timeline.md             (Stage 2)
-talks/2026-devwithai-concepts.md             (Stage 3)
-talks/2026-devwithai-concepts-enriched.md    (Stage 3)
-talks/2026-devwithai-angles.md               (Stage 4)
-talks/2026-devwithai-titre.md                (Stage 4)
-talks/2026-devwithai-descriptions.md         (Stage 4)
-talks/2026-devwithai-feedback-draft.md       (Stage 4)
-talks/2026-devwithai-pitch.md                (Stage 5)
-talks/2026-devwithai-slides.md               (Stage 5)
-talks/2026-devwithai-kimi-prompt.md          (Stage 5)
-talks/2026-devwithai-revision-sheets.md      (Stage 6)
+talks/2026-devwithai-summary.md              （阶段 1）
+talks/2026-devwithai-git-archaeology.md      （阶段 2）
+talks/2026-devwithai-changelog-analysis.md   （阶段 2）
+talks/2026-devwithai-timeline.md             （阶段 2）
+talks/2026-devwithai-concepts.md             （阶段 3）
+talks/2026-devwithai-concepts-enriched.md    （阶段 3）
+talks/2026-devwithai-angles.md               （阶段 4）
+talks/2026-devwithai-titre.md                （阶段 4）
+talks/2026-devwithai-descriptions.md         （阶段 4）
+talks/2026-devwithai-feedback-draft.md       （阶段 4）
+talks/2026-devwithai-pitch.md                （阶段 5）
+talks/2026-devwithai-slides.md               （阶段 5）
+talks/2026-devwithai-kimi-prompt.md          （阶段 5）
+talks/2026-devwithai-revision-sheets.md      （阶段 6）
 ```
 
-**Key metrics surfaced by Stage 2**:
-- 1,200 commits over 7 months (verified by `git log`)
-- 3 main contributors
-- 97% traffic reduction after a specific migration (sourced from CHANGELOG v1.1.0)
-- Velocity peak in month 4 (2x normal pace)
+**阶段 2 提取的关键指标**：
+- 7 个月内 1,200 次提交（通过 `git log` 验证）
+- 3 名主要贡献者
+- 某次迁移后流量减少 97%（来源：CHANGELOG v1.1.0）
+- 第 4 个月速度峰值（正常速度的 2 倍）
 
-**Angle chosen** (from 3 generated): "The builder's journey" — REX angle showing what it's actually like to build with AI tooling over months, not a feature demo
+**选定角度**（从 3 个中选出）：「构建者之旅」——REX 角度，展示数月来使用 AI 工具构建的真实感受，而非功能演示
 
-**Kimi output**: Dark-theme deck, 20 slides, numbers-as-heroes design, generated in ~90 seconds
+**Kimi 输出**：深色主题幻灯片，20 张，数字主角设计，约 90 秒生成
 
 ---
 
-## Common Pitfalls
+## 常见陷阱
 
-### Metrics without sources
+### 指标缺乏来源
 
-Stage 1 extracts metrics but doesn't verify them. Stage 2 verifies. If you're in Concept mode, any metric you mention in the talk must be sourced explicitly in your summary — or removed. Audiences ask "where did that number come from?" and "I looked it up" is not an answer.
+阶段 1 提取指标但不验证。阶段 2 验证。如果你在概念模式，演讲中提到的任何指标都必须在摘要中明确注明来源——否则删除。观众会问「那个数字从哪来的？」，而「我查过」不是答案。
 
-### Overloaded slides
+### 幻灯片内容超载
 
-The Kimi prompt enforces 30 words per slide, but the pitch.md you write in Stage 5 may drift toward bullet lists. Test the 1-idea-per-slide rule: if you need "and" to describe the slide's content, split it.
+Kimi 提示词强制每张幻灯片 30 个词，但你在阶段 5 中写的 pitch.md 可能会漂移到项目列表。测试「每张幻灯片一个想法」规则：如果你需要「和」才能描述幻灯片内容，就拆分它。
 
-### Skipping the CHECKPOINT
+### 跳过检查点
 
-Running Stage 5 without a validated angle + title produces a technically correct script for the wrong talk. Stage 4's recommendation is a good starting point, not a final answer — your audience knowledge matters.
+在没有验证角度 + 标题的情况下运行阶段 5，会产生一个技术上正确但针对错误演讲的脚本。阶段 4 的推荐方案是个好起点，不是最终答案——你对受众的了解至关重要。
 
-### Sending the feedback draft too late
+### 太晚发送反馈草稿
 
-The feedback draft is generated in Stage 4, before the script exists. That's intentional — peer feedback at the angle/title stage is actionable. Feedback on a finished script mostly generates regret.
+反馈草稿在阶段 4 生成，此时脚本尚不存在。这是有意为之——在角度/标题阶段的同行反馈是可操作的。对已完成脚本的反馈大多只会引发遗憾。
 
-### Generic speaker notes
+### 通用演讲者备注
 
-Speaker notes in `pitch.md` should read as natural speech. If you catch yourself writing "in this slide, we discuss...", rewrite it as what you'd actually say to the room. The Kimi prompt copies these notes — they need to be conversational.
+`pitch.md` 中的演讲者备注应该读起来像自然的口语。如果你发现自己在写「在这张幻灯片中，我们讨论……」，请将其改写为你实际会对观众说的话。Kimi 提示词会复制这些备注——它们需要具有对话性。
 
 ---
 
-## Design Patterns Showcased
+## 展示的设计模式
 
-This pipeline is interesting from a Claude Code perspective because it demonstrates several advanced patterns in one coherent system.
+这个流水线从 Claude Code 视角来看很有趣，因为它在一个连贯的系统中展示了几种高级模式。
 
-### Skill chaining with file-based state
+### 基于文件状态的 Skills（技能模块）链式调用
 
-Each stage writes files that the next stage reads. State persists between skill invocations through the filesystem — no in-memory coupling. You can run Stage 3 a week after Stage 2 without losing context.
+每个阶段写入文件，下一个阶段读取。状态通过文件系统在 Skills（技能模块）调用之间持久保存——无内存耦合。你可以在阶段 2 之后一周运行阶段 3，而不会丢失上下文。
 
 ```
-Stage 1 → writes {slug}-summary.md
-Stage 2 → reads {slug}-summary.md → writes 3 new files
-Stage 3 → reads summary + timeline → writes 2 new files
+阶段 1 → 写入 {slug}-summary.md
+阶段 2 → 读取 {slug}-summary.md → 写入 3 个新文件
+阶段 3 → 读取摘要 + 时间线 → 写入 2 个新文件
 ...
 ```
 
-### Tool permission scoping
+### 工具权限范围限定
 
-Stage 2 is the only stage that needs Bash (for git commands). Every other stage is Read + Write only. This is intentional — the minimal footprint for each stage means less surface for mistakes.
+阶段 2 是唯一需要 Bash 工具（用于 git 命令）的阶段。其他所有阶段仅需读取工具 + 写入工具。这是有意为之——每个阶段的最小工具占用意味着出错的风险面更小。
 
 ```yaml
-# Stage 2 only
+# 仅阶段 2
 allowed-tools:
   - Write
   - Read
   - Bash
 ```
 
-### Human-in-the-loop gates
+### 人工审核门控
 
-Stage 4 uses `AskUserQuestion` to surface the CHECKPOINT — not as a convenience, but as a structural requirement. The skill won't proceed to Stage 5 without an explicit human response. This is the pattern for "Claude proposes, human decides."
+阶段 4 使用 `AskUserQuestion` 来呈现检查点——不是为了方便，而是作为结构性要求。没有人工的明确响应，该 Skills（技能模块）不会继续到阶段 5。这是「Claude 提议，人类决策」的模式。
 
-### AI-to-AI handoff
+### AI 到 AI 的交接
 
-Stage 5 generates a prompt for a second AI system (Kimi). Claude doesn't generate slides directly — it generates the specification that another AI executes. This pattern lets you combine strengths: Claude for structured narrative reasoning, Kimi for visual presentation generation.
+阶段 5 为第二个 AI 系统（Kimi）生成提示词。Claude 不直接生成幻灯片——它生成另一个 AI 执行的规格。这种模式让你能结合各方优势：Claude 负责结构化叙事推理，Kimi 负责视觉演示生成。
 
 ```
-Claude (Stage 5) → kimi-prompt.md → Kimi.com → slides.pptx
+Claude（阶段 5）→ kimi-prompt.md → Kimi.com → slides.pptx
 ```
 
-### Two execution modes with conditional stage skip
+### 带条件阶段跳过的两种执行模式
 
-The `--rex` / `--concept` flag controls which stages run. Stage 2 skips automatically in Concept mode. The orchestrator (`/talk-pipeline`) handles routing — individual stage skills are mode-agnostic.
+`--rex` / `--concept` 标志控制哪些阶段运行。阶段 2 在概念模式下自动跳过。编排器（`/talk-pipeline`）处理路由——各阶段的 Skills（技能模块）本身与模式无关。
 
 ---
 
-## See Also
+## 延伸阅读
 
-- **Skill templates**: [`examples/skills/talk-pipeline/`](../../examples/skills/talk-pipeline/)
-- **PDF Generation workflow**: [`guide/workflows/pdf-generation.md`](./pdf-generation.md) — for generating handouts from the talk content
-- **Spec-First workflow**: [`guide/workflows/spec-first.md`](./spec-first.md) — complementary pattern for structured work with Claude
-- **Skill structure reference**: [`examples/skills/skill-creator/SKILL.md`](../../examples/skills/skill-creator/SKILL.md)
+- **Skills（技能模块）模板**：[`examples/skills/talk-pipeline/`](../../examples/skills/talk-pipeline/)
+- **PDF 生成工作流**：[`guide/workflows/pdf-generation.md`](./pdf-generation.md)——从演讲内容生成讲义
+- **规格优先工作流**：[`guide/workflows/spec-first.md`](./spec-first.md)——与 Claude 结构化协作的互补模式
+- **Skills（技能模块）结构参考**：[`examples/skills/skill-creator/SKILL.md`](../../examples/skills/skill-creator/SKILL.md)
 
 ---
 
-**Last updated**: February 2026
+**最后更新**：2026 年 2 月

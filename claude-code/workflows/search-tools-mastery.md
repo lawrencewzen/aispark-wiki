@@ -1,528 +1,528 @@
 > 📚 **AI Spark Wiki** · Claude Code 知识库
 
 ---
-title: "Search Tools Mastery: Combining rg, grepai, Serena, ast-grep, scip-search & lilmd"
-description: "Master code search and documentation navigation by combining the right tools for maximum efficiency"
+title: "搜索工具精通指南：综合运用 rg、grepai、Serena、ast-grep、scip-search 与 lilmd"
+description: "通过组合使用正确的工具，精通代码搜索与文档导航，实现最高效率"
 tags: [workflow, search, guide, mcp]
 ---
 
-# Search Tools Mastery: Combining rg, grepai, Serena, ast-grep, scip-search & lilmd
+# 搜索工具精通指南：综合运用 rg、grepai、Serena、ast-grep、scip-search 与 lilmd
 
-> **Master code search and documentation navigation by combining the right tools for maximum efficiency**
+> **通过组合使用正确的工具，精通代码搜索与文档导航，实现最高效率**
 
-**Author**: Florian BRUNIAUX | Contributions from Claude (Anthropic)
-**Reading time**: ~25 minutes
-**Last updated**: May 2026
-
----
-
-## Table of Contents
-
-1. [Quick Reference Matrix](#quick-reference-matrix)
-2. [Tool Comparison](#tool-comparison)
-3. [Decision Tree](#decision-tree)
-4. [Combined Workflows](#combined-workflows)
-5. [Real-World Scenarios](#real-world-scenarios)
-6. [Performance Optimization](#performance-optimization)
-7. [Common Pitfalls](#common-pitfalls)
-8. [Extended Toolkit: scip-search & lilmd](#extended-toolkit-scip-search--lilmd)
+**作者**：Florian BRUNIAUX | 贡献者：Claude（Anthropic）
+**阅读时间**：约 25 分钟
+**最后更新**：2026 年 5 月
 
 ---
 
-## Quick Reference Matrix
+## 目录
 
-| I need to... | Use This Tool | Command Example |
+1. [快速参考矩阵](#快速参考矩阵)
+2. [工具对比](#工具对比)
+3. [决策树](#决策树)
+4. [组合工作流](#组合工作流)
+5. [真实场景案例](#真实场景案例)
+6. [性能优化](#性能优化)
+7. [常见陷阱](#常见陷阱)
+8. [扩展工具集：scip-search 与 lilmd](#扩展工具集scip-search-与-lilmd)
+
+---
+
+## 快速参考矩阵
+
+| 我需要… | 使用这个工具 | 命令示例 |
 |--------------|---------------|-----------------|
-| Find exact text | `rg` (Grep tool) | `rg "authenticate" --type ts` |
-| Find by meaning | `grepai` | `grepai search "user login flow"` |
-| Find function definition | `Serena` | `serena find_symbol --name "login"` |
-| Find structural pattern | `ast-grep` | `ast-grep "async function $F"` |
-| See who calls function | `grepai` | `grepai trace callers "login"` |
-| Get file structure | `Serena` | `serena get_symbols_overview` |
-| Refactor across files | `Serena + ast-grep` | Combined workflow |
-| Explore unknown codebase | `grepai → Serena` | Discovery pattern |
-| Find symbol refs without MCP (worktree-safe) | `scip-search` | `scip-search refs AuthService.login` |
-| Navigate a large Markdown document | `lilmd` | `lilmd read docs/arch.md "Authentication"` |
+| 查找精确文本 | `rg`（搜索工具） | `rg "authenticate" --type ts` |
+| 按含义查找 | `grepai` | `grepai search "user login flow"` |
+| 查找函数定义 | `Serena` | `serena find_symbol --name "login"` |
+| 查找结构模式 | `ast-grep` | `ast-grep "async function $F"` |
+| 查看函数调用者 | `grepai` | `grepai trace callers "login"` |
+| 获取文件结构 | `Serena` | `serena get_symbols_overview` |
+| 跨文件重构 | `Serena + ast-grep` | 组合工作流 |
+| 探索未知代码库 | `grepai → Serena` | 发现模式 |
+| 无 MCP 时查找符号引用（工作树安全） | `scip-search` | `scip-search refs AuthService.login` |
+| 导航大型 Markdown 文档 | `lilmd` | `lilmd read docs/arch.md "Authentication"` |
 
 ---
 
-## Tool Comparison
+## 工具对比
 
-### Complete Feature Matrix
+### 完整功能矩阵
 
-| Feature | rg (ripgrep) | grepai | Serena | ast-grep |
+| 功能 | rg（ripgrep） | grepai | Serena | ast-grep |
 |---------|--------------|--------|--------|----------|
-| **Search Type** | Regex/text | Semantic (meaning) | Symbol-aware | AST structure |
-| **Technology** | Pattern matching | Embeddings (Ollama) | Symbol parsing | Abstract Syntax Tree |
-| **Speed** | ⚡ ~20ms | 🐢 ~500ms | ⚡ ~100ms | 🕐 ~200ms |
-| **Setup** | ✅ None (built-in) | ⚠️ Ollama + install | ⚠️ MCP config | ⚠️ npm install |
-| **Integration** | ✅ Native (`Grep`) | ⚠️ MCP server | ⚠️ MCP server | ⚠️ Plugin |
-| **Privacy** | ✅ 100% local | ✅ 100% local | ✅ 100% local | ✅ 100% local |
-| **Context needed** | None | None | Project indexation | None |
-| **Languages** | All (text) | All | TS/JS/Py/Rust/Go | TS/JS/Py/Rust/Go/C++ |
-| **Call graph** | ❌ No | ✅ Yes | ❌ No | ❌ No |
-| **Symbol tracking** | ❌ No | ❌ No | ✅ Yes | ❌ No |
-| **Session memory** | ❌ No | ❌ No | ✅ Yes | ❌ No |
-| **False positives** | Medium | Low | Very low | Very low |
-| **Learning curve** | Low | Medium | Low | High |
+| **搜索类型** | 正则/文本 | 语义（含义） | 符号感知 | AST 结构 |
+| **技术原理** | 模式匹配 | 嵌入向量（Ollama） | 符号解析 | 抽象语法树 |
+| **速度** | ⚡ ~20ms | 🐢 ~500ms | ⚡ ~100ms | 🕐 ~200ms |
+| **安装配置** | ✅ 无需（内置） | ⚠️ Ollama + 安装 | ⚠️ MCP 配置 | ⚠️ npm install |
+| **集成方式** | ✅ 原生（`Grep`） | ⚠️ MCP 服务器 | ⚠️ MCP 服务器 | ⚠️ 插件 |
+| **隐私保护** | ✅ 100% 本地 | ✅ 100% 本地 | ✅ 100% 本地 | ✅ 100% 本地 |
+| **所需上下文** | 无 | 无 | 项目索引 | 无 |
+| **支持语言** | 所有（文本） | 所有 | TS/JS/Py/Rust/Go | TS/JS/Py/Rust/Go/C++ |
+| **调用图** | ❌ 不支持 | ✅ 支持 | ❌ 不支持 | ❌ 不支持 |
+| **符号追踪** | ❌ 不支持 | ❌ 不支持 | ✅ 支持 | ❌ 不支持 |
+| **会话记忆** | ❌ 不支持 | ❌ 不支持 | ✅ 支持 | ❌ 不支持 |
+| **误报率** | 中 | 低 | 极低 | 极低 |
+| **学习曲线** | 低 | 中 | 低 | 高 |
 
-### Token Cost Comparison
+### Token 消耗对比
 
-| Tool | Typical Query | Tokens Consumed | Results Returned |
+| 工具 | 典型查询 | 消耗 Token | 返回结果 |
 |------|---------------|-----------------|------------------|
-| **rg** | "authenticate" | ~500 | Exact matches only |
-| **grepai** | "auth flow" | ~2000 | Intent-based matches |
-| **Serena** | find_symbol | ~1000 | Symbol + context |
-| **ast-grep** | AST pattern | ~1500 | Structural matches |
+| **rg** | "authenticate" | ~500 | 仅精确匹配 |
+| **grepai** | "auth flow" | ~2000 | 基于意图的匹配 |
+| **Serena** | find_symbol | ~1000 | 符号 + 上下文 |
+| **ast-grep** | AST 模式 | ~1500 | 结构性匹配 |
 
-**Key insight**: rg is 4x more token-efficient but 10x less intelligent than semantic tools.
+**核心洞察**：rg 的 Token 效率是语义工具的 4 倍，但智能度低约 10 倍。
 
-### Extended Tool Reference
+### 扩展工具参考
 
-Two tools that address gaps in the core stack, covered in depth in [§ Extended Toolkit](#extended-toolkit-scip-search--lilmd):
+以下两款工具填补了核心工具栈的空白，详见[§ 扩展工具集](#扩展工具集scip-search-与-lilmd)：
 
-| Tool | Category | vs existing stack |
+| 工具 | 类别 | 与现有工具栈对比 |
 |------|----------|-------------------|
-| **scip-search** | Symbol index search (SCIP) | Like Serena but stateless, no MCP, worktree-safe |
-| **lilmd** | Markdown section navigation | No equivalent in the stack (targets docs, not code) |
+| **scip-search** | 符号索引搜索（SCIP） | 类似 Serena，但无状态、无需 MCP、工作树安全 |
+| **lilmd** | Markdown 章节导航 | 工具栈中无对等工具（专注文档，非代码） |
 
 ---
 
-## Decision Tree
+## 决策树
 
-### Level 1: What Do You Know?
-
-```
-Do you know the EXACT text/pattern?
-│
-├─ YES → Use rg (ripgrep)
-│  ├─ Known function name: rg "createSession"
-│  ├─ Known import: rg "import.*React"
-│  └─ Known pattern: rg "async function"
-│
-└─ NO → Go to Level 2
-```
-
-### Level 2: What Are You Looking For?
+### 第一层：你知道什么？
 
 ```
-What's your search intent?
+你知道确切的文本/模式吗？
 │
-├─ "Find by MEANING/CONCEPT"
-│  → Use grepai
-│  └─ Example: grepai search "payment validation logic"
+├─ 知道 → 使用 rg（ripgrep）
+│  ├─ 已知函数名：rg "createSession"
+│  ├─ 已知导入：rg "import.*React"
+│  └─ 已知模式：rg "async function"
 │
-├─ "Find FUNCTION/CLASS definition"
-│  → Use Serena
-│  └─ Example: serena find_symbol --name "UserController"
-│
-├─ "Find by CODE STRUCTURE"
-│  → Use ast-grep
-│  └─ Example: async without error handling
-│
-└─ "Understand DEPENDENCIES"
-   → Use grepai trace
-   └─ Example: grepai trace callers "validatePayment"
+└─ 不知道 → 进入第二层
 ```
 
-### Level 2 (Worktree / No MCP)
-
-When running in a CI environment, a git worktree, or any context where MCP servers are unavailable:
+### 第二层：你在找什么？
 
 ```
-Known symbol name, no MCP available?
+你的搜索意图是什么？
 │
-└─ Use scip-search (pre-built SCIP index, millisecond cold start)
+├─ "按含义/概念查找"
+│  → 使用 grepai
+│  └─ 示例：grepai search "payment validation logic"
+│
+├─ "查找函数/类定义"
+│  → 使用 Serena
+│  └─ 示例：serena find_symbol --name "UserController"
+│
+├─ "按代码结构查找"
+│  → 使用 ast-grep
+│  └─ 示例：没有错误处理的 async 函数
+│
+└─ "理解依赖关系"
+   → 使用 grepai trace
+   └─ 示例：grepai trace callers "validatePayment"
+```
+
+### 第二层（工作树 / 无 MCP 环境）
+
+在 CI 环境、git 工作树或任何 MCP 服务器不可用的场景下：
+
+```
+已知符号名，但无 MCP 可用？
+│
+└─ 使用 scip-search（预构建的 SCIP 索引，毫秒级冷启动）
    └─ scip-search refs "AuthService.login" --format json
 ```
 
-### Level 3: Optimization
+### 第三层：优化
 
 ```
-Found too many results?
+结果太多？
 │
-├─ rg → Add --type filter or narrow path
-├─ grepai → Add --path filter or use trace
-├─ Serena → Filter by symbol type (function/class)
-└─ ast-grep → Add constraints to pattern
+├─ rg → 添加 --type 过滤器或缩小路径范围
+├─ grepai → 添加 --path 过滤器或使用 trace
+├─ Serena → 按符号类型过滤（function/class）
+└─ ast-grep → 为模式添加约束条件
 ```
 
 ---
 
-## Combined Workflows
+## 组合工作流
 
-### Workflow 1: Exploring Unknown Codebase
+### 工作流 1：探索未知代码库
 
-**Goal**: Understand a new project quickly
+**目标**：快速理解一个新项目
 
-**Step-by-step**:
+**步骤说明**：
 
 ```bash
-# 1. SEMANTIC DISCOVERY (grepai)
-# Find files related to authentication
+# 1. 语义发现（grepai）
+# 查找与认证相关的文件
 grepai search "user authentication and session management"
-# → Output: auth.service.ts, session.middleware.ts, user.controller.ts
+# → 输出：auth.service.ts, session.middleware.ts, user.controller.ts
 
-# 2. STRUCTURAL OVERVIEW (Serena)
-# Understand each file's structure
+# 2. 结构概览（Serena）
+# 了解每个文件的结构
 serena get_symbols_overview --file auth.service.ts
-# → Output:
+# → 输出：
 #   - class AuthService
 #     - login(email, password)
 #     - logout(sessionId)
 #     - validateSession(token)
 
-# 3. DEPENDENCY MAPPING (grepai trace)
-# See how login is used
+# 3. 依赖关系映射（grepai trace）
+# 查看 login 的使用情况
 grepai trace callers "login"
-# → Output: Called by UserController, ApiGateway, AdminPanel
+# → 输出：被 UserController、ApiGateway、AdminPanel 调用
 
-# 4. EXACT SEARCH (rg)
-# Find specific implementation details
+# 4. 精确搜索（rg）
+# 查找具体实现细节
 rg "validateSession" --type ts -A 5
-# → Output: Full function with 5 lines of context
+# → 输出：完整函数及 5 行上下文
 ```
 
-**Result**: Complete understanding in 4 commands (vs 30+ file reads)
+**结果**：4 条命令完成全面理解（相比读取 30+ 个文件）
 
 ---
 
-### Workflow 2: Large-Scale Refactoring
+### 工作流 2：大规模重构
 
-**Goal**: Rename `createSession` → `initializeUserSession` across 50+ files
+**目标**：将 `createSession` 重命名为 `initializeUserSession`，涉及 50+ 个文件
 
-**Step-by-step**:
+**步骤说明**：
 
 ```bash
-# 1. IMPACT ANALYSIS (grepai trace)
-# Understand full scope
+# 1. 影响分析（grepai trace）
+# 了解全部范围
 grepai trace callers "createSession"
-# → Output: 47 callers across 23 files
+# → 输出：23 个文件中有 47 处调用
 grepai trace callees "createSession"
-# → Output: Calls validateUser, createToken, storeSession
+# → 输出：调用了 validateUser、createToken、storeSession
 
-# 2. STRUCTURAL VALIDATION (ast-grep)
-# Ensure consistent usage pattern
+# 2. 结构验证（ast-grep）
+# 确保使用模式一致
 ast-grep "createSession($$$ARGS)"
-# → Output: All invocations with their argument patterns
+# → 输出：所有调用及其参数模式
 
-# 3. SYMBOL-AWARE REFACTORING (Serena)
-# Precise renaming
+# 3. 符号感知重构（Serena）
+# 精确重命名
 serena find_symbol --name "createSession" --include-body true
-# → Get exact definition + all references
+# → 获取精确定义 + 所有引用
 
 serena replace_symbol_body \
   --name "createSession" \
   --new-name "initializeUserSession"
-# → Rename across all files maintaining structure
+# → 跨所有文件重命名，保持结构完整
 
-# 4. VERIFICATION (rg)
-# Confirm no old references remain
+# 4. 验证（rg）
+# 确认没有旧引用残留
 rg "createSession" --type ts
-# → Should return 0 results
+# → 应返回 0 个结果
 ```
 
-**Result**: Safe refactoring with full dependency awareness
+**结果**：在完全了解依赖关系的前提下安全重构
 
 ---
 
-### Workflow 3: Security Audit
+### 工作流 3：安全审计
 
-**Goal**: Find security vulnerabilities
+**目标**：查找安全漏洞
 
-**Step-by-step**:
+**步骤说明**：
 
 ```bash
-# 1. SEMANTIC DISCOVERY (grepai)
-# Find security-sensitive code
+# 1. 语义发现（grepai）
+# 查找安全敏感代码
 grepai search "SQL query construction"
 grepai search "user input validation"
 grepai search "password handling"
 
-# 2. STRUCTURAL PATTERNS (ast-grep)
-# Find specific vulnerability patterns
+# 2. 结构模式（ast-grep）
+# 查找特定漏洞模式
 
-# SQL injection risks
+# SQL 注入风险
 ast-grep 'db.query(`${$VAR}`)'
 
-# XSS risks
+# XSS 风险
 ast-grep 'innerHTML = $VAR'
 
-# Missing error handling
+# 缺少错误处理
 ast-grep -p 'async function $F($$$) { $$$BODY }' \
   --without 'try { $$$TRY } catch'
 
-# 3. DEPENDENCY TRACING (grepai)
-# See where vulnerable code is called
+# 3. 依赖追踪（grepai）
+# 查看漏洞代码的调用位置
 grepai trace callers "executeQuery"
-# → Identify all entry points
+# → 识别所有入口点
 
-# 4. EXACT VERIFICATION (rg)
-# Confirm findings
+# 4. 精确验证（rg）
+# 确认发现的问题
 rg "innerHTML\s*=" --type ts
 rg "password" --type ts | rg -v "hashed"
 ```
 
-**Result**: Comprehensive security audit in minutes
+**结果**：在数分钟内完成全面的安全审计
 
 ---
 
-## Real-World Benchmarks
+## 真实基准测试
 
-### grepai vs grep (Janvier 2026)
+### grepai vs grep（2026 年 1 月）
 
-**Contexte**: Benchmark sur Excalidraw (155k lignes TypeScript)
-**Auteur**: YoanDev (mainteneur de grepai - biais potentiel)
-**Méthodologie**: 5 questions de découverte de code identiques
+**背景**：在 Excalidraw（15.5 万行 TypeScript）上进行基准测试
+**作者**：YoanDev（grepai 维护者 — 存在潜在偏差）
+**方法**：5 个相同的代码发现问题
 
-| Métrique | grep | grepai | Différence |
+| 指标 | grep | grepai | 差异 |
 |----------|------|--------|------------|
-| Tool calls | 139 | 62 | **-55%** |
-| Input tokens | 51k | 1.3k | **-97%** |
+| 工具调用次数 | 139 | 62 | **-55%** |
+| 输入 Token 数 | 51k | 1.3k | **-97%** |
 
-**À retenir**: Recherche sémantique réduit drastiquement les tokens en identifiant les fichiers pertinents dès la première tentative, évitant l'exploration itérative.
+**要点**：语义搜索通过首次尝试即定位相关文件，避免了迭代探索，从而大幅减少 Token 消耗。
 
-**Limitations**:
-- Benchmark par le mainteneur de l'outil
-- Single-project validation (TypeScript only)
-- Pas de validation indépendante à ce jour
+**局限性**：
+- 由工具维护者进行的基准测试
+- 单一项目验证（仅 TypeScript）
+- 目前尚无独立验证
 
-**Source**: [yoandev.co/grepai-benchmark](https://yoandev.co/grepai-benchmark)
+**来源**：[yoandev.co/grepai-benchmark](https://yoandev.co/grepai-benchmark)
 
-> **Note**: Ce benchmark reflète l'état de janvier 2026. Les performances peuvent évoluer avec les mises à jour de Claude Code et grepai.
+> **注意**：本基准测试反映的是 2026 年 1 月的状态，随着 Claude Code 和 grepai 的更新，性能可能有所变化。
 
 ---
 
-### Workflow 4: Framework Migration
+### 工作流 4：框架迁移
 
-**Goal**: Migrate React class components → hooks
+**目标**：将 React 类组件迁移至 Hooks
 
-**Step-by-step**:
+**步骤说明**：
 
 ```bash
-# 1. INVENTORY (ast-grep)
-# Find all class components
+# 1. 清单（ast-grep）
+# 查找所有类组件
 ast-grep 'class $C extends React.Component'
-# → Output: 34 components to migrate
+# → 输出：34 个待迁移组件
 
-# 2. DEPENDENCY ANALYSIS (grepai)
-# Understand component relationships
+# 2. 依赖分析（grepai）
+# 了解组件间关系
 for component in $(ast-grep 'class $C extends' --json | jq -r '.[].name'); do
   grepai trace callers "$component"
 done
-# → Build migration order (leaf components first)
+# → 确定迁移顺序（叶子组件优先）
 
-# 3. PATTERN DETECTION (ast-grep)
-# Identify lifecycle methods used
+# 3. 模式检测（ast-grep）
+# 识别所使用的生命周期方法
 ast-grep 'componentDidMount() { $$$BODY }'
 ast-grep 'componentWillReceiveProps($$$) { $$$BODY }'
-# → Map to equivalent hooks
+# → 映射到等效的 Hooks
 
-# 4. INCREMENTAL MIGRATION (Serena + ast-grep)
-# Migrate one component at a time
+# 4. 增量迁移（Serena + ast-grep）
+# 逐个组件迁移
 serena find_symbol --name "UserProfile" --include-body true
-# → Get full component code
+# → 获取完整组件代码
 
-# Use ast-grep to transform
+# 使用 ast-grep 进行转换
 ast-grep --rewrite \
   --from 'class $C extends React.Component' \
   --to 'const $C = () => { }'
 
-# 5. VERIFICATION (rg + grepai)
-# Ensure migration successful
-rg "React.Component" --type tsx  # Should decrease
-grepai search "component lifecycle methods"  # Find any missed
+# 5. 验证（rg + grepai）
+# 确认迁移成功
+rg "React.Component" --type tsx  # 数量应减少
+grepai search "component lifecycle methods"  # 查找遗漏项
 ```
 
-**Result**: Systematic migration with minimal breakage
+**结果**：系统性迁移，破坏性最小
 
 ---
 
-### Workflow 5: Performance Optimization
+### 工作流 5：性能优化
 
-**Goal**: Identify and fix performance bottlenecks
+**目标**：识别并修复性能瓶颈
 
-**Step-by-step**:
+**步骤说明**：
 
 ```bash
-# 1. HOTSPOT DISCOVERY (grepai)
-# Find performance-critical code
+# 1. 热点发现（grepai）
+# 查找性能关键代码
 grepai search "heavy computation or loops"
 grepai search "database queries in loops"
 
-# 2. PATTERN DETECTION (ast-grep)
-# Find N+1 query patterns
+# 2. 模式检测（ast-grep）
+# 查找 N+1 查询模式
 ast-grep 'for ($$$) { await db.query($$$) }'
 
-# Find missing memoization
+# 查找缺少 memoization 的情况
 ast-grep 'useMemo' --invert-match \
   --in 'const $VAR = $$$'
 
-# 3. CALL GRAPH ANALYSIS (grepai trace)
-# Find hot paths
+# 3. 调用图分析（grepai trace）
+# 查找热点路径
 grepai trace graph "renderUserList" --depth 3
-# → Visualize dependency tree
+# → 可视化依赖树
 
-# 4. SYMBOL TRACKING (Serena)
-# Track function changes
+# 4. 符号追踪（Serena）
+# 追踪函数变化
 serena write_memory "perf_baseline" \
   "renderUserList: 450ms avg"
 
-# After optimization
+# 优化后
 serena write_memory "perf_optimized" \
   "renderUserList: 45ms avg (10x improvement)"
 
-# 5. VERIFICATION (rg)
-# Confirm optimizations applied
+# 5. 验证（rg）
+# 确认优化已应用
 rg "useMemo|useCallback" --type tsx
 ```
 
-**Result**: Data-driven performance improvements
+**结果**：数据驱动的性能改进
 
 ---
 
-## Real-World Scenarios
+## 真实场景案例
 
-### Scenario 1: "I Don't Know What I'm Looking For"
+### 场景 1："我不知道我在找什么"
 
-**Problem**: New project, no documentation, need to add feature
+**问题**：新项目，没有文档，需要添加功能
 
-**Solution**: Semantic-first discovery
+**解决方案**：以语义搜索为先的发现策略
 
 ```bash
-# Start broad with meaning
+# 从宽泛的含义开始
 grepai search "user profile management"
-# → Discover relevant files
+# → 发现相关文件
 
-# Then narrow with structure
+# 再通过结构缩小范围
 serena get_symbols_overview --file user-profile.service.ts
-# → Understand available functions
+# → 了解可用函数
 
-# Finally, exact search for details
+# 最后精确搜索细节
 rg "updateProfile" --type ts -C 3
 ```
 
 ---
 
-### Scenario 2: "This Function is Called from Everywhere"
+### 场景 2："这个函数到处都在调用"
 
-**Problem**: Need to modify a function but worried about breaking things
+**问题**：需要修改某个函数，但担心破坏其他地方
 
-**Solution**: Dependency mapping first
+**解决方案**：先进行依赖关系映射
 
 ```bash
-# 1. See all callers
+# 1. 查看所有调用者
 grepai trace callers "calculateTotal"
-# → 47 callers found
+# → 发现 47 处调用
 
-# 2. Analyze caller contexts
+# 2. 分析调用上下文
 for file in $(grepai trace callers "calculateTotal" --json | jq -r '.[].file'); do
   serena get_symbols_overview --file "$file"
 done
 
-# 3. Identify safe vs risky call sites
+# 3. 识别安全与风险调用点
 ast-grep 'calculateTotal($ARGS)' --json
-# → Group by argument patterns
+# → 按参数模式分组
 
-# 4. Make change with confidence
-# Now you know all impact points
+# 4. 有把握地进行修改
+# 现在你已了解所有影响点
 ```
 
 ---
 
-### Scenario 3: "Find All Code Doing X"
+### 场景 3："查找所有做 X 的代码"
 
-**Problem**: Need to apply consistent pattern across codebase
+**问题**：需要在代码库中应用统一的模式
 
-**Solution**: Combine semantic + structural
+**解决方案**：结合语义搜索 + 结构搜索
 
 ```bash
-# Example: Find all error handling code
+# 示例：查找所有错误处理代码
 
-# 1. Semantic discovery
+# 1. 语义发现
 grepai search "error handling and exception management"
 
-# 2. Structural patterns
+# 2. 结构模式
 ast-grep 'try { $$$TRY } catch ($ERR) { $$$CATCH }'
 ast-grep 'throw new Error($MSG)'
 
-# 3. Verify consistency
+# 3. 验证一致性
 rg "catch\s*\(" --type ts | wc -l
-# Compare with ast-grep count to find anomalies
+# 与 ast-grep 的计数对比，找出异常情况
 ```
 
 ---
 
-### Scenario 4: "I Need to Understand This Module"
+### 场景 4："我需要理解这个模块"
 
-**Problem**: Complex module with unclear responsibilities
+**问题**：复杂模块，职责不清晰
 
-**Solution**: Multi-tool analysis
+**解决方案**：多工具综合分析
 
 ```bash
-# 1. Get symbol overview (Serena)
+# 1. 获取符号概览（Serena）
 serena get_symbols_overview --file payment.module.ts
-# → See all exports, classes, functions
+# → 查看所有导出、类、函数
 
-# 2. Understand dependencies (grepai)
+# 2. 理解依赖关系（grepai）
 grepai trace callees "PaymentModule"
-# → What does this module use?
+# → 该模块依赖什么？
 
 grepai trace callers "PaymentModule"
-# → Who uses this module?
+# → 谁使用了该模块？
 
-# 3. Find implementation patterns (ast-grep)
+# 3. 查找实现模式（ast-grep）
 ast-grep 'export class $C' --file payment.module.ts
 ast-grep 'async $METHOD($$$)' --file payment.module.ts
 
-# 4. Read specific implementations (rg)
+# 4. 读取具体实现（rg）
 rg "processPayment" --type ts -A 20
 ```
 
 ---
 
-## Performance Optimization
+## 性能优化
 
-### Choosing the Fastest Tool
+### 选择最快的工具
 
-**General Rules**:
+**通用原则**：
 
-1. **Known exact text** → Always use rg first
-2. **Unknown exact text** → Use grepai, then rg for verification
-3. **Refactoring** → Serena for symbol safety
-4. **Large migrations** → ast-grep for structural precision
+1. **已知精确文本** → 始终优先使用 rg
+2. **不知道精确文本** → 使用 grepai，然后用 rg 验证
+3. **重构** → 使用 Serena 确保符号安全
+4. **大规模迁移** → 使用 ast-grep 确保结构精确
 
-### Performance Benchmarks
+### 性能基准测试
 
-**Test**: Find authentication code in 500k line codebase
+**测试**：在 50 万行代码库中查找认证代码
 
-| Strategy | Time | Results Quality |
+| 策略 | 耗时 | 结果质量 |
 |----------|------|-----------------|
-| rg "auth" only | 0.2s | 5000+ false positives |
-| grepai "auth" only | 2.5s | 50 relevant results |
-| grepai → rg (combined) | 2.7s | 50 relevant, verified |
-| Serena symbols only | 1.5s | 12 auth functions |
-| ast-grep patterns | 3.0s | 8 auth flows |
+| 仅用 rg "auth" | 0.2s | 5000+ 误报 |
+| 仅用 grepai "auth" | 2.5s | 50 个相关结果 |
+| grepai → rg（组合） | 2.7s | 50 个相关且已验证 |
+| 仅用 Serena 符号 | 1.5s | 12 个认证函数 |
+| ast-grep 模式 | 3.0s | 8 个认证流程 |
 
-**Winner**: Serena symbols (fastest + high quality) for known function names
+**最优方案**：对已知函数名使用 Serena 符号（最快 + 高质量）
 
-### Parallelization Strategy
+### 并行化策略
 
-**For large codebases (>100k lines)**:
+**针对大型代码库（> 10 万行）**：
 
 ```bash
-# Run searches in parallel
+# 并行运行搜索
 
-# Terminal 1: Semantic discovery
+# 终端 1：语义发现
 grepai search "authentication flow" > /tmp/grepai-results.json &
 
-# Terminal 2: Symbol indexing
+# 终端 2：符号索引
 serena get_symbols_overview --file src/**/*.ts > /tmp/symbols.json &
 
-# Terminal 3: Pattern detection
+# 终端 3：模式检测
 ast-grep 'async function $F' --json > /tmp/ast-results.json &
 
-# Wait for all, then combine results
+# 等待全部完成，然后合并结果
 wait
 jq -s '.[0] + .[1] + .[2]' \
   /tmp/grepai-results.json \
@@ -532,253 +532,253 @@ jq -s '.[0] + .[1] + .[2]' \
 
 ---
 
-## Common Pitfalls
+## 常见陷阱
 
-### Pitfall 1: Using Semantic Search for Exact Matches
+### 陷阱 1：用语义搜索查找精确匹配
 
-❌ **Wrong**:
+❌ **错误做法**：
 ```bash
-grepai search "createSession"  # Slow, overkill
+grepai search "createSession"  # 慢，大材小用
 ```
 
-✅ **Right**:
+✅ **正确做法**：
 ```bash
-rg "createSession" --type ts  # Fast, precise
+rg "createSession" --type ts  # 快速、精确
 ```
 
-**Rule**: If you know the exact text, never use semantic search.
+**原则**：如果你知道精确文本，永远不要用语义搜索。
 
 ---
 
-### Pitfall 2: Using rg for Conceptual Search
+### 陷阱 2：用 rg 进行概念性搜索
 
-❌ **Wrong**:
+❌ **错误做法**：
 ```bash
-rg "auth.*login.*session" --type ts  # Misses variations
+rg "auth.*login.*session" --type ts  # 会遗漏变体
 ```
 
-✅ **Right**:
+✅ **正确做法**：
 ```bash
 grepai search "authentication and session management"
 ```
 
-**Rule**: Regex doesn't understand meaning, use semantic tools.
+**原则**：正则表达式不理解含义，请使用语义工具。
 
 ---
 
-### Pitfall 3: Ignoring Call Graph Before Refactoring
+### 陷阱 3：重构前忽略调用图
 
-❌ **Wrong**:
+❌ **错误做法**：
 ```bash
-# Directly refactor without checking callers
+# 不检查调用者，直接重构
 rg "oldFunction" --type ts | sed 's/oldFunction/newFunction/g'
 ```
 
-✅ **Right**:
+✅ **正确做法**：
 ```bash
-# Check impact first
+# 先检查影响范围
 grepai trace callers "oldFunction"
-# See 47 callers across 23 files
-# Then plan refactoring strategy
+# 发现 23 个文件中有 47 处调用
+# 然后制定重构策略
 ```
 
-**Rule**: Always trace dependencies before modifying shared code.
+**原则**：修改共享代码前，始终先追踪依赖关系。
 
 ---
 
-### Pitfall 4: Not Combining Tools
+### 陷阱 4：不组合使用工具
 
-❌ **Wrong**:
+❌ **错误做法**：
 ```bash
-# Use only one tool for complex task
+# 复杂任务只用一种工具
 ast-grep 'async function $F' --json | jq '.[].file' | xargs -I {} vim {}
-# Blindly edit without understanding context
+# 不了解上下文，盲目编辑
 ```
 
-✅ **Right**:
+✅ **正确做法**：
 ```bash
-# Combine for full understanding
+# 组合使用，全面理解
 ast-grep 'async function $F' --json > /tmp/async.json
 for file in $(jq -r '.[].file' /tmp/async.json); do
-  serena get_symbols_overview --file "$file"  # Context
-  grepai trace callers "$(jq -r '.[].name' /tmp/async.json)"  # Usage
+  serena get_symbols_overview --file "$file"  # 上下文
+  grepai trace callers "$(jq -r '.[].name' /tmp/async.json)"  # 使用情况
 done
 ```
 
-**Rule**: Complex tasks need multiple perspectives.
+**原则**：复杂任务需要多角度视角。
 
 ---
 
-### Pitfall 5: Over-Engineering Simple Searches
+### 陷阱 5：简单搜索过度工程化
 
-❌ **Wrong**:
+❌ **错误做法**：
 ```bash
-# Setup grepai + Ollama just to find a TODO comment
+# 仅为了找 TODO 注释而配置 grepai + Ollama
 grepai search "TODO comments in the code"
 ```
 
-✅ **Right**:
+✅ **正确做法**：
 ```bash
 rg "TODO" --type ts
 ```
 
-**Rule**: Use the simplest tool that works.
+**原则**：使用能解决问题的最简单工具。
 
 ---
 
-## Tool Selection Cheatsheet
+## 工具选择速查表
 
-### Quick Decision Matrix
+### 快速决策矩阵
 
-| Your Situation | Use This | Not This |
+| 你的情况 | 使用这个 | 不要用这个 |
 |----------------|----------|----------|
-| "Find function `login`" | rg "login" | grepai search "login" |
-| "Find login-related code" | grepai "login flow" | rg "login.*" |
-| "Rename function safely" | Serena find_symbol | rg + sed |
-| "Who calls this function?" | grepai trace callers | rg + grep |
-| "Get file structure" | Serena overview | rg "class\|function" |
-| "Find async without try/catch" | ast-grep | rg "async.*{" |
-| "Migrate React classes" | ast-grep | rg + manual |
-| "Find TODOs" | rg "TODO" | Any other tool |
+| "查找函数 `login`" | rg "login" | grepai search "login" |
+| "查找与登录相关的代码" | grepai "login flow" | rg "login.*" |
+| "安全地重命名函数" | Serena find_symbol | rg + sed |
+| "谁调用了这个函数？" | grepai trace callers | rg + grep |
+| "获取文件结构" | Serena overview | rg "class\|function" |
+| "查找没有 try/catch 的 async" | ast-grep | rg "async.*{" |
+| "迁移 React 类" | ast-grep | rg + 手动操作 |
+| "查找 TODO" | rg "TODO" | 其他任何工具 |
 
 ---
 
-## Extended Toolkit: scip-search & lilmd
+## 扩展工具集：scip-search 与 lilmd
 
-Two CLI tools that address gaps in the rg/grepai/Serena stack.
+这两款 CLI 工具填补了 rg/grepai/Serena 工具栈的空白。
 
 ### scip-search
 
-scip-search queries pre-built SCIP (Sourcegraph Code Intelligence Protocol) symbol indexes. Where grepai searches by semantic meaning and Serena requires a live MCP connection, scip-search operates against a static binary index with millisecond cold starts.
+scip-search 查询预构建的 SCIP（Sourcegraph 代码智能协议）符号索引。grepai 按语义含义搜索，Serena 需要实时的 MCP 连接，而 scip-search 则基于静态二进制索引运行，冷启动时间仅需毫秒。
 
-| Attribute | Details |
+| 属性 | 详情 |
 |-----------|---------|
-| **Source** | [github.com/liza-mas/scip-search](https://github.com/liza-mas/scip-search) |
-| **Install** | `curl -fsSL https://raw.githubusercontent.com/liza-mas/scip-search/main/install.sh \| bash` |
-| **Index format** | SCIP (Go, TypeScript, Python, Java, Rust, and others) |
-| **Output** | One-line text, JSON, or location-only |
+| **来源** | [github.com/liza-mas/scip-search](https://github.com/liza-mas/scip-search) |
+| **安装** | `curl -fsSL https://raw.githubusercontent.com/liza-mas/scip-search/main/install.sh \| bash` |
+| **索引格式** | SCIP（Go、TypeScript、Python、Java、Rust 等） |
+| **输出格式** | 单行文本、JSON 或仅位置信息 |
 
-**Workflow**: scip-search replaces the 5-10 rg/read round-trips typical for symbol discovery.
+**工作流**：scip-search 可替代符号发现时典型的 5-10 次 rg/读取往返操作。
 
 ```bash
-# Step 1: generate SCIP index once per language
+# 步骤 1：每种语言生成一次 SCIP 索引
 scip-typescript index --output index.scip
 
-# Step 2: find a symbol definition
+# 步骤 2：查找符号定义
 scip-search find AuthService
 
-# Step 3: get all references with line numbers
+# 步骤 3：获取所有引用及行号
 scip-search refs AuthService.login --format json
 
-# Step 4: read only the returned line ranges
+# 步骤 4：仅读取返回的行范围
 ```
 
-**vs Serena**: Serena connects to a language server and has session memory. scip-search is stateless and works against a snapshot: no MCP, no persistent process. This makes it reliable in worktrees and ephemeral CI environments where Serena's LSP backend may not be available.
+**与 Serena 的对比**：Serena 连接到语言服务器并具有会话记忆。scip-search 是无状态的，基于快照运行：无需 MCP，无需持久进程。这使其在工作树和临时 CI 环境中可靠运行，而 Serena 的 LSP 后端在这些环境中可能不可用。
 
-**vs grepai**: grepai finds by semantic intent ("payment validation logic"). scip-search finds by exact or near-exact symbol identifier. They work in sequence: grepai discovers the concept, scip-search confirms the symbol.
+**与 grepai 的对比**：grepai 按语义意图查找（"支付验证逻辑"）。scip-search 按精确或近似精确的符号标识符查找。两者可顺序配合使用：grepai 发现概念，scip-search 确认符号。
 
-**Worktree compatibility**: indexes are per-repository files with no shared state. Running `scip-typescript index` inside a worktree produces a local index for that worktree.
+**工作树兼容性**：索引是每个仓库的文件，无共享状态。在工作树内运行 `scip-typescript index` 会为该工作树生成本地索引。
 
 ---
 
 ### lilmd
 
-lilmd treats Markdown files as databases. It returns a table of contents with line ranges and enables targeted section reads. An agent reading a 2,000-line guide fetches one section in a single call instead of reading the full file.
+lilmd 将 Markdown 文件视为数据库。它返回带有行范围的目录，并支持定向章节读取。智能体读取一篇 2000 行的指南时，只需一次调用即可获取某个章节，而不必读取整个文件。
 
-| Attribute | Details |
+| 属性 | 详情 |
 |-----------|---------|
-| **Source** | [github.com/molefrog/lilmd](https://github.com/molefrog/lilmd) |
-| **Install** | `npm install -g lilmd` |
-| **Runtime** | Node or Bun |
+| **来源** | [github.com/molefrog/lilmd](https://github.com/molefrog/lilmd) |
+| **安装** | `npm install -g lilmd` |
+| **运行时** | Node 或 Bun |
 
-**Key commands**:
+**核心命令**：
 
 ```bash
-# TOC with line ranges (inclusive, 1-indexed)
+# 带行范围的目录（含头尾，1 为起始行）
 lilmd docs/architecture.md
 
-# Read a section by name (fuzzy match by default)
+# 按名称读取章节（默认模糊匹配）
 lilmd read docs/architecture.md "Authentication"
 
-# Read a nested section
+# 读取嵌套章节
 lilmd read docs/architecture.md "Security > JWT"
 
-# Exact match (prefix with =)
+# 精确匹配（以 = 开头）
 lilmd read docs/architecture.md "=Authentication Flow"
 ```
 
-**Agent-specific value**: the TOC output contains line ranges for each heading. An agent parses these and requests only the relevant section rather than loading the full file. The natural pipeline is: `rg` (find which file) then `lilmd` (get TOC with ranges) then `Read lines:N-M` (load the specific section). This also works for CHANGELOG.md, large README files, and knowledge base documents.
+**对智能体的特殊价值**：目录输出包含每个标题的行范围。智能体解析这些信息后，只请求相关章节，而不是加载整个文件。自然的处理流程是：`rg`（找到哪个文件）→ `lilmd`（获取带范围的目录）→ `Read lines:N-M`（加载特定章节）。这同样适用于 CHANGELOG.md、大型 README 文件和知识库文档。
 
-**Worktree compatibility**: stateless, no index, runs per file. Works anywhere.
-
----
-
-## Setup Priority
-
-**Recommended Setup Order**:
-
-1. **Start**: rg (already built-in with Grep tool) ✅
-2. **Next**: Serena MCP (symbol awareness, session memory)
-3. **Then**: grepai (semantic search + call graph)
-4. **If worktrees are part of your workflow**: scip-search (stateless symbol lookup, no MCP required)
-5. **For large documentation**: lilmd (targeted Markdown section reads, no setup)
-6. **Finally**: ast-grep (structural patterns, large refactoring)
-
-**Rationale**: 90% of searches work with rg + Serena. Add grepai for semantic needs. Add scip-search for worktree or CI environments where MCP is unavailable. Add ast-grep only for large-scale refactoring.
+**工作树兼容性**：无状态，无索引，按文件运行。适用于任何环境。
 
 ---
 
-## Summary: The 6-Tool Toolkit
+## 安装优先级
+
+**推荐安装顺序**：
+
+1. **起步**：rg（已内置于搜索工具）✅
+2. **下一步**：Serena MCP（符号感知，会话记忆）
+3. **然后**：grepai（语义搜索 + 调用图）
+4. **如果工作流涉及工作树**：scip-search（无状态符号查找，无需 MCP）
+5. **针对大型文档**：lilmd（定向 Markdown 章节读取，无需配置）
+6. **最后**：ast-grep（结构模式，大规模重构）
+
+**理由**：90% 的搜索用 rg + Serena 即可完成。语义需求时添加 grepai。工作树或 MCP 不可用的 CI 环境时添加 scip-search。仅在大规模重构时才添加 ast-grep。
+
+---
+
+## 总结：六工具工具箱
 
 ```
 ┌─────────────────────────────────────────────────────────┐
-│                   SEARCH TOOL MASTERY                   │
+│                   搜索工具精通                           │
 ├─────────────────────────────────────────────────────────┤
 │                                                         │
-│  rg (ripgrep)     →  Fast, exact text matching         │
-│  ├─ Use: 90% of searches                               │
-│  └─ Speed: ~20ms                                        │
+│  rg（ripgrep）  →  快速、精确的文本匹配                 │
+│  ├─ 适用：90% 的搜索场景                               │
+│  └─ 速度：~20ms                                        │
 │                                                         │
-│  grepai           →  Semantic + Call graph             │
-│  ├─ Use: Concept discovery, dependency tracing         │
-│  └─ Speed: ~500ms (finds what rg cannot)               │
+│  grepai         →  语义搜索 + 调用图                   │
+│  ├─ 适用：概念发现、依赖追踪                           │
+│  └─ 速度：~500ms（能找到 rg 找不到的内容）             │
 │                                                         │
-│  Serena           →  Symbol-aware + Session memory     │
-│  ├─ Use: Refactoring, structure understanding          │
-│  └─ Speed: ~100ms                                       │
+│  Serena         →  符号感知 + 会话记忆                 │
+│  ├─ 适用：重构、结构理解                               │
+│  └─ 速度：~100ms                                       │
 │                                                         │
-│  ast-grep         →  AST structural patterns           │
-│  ├─ Use: Large migrations, complex patterns            │
-│  └─ Speed: ~200ms                                       │
+│  ast-grep       →  AST 结构模式                        │
+│  ├─ 适用：大规模迁移、复杂模式                         │
+│  └─ 速度：~200ms                                       │
 │                                                         │
-│  scip-search      →  Symbol index (stateless, SCIP)   │
-│  ├─ Use: CI / worktrees / no MCP environments          │
-│  └─ Speed: ~5ms cold start                             │
+│  scip-search    →  符号索引（无状态，SCIP）             │
+│  ├─ 适用：CI / 工作树 / 无 MCP 环境                   │
+│  └─ 速度：~5ms 冷启动                                  │
 │                                                         │
-│  lilmd            →  Markdown section navigation       │
-│  ├─ Use: Large docs, TOC + line ranges per section     │
-│  └─ Speed: instant, no index                           │
+│  lilmd          →  Markdown 章节导航                   │
+│  ├─ 适用：大型文档，带行范围的目录                     │
+│  └─ 速度：即时，无需索引                               │
 │                                                         │
 │  ═══════════════════════════════════════════════════   │
 │                                                         │
-│  Master the combination, not individual tools.          │
-│  Each tool has a sweet spot. Use the right one.        │
+│  掌握工具组合，而非单一工具。                           │
+│  每种工具都有其最适合的场景，选对工具才是关键。         │
 │                                                         │
 └─────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## Further Reading
+## 延伸阅读
 
-- [Serena MCP Guide](#serena-semantic-code-analysis)
-- [grepai Documentation](#grepai-recommended-semantic-search)
-- [ast-grep Patterns Skill](../../examples/skills/ast-grep-patterns.md)
-- [Architecture: Grep vs RAG History](../core/architecture.md#search-strategy-evolution)
+- [Serena MCP 指南](#serena-semantic-code-analysis)
+- [grepai 文档](#grepai-recommended-semantic-search)
+- [ast-grep 模式技能](../../examples/skills/ast-grep-patterns.md)
+- [架构：Grep 与 RAG 的历史演变](../core/architecture.md#search-strategy-evolution)
 - [scip-search GitHub](https://github.com/liza-mas/scip-search)
 - [lilmd GitHub](https://github.com/molefrog/lilmd)
 
 ---
 
-**Last updated**: May 2026
-**Compatible with**: Claude Code 2.1.7+
+**最后更新**：2026 年 5 月
+**兼容版本**：Claude Code 2.1.7+

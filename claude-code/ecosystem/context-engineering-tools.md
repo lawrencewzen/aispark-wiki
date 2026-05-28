@@ -1,564 +1,564 @@
 > 📚 **AI Spark Wiki** · Claude Code 知识库
 
 ---
-title: "Context Engineering: Tools & Ecosystem"
-description: "A practical map of the tools that compress, optimize, route, and observe LLM context — from CLI output filters to AI gateways to LLMOps platforms"
+title: "上下文工程：工具与生态系统"
+description: "压缩、优化、路由和观测 LLM 上下文的工具全景图——从 CLI 输出过滤到 AI 网关再到 LLMOps 平台"
 tags: [context, tokens, optimization, ecosystem, tools, advanced]
 ---
 
-# Context Engineering: Tools & Ecosystem
+# 上下文工程：工具与生态系统
 
-> **Confidence**: Tier 1/2 — Core concepts based on published research and production data. Third-party tool details based on public documentation (March 2026).
+> **可信度**：Tier 1/2 — 核心概念基于已发表研究和生产数据，第三方工具详情基于公开文档（2026 年 3 月）。
 >
-> **Related**: [Context Engineering (configuration guide)](../core/context-engineering.md) | [Third-Party Tools](./third-party-tools.md) | [MCP Servers Ecosystem](./mcp-servers-ecosystem.md)
+> **相关内容**：[上下文工程（配置指南）](../core/context-engineering.md) | [第三方工具](./third-party-tools.md) | [MCP 服务器生态系统](./mcp-servers-ecosystem.md)
 
-This page maps the ecosystem of tools that help you manage what enters the context window and what doesn't. It complements the [configuration-focused context engineering guide](../core/context-engineering.md), which covers CLAUDE.md structure and path-scoping. Here the focus is on the broader tooling landscape: output compression, prompt compression, AI gateways, RAG optimization, observability, and inference infrastructure.
-
----
-
-## Table of Contents
-
-1. [The Mental Model](#1-the-mental-model)
-2. [Core Concepts](#2-core-concepts)
-3. [Output Compression: CLI & Tool Output](#3-output-compression-cli--tool-output) (RTK, Headroom, context-mode, stacklit)
-4. [Prompt Compression](#4-prompt-compression)
-5. [AI Gateways](#5-ai-gateways)
-6. [RAG Optimization](#6-rag-optimization)
-7. [Memory Systems](#7-memory-systems)
-8. [KV Cache Infrastructure](#8-kv-cache-infrastructure)
-9. [LLMOps & Observability](#9-llmops--observability)
-10. [Tool Selection by Use Case](#10-tool-selection-by-use-case)
-11. [Research Landscape](#11-research-landscape)
+本页梳理帮助你管理上下文窗口内容的工具生态系统。它是[以配置为重心的上下文工程指南](../core/context-engineering.md)的补充，后者聚焦于 CLAUDE.md 结构和路径范围限定。本页关注更广泛的工具全景：输出压缩、提示词压缩、AI 网关、RAG 优化、可观测性和推理基础设施。
 
 ---
 
-## 1. The Mental Model
+## 目录
 
-The framing that makes everything else click: **the context window is RAM, not disk**.
-
-RAM is fast, expensive, and finite. You don't load everything you own into RAM before running a program. You load exactly what the program needs, right when it needs it. The same applies to LLM context: every token you put there displaces something else, costs money, and competes for the model's attention.
-
-This reframes the engineering challenge. It's not "how do I give the model more information?" but "what is the minimum viable set of information the model needs to succeed?" Every technique in this page is an answer to that second question.
-
-The parallel with system architecture holds further. A CPU without good memory management stalls. An LLM without good context management hallucinates, loses coherence, and drifts toward generic outputs. Optimizing context is not a cost-cutting exercise — it's a reliability investment.
+1. [思维模型](#1-思维模型)
+2. [核心概念](#2-核心概念)
+3. [输出压缩：CLI 与工具输出](#3-输出压缩cli-与工具输出)（RTK、Headroom、context-mode、stacklit）
+4. [提示词压缩](#4-提示词压缩)
+5. [AI 网关](#5-ai-网关)
+6. [RAG 优化](#6-rag-优化)
+7. [记忆系统](#7-记忆系统)
+8. [KV 缓存基础设施](#8-kv-缓存基础设施)
+9. [LLMOps 与可观测性](#9-llmops-与可观测性)
+10. [按使用场景选择工具](#10-按使用场景选择工具)
+11. [前沿研究动态](#11-前沿研究动态)
 
 ---
 
-## 2. Core Concepts
+## 1. 思维模型
 
-### Minimum Viable Context (MVC)
+让所有内容串联起来的框架：**上下文窗口是内存，不是磁盘**。
 
-MVC is the principle of providing exactly the information needed for the task, nothing more. It has two failure modes that look opposite but stem from the same cause:
+内存速度快、成本高、容量有限。你不会在运行程序前把所有东西都加载进内存。你只在程序需要时加载它需要的内容。LLM 上下文同理：每一个放入其中的 Token（词元）都会占用其他内容的空间，产生成本，并与模型的注意力竞争。
 
-- **Under-context**: the model lacks necessary information, hallucinates or produces generic output
-- **Over-context**: the model is overwhelmed with irrelevant information, attention diffuses, adherence degrades
+这重新定义了工程挑战。问题不是"如何给模型更多信息"，而是"模型成功完成任务所需的最小可行信息集是什么"。本页的每项技术都是对这第二个问题的回答。
 
-The research on adherence degradation (see [context engineering guide, section 2](../core/context-engineering.md#2-the-context-budget)) quantifies the over-context failure: a CLAUDE.md over 400 lines typically drops adherence to ~60%. The cause is attention diffusion — too many potentially relevant signals compete for the model's limited attention budget.
+与系统架构的类比可以进一步延伸。没有良好内存管理的 CPU 会卡顿。没有良好上下文管理的 LLM 会产生幻觉、失去连贯性，并退化为泛化输出。优化上下文不是降本练习，而是可靠性投资。
 
-MVC is not about minimalism for its own sake. It's about precision. A 300-token system prompt that covers exactly what the model needs beats a 3,000-token prompt that buries the critical instruction on page five.
+---
 
-### Context Rot
+## 2. 核心概念
 
-Context rot describes the degradation in model behavior as context length grows during a session. The most studied form is the "lost-in-the-middle" phenomenon: models consistently underweight information placed in the middle of a long context, attending primarily to the beginning and end.
+### 最小可行上下文（MVC）
 
-Empirical consequences in practice:
+MVC 是只提供任务所需信息、不多不少的原则。它有两种看似相反却源于同一原因的失败模式：
 
-- Instructions near the top of a CLAUDE.md file are followed more consistently than instructions at the bottom
-- In long agentic sessions, earlier constraints lose salience as new content pushes them toward the middle
-- Tool outputs from the start of a session are often effectively "forgotten" after several rounds of interaction
+- **上下文不足**：模型缺乏必要信息，产生幻觉或泛化输出
+- **上下文过载**：模型被无关信息淹没，注意力分散，遵从性下降
 
-Mitigation: `/compact` at 70% context usage (not 90%), structured note-taking hooks, and session restarts for fundamentally new task contexts. The `/compact` command summarizes conversation history, moving stale content out of the active attention window while preserving continuity.
+关于遵从性下降的研究（参见[上下文工程指南第 2 节](../core/context-engineering.md#2-the-context-budget)）量化了上下文过载的失败：CLAUDE.md 超过 400 行通常会使遵从度降至约 60%。原因是注意力分散——过多潜在相关信号争夺模型有限的注意力预算。
 
-### Semantic Priming Hypothesis
+MVC 不是为了简洁而简洁，而是追求精准。一个覆盖模型所需内容的 300 token 系统提示，胜过一个将关键指令淹没在第五页的 3000 token 提示。
 
-An observation from compression research with practical implications: when you ultra-compress a context (removing most tokens), the model does not recall the removed information verbatim. Instead, the compressed context acts as a *semantic prime* — it activates relevant latent knowledge that was already present in the model's weights from training.
+### 上下文退化
 
-This matters because it means heavily compressed context can perform better than its information density suggests. The model is not reconstructing facts from the context; it's being pointed toward relevant knowledge it already has. For well-trained domains, a 10-token hint may activate more relevant knowledge than a 100-token verbatim extract.
+上下文退化描述随着会话中上下文长度增长，模型行为质量下降的现象。研究最充分的形式是"遗忘中间"现象：模型对置于长上下文中间的信息持续性地低权重处理，主要关注开头和结尾。
 
-The practical implication: prefer keywords and structural cues over prose when context is tight. "Use OpenAPI 3.1, strict mode, no nullable" retrieves more precise behavior than two paragraphs explaining the same thing.
+实践中的实证影响：
 
-### Context Rot vs. Token Cost: The Two Pressures
+- CLAUDE.md 文件顶部的指令比底部的指令遵从度更高
+- 在长时智能体会话中，随着新内容将其推向中间，早期约束的显著性降低
+- 会话初期的工具输出在多轮交互后往往实际上被"遗忘"
 
-Context management operates under two simultaneous pressures that pull in opposite directions:
+缓解措施：在上下文使用率达到 70% 时（而非 90%）运行 `/compact`，使用结构化记录 Hooks，以及在根本上下文需求发生变化时重启会话。`/compact` 命令会总结对话历史，将陈旧内容移出活跃注意力窗口，同时保持连贯性。
 
-| Pressure | Cause | Effect | Mitigation |
+### 语义激活假设
+
+来自压缩研究的一个观察，具有实践意义：对上下文进行极限压缩（删除大多数 Token（词元））后，模型不会逐字回忆被删除的信息。被压缩的上下文充当*语义激活触发器*——它激活模型权重中训练时已存在的相关潜在知识。
+
+这一点很重要，因为它意味着高度压缩的上下文能比其信息密度所暗示的表现更好。模型不是从上下文中重建事实；而是被指向它已掌握的相关知识。对于训练充分的领域，10 个 Token（词元）的提示可能比 100 个 Token（词元）的逐字摘录激活更多相关知识。
+
+实践含义：上下文紧张时，关键词和结构性线索优于散文。"使用 OpenAPI 3.1，严格模式，不允许 nullable"比用两段话解释同样的内容能检索出更精确的行为。
+
+### 上下文退化 vs Token（词元）成本：两种压力
+
+上下文管理同时面临方向相反的两种压力：
+
+| 压力 | 原因 | 影响 | 缓解措施 |
 |----------|-------|--------|------------|
-| **Context Rot** | Too much content | Attention diffusion, lost-in-middle | Prune, compact, scope |
-| **Token Cost** | Every token billed | Budget overrun, latency increase | Compress, filter, cache |
+| **上下文退化** | 内容过多 | 注意力分散，遗忘中间 | 剪裁、压缩、范围限定 |
+| **Token（词元）成本** | 每个 Token（词元）都计费 | 超出预算，延迟增加 | 压缩、过滤、缓存 |
 
-Compression addresses cost. Pruning addresses rot. Good context engineering does both.
+压缩解决成本问题，剪裁解决退化问题。良好的上下文工程同时兼顾两者。
 
 ---
 
-## 3. Output Compression: CLI & Tool Output
+## 3. 输出压缩：CLI 与工具输出
 
-Tool outputs, shell command results, test logs, and database query responses share a structural problem: they contain 70–95% boilerplate. A passing test suite logs hundreds of success lines for the one failure you care about. A `git log` dumps metadata for every commit when you need three fields. This noise enters the context window verbatim unless intercepted.
+工具输出、shell 命令结果、测试日志和数据库查询响应有一个共同的结构性问题：包含 70-95% 的样板内容。通过的测试套件会为你关心的那一个失败记录数百行成功信息。`git log` 会为每次提交输出元数据，而你只需要三个字段。除非被拦截，这些噪声会原样进入上下文窗口。
 
-### RTK (Rust Token Killer)
+### RTK（Rust Token Killer）
 
-RTK is a CLI proxy that intercepts command output before it reaches Claude's context, applying purpose-built filters that surface signal and discard noise. It integrates via a Claude Code hook, so standard commands are transparently rewritten.
+RTK 是一款 CLI 代理，在命令输出进入 Claude 上下文之前拦截它，应用专门构建的过滤器提取信号并丢弃噪声。通过 Claude Code Hook 集成，标准命令被透明地重写。
 
-| Attribute | Details |
+| 属性 | 详情 |
 |-----------|---------|
-| **Source** | [github.com/rtk-ai/rtk](https://github.com/rtk-ai/rtk) |
-| **Install** | `brew install rtk-ai/tap/rtk` or `cargo install rtk` |
-| **Stars** | 446 (March 2026) |
-| **Integration** | Claude Code hook via `rtk init --global` |
+| **来源** | [github.com/rtk-ai/rtk](https://github.com/rtk-ai/rtk) |
+| **安装** | `brew install rtk-ai/tap/rtk` 或 `cargo install rtk` |
+| **Stars** | 446（2026 年 3 月） |
+| **集成** | 通过 `rtk init --global` 作为 Claude Code Hook |
 
-Measured savings across command categories:
+各命令类别的实测节省量：
 
-| Command | Reduction |
+| 命令 | 压缩率 |
 |---------|-----------|
 | `rtk git log` | 92% |
 | `rtk git status` | 76% |
 | `rtk vitest run` | 99%+ |
-| `rtk cargo test` | 89% avg |
-| `rtk pnpm outdated` | 70–85% |
+| `rtk cargo test` | 平均 89% |
+| `rtk pnpm outdated` | 70-85% |
 
-The design philosophy: suppress successful output, surface failures. A test suite that passes 300 tests and fails 2 should show 2 lines, not 302. This matches how a developer reads output — context should match that cognitive model.
+设计哲学：抑制成功输出，呈现失败。通过 300 个测试、失败 2 个的测试套件应该显示 2 行，而非 302 行。这符合开发者阅读输出的方式——上下文应匹配这一认知模型。
 
-RTK supports custom filters via TOML DSL (`.rtk/filters.toml`) for project-specific output patterns without writing Rust. See [Third-Party Tools: RTK](./third-party-tools.md#rtk-rust-token-killer) for the complete feature reference.
+RTK 通过 TOML DSL（`.rtk/filters.toml`）支持自定义过滤器，无需编写 Rust 即可处理项目特定的输出模式。完整功能参考见[第三方工具：RTK](./third-party-tools.md#rtk-rust-token-killer)。
 
 ### Headroom
 
-Headroom targets a different problem: structured data returned by tools (JSON payloads, database results, API responses) that is large but not entirely droppable.
+Headroom 针对不同问题：工具返回的结构化数据（JSON 载荷、数据库结果、API 响应）体量庞大但不能完全丢弃。
 
-The key difference from RTK: Headroom is **lossless**. Rather than discarding content, it replaces verbose data with a compressed summary and registers the original with a retrieval handle. If the model determines it needs the full data, it can call a tool to fetch it. This preserves the agent's ability to access detail on demand without loading everything upfront.
+与 RTK 的核心区别：Headroom 是**无损的**。它不是丢弃内容，而是用压缩摘要替换冗长数据，并注册原始数据的检索句柄。如果模型判断需要完整数据，可以调用工具获取。这既保留了智能体按需访问详情的能力，又不会预先加载所有内容。
 
-| Attribute | Details |
+| 属性 | 详情 |
 |-----------|---------|
-| **Source** | [headroom.ai](https://headroom.ai) |
-| **Compression** | 70–95% on structured tool output |
-| **Architecture** | Lossless — original accessible via retrieval handle |
-| **Compression models** | SmartCrusher (fast), Kompress (high fidelity) |
+| **来源** | [headroom.ai](https://headroom.ai) |
+| **压缩率** | 结构化工具输出 70-95% |
+| **架构** | 无损——原始内容可通过检索句柄访问 |
+| **压缩模型** | SmartCrusher（快速）、Kompress（高保真） |
 
-When to choose Headroom over RTK:
+何时选择 Headroom 而非 RTK：
 
-- Tool outputs contain structured data the model may need partially (database results, API responses)
-- You cannot predict which parts of the output the model will need
-- Lossless retrieval is a requirement (compliance, debugging, audit trails)
+- 工具输出包含模型可能部分需要的结构化数据（数据库结果、API 响应）
+- 无法预测模型需要输出的哪些部分
+- 无损检索是必需的（合规、调试、审计追踪）
 
-When RTK is sufficient:
+RTK 足够时：
 
-- Output is unstructured command-line text
-- Successful runs produce noise you definitively do not need
-- Simplicity and zero infrastructure is preferred
+- 输出是非结构化命令行文本
+- 成功运行产生你明确不需要的噪声
+- 偏好简洁，零基础设施
 
 ### context-mode
 
-context-mode is an MCP server that operates at the boundary between tools and context, intercepting tool call outputs before they reach the conversation window and applying compression or selective retrieval. It also implements a session tracking layer using SQLite with FTS5 full-text search, enabling semantic retrieval of earlier session content after `/compact` discards raw history.
+context-mode 是一款 MCP 服务器，在工具与上下文之间的边界运作，在工具调用输出进入对话窗口之前拦截并应用压缩或选择性检索。它还通过带有 FTS5 全文搜索的 SQLite 实现会话跟踪层，使 `/compact` 丢弃原始历史后仍能语义检索早期会话内容。
 
-| Attribute | Details |
+| 属性 | 详情 |
 |-----------|---------|
-| **Source** | [GitHub: mksglu/context-mode](https://github.com/mksglu/context-mode) |
-| **Stars** | ~14,149 (May 2026) |
-| **License** | ELv2 (commercial SaaS planned) |
-| **Platforms** | Claude Code plugin, Gemini CLI, Copilot, Cursor, Kiro, Zed, and 6 others (12 total) |
-| **Claims** | 98% MCP output compression, 65–75% response compression |
+| **来源** | [GitHub: mksglu/context-mode](https://github.com/mksglu/context-mode) |
+| **Stars** | 约 14,149（2026 年 5 月） |
+| **许可证** | ELv2（计划商业 SaaS） |
+| **平台** | Claude Code 插件、Gemini CLI、Copilot、Cursor、Kiro、Zed 及其他 6 个平台（共 12 个） |
+| **声称效果** | 98% MCP 输出压缩，65-75% 响应压缩 |
 
-**How the MCP output sandbox works**: Instead of routing raw tool call output directly into the conversation, context-mode intercepts the result, applies compression, and injects a summary with a retrieval handle. The full output is accessible on demand if the model requests it, similar in spirit to Headroom's lossless architecture but operating specifically on MCP tool boundaries.
+**MCP 输出沙盒工作原理**：context-mode 拦截工具调用结果，应用压缩后注入摘要和检索句柄，而非将原始工具调用输出直接路由到对话中。完整输出可按需获取，精神上类似 Headroom 的无损架构，但专门作用于 MCP 工具边界。
 
-**Session memory after `/compact`**: context-mode uses SQLite + FTS5 to index session history. When `/compact` runs and discards raw conversation history, the SQLite index persists. Subsequent retrieval queries use BM25 ranking to surface relevant earlier context without reloading the full transcript.
+**`/compact` 后的会话记忆**：context-mode 使用 SQLite + FTS5 索引会话历史。`/compact` 运行并丢弃原始对话历史后，SQLite 索引持久化。后续检索查询使用 BM25 排序检索相关早期上下文，无需重新加载完整记录。
 
-**"Think in Code" pattern**: context-mode v1.0.64 documented a pattern where, instead of reading files to answer an exploratory question, the model writes and executes a script that queries or counts, then reads only the result. This is covered in depth as a named technique in the [context engineering guide](../core/context-engineering.md).
+**"以代码思考"模式**：context-mode v1.0.64 记录了一种模式——模型不是通过读取文件来回答探索性问题，而是编写并执行查询或计数的脚本，然后只读取结果。这一模式在[上下文工程指南](../core/context-engineering.md)中被作为命名技术详细介绍。
 
-**When to choose context-mode**: If you run Claude Code alongside other platforms (Cursor, Gemini CLI) and want a single context management layer that works across all of them. Also useful when MCP tool outputs are large and structured, and you need post-compact session retrieval beyond what `/compact` alone provides.
+**何时选择 context-mode**：如果你同时在 Claude Code 和其他平台（Cursor、Gemini CLI）上运行，并希望有一个跨平台的统一上下文管理层。当 MCP 工具输出体量大且结构化，且需要在 `/compact` 后进行会话检索时也很有用。
 
-**Comparison with RTK and Headroom**: RTK operates at the shell command level (CLI output), Headroom at the structured data/API response level. context-mode operates specifically at the MCP tool boundary and adds session persistence. These tools are complementary.
+**与 RTK 和 Headroom 的对比**：RTK 作用于 shell 命令级别（CLI 输出），Headroom 作用于结构化数据/API 响应级别。context-mode 专门作用于 MCP 工具边界并增加会话持久化。这些工具互补。
 
 ### stacklit
 
-stacklit generates a machine-readable index of a repository's package structure, exported symbols, and dependencies. An agent reads this index in a single call (~250 tokens) instead of spending 50,000+ tokens exploring files to understand the codebase structure.
+stacklit 生成仓库包结构、导出符号和依赖关系的机器可读索引。智能体通过单次调用读取该索引（约 250 个 Token（词元）），而非花费 50,000+ Token（词元）探索文件来理解代码库结构。
 
-| Attribute | Details |
+| 属性 | 详情 |
 |-----------|---------|
-| **Source** | [GitHub: glincker/stacklit](https://github.com/glincker/stacklit) |
-| **Install** | `npm install -g stacklit` |
-| **Integration** | Auto-configures Claude Code, Cursor, and Aider via `stacklit setup` |
-| **Claimed reduction** | 50,000+ tokens of exploration compressed to ~250 tokens |
+| **来源** | [GitHub: glincker/stacklit](https://github.com/glincker/stacklit) |
+| **安装** | `npm install -g stacklit` |
+| **集成** | 通过 `stacklit setup` 自动配置 Claude Code、Cursor 和 Aider |
+| **声称节省** | 50,000+ Token（词元）的探索压缩至约 250 Token（词元） |
 
-**How it works**: `stacklit generate-json` scans the repository and writes `stacklit.json`, a structured map of packages, exports with type signatures, dependency graph, git activity heatmap, and framework hints. `stacklit setup` injects a compact codebase map into agent configuration files automatically. `stacklit diff` detects when the index is stale after file additions or deletions.
+**工作原理**：`stacklit generate-json` 扫描仓库并写入 `stacklit.json`，这是包含包信息、带类型签名的导出、依赖图、git 活跃度热力图和框架提示的结构化地图。`stacklit setup` 自动将简洁的代码库地图注入智能体配置文件。`stacklit diff` 在文件新增或删除后检测索引是否过时。
 
 ```bash
-# One-time setup per repository
-stacklit generate-json    # create the index
-stacklit setup            # inject into Claude Code / Cursor / Aider config
+# 每个仓库一次性设置
+stacklit generate-json    # 创建索引
+stacklit setup            # 注入到 Claude Code / Cursor / Aider 配置
 
-# Maintenance
-stacklit diff             # check if index is stale
-stacklit generate-json    # re-index after structure changes
+# 维护
+stacklit diff             # 检查索引是否过时
+stacklit generate-json    # 结构变更后重新索引
 ```
 
-**Worktree compatibility**: generates per-repository indexes with no centralized state. Unlike grepai (which requires a local embedding index) or Serena (which connects to a language server), stacklit produces a static JSON file that works in git worktrees and ephemeral CI environments without additional setup.
+**工作树兼容性**：生成每个仓库的索引，无集中式状态。与 grepai（需要本地嵌入索引）或 Serena（连接语言服务器）不同，stacklit 生成静态 JSON 文件，在 git 工作树和临时 CI 环境中无需额外设置即可工作。
 
-**Comparison with RTK and context-mode**: RTK intercepts CLI output during a session. context-mode intercepts MCP tool output in real time. stacklit eliminates exploration-phase token spend before the session starts, by making the repo structure known from the first message. The three tools target different moments in a session's lifecycle and are complementary.
+**与 RTK 和 context-mode 的对比**：RTK 在会话中拦截 CLI 输出。context-mode 实时拦截 MCP 工具输出。stacklit 在会话开始前通过让仓库结构从第一条消息起就已知，消除探索阶段的 Token（词元）消耗。这三个工具针对会话生命周期的不同时刻，互相补充。
 
 ---
 
-## 4. Prompt Compression
+## 4. 提示词压缩
 
-Prompt compression operates at the model-input level: reducing the token count of the prompt itself before it is sent to the LLM. This differs from output compression (which intercepts tool responses) and context pruning (which manages session history).
+提示词压缩在模型输入层面运作：在发送给 LLM 之前减少提示词本身的 Token（词元）数量。这与输出压缩（拦截工具响应）和上下文剪裁（管理会话历史）不同。
 
 ### LLMLingua / LLMLingua-2
 
-LLMLingua (Microsoft Research) is the most studied prompt compression framework. It uses a small language model to evaluate the "importance" of each token in a prompt, then removes the least important tokens up to a target compression ratio.
+LLMLingua（微软研究院）是研究最充分的提示词压缩框架。它使用小型语言模型评估提示词中每个 Token（词元）的"重要性"，然后删除最不重要的 Token（词元），直至达到目标压缩比。
 
-| Attribute | Details |
+| 属性 | 详情 |
 |-----------|---------|
-| **Source** | [github.com/microsoft/LLMLingua](https://github.com/microsoft/LLMLingua) |
-| **Max compression** | 20x |
-| **Performance loss** | ~1.5% on GSM8K and BBH benchmarks |
-| **Approach (v1)** | Perplexity-based token scoring via small LM |
-| **Approach (v2)** | Data distillation from GPT-4, token classification |
+| **来源** | [github.com/microsoft/LLMLingua](https://github.com/microsoft/LLMLingua) |
+| **最大压缩比** | 20 倍 |
+| **性能损失** | GSM8K 和 BBH 基准约 1.5% |
+| **方法（v1）** | 通过小型 LM 进行基于困惑度的 Token（词元）评分 |
+| **方法（v2）** | 来自 GPT-4 的数据蒸馏，Token（词元）分类 |
 
-LLMLingua-2 improves on the original by treating compression as a classification problem (keep vs. drop) rather than a ranking problem. The classifier is trained via distillation from GPT-4 annotations, making it faster and more generalizable across domains.
+LLMLingua-2 通过将压缩视为分类问题（保留 vs 丢弃）而非排序问题来改进原版。分类器通过 GPT-4 注释蒸馏训练，使其更快且在不同领域更具泛化性。
 
-The Semantic Priming Hypothesis (see section 2) explains why 20x compression can retain 98.5% of task performance: the model is not recalling compressed text literally. It's using the compressed tokens as semantic anchors into its own pre-trained knowledge. High-frequency tokens (function words, connectives) are often dropped; domain keywords and structural markers are preserved.
+语义激活假设（见第 2 节）解释了为什么 20 倍压缩仍能保留 98.5% 的任务性能：模型不是逐字回忆压缩文本，而是将压缩的 Token（词元）作为语义锚点访问其预训练知识。高频 Token（词元）（功能词、连接词）通常被删除；领域关键词和结构标记被保留。
 
-**When to use**: Long system prompts, repetitive RAG contexts, few-shot examples where the examples are verbose. Not suitable for code (syntax is load-bearing) or numerical data (every digit matters).
+**适用场景**：长系统提示、重复的 RAG 上下文、冗长的少样本示例。不适用于代码（语法至关重要）或数值数据（每一位数字都重要）。
 
-### AttnComp (Research Direction)
+### AttnComp（研究方向）
 
-AttnComp (not yet a shipping product as of March 2026) proposes replacing perplexity scoring with cross-attention patterns as the compression metric. The argument: perplexity measures how "surprising" a token is given its predecessors — useful for language modeling, but only loosely correlated with task relevance. Cross-attention patterns directly show which tokens the model attends to for a given output, making it a more principled importance metric.
+AttnComp（截至 2026 年 3 月尚未作为生产产品发布）提议用交叉注意力模式替代困惑度评分作为压缩指标。理由是：困惑度衡量 Token（词元）相对于其前序 Token（词元）的"意外程度"——对语言建模有用，但与任务相关性的相关性较弱。交叉注意力模式直接显示模型为了生成特定输出而关注哪些 Token（词元），使其成为更有原则的重要性指标。
 
-Published results show AttnComp outperforms LLMLingua at equivalent compression ratios. Monitor for OSS release.
+已发表结果显示 AttnComp 在相同压缩比下优于 LLMLingua。关注开源发布。
 
 ---
 
-## 5. AI Gateways
+## 5. AI 网关
 
-AI gateways sit between your application and the LLM provider. They handle routing, rate limiting, cost management, and increasingly, active context transformation. The gateway category is where infrastructure and context engineering overlap.
+AI 网关位于你的应用程序和 LLM 提供商之间，处理路由、速率限制、成本管理，以及越来越多的主动上下文转换。网关类别是基础设施与上下文工程的交汇处。
 
 ### Edgee
 
-Edgee positions as a "composable edge layer" for AI applications. Its context engineering features operate transparently at the HTTP layer: the application sends a standard API call, Edgee intercepts it, applies compression and routing policies, and forwards the optimized request to the model.
+Edgee 定位为 AI 应用的"可组合边缘层"。其上下文工程功能在 HTTP 层透明运作：应用程序发送标准 API 调用，Edgee 拦截它，应用压缩和路由策略，然后将优化后的请求转发给模型。
 
-| Attribute | Details |
+| 属性 | 详情 |
 |-----------|---------|
-| **Source** | [edgee.cloud](https://www.edgee.cloud) |
-| **Context compression** | Up to 50% active compression |
-| **Deployment** | Edge (close to user, low latency) |
-| **Features** | Routing, guardrails, compression, cost policies |
+| **来源** | [edgee.cloud](https://www.edgee.cloud) |
+| **上下文压缩** | 最高 50% 主动压缩 |
+| **部署** | 边缘（靠近用户，低延迟） |
+| **功能** | 路由、护栏、压缩、成本策略 |
 
-The "edge" positioning is deliberate: by running close to the user rather than in a centralized server, Edgee reduces round-trip latency while still intercepting the full request/response cycle. This matters in interactive applications where token compression and latency are both constraints.
+"边缘"定位是刻意为之：通过在靠近用户而非集中服务器的位置运行，Edgee 在拦截完整请求/响应周期的同时降低了往返延迟。在 Token（词元）压缩和延迟都是约束条件的交互应用中，这一点很重要。
 
-Guardrails are applied at the gateway level, meaning they are enforced regardless of which application or client initiates the request. In multi-tenant environments, this separates the concern of "what context reaches the model" from the application code that generates it.
+护栏在网关层面执行，意味着无论哪个应用程序或客户端发起请求，都会被强制执行。在多租户环境中，这将"什么上下文到达模型"的关注点与生成它的应用程序代码分离。
 
 ### Portkey
 
-Portkey is the more established player in the AI gateway category, with a broader feature set centered on unified routing across multiple LLM providers.
+Portkey 是 AI 网关类别中更成熟的玩家，功能集更广泛，以跨多个 LLM 提供商的统一路由为核心。
 
-| Attribute | Details |
+| 属性 | 详情 |
 |-----------|---------|
-| **Source** | [portkey.ai](https://portkey.ai) |
-| **Model support** | 250+ LLMs via unified API |
-| **Features** | Routing, fallbacks, load balancing, caching, guardrails |
-| **Observability** | Built-in tracing and cost tracking |
+| **来源** | [portkey.ai](https://portkey.ai) |
+| **模型支持** | 通过统一 API 支持 250+ 个 LLM |
+| **功能** | 路由、降级、负载均衡、缓存、护栏 |
+| **可观测性** | 内置追踪和成本跟踪 |
 
-Portkey's semantic caching layer is particularly relevant for context optimization: identical or near-identical requests are cached and returned without an LLM call. In applications with repetitive query patterns (helpdesks, code review bots, internal search), cache hit rates can reduce total LLM calls by 30–60%.
+Portkey 的语义缓存层对于上下文优化特别相关：相同或近似相同的请求被缓存并直接返回，无需 LLM 调用。在查询模式重复的应用程序（帮助台、代码审查机器人、内部搜索）中，缓存命中率可将总 LLM 调用量减少 30-60%。
 
-**Gateway vs. Output Compression**: these categories complement each other. RTK/Headroom compress what goes into the context from tool outputs. Gateways compress or route the assembled prompt before it hits the model. Both reduce total token spend, but they intercept at different points in the pipeline.
+**网关 vs 输出压缩**：这两类工具互补。RTK/Headroom 压缩来自工具输出进入上下文的内容。网关在组装好的提示词到达模型之前压缩或路由它。两者都降低总 Token（词元）消耗，但在流水线的不同节点拦截。
 
 ---
 
-## 6. RAG Optimization
+## 6. RAG 优化
 
-Retrieval-Augmented Generation has a well-documented failure mode: the retrieval step returns chunks that are semantically relevant in isolation but lack the context to be useful. A fragment mentioning "Q3 revenue grew 3%" is meaningless without the company name and year — both of which may have been in the same document but in a different chunk.
+检索增强生成（RAG）有一个有据可查的失败模式：检索步骤返回的片段单独来看语义相关，但缺乏实际使用所需的上下文。提到"Q3 收入增长 3%"的片段，如果公司名称和年份在同一文档的不同片段中，就会变得毫无意义。
 
-### Anthropic Contextual Retrieval
+### Anthropic 上下文检索
 
-Anthropic's contextual retrieval method addresses chunk isolation by pre-contextualizing each fragment before indexing. A short LLM-generated preamble is prepended to each chunk, situating it within the document it came from.
+Anthropic 的上下文检索方法通过在索引前预先为每个片段加入上下文来解决片段孤立问题。在每个片段之前添加一个简短的 LLM 生成前言，将其置于所来源的文档背景中。
 
 ```
-Before: "Revenue grew 3% in Q3."
+之前："Q3 收入增长 3%。"
 
-After: "From Acme Corp Q3 2024 earnings report: Revenue grew 3% in Q3."
+之后："来自 Acme Corp 2024 年 Q3 收益报告：Q3 收入增长 3%。"
 ```
 
-The preamble is generated once per chunk at indexing time, not at retrieval time. With prompt caching, the cost of generating preambles for a large document corpus is reduced by ~90% (the document is cached; only the per-chunk instruction varies).
+前言在索引时为每个片段生成一次，而非在检索时生成。使用提示缓存，为大型文档语料库生成前言的成本降低约 90%（文档被缓存；只有每个片段的指令不同）。
 
-Published results from Anthropic's evaluation:
+Anthropic 评估的已发布结果：
 
-| Method | Failure Rate Reduction |
+| 方法 | 失败率降低 |
 |--------|----------------------|
-| Contextual embeddings only | 35% |
-| Contextual BM25 (keyword + semantic) | 49% |
-| Contextual embeddings + BM25 + reranking | 67% |
+| 仅上下文嵌入 | 35% |
+| 上下文 BM25（关键词 + 语义） | 49% |
+| 上下文嵌入 + BM25 + 重排序 | 67% |
 
-The combination of semantic search (embeddings), keyword search (BM25), and a reranking step that re-orders results by relevance to the actual query produces the best outcomes. Reranking providers include Cohere and Voyage AI.
+语义搜索（嵌入）、关键词搜索（BM25）和按实际查询相关性重排结果的组合产生最佳效果。重排序提供商包括 Cohere 和 Voyage AI。
 
-Cost at scale: generating contextual preambles for 1M document tokens costs approximately $1.02 after prompt caching. For most production corpora, this is a one-time indexing cost.
+规模化成本：为 100 万文档 Token（词元）生成上下文前言，使用提示缓存后约需 1.02 美元。对于大多数生产语料库，这是一次性索引成本。
 
-### JIT / Agentic Search
+### JIT / 智能体搜索
 
-Traditional RAG loads the retrieval results at the start of the request. JIT (Just-in-Time) retrieval defers this: the agent starts with minimal context and retrieves information on-demand as the task reveals what it actually needs.
+传统 RAG 在请求开始时加载检索结果。JIT（即时检索）将此推迟：智能体以最小上下文开始，随任务揭示实际需要随需检索信息。
 
-This matters for agent workflows with unpredictable information requirements. A code debugging agent may need one set of docs for a Python error and a completely different set for the database error encountered two steps later. Loading both upfront wastes context; loading neither forces hallucination. JIT retrieval threads the needle.
+这对于信息需求不可预测的智能体工作流很重要。调试代码的智能体可能需要一套关于 Python 错误的文档，两步后遇到数据库错误又需要完全不同的文档。预先加载两者都浪费上下文；都不加载则强迫产生幻觉。JIT 检索找到了平衡点。
 
-In Claude Code terms: this is what the agent does naturally when it uses tools (`list_directory`, `read_file`, `grep`) rather than receiving a pre-assembled context. The "search when needed" pattern is a design principle, not just a Claude capability.
+用 Claude Code 的术语来说：这正是智能体自然使用工具（`list_directory`、`read_file`、`grep`）而非接收预先组装的上下文时所做的事。"按需搜索"模式是一种设计原则，而非仅仅是 Claude 的能力。
 
-### RAG Triad Evaluation
+### RAG 三元组评估
 
-The RAG Triad is a framework for evaluating RAG output quality across three dimensions:
+RAG 三元组是在三个维度上评估 RAG 输出质量的框架：
 
-| Dimension | Question | What it catches |
+| 维度 | 问题 | 捕获内容 |
 |-----------|----------|----------------|
-| **Context Relevance** | Is the retrieved context relevant to the question? | Retrieval failures |
-| **Answer Relevance** | Is the answer relevant to the question? | Generation drift |
-| **Groundedness** | Is the answer supported by the retrieved context? | Hallucination |
+| **上下文相关性** | 检索到的上下文与问题相关吗？ | 检索失败 |
+| **答案相关性** | 答案与问题相关吗？ | 生成漂移 |
+| **有理有据** | 答案有检索到的上下文支撑吗？ | 幻觉 |
 
-All three can fail independently. A system can retrieve perfectly relevant context and still hallucinate (groundedness failure). It can generate a relevant answer not supported by what was retrieved. Evaluating all three simultaneously identifies which part of the RAG pipeline is the weak link.
+三者可以独立失败。系统可以检索到完全相关的上下文，仍然产生幻觉（有理有据失败）。可以生成与问题相关但无检索内容支撑的答案。同时评估三者可以识别 RAG 流水线中的薄弱环节。
 
-Arize Phoenix implements the RAG Triad as a production evaluation framework (see section 9).
-
----
-
-## 7. Memory Systems
-
-Long-running agents face a variant of the context rot problem: session history grows until it exceeds the context window, or until early context is effectively ignored. Memory systems solve this by moving information out of the context window and into persistent storage, retrieving it on demand.
-
-### Short-Term: Compaction and Structured Note-Taking
-
-For Claude Code specifically, two mechanisms handle session-level memory:
-
-**`/compact`** summarizes the conversation history, replacing the raw exchange with a dense summary. The model retains continuity but the token count resets substantially. Use at 70% context usage, not 90%.
-
-**Structured note-taking via hooks** is the agentic version: a PostToolUse hook writes key decisions, discovered facts, and task state to a notes file. The agent loads this file at the start of the next session. This sidesteps context rot entirely for multi-session work — the notes file sits at the start of the context (maximum attention) and contains only curated information.
-
-**Auto Memory (v2.1.59+)** and **Auto Dream** provide native CC alternatives: Claude writes its own `MEMORY.md` between sessions, and a background sub-agent consolidates it after ≥5 sessions and ≥24 hours. See [Memory Systems: Auto Memory](../core/memory-systems.md#22-auto-memory-v21594).
-
-### Long-Term: External Memory Systems
-
-For multi-session and multi-agent workflows, persistent memory systems store information outside the context window and retrieve it selectively. The CC ecosystem has a three-tier model:
-
-**Individual (no team)**: claude-mem (26.5K stars, hooks-based auto-capture), agentmemory (16K stars, BM25+vector+graph fusion, 95.2% R@5), ICM (Rust binary, dual decay+graph architecture, `brew install icm`).
-
-**Team sharing**: CLAUDE.md + `.mcp.json` + skills committed to the repo (the Trinity, zero infra). Mem0 Cloud MCP for pooled team memory. Zep/Graphiti for temporal knowledge graphs.
-
-**The RAG-vs-Memory distinction**: RAG is the model's access to external world knowledge (docs, codebase, web). Memory is its access to user-specific and session-specific knowledge (preferences, past decisions, continuity). Both are retrieval systems serving different parts of the information architecture. A well-designed agent uses both.
-
-> **Canonical reference**: [Memory Systems guide](../core/memory-systems.md) — 20-tool comparison table, architecture patterns, risk matrix, decision flowchart, and benchmarks.
+Arize Phoenix 将 RAG 三元组实现为生产评估框架（见第 9 节）。
 
 ---
 
-## 8. KV Cache Infrastructure
+## 7. 记忆系统
 
-This section has two parts. The first covers Anthropic's prompt caching mechanics as they apply to Claude Code, including how Claude Code structures requests to maximize hit rates. The second covers self-hosted inference infrastructure for teams deploying their own LLMs.
+长期运行的智能体面临上下文退化问题的变体：会话历史增长至超过上下文窗口，或早期上下文被实际忽略。记忆系统通过将信息移出上下文窗口至持久化存储、按需检索来解决这一问题。
 
-### What is the KV Cache?
+### 短期：压缩与结构化记录
 
-During the prefill phase (processing the input), the transformer computes Key-Value pairs for every token in the context. These pairs are stored in GPU VRAM, not as raw text or token hashes. For a 100K-token prefix on Opus, the KV data occupies approximately 500MB–1GB of VRAM.
+对于 Claude Code 具体而言，两种机制处理会话级别记忆：
 
-For subsequent requests that share a prefix (e.g., the same system prompt), these stored KV values can be reused rather than recomputed. This is KV cache reuse. The autoregressive nature of transformers imposes one strict constraint: only prefixes can be cached. If token N changes, the KV entries for tokens N+1 onward must be recomputed. A modification anywhere in the prefix invalidates everything downstream.
+**`/compact`** 总结对话历史，用密集摘要替换原始交流。模型保持连贯性，但 Token（词元）数量大幅重置。在上下文使用率达到 70% 时使用，而非 90%。
 
-Without KV cache reuse, every request processes the full context from scratch. With effective caching, only the unique portion of each request (the user message, new tool results) requires fresh computation. Anthropic's prompt caching reduces both latency and cost: cached tokens on Opus are billed at approximately $0.50/M versus $5/M for uncached input tokens. Cache hits require the shared prefix to be long enough (typically 1,024+ tokens) and recent enough (cache expires after approximately 5 minutes without access).
+**通过 Hooks 进行结构化记录**是智能体版本：工具后钩子将关键决策、发现的事实和任务状态写入记录文件。智能体在下一次会话开始时加载此文件。这完全规避了多会话工作中的上下文退化——记录文件位于上下文开头（最大注意力位置），只包含精心策划的信息。
 
-### How Claude Code Uses Prompt Caching
+**自动记忆（v2.1.59+）** 和 **Auto Dream** 提供原生 CC 替代方案：Claude 在会话间自己编写 `MEMORY.md`，后台子智能体在 ≥5 次会话且 ≥24 小时后进行整合。参见[记忆系统：自动记忆](../core/memory-systems.md#22-auto-memory-v21594)。
 
-Claude Code structures every request to maximize cache hit rate. The request order matters because of the prefix constraint: items that change most often must appear last.
+### 长期：外部记忆系统
 
-**Request structure (most stable to least stable)**:
+对于多会话和多智能体工作流，持久化记忆系统在上下文窗口外存储信息并选择性检索。CC 生态系统有三层模型：
 
-1. **System prompt** — Identical across all Claude Code users on the same version. Shared cache: all users on the same version benefit from the same cached KV entries when Anthropic serves the system prompt from shared GPU memory.
-2. **Tool definitions** — Static per session. Locked at session start. Adding or removing tools mid-session invalidates the entire conversation cache, which is why Claude Code locks the tool list when a session begins.
-3. **Project config / CLAUDE.md** — Injected as message content (via `<system-reminder>` blocks in messages), not in the system prompt.
-4. **Conversation history** — The sliding breakpoint: only new turns require fresh computation.
+**个人（无团队）**：claude-mem（26,500 stars，基于 Hooks 的自动捕获）、agentmemory（16,000 stars，BM25+向量+图融合，R@5 达 95.2%）、ICM（Rust 二进制文件，双衰减+图架构，`brew install icm`）。
 
-**Why CLAUDE.md is not in the system prompt**: If CLAUDE.md content were injected into the system prompt, each user's prefix would be unique (different projects, different configs), and the shared caching benefit of the ~30K-token system prompt would disappear. By keeping the system prompt identical for all users and injecting CLAUDE.md as message content, Anthropic can amortize the system prompt computation cost across every concurrent Claude Code session. CLAUDE.md still gets cached once it appears in the conversation history, but the system prompt itself stays universally shared.
+**团队共享**：CLAUDE.md + `.mcp.json` + 提交到仓库的 Skills（技能模块）（Trinity，零基础设施）。Mem0 Cloud MCP 用于共享团队记忆。Zep/Graphiti 用于时态知识图谱。
 
-**Production hit rates**: In real Claude Code sessions, prompt caching achieves approximately 96% hit rate. The simple reason is that the system prompt, tool definitions, CLAUDE.md content, and prior conversation turns all hit the cache; only the new user turn and the model's response are fresh computation.
+**RAG vs 记忆的区别**：RAG 是模型访问外部世界知识（文档、代码库、网络）的途径。记忆是模型访问用户特定和会话特定知识（偏好、过往决策、连贯性）的途径。两者都是检索系统，服务于信息架构的不同部分。设计良好的智能体同时使用两者。
 
-### Cache Anti-Patterns
+> **权威参考**：[记忆系统指南](../core/memory-systems.md) — 20 种工具对比表、架构模式、风险矩阵、决策流程图和基准测试。
 
-**Timestamps in the system prompt**: Any frequently-changing value in the system prompt prefix breaks caching by making every user's prefix unique. A Hacker News user reported recovering over 20 percentage points of cache hit rate by moving a timestamp field from the system prompt prefix into a message. The fix: move dynamic values (current date, git branch, file modification times) into message content, not the system prompt.
+---
 
-**Adding or removing tools mid-session**: Because tool definitions sit between the system prompt and conversation history in the request prefix, any change to the tool list invalidates the cache for the entire conversation. Claude Code avoids this by locking tool definitions at session start.
+## 8. KV 缓存基础设施
 
-### Plan Mode: A Cache-Stable Design Pattern
+本节分两部分。第一部分介绍 Anthropic 提示缓存机制及其在 Claude Code 中的应用，包括 Claude Code 如何组织请求以最大化命中率。第二部分介绍面向自行部署 LLM 团队的自托管推理基础设施。
 
-Plan Mode restricts write access during planning phases. A naive implementation would be to remove write tools from the tool list while in Plan Mode. The problem: removing tools from the list changes the prefix, invalidating the entire session cache.
+### 什么是 KV 缓存？
 
-Claude Code's actual implementation: rather than removing tools, two new tools are added (`EnterPlanMode` and `ExitPlanMode`). The full tool list remains constant across mode switches. Mode behavior is conveyed through instructions in messages, not through changes to the tool definitions. The cache prefix stays identical whether Plan Mode is on or off.
+在预填充阶段（处理输入）期间，transformer 为上下文中的每个 Token（词元）计算键值对。这些键值对存储在 GPU 显存中，而非原始文本或 Token（词元）哈希中。对于 Opus 上 100K Token（词元）的前缀，KV 数据占用约 500MB-1GB 显存。
 
-This is a concrete example of a broader design principle: prefer instruction-level mode switching over structural changes to the request prefix.
+对于共享前缀的后续请求（例如相同的系统提示），这些存储的 KV 值可以重用，而不是重新计算。这就是 KV 缓存复用。自动回归型 transformer 施加了一个严格约束：只有前缀可以被缓存。如果第 N 个 Token（词元）发生变化，从第 N+1 个 Token（词元）开始的 KV 条目必须重新计算。前缀中任何位置的修改都会使下游所有内容的缓存失效。
 
-### Compaction vs `/clear` for Cache Continuity
+没有 KV 缓存复用，每个请求都从头处理完整上下文。有效缓存后，只有每个请求的独特部分（用户消息、新工具结果）需要全新计算。Anthropic 的提示缓存降低了延迟和成本：Opus 上缓存 Token（词元）的计费约为 0.50 美元/M，而未缓存输入 Token（词元）约为 5 美元/M。命中缓存需要共享前缀足够长（通常 1,024 个 Token（词元）以上）且足够近期（缓存在约 5 分钟未访问后过期）。
 
-Compaction (`/compact`) preserves the cache. The compaction request reuses the same system prompt and tool definitions prefix, so cached KV entries from earlier in the session remain valid after compaction runs. Only the conversation history portion is replaced with the summary.
+### Claude Code 如何使用提示缓存
 
-`/clear` followed by more than approximately 5 minutes of inactivity can result in a full cold start. The TTL for cached entries expires during the idle time, so the next request finds no cached KV entries for the system prompt or tool definitions. This is one reason Claude Code defaults to compaction rather than hard resets for long sessions: compaction preserves continuity without triggering cache expiration.
+Claude Code 组织每个请求以最大化缓存命中率。请求顺序很重要，因为前缀约束：变化最频繁的项目必须排在最后。
 
-### Self-Hosted KV Cache Infrastructure
+**请求结构（从最稳定到最不稳定）**：
 
-The following tools apply to teams deploying their own LLMs rather than using Anthropic's managed API.
+1. **系统提示** — 在相同版本的所有 Claude Code 用户间完全相同。共享缓存：当 Anthropic 从共享 GPU 内存提供系统提示时，相同版本的所有用户受益于相同的缓存 KV 条目。
+2. **工具定义** — 每次会话静态不变，在会话开始时锁定。会话中间添加或删除工具会使整个对话缓存失效，这就是 Claude Code 在会话开始时锁定工具列表的原因。
+3. **项目配置 / CLAUDE.md** — 作为消息内容注入（通过消息中的 `<system-reminder>` 块），而非系统提示。
+4. **对话历史** — 滑动断点：只有新轮次需要全新计算。
 
-### vLLM (PagedAttention)
+**为什么 CLAUDE.md 不在系统提示中**：如果 CLAUDE.md 内容注入到系统提示中，每个用户的前缀将是唯一的（不同项目、不同配置），约 30K Token（词元）系统提示的共享缓存优势将消失。通过让系统提示对所有用户保持相同，将 CLAUDE.md 作为消息内容注入，Anthropic 可以在所有并发 Claude Code 会话中摊销系统提示计算成本。CLAUDE.md 在对话历史中出现后仍会被缓存，但系统提示本身保持通用共享。
 
-vLLM is the dominant open-source inference engine for self-hosted LLMs. Its key innovation is PagedAttention: KV cache memory is allocated in fixed-size pages (analogous to OS virtual memory pages) rather than contiguous blocks.
+**生产命中率**：在实际 Claude Code 会话中，提示缓存实现约 96% 的命中率。简单原因是：系统提示、工具定义、CLAUDE.md 内容和先前对话轮次都命中缓存；只有新的用户轮次和模型响应是全新计算。
 
-Traditional KV cache allocation wastes 60–80% of GPU memory through fragmentation (allocating worst-case space per sequence). PagedAttention reduces this waste to under 4% by sharing pages across requests and allocating on demand.
+### 缓存反模式
 
-| Attribute | Details |
+**系统提示中的时间戳**：系统提示前缀中任何频繁变化的值都会使缓存失效，让每个用户的前缀变得唯一。一位 Hacker News 用户报告，将时间戳字段从系统提示前缀移至消息后，缓存命中率提高了超过 20 个百分点。解决方案：将动态值（当前日期、git 分支、文件修改时间）移入消息内容，而非系统提示。
+
+**会话中间添加或删除工具**：由于工具定义位于系统提示和对话历史之间的请求前缀中，对工具列表的任何更改都会使整个对话的缓存失效。Claude Code 通过在会话开始时锁定工具定义来避免这一问题。
+
+### 计划模式：缓存稳定的设计模式
+
+计划模式在规划阶段限制写入访问。朴素实现是在计划模式下从工具列表中移除写入工具。问题是：从列表中移除工具会改变前缀，使整个会话缓存失效。
+
+Claude Code 的实际实现：不是移除工具，而是添加两个新工具（`EnterPlanMode` 和 `ExitPlanMode`）。完整工具列表在模式切换时保持不变。模式行为通过消息中的指令传达，而非通过工具定义的更改。无论计划模式开启还是关闭，缓存前缀保持相同。
+
+这是更广泛设计原则的具体示例：偏好指令级别的模式切换，而非对请求前缀的结构性更改。
+
+### 压缩（/compact）vs /clear 对缓存连续性的影响
+
+压缩（`/compact`）保留缓存。压缩请求复用相同的系统提示和工具定义前缀，因此会话早期的缓存 KV 条目在压缩运行后仍然有效。只有对话历史部分被摘要替换。
+
+`/clear` 后超过约 5 分钟不活动可能导致完全冷启动。空闲期间缓存条目的 TTL 过期，因此下一个请求对系统提示或工具定义都找不到缓存 KV 条目。这是 Claude Code 默认使用压缩而非硬重置长会话的原因之一：压缩在不触发缓存过期的情况下保持连续性。
+
+### 自托管 KV 缓存基础设施
+
+以下工具适用于自行部署 LLM 而非使用 Anthropic 托管 API 的团队。
+
+### vLLM（PagedAttention）
+
+vLLM 是自托管 LLM 的主流开源推理引擎。其核心创新是 PagedAttention：KV 缓存内存以固定大小的页（类比操作系统虚拟内存页）分配，而非连续块。
+
+传统 KV 缓存分配通过碎片化（为每个序列分配最坏情况空间）浪费 60-80% 的 GPU 内存。PagedAttention 通过在请求间共享页并按需分配，将这种浪费降低到 4% 以下。
+
+| 属性 | 详情 |
 |-----------|---------|
-| **Source** | [github.com/vllm-project/vllm](https://github.com/vllm-project/vllm) |
-| **Key innovation** | PagedAttention (non-contiguous KV cache) |
-| **Memory waste** | Reduced from 60–80% to <4% |
+| **来源** | [github.com/vllm-project/vllm](https://github.com/vllm-project/vllm) |
+| **核心创新** | PagedAttention（非连续 KV 缓存） |
+| **内存浪费** | 从 60-80% 降至 <4% |
 
-### SGLang (RadixAttention)
+### SGLang（RadixAttention）
 
-SGLang introduces RadixAttention: KV cache entries are organized as a radix tree (trie structure) keyed on the token sequence. When two requests share a prefix, their shared prefix's KV entries are reused automatically.
+SGLang 引入 RadixAttention：KV 缓存条目以以 Token（词元）序列为键的基数树（前缀树结构）组织。当两个请求共享前缀时，其共享前缀的 KV 条目自动复用。
 
-This is particularly powerful for:
+这在以下场景特别强大：
 
-- Multiple requests sharing the same system prompt (the trie stores it once)
-- RAG pipelines where the retrieved document is constant across many queries
-- Multi-agent systems where a base context is shared across subagents
+- 共享相同系统提示的多个请求（树只存储一次）
+- 检索到的文档在多个查询中固定不变的 RAG 流水线
+- 跨子智能体共享基础上下文的多智能体系统
 
-| Attribute | Details |
+| 属性 | 详情 |
 |-----------|---------|
-| **Source** | [github.com/sgl-project/sglang](https://github.com/sgl-project/sglang) |
-| **Key innovation** | RadixAttention (trie-based automatic cache reuse) |
-| **Best for** | Shared-prefix workloads, multi-agent systems |
+| **来源** | [github.com/sgl-project/sglang](https://github.com/sgl-project/sglang) |
+| **核心创新** | RadixAttention（基于前缀树的自动缓存复用） |
+| **最适合** | 共享前缀工作负载、多智能体系统 |
 
-### Semantic Caching
+### 语义缓存
 
-Semantic caching operates above the model layer: instead of caching KV activations, it caches complete LLM responses keyed on semantic similarity of the request. A new request that is semantically close to a cached request returns the cached response without an LLM call.
+语义缓存在模型层之上运作：它不是缓存 KV 激活，而是以请求的语义相似性为键缓存完整 LLM 响应。语义上与缓存请求接近的新请求直接返回缓存响应，无需 LLM 调用。
 
-Redis, with vector search extensions, is the most common implementation. In high-repetition workloads (FAQ bots, internal search, code review pipelines with similar patterns), semantic cache hit rates of 30–60% are achievable, with some production deployments reporting 73% cost reduction.
+带向量搜索扩展的 Redis 是最常见的实现。在高重复工作负载（FAQ 机器人、内部搜索、具有相似模式的代码审查流水线）中，语义缓存命中率可达 30-60%，部分生产部署报告成本降低 73%。
 
-The risk: cached responses become stale. Semantic caching requires TTL policies aligned with how frequently the underlying knowledge changes.
+风险：缓存响应会变得过时。语义缓存需要与底层知识变化频率对齐的 TTL 策略。
 
 ---
 
-## 9. LLMOps & Observability
+## 9. LLMOps 与可观测性
 
-You cannot optimize what you do not measure. The LLMOps tooling category provides the instrumentation layer: tracing, cost tracking, quality evaluation, and drift detection for LLM-powered systems.
+无法度量就无法优化。LLMOps 工具类别提供仪表层：LLM 驱动系统的追踪、成本跟踪、质量评估和漂移检测。
 
 ### Langfuse
 
-The leading open-source option. Langfuse traces LLM calls across complex multi-step agent workflows, capturing input/output at each step, latency, cost per call, and the full execution tree.
+领先的开源选择。Langfuse 在复杂多步骤智能体工作流中追踪 LLM 调用，捕获每步的输入/输出、延迟、每次调用成本和完整执行树。
 
-| Attribute | Details |
+| 属性 | 详情 |
 |-----------|---------|
-| **Source** | [github.com/langfuse/langfuse](https://github.com/langfuse/langfuse) |
-| **License** | Open-source (MIT) |
-| **Deployment** | Self-hosted or cloud |
-| **Best for** | Self-hosting requirements, cost analysis, trace debugging |
+| **来源** | [github.com/langfuse/langfuse](https://github.com/langfuse/langfuse) |
+| **许可证** | 开源（MIT） |
+| **部署** | 自托管或云端 |
+| **最适合** | 自托管需求、成本分析、追踪调试 |
 
-Key features for context optimization: per-session token cost breakdowns, trace comparison (which prompt variant is cheaper?), and custom evaluation metrics you can run on stored traces without rerunning the agent.
+上下文优化的关键功能：按会话的 Token（词元）成本细分、追踪对比（哪个提示词变体更便宜？）以及可在存储的追踪上运行的自定义评估指标，无需重新运行智能体。
 
 ### LangSmith
 
-LangSmith is Anthropic-adjacent (LangChain ecosystem) and the standard choice if you are building on LangChain or LangGraph. It excels at debugging chained operations where understanding the execution graph is as important as the individual LLM calls.
+LangSmith 与 Anthropic 相邻（LangChain 生态系统），是基于 LangChain 或 LangGraph 构建时的标准选择。它擅长调试链式操作，在这类场景中理解执行图与理解单个 LLM 调用同样重要。
 
-| Attribute | Details |
+| 属性 | 详情 |
 |-----------|---------|
-| **Source** | [smith.langchain.com](https://smith.langchain.com) |
-| **Best for** | LangChain/LangGraph workloads, chain debugging, A/B testing |
-| **Features** | Dataset management, automated evaluation, regression testing |
+| **来源** | [smith.langchain.com](https://smith.langchain.com) |
+| **最适合** | LangChain/LangGraph 工作负载、链式调试、A/B 测试 |
+| **功能** | 数据集管理、自动评估、回归测试 |
 
 ### Arize Phoenix
 
-Phoenix specializes in RAG quality evaluation, implementing the RAG Triad natively. It traces retrieval operations alongside generation, so you can correlate retrieval quality with final answer quality.
+Phoenix 专注于 RAG 质量评估，原生实现 RAG 三元组。它在生成旁边追踪检索操作，让你将检索质量与最终答案质量关联起来。
 
-| Attribute | Details |
+| 属性 | 详情 |
 |-----------|---------|
-| **Source** | [github.com/Arize-ai/phoenix](https://github.com/Arize-ai/phoenix) |
-| **License** | Open-source |
-| **Specialty** | RAG evaluation, LLM-as-judge metrics, embedding drift |
+| **来源** | [github.com/Arize-ai/phoenix](https://github.com/Arize-ai/phoenix) |
+| **许可证** | 开源 |
+| **专长** | RAG 评估、LLM 作为评判者指标、嵌入漂移 |
 
-Particularly useful for: identifying when retrieval is the bottleneck (context relevance failures) versus generation (groundedness failures). This distinction determines whether you fix the retriever or the prompt.
+特别适合：识别检索是瓶颈（上下文相关性失败）还是生成（有理有据失败）的场景。这一区分决定了你是修复检索器还是提示词。
 
 ### Maxim AI
 
-Maxim AI focuses on continuous evaluation: running automated evals against every production trace, not just offline test sets. It supports LLM-as-a-judge workflows (using an LLM to score another LLM's output) and A/B testing of prompt variants against production traffic.
+Maxim AI 专注于持续评估：对每个生产追踪运行自动评估，而非仅针对离线测试集。它支持 LLM 作为评判者工作流（使用一个 LLM 对另一个 LLM 的输出评分），以及针对生产流量的提示词变体 A/B 测试。
 
-| Attribute | Details |
+| 属性 | 详情 |
 |-----------|---------|
-| **Source** | [getmaxim.ai](https://www.getmaxim.ai) |
-| **Best for** | Continuous eval, A/B testing in production, regression detection |
+| **来源** | [getmaxim.ai](https://www.getmaxim.ai) |
+| **最适合** | 持续评估、生产环境 A/B 测试、回归检测 |
 
 ### TruLens
 
-TruLens implements the RAG Triad evaluation framework as an open-source library. It can be embedded directly in your application code, running evaluations inline as part of the application rather than in a separate observability platform.
+TruLens 将 RAG 三元组评估框架实现为开源库。可以直接嵌入应用程序代码，作为应用的一部分内联运行评估，而非在单独的可观测性平台中运行。
 
-| Attribute | Details |
+| 属性 | 详情 |
 |-----------|---------|
-| **Source** | [github.com/truera/trulens](https://github.com/truera/trulens) |
-| **License** | Open-source |
-| **Best for** | Inline RAG evaluation, library integration, RAG Triad scoring |
+| **来源** | [github.com/truera/trulens](https://github.com/truera/trulens) |
+| **许可证** | 开源 |
+| **最适合** | 内联 RAG 评估、库集成、RAG 三元组评分 |
 
-### Choosing an Observability Tool
+### 可观测性工具选择
 
-| Need | Recommended |
+| 需求 | 推荐 |
 |------|------------|
-| Self-host everything, cost analysis | Langfuse |
-| LangChain ecosystem, chain debugging | LangSmith |
-| RAG quality evaluation specifically | Arize Phoenix |
-| Continuous prod eval, A/B testing | Maxim AI |
-| Embed RAG Triad in app code | TruLens |
+| 自托管所有内容，成本分析 | Langfuse |
+| LangChain 生态系统，链式调试 | LangSmith |
+| RAG 质量评估 | Arize Phoenix |
+| 生产环境持续评估、A/B 测试 | Maxim AI |
+| 在应用代码中嵌入 RAG 三元组 | TruLens |
 
-These tools are not mutually exclusive. Langfuse for tracing plus Phoenix for RAG evaluation is a common combination.
-
----
-
-## 10. Tool Selection by Use Case
-
-### You are a Claude Code user (individual developer)
-
-| Problem | Tool |
-|---------|------|
-| Command outputs flooding context | RTK |
-| Monitoring token spend | ccusage (see [Third-Party Tools](./third-party-tools.md)) |
-| Context growing too long in a session | `/compact` at 70% usage |
-| Forgetting past session decisions | ICM memory system |
-| Claude ignoring rules from long CLAUDE.md | Path-scoping (see [context engineering guide](../core/context-engineering.md)) |
-
-### You are building an AI application
-
-| Problem | Tool |
-|---------|------|
-| Tool output JSON too verbose | Headroom |
-| Prompts too long, need compression | LLMLingua |
-| Routing across multiple LLM providers | Portkey |
-| Compression + guardrails at the edge | Edgee |
-| RAG chunks losing context | Anthropic Contextual Retrieval |
-| Tracing agent execution | Langfuse or LangSmith |
-| RAG quality measurement | Arize Phoenix |
-| Continuous evaluation | Maxim AI |
-
-### You are deploying a self-hosted LLM
-
-| Problem | Tool |
-|---------|------|
-| GPU memory efficiency | vLLM (PagedAttention) |
-| Shared-prefix caching (multi-agent, RAG) | SGLang (RadixAttention) |
-| Caching repeated queries semantically | Redis with vector search |
+这些工具并不互斥。Langfuse 追踪 + Phoenix RAG 评估是常见组合。
 
 ---
 
-## 11. Research Landscape
+## 10. 按使用场景选择工具
 
-Active research areas that have not yet shipped as production tools (March 2026):
+### 你是 Claude Code 用户（个人开发者）
 
-### SlimInfer (Dynamic Token Pruning)
+| 问题 | 工具 |
+|---------|------|
+| 命令输出淹没上下文 | RTK |
+| 监控 Token（词元）消耗 | ccusage（见[第三方工具](./third-party-tools.md)） |
+| 会话中上下文过长 | 在使用率 70% 时运行 `/compact` |
+| 忘记过去会话的决策 | ICM 记忆系统 |
+| Claude 忽略长 CLAUDE.md 中的规则 | 路径范围限定（见[上下文工程指南](../core/context-engineering.md)） |
 
-SlimInfer identifies redundant token representations in intermediate transformer layers and prunes them during inference. Published results: 2.53x speedup on Time-to-First-Token for LLaMA 3.1 without measurable quality degradation. The mechanism: mid-layer representations for many tokens converge to near-identical values; pruning these redundant representations saves computation without losing information.
+### 你在构建 AI 应用
 
-### TopV (Visual Token Pruning)
+| 问题 | 工具 |
+|---------|------|
+| 工具输出 JSON 过于冗长 | Headroom |
+| 提示词太长，需要压缩 | LLMLingua |
+| 跨多个 LLM 提供商路由 | Portkey |
+| 边缘层的压缩 + 护栏 | Edgee |
+| RAG 片段丢失上下文 | Anthropic 上下文检索 |
+| 追踪智能体执行 | Langfuse 或 LangSmith |
+| RAG 质量测量 | Arize Phoenix |
+| 持续评估 | Maxim AI |
 
-For multimodal models (vision-language models), image tokens dominate context usage. A 1024x1024 image can generate thousands of visual tokens, most of which encode uninformative patches (backgrounds, margins). TopV formulates patch selection as an optimization problem (Sinkhorn algorithm), retaining only the visual regions relevant to the reasoning task. Published results show significant TTFT reduction on VLM inference with maintained task performance.
+### 你在部署自托管 LLM
 
-### The Token Reduction Effect on Hallucination
-
-A finding that cuts across multiple research directions: token reduction in generative models does not just reduce cost — it measurably reduces hallucination and "overthinking" on simple queries. The mechanism is not fully understood, but the correlation is consistent across studies. Shorter, more precise contexts yield more grounded, less verbose outputs. This strengthens the case for MVC as a reliability principle, not just a cost principle.
+| 问题 | 工具 |
+|---------|------|
+| GPU 内存效率 | vLLM（PagedAttention） |
+| 共享前缀缓存（多智能体、RAG） | SGLang（RadixAttention） |
+| 语义缓存重复查询 | 带向量搜索的 Redis |
 
 ---
 
-> **Cross-references**
+## 11. 前沿研究动态
+
+尚未以生产工具形式落地的活跃研究方向（2026 年 3 月）：
+
+### SlimInfer（动态 Token（词元）剪枝）
+
+SlimInfer 识别 transformer 中间层中冗余的 Token（词元）表示，并在推理时剪枝。已发布结果：LLaMA 3.1 的首 Token（词元）生成时间提速 2.53 倍，无可测量的质量下降。机制：多层的许多 Token（词元）表示收敛至近乎相同的值；剪枝这些冗余表示节省计算量而不丢失信息。
+
+### TopV（视觉 Token（词元）剪枝）
+
+对于多模态模型（视觉-语言模型），图像 Token（词元）主导上下文使用。1024×1024 图像可生成数千个视觉 Token（词元），其中大多数编码无信息性的图像块（背景、边距）。TopV 将图像块选择表述为优化问题（Sinkhorn 算法），只保留与推理任务相关的视觉区域。已发布结果显示 VLM 推理首 Token（词元）生成时间显著减少，同时保持任务性能。
+
+### Token（词元）减少对幻觉的影响
+
+一个跨多个研究方向的发现：生成模型中的 Token（词元）减少不仅降低成本，还可以可测量地减少简单查询的幻觉和"过度思考"。机制尚未完全理解，但相关性在多项研究中一致出现。更短、更精准的上下文产生更有依据、更简洁的输出。这强化了 MVC 作为可靠性原则而非成本原则的论据。
+
+---
+
+> **交叉引用**
 >
-> - [Context Engineering (configuration guide)](../core/context-engineering.md) — CLAUDE.md hierarchy, path-scoping, budget management
-> - [Third-Party Tools](./third-party-tools.md) — RTK full reference, ccusage, ICM, and other CC-specific tools
-> - [MCP Servers Ecosystem](./mcp-servers-ecosystem.md) — MCP as dynamic context injection
-> - [Observability](../ops/observability.md) — Monitoring Claude Code in production
-> - [Ultimate Guide: Memory Systems](.#memory-hierarchy) — Complete memory architecture for Claude Code
+> - [上下文工程（配置指南）](../core/context-engineering.md) — CLAUDE.md 层级、路径范围限定、预算管理
+> - [第三方工具](./third-party-tools.md) — RTK 完整参考、ccusage、ICM 及其他 CC 专属工具
+> - [MCP 服务器生态系统](./mcp-servers-ecosystem.md) — MCP 作为动态上下文注入
+> - [可观测性](../ops/observability.md) — 在生产环境监控 Claude Code
+> - [终极指南：记忆系统](.#memory-hierarchy) — Claude Code 的完整记忆架构

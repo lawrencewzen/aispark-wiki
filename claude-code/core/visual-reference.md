@@ -1,772 +1,769 @@
 > 📚 **AI Spark Wiki** · Claude Code 知识库
 
 ---
-title: "Claude Code — Visual Reference"
-description: "ASCII diagrams consolidating key Claude Code concepts in one visual overview"
+title: "Claude Code — 视觉参考"
+description: "ASCII 图表，在一份视觉概览中整合 Claude Code 的核心概念"
 tags: [reference, architecture, cheatsheet]
 ---
 
-# Claude Code — Visual Reference
+# Claude Code — 视觉参考
 
-All diagrams in one place. Quick visual overview of Claude Code's key concepts.
-For detailed docs → [Ultimate Guide](../ultimate-guide.md) | [Cheatsheet](../cheatsheet.md)
+所有图表汇总于此。Claude Code 核心概念的快速视觉概览。
+详细文档 → [终极指南](../ultimate-guide.md) | [速查表](../cheatsheet.md)
 
-> **Interactive Mermaid diagrams available**: For 40 interactive diagrams covering model selection, agent lifecycle, memory hierarchy, multi-agent patterns, security threats, and more — see **[guide/diagrams/](../diagrams/)**. This file contains ASCII versions of key concepts.
+> **交互式 Mermaid 图表**：包含 40 张交互式图表，涵盖模型选择、智能体生命周期、记忆层级、多智能体模式、安全威胁等更多内容——请参见 **[guide/diagrams/](../diagrams/)**。本文件包含核心概念的 ASCII 版本。
 
-> **20 diagrams**: 8 new (this file) + 12 from existing guides, all consolidated here.
-
----
-
-## Table of Contents
-
-**New diagrams:**
-1. [Context Management Zones](#1-context-management-zones)
-2. [Permission Modes Cycle](#2-permission-modes-cycle)
-3. [Workflow Pipeline (9 Steps)](#3-workflow-pipeline-9-steps)
-4. [Quick Decision Tree](#4-quick-decision-tree)
-
-**Architecture & Internals:**
-5. [Master Loop](#5-master-loop)
-6. [Hook Event Flow](#6-hook-event-flow)
-7. [Data Privacy Flow](#7-data-privacy-flow)
-
-**Security:**
-8. [MCP Rug Pull Attack](#8-mcp-rug-pull-attack)
-9. [Docker Sandbox Architecture](#9-docker-sandbox-architecture)
-
-**Decision Trees:**
-10. [Search Tool Selection](#10-search-tool-selection)
-11. [Trust Calibration Flow](#11-trust-calibration-flow)
-12. [Adoption Decision Tree](#12-adoption-decision-tree)
-13. [Methodology Selection](#13-methodology-selection)
-
-**Workflows:**
-14. [Research → Spec → Code](#14-research--spec--code)
-15. [Review Auto-Correction Loop](#15-review-auto-correction-loop)
-16. [PDF Pipeline Stack](#16-pdf-pipeline-stack)
-
-**Development & Learning:**
-17. [TDD Red-Green-Refactor Cycle](#17-tdd-red-green-refactor-cycle)
-18. [UVAL Protocol Flow](#18-uval-protocol-flow)
-
-**Security (extended):**
-19. [Security 3-Layer Defense](#19-security-3-layer-defense)
-20. [Secret Exposure Timeline](#20-secret-exposure-timeline)
+> **共 20 张图表**：8 张新增（本文件）+ 12 张来自现有指南，全部汇总于此。
 
 ---
 
-## 1. Context Management Zones
+## 目录
 
-How to react based on context window usage (check with `/status`):
+**新增图表：**
+1. [上下文管理区域](#1-上下文管理区域)
+2. [权限模式循环](#2-权限模式循环)
+3. [工作流流水线（9 步）](#3-工作流流水线9-步)
+4. [快速决策树](#4-快速决策树)
+
+**架构与内部机制：**
+5. [主循环](#5-主循环)
+6. [Hooks（钩子）事件流](#6-hooks钩子事件流)
+7. [数据隐私流](#7-数据隐私流)
+
+**安全：**
+8. [MCP 地毯式攻击](#8-mcp-地毯式攻击)
+9. [Docker 沙盒架构](#9-docker-沙盒架构)
+
+**决策树：**
+10. [搜索工具选择](#10-搜索工具选择)
+11. [信任校准流程](#11-信任校准流程)
+12. [采用策略决策树](#12-采用策略决策树)
+13. [方法论选择](#13-方法论选择)
+
+**工作流：**
+14. [研究 → 规范 → 代码](#14-研究--规范--代码)
+15. [审查自动纠正循环](#15-审查自动纠正循环)
+16. [PDF 流水线技术栈](#16-pdf-流水线技术栈)
+
+**开发与学习：**
+17. [TDD（测试驱动开发）红-绿-重构循环](#17-tdd测试驱动开发红-绿-重构循环)
+18. [UVAL 协议流程](#18-uval-协议流程)
+
+**安全（扩展）：**
+19. [安全三层防御](#19-安全三层防御)
+20. [密钥泄露时间线](#20-密钥泄露时间线)
+
+---
+
+## 1. 上下文管理区域
+
+根据上下文窗口使用情况（使用 `/status` 查看）做出响应：
 
 ```
-Context Usage
+上下文使用率
 0%          50%         70%         90%       100%
 ├───────────┼───────────┼───────────┼──────────┤
-│   GREEN   │  YELLOW   │  ORANGE   │   RED    │
-│  work     │ selective │ /compact  │  /clear  │
-│  freely   │ with care │   NOW     │ required │
+│   绿色    │   黄色    │   橙色    │   红色   │
+│  自由     │  谨慎     │  立即     │  必须    │
+│  工作     │  操作     │ /compact  │  /clear  │
 └───────────┴───────────┴───────────┴──────────┘
               ▲                       ▲
               │                       │
-         Be selective            Risk: forgetting
-         about reads             instructions,
-         and tool use            hallucinations
+         谨慎选择读取            风险：遗忘指令、
+         和工具使用              产生幻觉
 ```
 
-**Actions by zone:**
-- **Green (0-50%)** — Full speed. Read files, explore freely.
-- **Yellow (50-70%)** — Be selective. Avoid unnecessary file reads.
-- **Orange (70-90%)** — Run `/compact` immediately. Context is degrading.
-- **Red (90%+)** — Run `/clear` and restart. Responses are unreliable.
+**各区域操作：**
+- **绿色（0-50%）** — 全速运行。读取文件，自由探索。
+- **黄色（50-70%）** — 谨慎操作。避免不必要的文件读取。
+- **橙色（70-90%）** — 立即运行 `/compact`。上下文正在退化。
+- **红色（90%+）** — 运行 `/clear` 并重启。响应不可靠。
 
-→ Source: [ultimate-guide.md:1335](../ultimate-guide.md)
+→ 来源：[ultimate-guide.md:1335](../ultimate-guide.md)
 
 ---
 
-## 2. Permission Modes Cycle
+## 2. 权限模式循环
 
-Cycle through modes with `Shift+Tab`:
+使用 `Shift+Tab` 循环切换模式：
 
 ```
                  Shift+Tab              Shift+Tab
   ┌──────────┐ ────────────→ ┌───────────────┐ ────────────→ ┌───────────┐
-  │ DEFAULT  │               │  AUTO-ACCEPT   │               │ PLAN MODE │
+  │  默认    │               │  自动接受      │               │ 计划模式  │
   │          │               │                │               │           │
-  │ edit=ask │               │ edit=auto      │               │ edit=no   │
-  │ exec=ask │               │ exec=ask       │               │ exec=no   │
+  │ 编辑=询问│               │ 编辑=自动      │               │ 编辑=禁止 │
+  │ 执行=询问│               │ 执行=询问      │               │ 执行=禁止 │
   └──────────┘ ←──────────── └───────────────┘ ←──────────── └───────────┘
                  Shift+Tab              Shift+Tab
 ```
 
-**When to use each mode:**
+**各模式的使用时机：**
 
-| Mode | Use when... | Risk level |
+| 模式 | 使用时机... | 风险级别 |
 |------|-------------|------------|
-| **Default** | Normal development — review each change | Low |
-| **Auto-accept** | Trusted tasks (formatting, refactoring) | Medium |
-| **Plan mode** | Complex/risky operations — explore safely first | None |
+| **默认** | 正常开发——审查每次变更 | 低 |
+| **自动接受** | 受信任任务（格式化、重构） | 中 |
+| **计划模式** | 复杂/风险操作——先安全探索 | 无 |
 
-**Shortcuts:**
-- `Shift+Tab` — Cycle to next mode
-- `Shift+Tab × 2` — Jump to plan mode from default
-- `/plan` — Enter plan mode directly
-- `/execute` — Exit plan mode
+**快捷键：**
+- `Shift+Tab` — 切换到下一个模式
+- `Shift+Tab × 2` — 从默认直接跳至计划模式
+- `/plan` — 直接进入计划模式
+- `/execute` — 退出计划模式
 
-→ Source: [ultimate-guide.md:760](../ultimate-guide.md)
+→ 来源：[ultimate-guide.md:760](../ultimate-guide.md)
 
 ---
 
-## 3. Workflow Pipeline (9 Steps)
+## 3. 工作流流水线（9 步）
 
-The recommended workflow for every task:
+每项任务的推荐工作流：
 
 ```
   ┌─────────┐    ┌──────────┐    ┌────────────┐    ┌─────────────┐
-  │ 1.START │───→│ 2./status│───→│ 3. plan?   │───→│ 4. describe │
-  │ claude  │    │ check ctx│    │ Shift+Tab×2│    │ WHAT/WHERE  │
-  └─────────┘    └──────────┘    │ (if risky) │    │ HOW/VERIFY  │
-                                 └────────────┘    └──────┬──────┘
+  │ 1.启动  │───→│2./status │───→│ 3. 计划?   │───→│ 4. 描述     │
+  │  claude │    │ 检查上下 │    │ Shift+Tab×2│    │ 做什么/在哪 │
+  └─────────┘    │ 文使用率 │    │（如有风险）│    │ 怎么做/验证 │
+                 └──────────┘    └────────────┘    └──────┬──────┘
                                                           │
       ┌───────────────────────────────────────────────────┘
       │
       ▼
   ┌──────────┐    ┌──────────┐    ┌──────────┐    ┌──────────┐    ┌──────────┐
-  │ 5.review │───→│ 6. y/n   │───→│ 7. test  │───→│ 8.commit │───→│9./compact│
-  │   diff   │    │ accept?  │    │   run    │    │ when done│    │ when >70%│
+  │ 5.审查   │───→│ 6. 是/否 │───→│ 7. 运行  │───→│ 8.完成   │───→│9./compact│
+  │  差异对比│    │  接受?   │    │   测试   │    │  时提交  │    │  >70%时  │
   └──────────┘    └──────────┘    └──────────┘    └──────────┘    └──────────┘
 ```
 
-**Key principles:**
-- **Step 2**: Always check context before starting. If >70%, `/compact` first.
-- **Step 3**: Use plan mode for anything risky, complex, or multi-file.
-- **Step 4**: Be specific — vague prompts produce vague results.
-- **Step 5**: Read every diff. Never blindly accept.
-- **Step 9**: Compact after each task to stay in the green zone.
+**关键原则：**
+- **步骤 2**：开始前始终检查上下文。如果 >70%，先运行 `/compact`。
+- **步骤 3**：对任何有风险、复杂或涉及多文件的操作使用计划模式。
+- **步骤 4**：要具体——模糊的提示词产生模糊的结果。
+- **步骤 5**：阅读每一个差异对比。绝不盲目接受。
+- **步骤 9**：每项任务后压缩，保持在绿色区域。
 
-→ Source: [ultimate-guide.md:277](../ultimate-guide.md)
-
----
-
-## 4. Quick Decision Tree
-
-What to do based on your situation:
-
-```
-What do you need?
-│
-├─ Simple task ─────────────────→ Just ask Claude
-│
-├─ Complex task
-│  ├─ Single session ───────────→ /plan + Tasks API
-│  └─ Multi-session ────────────→ Tasks API + CLAUDE_CODE_TASK_LIST_ID
-│
-├─ Repeating task ──────────────→ Create agent or command
-│
-├─ Context >70% ────────────────→ /compact
-│
-├─ Context >90% ────────────────→ /clear (restart conversation)
-│
-├─ Need library docs ───────────→ Context7 MCP
-│
-├─ Deep debugging ──────────────→ Opus model + Alt+T (thinking)
-│
-├─ UI from design ──────────────→ Figma MCP or screenshot input
-│
-└─ Team rollout ────────────────→ Read adoption-approaches.md
-```
-
-→ Source: [reference.yaml](../../machine-readable/reference.yaml) (decide section)
+→ 来源：[ultimate-guide.md:277](../ultimate-guide.md)
 
 ---
 
-## 5. Master Loop
+## 4. 快速决策树
 
-The entire architecture is a simple `while` loop — no DAG, no classifier, no RAG.
+根据你的情况该怎么做：
+
+```
+你需要什么？
+│
+├─ 简单任务 ─────────────────→ 直接问 Claude
+│
+├─ 复杂任务
+│  ├─ 单次会话 ───────────────→ /plan + Tasks API（任务 API）
+│  └─ 多次会话 ───────────────→ Tasks API + CLAUDE_CODE_TASK_LIST_ID
+│
+├─ 重复任务 ─────────────────→ 创建智能体或命令
+│
+├─ 上下文 >70% ──────────────→ /compact
+│
+├─ 上下文 >90% ──────────────→ /clear（重启对话）
+│
+├─ 需要库文档 ───────────────→ Context7 MCP
+│
+├─ 深度调试 ─────────────────→ Opus 模型 + Alt+T（思考）
+│
+├─ 从设计稿生成 UI ───────────→ Figma MCP 或截图输入
+│
+└─ 团队推广 ─────────────────→ 阅读 adoption-approaches.md
+```
+
+→ 来源：[reference.yaml](../../machine-readable/reference.yaml)（决策部分）
+
+---
+
+## 5. 主循环
+
+整个架构就是一个简单的 `while` 循环——没有 DAG、没有分类器、没有 RAG（检索增强生成）。
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                    CLAUDE CODE MASTER LOOP                  │
+│               CLAUDE CODE 主循环                            │
 ├─────────────────────────────────────────────────────────────┤
 │                                                             │
 │   ┌──────────────┐                                          │
-│   │  Your Prompt │                                          │
+│   │  你的提示词  │                                          │
 │   └──────┬───────┘                                          │
 │          │                                                  │
 │          ▼                                                  │
 │   ┌──────────────────────────────────────────────────────┐  │
 │   │                                                      │  │
-│   │                  CLAUDE REASONS                      │  │
-│   │        (No classifier, no routing layer)             │  │
+│   │                  CLAUDE 推理                         │  │
+│   │           （无分类器，无路由层）                     │  │
 │   │                                                      │  │
-│   └────────────────────────┬─────────────────────────────┘  │
+│   └────────────────────┬─────────────────────────────────┘  │
 │                            │                                │
 │                            ▼                                │
 │                   ┌────────────────┐                        │
-│                   │  Tool Call?    │                        │
+│                   │  工具调用？    │                        │
 │                   └───────┬────────┘                        │
 │                           │                                 │
-│              YES          │           NO                    │
+│              是           │           否                    │
 │         ┌─────────────────┴─────────────────┐               │
 │         │                                   │               │
 │         ▼                                   ▼               │
 │  ┌────────────┐                      ┌────────────┐         │
-│  │  Execute   │                      │   Text     │         │
-│  │   Tool     │                      │  Response  │         │
-│  │            │                      │   (DONE)   │         │
+│  │  执行      │                      │   文本     │         │
+│  │  工具      │                      │   响应     │         │
+│  │            │                      │  （完成）  │         │
 │  └─────┬──────┘                      └────────────┘         │
 │        │                                                    │
 │        ▼                                                    │
 │  ┌─────────────┐                                            │
-│  │ Feed Result │                                            │
-│  │  to Claude  │──────────────────┐                         │
+│  │ 将结果返回  │                                            │
+│  │  给 Claude  │──────────────────┐                         │
 │  └─────────────┘                  │                         │
 │                                   │                         │
 │                                   ▼                         │
 │                          ┌────────────────┐                 │
-│                          │   LOOP BACK    │                 │
-│                          │  (Next turn)   │                 │
+│                          │   循环回到     │                 │
+│                          │  （下一轮）    │                 │
 │                          └────────────────┘                 │
 │                                                             │
 └─────────────────────────────────────────────────────────────┘
 ```
 
-→ Source: [architecture.md:84](./architecture.md)
+→ 来源：[architecture.md:84](./architecture.md)
 
 ---
 
-## 6. Hook Event Flow
+## 6. Hooks（钩子）事件流
 
-How hooks intercept Claude Code's execution pipeline:
+Hooks（钩子）如何拦截 Claude Code 的执行流水线：
 
 ```
 ┌─────────────────────────────────────────────────────────┐
-│                      EVENT FLOW                         │
+│                      事件流                             │
 ├─────────────────────────────────────────────────────────┤
 │                                                         │
-│   User types message                                    │
+│   用户输入消息                                          │
 │        │                                                │
 │        ▼                                                │
 │   ┌────────────────────┐                                │
-│   │ UserPromptSubmit   │  ← Add context (git status)    │
+│   │ UserPromptSubmit   │  ← 添加上下文（git status）    │
+│   │ （用户提交钩子）   │                                │
 │   └────────────────────┘                                │
 │        │                                                │
 │        ▼                                                │
-│   Claude decides to run tool (e.g., Edit)               │
+│   Claude 决定运行工具（例如 Edit）                      │
 │        │                                                │
 │        ▼                                                │
 │   ┌────────────────────┐                                │
-│   │ PreToolUse         │  ← Security check              │
+│   │ PreToolUse         │  ← 安全检查                    │
+│   │ （工具前钩子）     │                                │
 │   └────────────────────┘                                │
 │        │                                                │
-│        ▼ (if allowed)                                   │
-│   Tool executes                                         │
+│        ▼ （如果允许）                                   │
+│   工具执行                                              │
 │        │                                                │
 │        ▼                                                │
 │   ┌────────────────────┐                                │
-│   │ PostToolUse        │  ← Auto-format                 │
+│   │ PostToolUse        │  ← 自动格式化                  │
+│   │ （工具后钩子）     │                                │
 │   └────────────────────┘                                │
 │                                                         │
 └─────────────────────────────────────────────────────────┘
 ```
 
-→ Source: [ultimate-guide.md:6327](../ultimate-guide.md)
+→ 来源：[ultimate-guide.md:6327](../ultimate-guide.md)
 
 ---
 
-## 7. Data Privacy Flow
+## 7. 数据隐私流
 
-What data leaves your machine when using Claude Code:
+使用 Claude Code 时哪些数据会离开你的机器：
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                    YOUR LOCAL MACHINE                       │
+│                      你的本地机器                           │
 ├─────────────────────────────────────────────────────────────┤
-│  • Prompts you type                                         │
-│  • Files Claude reads (including .env if not excluded!)     │
-│  • MCP server results (SQL queries, API responses)          │
-│  • Bash command outputs                                     │
-│  • Error messages and stack traces                          │
+│  • 你输入的提示词                                           │
+│  • Claude 读取的文件（包括 .env，除非已排除！）             │
+│  • MCP 服务器结果（SQL 查询、API 响应）                     │
+│  • Bash 命令输出                                            │
+│  • 错误消息和堆栈跟踪                                       │
 └───────────────────────┬─────────────────────────────────────┘
                         │
                         ▼ HTTPS
 ┌─────────────────────────────────────────────────────────────┐
 │                    ANTHROPIC API                            │
 ├─────────────────────────────────────────────────────────────┤
-│  • Processes your request                                   │
-│  • Stores conversation based on retention policy            │
-│  • May use data for model training (if not opted out)       │
+│  • 处理你的请求                                             │
+│  • 根据保留策略存储对话                                     │
+│  • 如果未退出，可能将数据用于模型训练                       │
 └─────────────────────────────────────────────────────────────┘
 ```
 
-→ Source: [data-privacy.md:24](../security/data-privacy.md)
+→ 来源：[data-privacy.md:24](../security/data-privacy.md)
 
 ---
 
-## 8. MCP Rug Pull Attack
+## 8. MCP 地毯式攻击
 
-How a malicious MCP server can exploit the one-time approval model:
+恶意 MCP（模型上下文协议）服务器如何利用一次性审批模型发动攻击：
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│  1. Attacker publishes benign MCP "code-formatter"          │
+│  1. 攻击者发布无害的 MCP "代码格式化工具"                   │
 │                         ↓                                    │
-│  2. User adds to ~/.claude.json, approves once               │
+│  2. 用户添加到 ~/.claude.json，一次性批准                    │
 │                         ↓                                    │
-│  3. MCP works normally for 2 weeks (builds trust)           │
+│  3. MCP 正常工作 2 周（建立信任）                           │
 │                         ↓                                    │
-│  4. Attacker pushes malicious update (no re-approval!)      │
+│  4. 攻击者推送恶意更新（无需重新审批！）                    │
 │                         ↓                                    │
-│  5. MCP exfiltrates ~/.ssh/*, .env, credentials             │
+│  5. MCP 泄露 ~/.ssh/*、.env、凭证                           │
 └─────────────────────────────────────────────────────────────┘
-MITIGATION: Version pinning + hash verification + monitoring
+缓解措施：版本固定 + 哈希验证 + 监控
 ```
 
-→ Source: [security-hardening.md:33](../security/security-hardening.md)
+→ 来源：[security-hardening.md:33](../security/security-hardening.md)
 
 ---
 
-## 9. Docker Sandbox Architecture
+## 9. Docker 沙盒架构
 
-Full isolation for autonomous Claude Code sessions:
+自主 Claude Code 会话的完全隔离：
 
 ```
 ┌──────────────────────────────────────────────────────────┐
-│                     HOST MACHINE                          │
+│                      宿主机器                             │
 │                                                          │
 │  ┌────────────────────────────────────────────────────┐  │
-│  │              DOCKER SANDBOX (microVM)               │  │
+│  │           DOCKER 沙盒（microVM）                    │  │
 │  │                                                    │  │
 │  │  ┌──────────────┐  ┌───────────────────────────┐  │  │
-│  │  │ Claude Code   │  │ Private Docker daemon     │  │  │
-│  │  │ (--dsp mode)  │  │ (isolated from host)      │  │  │
+│  │  │ Claude Code  │  │ 私有 Docker daemon         │  │  │
+│  │  │（--dsp 模式）│  │（与宿主隔离）              │  │  │
 │  │  └──────────────┘  └───────────────────────────┘  │  │
 │  │                                                    │  │
 │  │  ┌──────────────────────────────────────────────┐  │  │
-│  │  │ Workspace: ~/my-project (synced with host)   │  │  │
-│  │  │ Same absolute path as host                   │  │  │
+│  │  │ 工作区：~/my-project（与宿主同步）           │  │  │
+│  │  │ 与宿主相同的绝对路径                         │  │  │
 │  │  └──────────────────────────────────────────────┘  │  │
 │  │                                                    │  │
-│  │  Base: Ubuntu, Node.js, Python 3, Go, Git,        │  │
-│  │        Docker CLI, GitHub CLI, ripgrep, jq         │  │
-│  │  User: non-root 'agent' with sudo                 │  │
+│  │  基础环境：Ubuntu、Node.js、Python 3、Go、Git、   │  │
+│  │           Docker CLI、GitHub CLI、ripgrep、jq      │  │
+│  │  用户：拥有 sudo 权限的非 root 用户 'agent'       │  │
 │  └────────────────────────────────────────────────────┘  │
 │                                                          │
-│  Host Docker daemon: NOT accessible from sandbox          │
-│  Host filesystem: NOT accessible (except workspace)       │
+│  宿主 Docker daemon：沙盒内无法访问                       │
+│  宿主文件系统：无法访问（工作区除外）                     │
 └──────────────────────────────────────────────────────────┘
 ```
 
-→ Source: [sandbox-isolation.md:87](../security/sandbox-isolation.md)
+→ 来源：[sandbox-isolation.md:87](../security/sandbox-isolation.md)
 
 ---
 
-## 10. Search Tool Selection
+## 10. 搜索工具选择
 
-3-level decision tree for choosing the right search tool:
+选择合适搜索工具的三级决策树：
 
-**Level 1: What Do You Know?**
-
-```
-Do you know the EXACT text/pattern?
-│
-├─ YES → Use rg (ripgrep)
-│  ├─ Known function name: rg "createSession"
-│  ├─ Known import: rg "import.*React"
-│  └─ Known pattern: rg "async function"
-│
-└─ NO → Go to Level 2
-```
-
-**Level 2: What Are You Looking For?**
+**第一级：你知道什么？**
 
 ```
-What's your search intent?
+你知道确切的文本/模式吗？
 │
-├─ "Find by MEANING/CONCEPT"
-│  → Use grepai
-│  └─ Example: grepai search "payment validation logic"
+├─ 是 → 使用 rg（ripgrep）
+│  ├─ 已知函数名：rg "createSession"
+│  ├─ 已知导入：rg "import.*React"
+│  └─ 已知模式：rg "async function"
 │
-├─ "Find FUNCTION/CLASS definition"
-│  → Use Serena
-│  └─ Example: serena find_symbol --name "UserController"
-│
-├─ "Find by CODE STRUCTURE"
-│  → Use ast-grep
-│  └─ Example: async without error handling
-│
-└─ "Understand DEPENDENCIES"
-   → Use grepai trace
-   └─ Example: grepai trace callers "validatePayment"
+└─ 否 → 进入第二级
 ```
 
-**Level 3: Optimization**
+**第二级：你在找什么？**
 
 ```
-Found too many results?
+你的搜索意图是什么？
 │
-├─ rg → Add --type filter or narrow path
-├─ grepai → Add --path filter or use trace
-├─ Serena → Filter by symbol type (function/class)
-└─ ast-grep → Add constraints to pattern
+├─ "按含义/概念查找"
+│  → 使用 grepai
+│  └─ 示例：grepai search "payment validation logic"
+│
+├─ "查找函数/类定义"
+│  → 使用 Serena
+│  └─ 示例：serena find_symbol --name "UserController"
+│
+├─ "按代码结构查找"
+│  → 使用 ast-grep
+│  └─ 示例：无错误处理的 async
+│
+└─ "了解依赖关系"
+   → 使用 grepai trace
+   └─ 示例：grepai trace callers "validatePayment"
 ```
 
-→ Source: [search-tools-mastery.md:75](../workflows/search-tools-mastery.md)
+**第三级：优化**
+
+```
+结果太多？
+│
+├─ rg → 添加 --type 过滤器或缩小路径范围
+├─ grepai → 添加 --path 过滤器或使用 trace
+├─ Serena → 按符号类型过滤（function/class）
+└─ ast-grep → 为模式添加约束
+```
+
+→ 来源：[search-tools-mastery.md:75](../workflows/search-tools-mastery.md)
 
 ---
 
-## 11. Trust Calibration Flow
+## 11. 信任校准流程
 
-How much to review AI-generated code based on risk level:
+根据风险级别决定对 AI 生成代码的审查程度：
 
 ```
 ┌─────────────────────────────────────────────────────────┐
-│                 TRUST CALIBRATION FLOW                  │
+│                   信任校准流程                          │
 ├─────────────────────────────────────────────────────────┤
 │                                                         │
-│  AI generates code                                      │
+│  AI 生成代码                                            │
 │         │                                               │
 │         ▼                                               │
 │  ┌──────────────┐                                       │
-│  │ What type?   │                                       │
+│  │ 什么类型？   │                                       │
 │  └──────────────┘                                       │
 │    │    │    │                                          │
 │    ▼    ▼    ▼                                          │
-│  Boiler Business Security                               │
-│  -plate  logic   critical                               │
-│    │      │        │                                    │
-│    ▼      ▼        ▼                                    │
-│  Skim   Test +   Full review                            │
-│  only   review   + tools                                │
-│    │      │        │                                    │
-│    └──────┴────────┘                                    │
-│            │                                            │
-│            ▼                                            │
-│    Tests pass? ──No──► Debug & fix                      │
-│            │                                            │
-│           Yes                                           │
-│            │                                            │
-│            ▼                                            │
-│        Ship it                                          │
+│  样板  业务  安全                                       │
+│  代码  逻辑  关键                                       │
+│    │    │    │                                          │
+│    ▼    ▼    ▼                                          │
+│  粗读  测试  全面审查                                   │
+│  即可  +审查 + 工具                                     │
+│    │    │    │                                          │
+│    └────┴────┘                                          │
+│         │                                               │
+│         ▼                                               │
+│  测试通过？──否──► 调试并修复                          │
+│         │                                               │
+│        是                                               │
+│         │                                               │
+│         ▼                                               │
+│       发布                                              │
 │                                                         │
 └─────────────────────────────────────────────────────────┘
 ```
 
-→ Source: [ultimate-guide.md:1182](../ultimate-guide.md)
+→ 来源：[ultimate-guide.md:1182](../ultimate-guide.md)
 
 ---
 
-## 12. Adoption Decision Tree
+## 12. 采用策略决策树
 
-How to choose your Claude Code adoption strategy:
+如何选择你的 Claude Code 采用策略：
 
 ```
-Starting Claude Code?
+刚开始使用 Claude Code？
 │
-├─ Need to ship today?
-│   └─ YES → Turnkey Quickstart
-│   └─ NO ↓
+├─ 今天需要交付？
+│   └─ 是 → 即开即用快速入门
+│   └─ 否 ↓
 │
-├─ Team needs shared conventions?
-│   └─ YES → Turnkey + document what matters to you
-│   └─ NO ↓
+├─ 团队需要共同规范？
+│   └─ 是 → 即开即用 + 记录对你重要的内容
+│   └─ 否 ↓
 │
-├─ Want to understand before configuring?
-│   └─ YES → Autonomous Learning Path
-│   └─ NO → Turnkey, adjust as you go
+├─ 想在配置前先了解？
+│   └─ 是 → 自主学习路径
+│   └─ 否 → 即开即用，随时调整
 ```
 
-→ Source: [adoption-approaches.md:51](../roles/adoption-approaches.md)
+→ 来源：[adoption-approaches.md:51](../roles/adoption-approaches.md)
 
 ---
 
-## 13. Methodology Selection
+## 13. 方法论选择
 
-Which development methodology to use:
+该使用哪种开发方法论：
 
 ```
-┌─ "I want quality code" ────────────→ workflows/tdd-with-claude.md
+┌─ "我想要高质量代码" ────────────→ workflows/tdd-with-claude.md
 │
-├─ "I want to spec before code" ─────→ workflows/spec-first.md
+├─ "我想在编码前先写规范" ─────────→ workflows/spec-first.md
 │
-├─ "I need to plan architecture" ────→ workflows/plan-driven.md
+├─ "我需要规划架构" ──────────────→ workflows/plan-driven.md
 │
-├─ "I'm iterating on something" ─────→ workflows/iterative-refinement.md
+├─ "我在迭代某个功能" ─────────────→ workflows/iterative-refinement.md
 │
-└─ "I need methodology theory" ──────→ methodologies.md
+└─ "我需要方法论理论" ─────────────→ methodologies.md
 ```
 
-→ Source: [methodologies.md:24](./methodologies.md)
+→ 来源：[methodologies.md:24](./methodologies.md)
 
 ---
 
-## 14. Research → Spec → Code
+## 14. 研究 → 规范 → 代码
 
-Using Perplexity for research, then Claude Code for implementation:
+使用 Perplexity 进行研究，然后使用 Claude Code 实现：
 
 ```
 ┌─────────────────────────────────────────────────────────┐
-│ 1. PERPLEXITY (Deep Research)                           │
-│    "Research best practices for JWT refresh tokens      │
-│     in Next.js 15. Include security considerations,     │
-│     common pitfalls, and library recommendations."      │
+│ 1. PERPLEXITY（深度研究）                               │
+│    "研究 Next.js 15 中 JWT 刷新 Token（词元）的最佳     │
+│     实践，包括安全注意事项、常见陷阱和库推荐。"         │
 │                                                         │
-│    → Output: 2000-word spec with sources               │
+│    → 输出：附带来源的 2000 字规范                       │
 └───────────────────────────┬─────────────────────────────┘
-                            ↓ Export as spec.md
+                            ↓ 导出为 spec.md
 ┌─────────────────────────────────────────────────────────┐
 │ 2. CLAUDE CODE                                          │
 │    > claude                                             │
-│    "Implement JWT refresh tokens following spec.md.     │
-│     Use the jose library as recommended."               │
+│    "按照 spec.md 实现 JWT 刷新 Token（词元）。          │
+│     使用推荐的 jose 库。"                               │
 │                                                         │
-│    → Output: Working implementation with tests         │
+│    → 输出：带测试的可运行实现                           │
 └─────────────────────────────────────────────────────────┘
 ```
 
-→ Source: [ai-ecosystem.md:155](../ecosystem/ai-ecosystem.md)
+→ 来源：[ai-ecosystem.md:155](../ecosystem/ai-ecosystem.md)
 
 ---
 
-## 15. Review Auto-Correction Loop
+## 15. 审查自动纠正循环
 
-Iterative code review pattern where Claude reviews, fixes, and re-reviews:
+Claude 审查、修复、再审查的迭代代码审查模式：
 
 ```
 ┌─────────────────────────────────────────┐
-│   Review Auto-Correction Loop           │
+│          审查自动纠正循环               │
 │                                          │
-│   Review (identify issues)               │
+│   审查（发现问题）                       │
 │        ↓                                 │
-│   Fix (apply corrections)                │
+│   修复（应用纠正）                       │
 │        ↓                                 │
-│   Re-Review (verify fixes)               │
+│   再审查（验证修复）                     │
 │        ↓                                 │
-│   Converge (minimal changes) → Done      │
+│   收敛（最小变更）→ 完成                 │
 │        ↑                                 │
-│        └──── Repeat (max iterations)     │
+│        └──── 重复（最大迭代次数）        │
 └─────────────────────────────────────────┘
 ```
 
-→ Source: [iterative-refinement.md:354](../workflows/iterative-refinement.md)
+→ 来源：[iterative-refinement.md:354](../workflows/iterative-refinement.md)
 
 ---
 
-## 16. PDF Pipeline Stack
+## 16. PDF 流水线技术栈
 
-Quarto + Typst stack for generating professional PDFs:
+使用 Quarto + Typst 技术栈生成专业 PDF：
 
 ```
 ┌─────────────────────────────────────────────────┐
-│                  Your .qmd File                 │
-│         (Markdown + YAML frontmatter)           │
+│                 你的 .qmd 文件                   │
+│          （Markdown + YAML 前置元数据）          │
 └─────────────────────────────────────────────────┘
                         │
                         ▼
 ┌─────────────────────────────────────────────────┐
 │                    Quarto                       │
-│           (Document rendering engine)           │
-│         • Processes YAML metadata               │
-│         • Handles extensions                    │
-│         • Manages output formats                │
+│            （文档渲染引擎）                     │
+│         • 处理 YAML 元数据                      │
+│         • 处理扩展                              │
+│         • 管理输出格式                          │
 └─────────────────────────────────────────────────┘
                         │
           ┌─────────────┴─────────────┐
           ▼                           ▼
 ┌─────────────────────┐    ┌─────────────────────┐
 │       Pandoc        │    │       Typst         │
-│   (MD → AST → ?)    │    │  (Typography/PDF)   │
-│  • Markdown parser  │    │  • Modern engine    │
-│  • AST transforms   │    │  • Fast compilation │
-│  • Format bridges   │    │  • No LaTeX needed  │
+│   （MD → AST → ?）  │    │  （排版/PDF）       │
+│  • Markdown 解析器  │    │  • 现代引擎         │
+│  • AST 转换         │    │  • 快速编译         │
+│  • 格式桥接         │    │  • 无需 LaTeX       │
 └─────────────────────┘    └─────────────────────┘
                         │
                         ▼
 ┌─────────────────────────────────────────────────┐
 │                  document.pdf                   │
-│        (Professional typography output)         │
+│          （专业排版输出）                       │
 └─────────────────────────────────────────────────┘
 ```
 
-→ Source: [pdf-generation.md:58](../workflows/pdf-generation.md)
+→ 来源：[pdf-generation.md:58](../workflows/pdf-generation.md)
 
 ---
 
-## 17. TDD Red-Green-Refactor Cycle
+## 17. TDD（测试驱动开发）红-绿-重构循环
 
-The iterative loop at the heart of Test-Driven Development:
+测试驱动开发核心的迭代循环：
 
 ```
                     ┌──────────────────────────┐
                     │                          │
                     ▼                          │
             ┌──────────────┐                   │
-            │   🔴 RED      │                   │
+            │   🔴 红色     │                   │
             │              │                   │
-            │  Write a     │                   │
-            │  failing     │                   │
-            │  test        │                   │
+            │  编写一个    │                   │
+            │  失败的      │                   │
+            │  测试        │                   │
             └──────┬───────┘                   │
                    │                           │
-                   │ Tests FAIL                │
-                   │ (expected)                │
+                   │ 测试失败                  │
+                   │ （预期）                  │
                    ▼                           │
             ┌──────────────┐                   │
-            │   🟢 GREEN   │                   │
+            │   🟢 绿色    │                   │
             │              │                   │
-            │  Write       │                   │
-            │  minimal     │                   │
-            │  code to     │                   │
-            │  pass        │                   │
+            │  编写最少    │                   │
+            │  量代码以    │                   │
+            │  通过测试    │                   │
+            │              │                   │
             └──────┬───────┘                   │
                    │                           │
-                   │ Tests PASS                │
-                   │ (minimal)                 │
+                   │ 测试通过                  │
+                   │ （最简实现）              │
                    ▼                           │
             ┌──────────────┐                   │
-            │   🔵 REFACTOR│                   │
+            │   🔵 重构    │                   │
             │              │                   │
-            │  Clean up    │                   │
-            │  while tests │                   │
-            │  stay green  │                   │
+            │  在测试保持  │                   │
+            │  绿色的情况  │                   │
+            │  下优化代码  │                   │
             └──────┬───────┘                   │
                    │                           │
-                   │ Next feature              │
+                   │ 下一个功能                │
                    └───────────────────────────┘
 
-Key rules:
-  RED    → Test must FAIL before writing implementation
-  GREEN  → Write ONLY enough code to pass (no more)
-  REFACTOR → Improve structure, tests must stay green
-  REPEAT → One feature at a time, always in this order
+关键规则：
+  红色   → 编写实现之前测试必须失败
+  绿色   → 只编写足够通过测试的代码（不多）
+  重构   → 改善结构，测试必须保持绿色
+  重复   → 一次一个功能，始终按此顺序
 ```
 
-> Source: [workflows/tdd-with-claude.md:78](../workflows/tdd-with-claude.md)
+> 来源：[workflows/tdd-with-claude.md:78](../workflows/tdd-with-claude.md)
 
 ---
 
-## 18. UVAL Protocol Flow
+## 18. UVAL 协议流程
 
-Systematic framework for learning with AI without losing your edge:
+使用 AI 学习而不失去自身优势的系统性框架：
 
 ```
   ┌────────────────────────────────────────────────────────────┐
-  │                    UVAL PROTOCOL                           │
-  │         (Use AI without losing your edge)                  │
+  │                    UVAL 协议                               │
+  │          （使用 AI 而不失去自身优势）                      │
   └────────────────────────────────────────────────────────────┘
 
   ┌──────────┐     ┌──────────┐     ┌──────────┐     ┌──────────┐
   │    U     │     │    V     │     │    A     │     │    L     │
-  │UNDERSTAND│────→│  VERIFY  │────→│  APPLY   │────→│  LEARN   │
+  │  理解    │────→│  验证    │────→│  应用    │────→│  学习    │
   │          │     │          │     │          │     │          │
-  │ 15-min   │     │ Can you  │     │ Modify   │     │ Capture  │
-  │ rule:    │     │ explain  │     │ the code │     │ insights │
-  │          │     │ it back? │     │ yourself │     │ for long │
-  │ 1.State  │     │          │     │          │     │ term     │
-  │   problem│     │ Test:    │     │ Tasks:   │     │          │
-  │ 2.Brain- │     │ explain  │     │ • Extend │     │ Methods: │
-  │   storm  │     │ to a     │     │ • Modify │     │ • Notes  │
-  │ 3.Find   │     │ colleague│     │ • Debug  │     │ • Teach  │
-  │   gaps   │     │ without  │     │ • Adapt  │     │ • Blog   │
-  │ 4.Ask    │     │ looking  │     │   to new │     │ • Review │
-  │   smart  │     │ at code  │     │   context│     │   later  │
+  │ 15 分钟  │     │ 你能讲   │     │ 自己修改 │     │ 捕获见解 │
+  │ 法则：   │     │ 回来吗？ │     │ 代码     │     │ 用于长期 │
+  │          │     │          │     │          │     │          │
+  │ 1.陈述   │     │ 测试：   │     │ 任务：   │     │ 方法：   │
+  │   问题   │     │ 不看代码 │     │ • 扩展   │     │ • 笔记   │
+  │ 2.头脑   │     │ 向同事   │     │ • 修改   │     │ • 教授   │
+  │   风暴   │     │ 解释     │     │ • 调试   │     │ • 写博客 │
+  │ 3.找差距 │     │          │     │ • 适配   │     │ • 稍后   │
+  │ 4.善于   │     │          │     │   新场景 │     │   复习   │
+  │   提问   │     │          │     │          │     │          │
   └──────────┘     └──────────┘     └──────────┘     └──────────┘
        │                                                   │
-       │              ◄── Repeat per concept ──►           │
+       │              ◄── 每个概念重复 ──►                 │
        └───────────────────────────────────────────────────┘
 
-  If VERIFY fails → go back to UNDERSTAND (you copied, didn't learn)
-  If APPLY fails  → go back to VERIFY (you memorized, didn't understand)
+  验证失败 → 返回理解（你是在复制，没有学习）
+  应用失败 → 返回验证（你是在记忆，没有理解）
 ```
 
-> Source: [learning-with-ai.md:208](../roles/learning-with-ai.md)
+> 来源：[learning-with-ai.md:208](../roles/learning-with-ai.md)
 
 ---
 
-## 19. Security 3-Layer Defense
+## 19. 安全三层防御
 
-The full security document (security-hardening.md) organized as 3 defense layers:
+完整安全文档（security-hardening.md）组织为三个防御层：
 
 ```
   ┌─────────────────────────────────────────────────────────────┐
-  │                  SECURITY 3-LAYER DEFENSE                   │
+  │                    安全三层防御                             │
   ├─────────────────────────────────────────────────────────────┤
   │                                                             │
-  │  TIME ──────────────────────────────────────────────────►   │
-  │         Before              During             After        │
+  │  时间 ────────────────────────────────────────────────►     │
+  │           之前               期间               之后        │
   │                                                             │
   │  ┌─────────────────┐ ┌─────────────────┐ ┌───────────────┐ │
-  │  │ LAYER 1         │ │ LAYER 2         │ │ LAYER 3       │ │
-  │  │ PREVENTION      │ │ DETECTION       │ │ RESPONSE      │ │
+  │  │ 第一层          │ │ 第二层          │ │ 第三层        │ │
+  │  │ 预防            │ │ 检测            │ │ 响应          │ │
   │  │                 │ │                 │ │               │ │
-  │  │ • MCP vetting   │ │ • Prompt inject │ │ • Secret      │ │
-  │  │   workflow      │ │   detection     │ │   rotation    │ │
-  │  │ • Version       │ │ • Output        │ │ • MCP         │ │
-  │  │   pinning       │ │   scanning      │ │   isolation   │ │
-  │  │ • .claudeignore │ │ • Anomaly       │ │ • History     │ │
-  │  │ • Input hooks   │ │   monitoring    │ │   rewriting   │ │
-  │  │ • Safe MCP list │ │ • Secret leak   │ │ • Incident    │ │
-  │  │ • Permissions   │ │   detection     │ │   reporting   │ │
-  │  │ • Integrity     │ │ • Unicode/ANSI  │ │ • Post-mortem │ │
-  │  │   scanning      │ │   filtering     │ │   & rotation  │ │
+  │  │ • MCP 审查      │ │ • 提示注入      │ │ • 密钥        │ │
+  │  │   流程          │ │   检测          │ │   轮换        │ │
+  │  │ • 版本固定      │ │ • 输出扫描      │ │ • MCP 隔离    │ │
+  │  │ • .claudeignore │ │ • 异常监控      │ │ • 历史记录    │ │
+  │  │ • 输入钩子      │ │ • 密钥泄露      │ │   重写        │ │
+  │  │ • 安全 MCP 列表 │ │   检测          │ │ • 事故上报    │ │
+  │  │ • 权限设置      │ │ • Unicode/ANSI  │ │ • 复盘 &      │ │
+  │  │ • 完整性扫描    │ │   过滤          │ │   轮换        │ │
   │  │                 │ │                 │ │               │ │
-  │  │  GOAL: Block    │ │  GOAL: Catch    │ │  GOAL: Limit  │ │
-  │  │  threats at     │ │  attacks in     │ │  damage and   │ │
-  │  │  entry points   │ │  real-time      │ │  recover fast │ │
+  │  │  目标：在       │ │  目标：实时     │ │  目标：限制   │ │
+  │  │  入口点拦截     │ │  捕获攻击       │ │  损害并快速   │ │
+  │  │  威胁           │ │                 │ │  恢复         │ │
   │  └─────────────────┘ └─────────────────┘ └───────────────┘ │
   │                                                             │
-  │  Adoption path:                                             │
-  │  Solo dev    → Layer 1 basics (output scanner)              │
-  │  Team        → Layer 1 + 2 (+ injection hooks)              │
-  │  Enterprise  → All 3 layers (+ ZDR + verification)          │
+  │  采用路径：                                                 │
+  │  个人开发者 → 第一层基础（输出扫描器）                      │
+  │  团队       → 第一层 + 第二层（+ 注入钩子）                 │
+  │  企业       → 全三层（+ ZDR + 验证）                        │
   │                                                             │
   └─────────────────────────────────────────────────────────────┘
 ```
 
-> Source: [security-hardening.md:24/205/345](../security/security-hardening.md)
+> 来源：[security-hardening.md:24/205/345](../security/security-hardening.md)
 
 ---
 
-## 20. Secret Exposure Timeline
+## 20. 密钥泄露时间线
 
-Emergency response when a secret (API key, token, password) is exposed:
+密钥（API 密钥、Token（词元）、密码）泄露时的紧急响应：
 
 ```
-  SECRET EXPOSED — Emergency Response Timeline
+  密钥泄露——紧急响应时间线
   ═══════════════════════════════════════════════════════════
 
-  0 min                15 min              1 hour             24 hours
+  0 分钟               15 分钟             1 小时             24 小时
   │                    │                   │                  │
   ▼                    ▼                   ▼                  ▼
   ┌──────────────────┐ ┌─────────────────┐ ┌────────────────┐
-  │ ⏱️ FIRST 15 MIN   │ │ ⏱️ FIRST HOUR    │ │ ⏱️ FIRST 24H    │
-  │ Stop the         │ │ Assess damage   │ │ Remediate      │
-  │ bleeding         │ │                 │ │                │
-  │                  │ │ 3. Audit git    │ │ 6. Rotate ALL  │
-  │ 1. REVOKE key    │ │    history      │ │    related     │
-  │    immediately   │ │    (rewrite if  │ │    credentials │
-  │    (AWS/GH/      │ │     pushed)     │ │                │
-  │     Stripe)      │ │                 │ │ 7. Notify team │
-  │                  │ │ 4. Scan deps    │ │    /compliance │
-  │ 2. Confirm       │ │    for leaked   │ │    (GDPR/SOC2) │
-  │    exposure      │ │    keys         │ │                │
-  │    scope         │ │                 │ │ 8. Document    │
-  │    (local or     │ │ 5. Check CI/CD  │ │    incident    │
-  │     pushed?)     │ │    logs         │ │    timeline    │
+  │ ⏱️ 前 15 分钟     │ │ ⏱️ 前 1 小时     │ │ ⏱️ 前 24 小时   │
+  │ 止血             │ │ 评估损害        │ │ 修复           │
   │                  │ │                 │ │                │
+  │ 1. 立即撤销      │ │ 3. 审计 git     │ │ 6. 轮换所有    │
+  │    密钥          │ │    历史记录     │ │    相关凭证    │
+  │   （AWS/GH/      │ │    （如已推送   │ │                │
+  │    Stripe）      │ │     则重写）    │ │ 7. 通知团队    │
+  │                  │ │                 │ │    /合规       │
+  │ 2. 确认泄露      │ │ 4. 扫描依赖     │ │   （GDPR/SOC2）│
+  │    范围          │ │    项中泄露     │ │                │
+  │   （本地还是     │ │    的密钥       │ │ 8. 记录事故    │
+  │    已推送？）    │ │                 │ │    时间线      │
+  │                  │ │ 5. 检查 CI/CD   │ │                │
+  │                  │ │    日志         │ │                │
   └──────────────────┘ └─────────────────┘ └────────────────┘
 
-  SEVERITY GUIDE:
+  严重程度指南：
   ┌─────────────────────────────────────────────────────────┐
-  │ Local only (not pushed)  → Revoke + rotate (steps 1-2) │
-  │ Pushed to remote         → Full timeline (steps 1-8)   │
-  │ Public repo exposure     → Assume compromised, rotate  │
-  │                            EVERYTHING, check for abuse  │
+  │ 仅本地（未推送）      → 撤销 + 轮换（步骤 1-2）        │
+  │ 已推送到远程          → 完整时间线（步骤 1-8）          │
+  │ 公开仓库暴露          → 假设已被攻破，轮换所有内容，   │
+  │                          检查是否已被滥用               │
   └─────────────────────────────────────────────────────────┘
 ```
 
-> Source: [security-hardening.md:347](../security/security-hardening.md)
+> 来源：[security-hardening.md:347](../security/security-hardening.md)
 
 ---
 
-*Back to [Guide README](../README.md) | [Cheatsheet](../cheatsheet.md) | [Main README](../README.md)*
+*返回 [指南 README](../README.md) | [速查表](../cheatsheet.md) | [主 README](../README.md)*

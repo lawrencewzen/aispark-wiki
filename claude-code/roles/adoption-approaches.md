@@ -1,471 +1,471 @@
 > 📚 **AI Spark Wiki** · Claude Code 知识库
 
 ---
-title: "Choosing Your Adoption Approach"
-description: "Starting points for team adoption patterns and CLAUDE.md configuration strategies"
+title: "选择你的采用方式"
+description: "团队采用模式与 CLAUDE.md 配置策略的起点"
 tags: [guide, config, workflows]
 ---
 
-# Choosing Your Adoption Approach
+# 选择你的采用方式
 
-> **Disclaimer**: Claude Code is young (~1 year). Nobody has definitive answers yet — including this guide. These are starting points based on observed patterns, not proven best practices. Adapt heavily to your context.
-
----
-
-## What We Don't Know Yet
-
-Before diving in, here's what remains genuinely uncertain:
-
-- **Optimal CLAUDE.md size** — Some teams thrive with 10 lines, others with 100. No clear winner.
-- **Team adoption patterns** — Whether top-down standardization beats organic adoption is unproven.
-- **Context management thresholds** — The 70%/90% numbers are heuristics, not science.
-- **ROI of advanced features** — MCP servers, hooks, agents — unclear when the setup cost pays off.
-
-If anyone tells you they've figured this out, they're ahead of the field or overconfident.
+> **免责声明**：Claude Code 还很新（约 1 年）。没有人有确定性答案——包括本指南。这些是基于观察到的模式的起点，而非经过验证的最佳实践。请大量适配到你的具体情况。
 
 ---
 
-## What We Do Know (Empirical Data)
+## 我们尚不了解的内容
 
-Some patterns have emerged from practitioner studies and team retrospectives:
+在深入之前，以下内容目前仍是真正不确定的：
 
-| Finding | Data | Implication |
+- **CLAUDE.md 的最优大小** — 有些团队用 10 行就很好，有些需要 100 行。没有明确的赢家。
+- **团队采用模式** — 自上而下的标准化是否优于有机采用尚未经过验证。
+- **上下文管理阈值** — 70%/90% 的数字是启发性原则，而非科学。
+- **高级功能的 ROI** — MCP 服务器、Hooks、智能体——设置成本何时回收尚不清楚。
+
+如果有人告诉你他们已经弄清楚了，他们要么领先于该领域，要么过于自信。
+
+---
+
+## 我们确实知道的内容（实证数据）
+
+一些模式已从实践者研究和团队回顾中浮现：
+
+| 发现 | 数据 | 含义 |
 |---------|------|-------------|
-| **Scope matters most** | 1-3 files: ~85% success, 8+ files: ~40% | Start small, expand gradually |
-| **CLAUDE.md sweet spot** | 4-8KB optimal, >16K degrades coherence | Concise > comprehensive |
-| **Session limits** | 15-25 turns before constraint drift | Reset for new tasks |
-| **Script generation ROI** | 70-90% time savings reported | Best first use case |
-| **Exploration before implementation** | +20-30% decision quality | Ask for alternatives first |
+| **范围最重要** | 1-3 个文件：约 85% 成功率，8+ 个文件：约 40% | 从小处开始，逐步扩展 |
+| **CLAUDE.md 甜蜜点** | 4-8KB 最优，>16K 会降低连贯性 | 简洁 > 全面 |
+| **会话限制** | 15-25 轮之前发生约束漂移 | 新任务时重置 |
+| **脚本生成 ROI** | 报告节省 70-90% 时间 | 最佳首个使用场景 |
+| **实现前先探索** | 决策质量提高 20-30% | 先询问替代方案 |
 
-**Source**: MetalBear engineering blog, arXiv practitioner studies, Reddit engineering threads (2024-2025).
+**来源**：MetalBear 工程博客、arXiv 实践者研究、Reddit 工程线程（2024-2025 年）。
 
 ---
 
-## Starting Points (Not Prescriptions)
+## 起点（不是处方）
 
-| Your Context | One Approach to Try |
+| 你的情况 | 可以尝试的方法 |
 |--------------|---------------------|
-| Limited setup time | **Turnkey** — minimal config, iterate based on friction |
-| Solo developer | **Autonomous** — learn concepts first, configure when needed |
-| Small team (4-10) | **Hybrid** — shared basics + room for personal preferences |
-| Larger team (10+) | **Turnkey + docs** — consistency matters more at scale |
+| 时间有限 | **一键启动** — 最小配置，根据摩擦迭代 |
+| 单独开发者 | **自主** — 先学习概念，需要时再配置 |
+| 小型团队（4-10 人） | **混合** — 共享基础 + 个人偏好空间 |
+| 较大团队（10+） | **一键启动 + 文档** — 规模化时一致性更重要 |
 
-These are hypotheses. Your mileage will vary.
-
----
-
-## Decision Tree
-
-```
-Starting Claude Code?
-│
-├─ Need to ship today?
-│   └─ YES → Turnkey Quickstart
-│   └─ NO ↓
-│
-├─ Team needs shared conventions?
-│   └─ YES → Turnkey + document what matters to you
-│   └─ NO ↓
-│
-├─ Want to understand before configuring?
-│   └─ YES → Autonomous Learning Path
-│   └─ NO → Turnkey, adjust as you go
-```
+这些是假设。你的实际情况会有所不同。
 
 ---
 
-## Turnkey Quickstart
+## 决策树
 
-### Step 1: Create Minimal Config
+```
+开始使用 Claude Code？
+│
+├─ 今天需要交付东西？
+│   └─ 是 → 一键启动快速开始
+│   └─ 否 ↓
+│
+├─ 团队需要共享约定？
+│   └─ 是 → 一键启动 + 记录对你重要的内容
+│   └─ 否 ↓
+│
+├─ 想在配置前先理解？
+│   └─ 是 → 自主学习路径
+│   └─ 否 → 一键启动，边走边调整
+```
+
+---
+
+## 一键启动快速开始
+
+### 步骤 1：创建最小配置
 
 ```bash
 mkdir -p .claude
 ```
 
-Create `.claude/CLAUDE.md`:
+创建 `.claude/CLAUDE.md`：
 
 ```markdown
-# Project: [your-project-name]
+# 项目：[你的项目名称]
 
-## Stack
-- Runtime: [Node 20 / Python 3.11 / etc.]
-- Framework: [Next.js / FastAPI / etc.]
+## 技术栈
+- 运行时：[Node 20 / Python 3.11 / 等]
+- 框架：[Next.js / FastAPI / 等]
 
-## Commands
-- Test: `npm test` or `pytest`
-- Lint: `npm run lint` or `ruff check`
+## 命令
+- 测试：`npm test` 或 `pytest`
+- Lint：`npm run lint` 或 `ruff check`
 
-## Convention
-- [One rule you care most about, e.g., "TypeScript strict mode required"]
+## 约定
+- [你最关心的一条规则，例如"需要 TypeScript strict 模式"]
 ```
 
-### Step 2: Verify Setup
+### 步骤 2：验证设置
 
 ```bash
 claude
 ```
 
-Then ask:
+然后询问：
 ```
-What's this project's test command?
+这个项目的测试命令是什么？
 ```
 
-**Pass**: Returns your configured command.
-**Fail**: CLAUDE.md not loaded — check path is `.claude/CLAUDE.md` or `./CLAUDE.md`
+**通过**：返回你配置的命令。
+**失败**：CLAUDE.md 未加载——检查路径是否为 `.claude/CLAUDE.md` 或 `./CLAUDE.md`
 
-### Step 3: First Real Task
+### 步骤 3：第一个真实任务
 
 ```bash
-claude "Review the README and suggest improvements"
+claude "审查 README 并建议改进"
 ```
 
-Claude should reference your stack and conventions automatically.
+Claude 应该自动引用你的技术栈和约定。
 
-**Done.** Add more config only when you hit friction.
+**完成。** 只在遇到摩擦时才添加更多配置。
 
 ---
 
-## Autonomous Learning Path
+## 自主学习路径
 
-If you prefer understanding before configuring, here's a progressive approach. No time estimates — speed depends on your familiarity with AI tools.
+如果你偏好先理解再配置，以下是渐进式方法。没有时间估算——速度取决于你对 AI 工具的熟悉程度。
 
-### Phase 1: Mental Model
+### 第一阶段：思维模型
 
-**Goal**: Understand how Claude Code operates before adding config.
+**目标**：在添加配置之前理解 Claude Code 如何运作。
 
-1. Read [Section 5: Mental Model](../ultimate-guide.md) (line 1675)
-2. Core concept: Claude works in a loop — prompt → plan → execute → verify
-3. **Try it**: Complete a few real tasks with zero config. Notice where friction appears.
+1. 阅读[第 5 节：思维模型](../ultimate-guide.md)（第 1675 行）
+2. 核心概念：Claude 在循环中工作——提示词 → 计划 → 执行 → 验证
+3. **动手试试**：零配置完成几个真实任务。注意摩擦出现的地方。
 
-### Phase 2: Context Management
+### 第二阶段：上下文管理
 
-**Goal**: Understand the main constraint of the tool.
+**目标**：理解工具的主要约束。
 
-1. Read [Context Management](../ultimate-guide.md) (line 944)
-2. The general idea (exact thresholds vary by use case):
-   - Low usage: work freely
-   - Medium usage: be more selective
-   - High usage: consider `/compact`
-   - Near limit: `/clear` to reset
-3. **Try it**: Check `/status` periodically. See how your usage patterns develop.
+1. 阅读[上下文管理](../ultimate-guide.md)（第 944 行）
+2. 一般思路（确切阈值因使用场景而异）：
+   - 低使用率：自由工作
+   - 中等使用率：更有选择性
+   - 高使用率：考虑 `/compact`
+   - 接近上限：`/clear` 重置
+3. **动手试试**：定期检查 `/status`。观察使用模式如何发展。
 
-### Phase 3: Memory Files
+### 第三阶段：记忆文件
 
-**Goal**: Give Claude project context.
+**目标**：给 Claude 项目上下文。
 
-1. Read [Memory Files](../ultimate-guide.md) (line 2218)
-2. Precedence: project `.claude/CLAUDE.md` > global `~/.claude/CLAUDE.md`
-3. **Try it**: Create a minimal CLAUDE.md, test if Claude picks it up.
+1. 阅读[记忆文件](../ultimate-guide.md)（第 2218 行）
+2. 优先级：项目 `.claude/CLAUDE.md` > 全局 `~/.claude/CLAUDE.md`
+3. **动手试试**：创建一个最小 CLAUDE.md，测试 Claude 是否读取它。
 
-### Phase 4: Extensions (when friction appears)
+### 第四阶段：扩展（当出现摩擦时）
 
-Add complexity only when you hit real problems:
+只在遇到真实问题时才添加复杂性：
 
-| Friction | Possible Solution | Reference |
+| 摩擦 | 可能的解决方案 | 参考 |
 |----------|-------------------|-----------|
-| Repeating same task often | Consider an agent | [Agent Template](../ultimate-guide.md) line 2793 |
-| Security concern | Consider a hook | [Hook Templates](../ultimate-guide.md) line 4172 |
-| Need external tool access | Consider MCP | [MCP Config](../ultimate-guide.md) line 4771 |
-| AI repeats same mistake | Add a specific rule | Start with one line, not ten |
+| 频繁重复相同任务 | 考虑一个智能体 | [智能体模板](../ultimate-guide.md) 第 2793 行 |
+| 安全顾虑 | 考虑一个 Hook | [Hook 模板](../ultimate-guide.md) 第 4172 行 |
+| 需要访问外部工具 | 考虑 MCP | [MCP 配置](../ultimate-guide.md) 第 4771 行 |
+| AI 重复同样的错误 | 添加一条具体规则 | 从一行开始，不是十行 |
 
-Whether these solutions are worth the setup cost depends on your context.
+这些解决方案是否值得设置成本取决于你的具体情况。
 
 ---
 
-## Sanity Checks
+## 健全性检查
 
-These are signals that things are working, not rigid milestones.
+这些是表明事情运转正常的信号，而非严格的里程碑。
 
-### Basic Setup Works
+### 基本设置有效
 
 ```bash
-claude --version          # Responds with version
-claude /status            # Shows context info
-claude /mcp               # Lists MCP servers (may be empty)
+claude --version          # 返回版本号
+claude /status            # 显示上下文信息
+claude /mcp               # 列出 MCP 服务器（可能为空）
 ```
 
-If these fail: installation issue — try `claude doctor`.
+如果这些失败：安装问题——尝试 `claude doctor`。
 
-### Config Is Being Read
+### 配置正在被读取
 
-**Test**: Ask Claude "What's the test command for this project?"
+**测试**：问 Claude"这个项目的测试命令是什么？"
 
-If it returns your configured command, CLAUDE.md is loaded. If not, check the path.
+如果它返回你配置的命令，CLAUDE.md 已加载。如果没有，检查路径。
 
-### You're Managing Context
+### 你在管理上下文
 
-**Signal**: You've noticed when context gets high and acted on it.
+**信号**：你注意到上下文变高时并采取了行动。
 
-This develops naturally with use. If you never think about context, either you're not using Claude intensively, or you're ignoring signals that might matter.
+这随使用自然发展。如果你从不考虑上下文，要么你没有密集使用 Claude，要么你在忽视可能重要的信号。
 
-### Extensions Feel Useful (or not needed)
+### 扩展感觉有用（或不需要）
 
-**Signal**: You've either created something (agent, hook, command) that helps, or you haven't needed to.
+**信号**：你要么创建了某些（智能体、Hook、命令）有帮助的东西，要么你不需要这些。
 
-Both are fine. Extensions are optional — don't add them just to have them.
+两者都没问题。扩展是可选的——不要仅仅为了拥有而添加。
 
 ---
 
-## Common Pitfalls
+## 常见陷阱
 
-These patterns seem problematic based on observations, though individual experiences vary.
+这些模式基于观察看起来有问题，尽管个体经验各异。
 
-| Pattern | What happens | Alternative |
-|---------|--------------|-------------|
-| **Large copied config** | Rules get ignored, unclear what matters | Start small, add based on friction |
-| **Over-engineering setup** | Time spent configuring instead of coding | Use templates as starting point |
-| **No shared conventions** | Team members diverge, onboarding confusion | Document a few essentials |
-| **Everything enabled immediately** | Complexity without clear benefit | Enable features when you need them |
+| 模式 | 发生了什么 | 替代方案 |
+|---------|--------------|------------|
+| **复制大量配置** | 规则被忽略，不清楚什么重要 | 从小处开始，根据摩擦添加 |
+| **过度设计设置** | 花时间配置而非编码 | 使用模板作为起点 |
+| **无共享约定** | 团队成员分歧，入职混乱 | 记录几条基本要素 |
+| **立即启用所有功能** | 复杂性没有明确收益 | 需要时才启用功能 |
 
-These aren't universal truths — some teams thrive with large configs or full feature sets.
+这些不是普遍真理——有些团队在大型配置或完整功能集下运行得很好。
 
 ---
 
-## Team Size Considerations
+## 团队规模考量
 
-These are starting points, not rules. Team dynamics matter more than headcount.
+这些是起点，而非规则。团队动态比人数更重要。
 
-### Solo / Small Team (2-3)
+### 个人/小型团队（2-3 人）
 
-**Typical structure**:
+**典型结构**：
 ```
-./CLAUDE.md                    # Project basics, committed
-~/.claude/CLAUDE.md            # Personal preferences
-```
-
-**What might work**:
-- Short project CLAUDE.md with stack and main commands
-- Personal config for model preferences, flags
-- Extensions only if you find yourself repeating tasks often
-
-**Watch for**: Over-engineering. If you're spending more time on config than coding, step back.
-
-### Medium Team (4-10)
-
-**Typical structure**:
-```
-./CLAUDE.md                    # Team conventions (committed)
-./.claude/settings.json        # Shared hooks (committed)
-~/.claude/CLAUDE.md            # Individual preferences (not committed)
+./CLAUDE.md                    # 项目基础，已提交
+~/.claude/CLAUDE.md            # 个人偏好
 ```
 
-**What might work**:
-- Shared conventions that the team actually follows
-- Security hooks if relevant to your context
-- Room for personal preferences
+**可能有效的方式**：
+- 包含技术栈和主要命令的简短项目 CLAUDE.md
+- 模型偏好、标志的个人配置
+- 仅在频繁重复任务时才添加扩展
 
-**One way to split things**:
+**注意**：过度设计。如果你在配置上花的时间比编码多，退一步。
 
-| Shared (repo) | Personal (~/.claude) |
+### 中型团队（4-10 人）
+
+**典型结构**：
+```
+./CLAUDE.md                    # 团队约定（已提交）
+./.claude/settings.json        # 共享 Hooks（已提交）
+~/.claude/CLAUDE.md            # 个人偏好（未提交）
+```
+
+**可能有效的方式**：
+- 团队实际遵守的共享约定
+- 如果与你的情况相关，可以使用安全 Hooks
+- 个人偏好的空间
+
+**一种划分方式**：
+
+| 共享（仓库） | 个人（~/.claude） |
 |---------------|----------------------|
-| Test/lint commands | Model preferences |
-| Project conventions | Custom agents |
-| Commit format | Flag defaults |
+| 测试/lint 命令 | 模型偏好 |
+| 项目约定 | 自定义智能体 |
+| 提交格式 | 标志默认值 |
 
-**Production teams**: Implement [Production Safety Rules](../security/production-safety.md) for port/DB/infrastructure protection via hooks and permission deny rules.
+**生产团队**：通过 Hooks 和权限拒绝规则实施[生产安全规则](../security/production-safety.md)，用于端口/数据库/基础设施保护。
 
-**Watch for**: Conventions that exist on paper but aren't followed.
+**注意**：存在于纸面但未被遵循的约定。
 
-### Larger Team (10+)
+### 较大团队（10+）
 
-**Typical structure**:
+**典型结构**：
 ```
-./CLAUDE.md                    # Documented, committed
-./.claude/settings.json        # Standard hooks, committed
-./.claude/agents/              # Shared agents, committed
-~/.claude/CLAUDE.md            # Personal additions
+./CLAUDE.md                    # 有记录，已提交
+./.claude/settings.json        # 标准 Hooks，已提交
+./.claude/agents/              # 共享智能体，已提交
+~/.claude/CLAUDE.md            # 个人补充
 ```
 
-**What might work**:
-- Documented conventions with rationale
-- Standardized hooks across the team
-- Onboarding that covers basics like `/status`
-- **Production teams**: Enforce [Production Safety Rules](../security/production-safety.md) via hooks and permission deny rules
+**可能有效的方式**：
+- 附有理由的有记录约定
+- 团队间标准化的 Hooks
+- 涵盖 `/status` 等基础知识的入职培训
+- **生产团队**：通过 Hooks 和权限拒绝规则强制执行[生产安全规则](../security/production-safety.md)
 
-**Watch for**: Config drift. Without some coordination, setups diverge over time. Whether that matters depends on your team.
+**注意**：配置漂移。没有某种协调，设置随时间分化。这是否重要取决于你的团队。
 
-> **Emerging approach**: Some organizations explore "corporate AI marketplaces" to pool AI skills, agents, and rules at the organizational level rather than individual teams (Hugo/Writizzy 2026[^hugo2026]). Few documented production implementations yet, but the concept addresses governance at scale.
+> **新兴方法**：一些组织探索"企业 AI 市场"，在组织级别而非单个团队层面汇集 AI Skills（技能模块）、智能体和规则（Hugo/Writizzy 2026[^hugo2026]）。目前很少有经过记录的生产实现，但这一概念解决了规模化治理问题。
 
-### Enterprise Rollout (50+ developers or regulated environments)
+### 企业推广（50+ 开发者或受监管环境）
 
-At this scale, individual team setups are not enough. You need a shared config baseline that applies consistently across all projects.
+这个规模上，单个团队的设置已不够。你需要跨所有项目一致应用的共享配置基准。
 
-**Phased rollout approach:**
+**分阶段推广方法：**
 
-**Phase 1 — Foundation (Week 1–2)**: Establish the governance baseline.
-- Create org-level shared config repo (`.claude/` templates per tier)
-- Publish AI Usage Charter (see [charter template](../../examples/scripts/ai-usage-charter-template.md))
-- Start MCP registry with currently-used MCPs (even if just 3 entries)
-- Install global safety hooks on all developer machines via onboarding script
+**第一阶段——基础（第 1-2 周）**：建立治理基准。
+- 创建组织级共享配置仓库（每个层级的 `.claude/` 模板）
+- 发布 AI 使用章程（见[章程模板](../../examples/scripts/ai-usage-charter-template.md)）
+- 创建包含当前使用中 MCP 的 MCP 注册表（即使只有 3 条记录）
+- 通过入职脚本在所有开发者机器上安装全局安全 Hooks
 
-**Phase 2 — Adoption (Week 3–6)**: Roll out project configs.
-- Classify existing projects by tier (Starter / Standard / Strict / Regulated)
-- Bootstrap each project with the appropriate tier config via setup script
-- Add Claude Code onboarding to engineering onboarding checklist
-- Run first governance audit to baseline the current state
+**第二阶段——采用（第 3-6 周）**：推广项目配置。
+- 按层级分类现有项目（入门/标准/严格/受监管）
+- 通过设置脚本用适当的层级配置引导每个项目
+- 将 Claude Code 入职添加到工程入职清单
+- 运行第一次治理审计以建立当前状态基准
 
-**Phase 3 — Optimization (Month 2–3)**: Refine based on friction.
-- Review hook false positive rate — tune rules that block legitimate work
-- Identify MCP requests and process them through registry workflow
-- Add CI/CD governance gates to catch config drift
-- Conduct first quarterly MCP registry review
+**第三阶段——优化（第 2-3 个月）**：根据摩擦完善。
+- 审查 Hook 误报率——调整阻断合法工作的规则
+- 识别 MCP 请求并通过注册表工作流处理它们
+- 添加 CI/CD 治理门以捕获配置漂移
+- 进行第一次季度 MCP 注册表审查
 
-**Common rollout mistakes at this scale:**
+**这个规模常见的推广错误：**
 
-| Mistake | Effect | Fix |
+| 错误 | 影响 | 修复 |
 |---------|--------|-----|
-| Rolling out Strict tier everywhere on day 1 | Developer resistance, workarounds | Start with Standard, move critical projects to Strict |
-| No central config repo | Every team diverges within weeks | Platform team owns shared templates |
-| Governance checks that block work | Developers disable hooks | Warn-only hooks, fix the root cause |
-| No onboarding → charter ignored | Policy exists on paper only | 30-min onboarding session per team |
+| 第一天就在所有地方推广严格层级 | 开发者抵制，产生变通方法 | 从标准开始，将关键项目移至严格 |
+| 无中央配置仓库 | 每个团队在几周内分化 | 平台团队拥有共享模板 |
+| 阻断工作的治理检查 | 开发者禁用 Hooks | 仅警告的 Hooks，修复根本原因 |
+| 无入职培训 → 章程被忽视 | 政策只停留在纸面 | 每个团队 30 分钟入职会话 |
 
-**For formal compliance programs** (SOC2, ISO27001, HIPAA), the additional requirements around audit trails, data classification, and review cycles are covered in [Enterprise AI Governance](../security/enterprise-governance.md).
+**对于正式合规项目**（SOC2、ISO27001、HIPAA），关于审计追踪、数据分类和审查周期的额外要求在[企业 AI 治理](../security/enterprise-governance.md)中介绍。
 
-[^hugo2026]: Hugo, ["AI's Impact on State of the Art in Software Engineering in 2026"](https://eventuallymaking.io/p/ai-s-impact-on-the-state-of-the-art-in-software-engineering-in-2026), Feb 6, 2026. Based on interviews with Doctolib, Malt, Alan, Google Cloud, Brevo, ManoMano, Ilek, Clever Cloud engineering teams.
+[^hugo2026]: Hugo，["AI 在 2026 年软件工程艺术状态中的影响"](https://eventuallymaking.io/p/ai-s-impact-on-the-state-of-the-art-in-software-engineering-in-2026)，2026 年 2 月 6 日。基于对 Doctolib、Malt、Alan、Google Cloud、Brevo、ManoMano、Ilek、Clever Cloud 工程团队的采访。
 
 ---
 
-## Common Situations
+## 常见情境
 
-### "I'm evaluating Claude Code for my team"
+### "我在为我的团队评估 Claude Code"
 
-**Quick test approach**:
-1. Install: `npm i -g @anthropic-ai/claude-code`
-2. Run in an existing project: `claude`
-3. Try a real task: `claude "Analyze this codebase architecture"`
-4. Check `/status` to understand token usage
+**快速测试方法**：
+1. 安装：`npm i -g @anthropic-ai/claude-code`
+2. 在现有项目中运行：`claude`
+3. 尝试真实任务：`claude "分析这个代码库的架构"`
+4. 检查 `/status` 了解 Token（词元）使用情况
 
-**Questions to answer**:
-- Does Claude understand your stack without config?
-- Does a minimal CLAUDE.md improve results?
-- Can your team learn context management basics?
+**需要回答的问题**：
+- 无配置时 Claude 能理解你的技术栈吗？
+- 最小 CLAUDE.md 能改善结果吗？
+- 你的团队能学习基本的上下文管理吗？
 
-Consider skipping advanced features (MCP, hooks, agents) during initial evaluation.
+考虑在初始评估期间跳过高级功能（MCP、Hooks、智能体）。
 
-### "My team disagrees on configuration"
+### "我的团队在配置上有分歧"
 
-**One way to think about it**:
+**一种思考方式**：
 
-| Layer | Typical owner | Typical content |
+| 层次 | 典型所有者 | 典型内容 |
 |-------|---------------|-----------------|
-| Repo CLAUDE.md | Team decision | Stack, commands, core conventions |
-| Repo hooks | Security-minded team members | Guardrails if needed |
-| Personal ~/.claude | Individual | Preferences, personal agents |
+| 仓库 CLAUDE.md | 团队决策 | 技术栈、命令、核心约定 |
+| 仓库 Hooks | 注重安全的团队成员 | 如有需要的护栏 |
+| 个人 ~/.claude | 个人 | 偏好、个人智能体 |
 
-How you resolve conflicts depends on your team culture. Some teams vote, some defer to tech leads, some let individuals diverge.
+你如何解决冲突取决于你的团队文化。有些团队投票，有些服从技术负责人，有些让个人各行其是。
 
-### "Claude keeps making the same mistake"
+### "Claude 一直犯同样的错误"
 
-**Tempting**: Add many rules to prevent it.
+**诱惑**：添加很多规则来防止它。
 
-**Often better**: Add one specific rule, test if it works, iterate.
+**通常更好的方法**：添加一条具体规则，测试是否有效，迭代。
 
 ```markdown
-## [Specific issue]
-When doing [X], avoid [specific mistake].
-Instead: [correct approach]
+## [具体问题]
+在做 [X] 时，避免 [具体错误]。
+替代方案：[正确方法]
 ```
 
-If the rule doesn't help, it might be too vague. Make it more specific or reconsider if rules are the right solution.
+如果规则没有帮助，可能是太模糊了。使其更具体，或重新考虑规则是否是正确的解决方案。
 
-### "I inherited a large CLAUDE.md"
+### "我接手了一个大型 CLAUDE.md"
 
-**One approach**:
-1. Ask Claude to summarize what the CLAUDE.md says
-2. Compare to what the team actually does
-3. Remove rules that aren't followed or referenced
-4. Keep what's genuinely useful
+**一种方法**：
+1. 让 Claude 总结 CLAUDE.md 的内容
+2. 与团队实际做的比较
+3. 删除未被遵循或引用的规则
+4. 保留真正有用的内容
 
-**Heuristic**: If you can't explain why a rule exists, consider removing it.
+**启发式**：如果你无法解释规则存在的原因，考虑删除它。
 
-### "When should I add more complexity?"
+### "什么时候应该添加更多复杂性？"
 
-There's no universal answer. Some signals that might suggest it:
+没有通用答案。一些可能建议的信号：
 
-| Signal | Possible response |
+| 信号 | 可能的响应 |
 |--------|-------------------|
-| Repeating the same prompt often | Consider a command |
-| Security concern | Consider a hook |
-| Need external tool access | Consider MCP |
-| Same questions from team | Consider documentation |
+| 频繁重复相同提示词 | 考虑一个命令 |
+| 安全顾虑 | 考虑一个 Hook |
+| 需要访问外部工具 | 考虑 MCP |
+| 团队重复相同问题 | 考虑文档 |
 
-But also: maybe you don't need more complexity. Simple setups work for many teams.
+但也要问：也许你不需要更多复杂性。简单设置对许多团队有效。
 
 ---
 
-## The L0-L5 Scale: Where Is Your Team?
+## L0-L5 规模：你的团队在哪里？
 
-Dan Shapiro (CEO Glowforge) published this framework in January 2026, drawing an explicit parallel with the SAE autonomy levels for self-driving vehicles. The original publication is at [factorydark.com](https://factorydark.com). Simon Willison summarized it at [simonwillison.net/2026/Jan/28/the-five-levels](https://simonwillison.net/2026/Jan/28/the-five-levels/). The name "Five Levels" covers L0-L5 (six levels total).
+Dan Shapiro（Glowforge CEO）于 2026 年 1 月发布了这个框架，明确与自动驾驶汽车的 SAE 自主性级别进行类比。原始发表在 [factorydark.com](https://factorydark.com)。Simon Willison 在 [simonwillison.net/2026/Jan/28/the-five-levels](https://simonwillison.net/2026/Jan/28/the-five-levels/) 上进行了总结。"五个级别"名称涵盖 L0-L5（共六个级别）。
 
-| Level | Label | What happens |
+| 级别 | 标签 | 发生了什么 |
 |-------|-------|--------------|
-| L0 | Spicy Autocomplete | Code completion only. AI never sees your project context. GitHub Copilot used as a fast typist. |
-| L1 | Assistant | Chat-driven development. The developer queries AI for specific sub-tasks and pastes the result. No persistent context, no agentic loop. |
-| L2 | Agent-in-the-Loop | AI reads the codebase and executes multi-step tasks (Claude Code in basic use). Developer reviews each significant step. This is where most professional use sits today. |
-| L3 | Orchestrated Agents | Multiple agents run in parallel or sequence. Spec-driven workflows, harness infrastructure, systematic context management. Significant setup investment required. |
-| L4 | Semi-autonomous Factory | Agents complete features with minimal check-ins. Human involvement is specification and review, not implementation. Limited documented production examples. |
-| L5 | Dark Factory | Fully autonomous operation. Glowforge reported examples, but no published methodology with independent verification. No proven playbook for reaching this level in general-purpose software. |
+| L0 | 辛辣自动补全 | 仅代码补全。AI 从不看到你的项目上下文。GitHub Copilot 用作快速打字员。 |
+| L1 | 助手 | 聊天驱动开发。开发者为特定子任务查询 AI，粘贴结果。无持久上下文，无智能体循环。 |
+| L2 | 循环中的智能体 | AI 读取代码库并执行多步骤任务（Claude Code 基本用法）。开发者审查每个重要步骤。这是今天大多数专业使用的位置。 |
+| L3 | 编排的智能体 | 多个智能体并行或顺序运行。规格驱动的工作流、框架基础设施、系统性上下文管理。需要大量设置投入。 |
+| L4 | 半自主工厂 | 智能体以最少签到完成功能。人类参与是规格和审查，而非实现。有限的有记录生产案例。 |
+| L5 | 暗工厂 | 完全自主运作。Glowforge 报告了案例，但无法独立核实的已发布方法论。目前没有通用软件的经过验证路径。 |
 
-**Where real adoption sits in May 2026:** Stack Overflow 2025 survey (n=49,000+) records 84% of developers using or planning to use AI tools. JetBrains AI Pulse January 2026 (n=10,000+) shows 90%. But 77% say "vibe coding" is not part of their professional work, and only 31% use agents at all. A rough mapping: L0-L1 covers roughly 30-40% of developers, L2 accounts for 40-50%, L3 and above is under 10%.
+**2026 年 5 月实际采用情况**：Stack Overflow 2025 调查（n=49,000+）记录 84% 的开发者正在使用或计划使用 AI 工具。JetBrains AI Pulse 2026 年 1 月（n=10,000+）显示 90%。但 77% 表示"vibe coding（凭感觉编程）"不是其专业工作的一部分，只有 31% 使用智能体。粗略映射：L0-L1 覆盖约 30-40% 的开发者，L2 约占 40-50%，L3 及以上不到 10%。
 
-### The J-curve you will hit at L2→L3
+### 你将在 L2→L3 遇到的 J 曲线
 
-Moving from L2 to L3 requires investing in specs, context management, harness infrastructure, and team discipline before the productivity gains materialize. McElheran, Yang, Kroff, and Brynjolfsson (2025) studied this pattern across tens of thousands of US manufacturing plants using Census Bureau data: early AI adopters showed an average -1.33 point drop in total factor productivity before gains emerged. Younger organizations absorbed the transition faster than established ones. The J-curve is a structural feature of General Purpose Technology adoption, not a sign that something went wrong.
+从 L2 到 L3 需要在规格、上下文管理、框架基础设施和团队规范上投入，然后生产力收益才能实现。McElheran、Yang、Kroff 和 Brynjolfsson（2025 年）使用人口普查局数据研究了数万家美国制造厂使用 AI 的情况：早期 AI 采用者在收益出现前平均出现 -1.33 点的全要素生产力下降。年轻组织比成熟组织更快吸收这一转变。J 曲线是通用目的技术采用的结构性特征，而非出了问题的信号。
 
-**The METR calibration:** The only published RCT on AI developer productivity (METR, July 2025, n=16 experienced developers, 246 real tasks on mature open-source repos) measured a +19% slowdown when developers used AI, while those same developers believed they were 20% faster before the study and still believed they were 20% faster after finishing. The 39-point perception gap is not noise; it is a documented structural bias in self-assessment. METR's study covered developers operating primarily at L1-L2 with Cursor Pro and Claude 3.5/3.7 Sonnet. It does not say L3 is useless; it says that the L1-L2 layer is not delivering the claimed gains for experienced developers working on complex existing codebases.
+**METR 校准**：唯一已发表的 AI 开发者生产力随机对照试验（METR，2025 年 7 月，n=16 名有经验的开发者，246 个真实任务，成熟开源仓库）测量了开发者使用 AI 时 +19% 的减慢，而这些开发者在研究前认为自己快了 20%，研究结束后仍然这样认为。39 点的感知差距不是噪音；这是自我评估中有记录的结构性偏见。METR 的研究涵盖主要在 L1-L2 工作流中使用 Cursor Pro 和 Claude 3.5/3.7 Sonnet 的开发者。它不是说 L3 没用；而是说 L1-L2 层次没有为有经验的开发者在复杂现有代码库上带来所声称的收益。
 
-A 2026 update (metr.org/blog/2026-02-24-uplift-update/) attempted a broader follow-up (n=57, 800+ tasks). The study was abandoned: 30-50% of participants refused to work without AI, making the non-AI condition unmeasurable. Partial data from the 10 developers common to both studies showed results consistent with Study 1. Across newer participants, the gap narrowed toward -4% (IC -15% to +9%), and some subgroups showed improvement of up to +18 percentage points relative to Study 1's baseline. METR qualifies this partial data as "very weak evidence." The practical takeaway: outcome depends heavily on developer profile, task complexity, and model version. No published RCT has yet documented a net productivity gain for experienced developers on complex production codebases, but the magnitude of the effect appears to vary considerably across contexts.
+2026 年更新（metr.org/blog/2026-02-24-uplift-update/）尝试了更广泛的后续研究（n=57，800+ 任务）。研究被放弃：30-50% 的参与者拒绝在没有 AI 的情况下工作，使非 AI 条件无法测量。来自两项研究中共同的 10 名开发者的部分数据显示结果与研究 1 一致。跨较新参与者，差距收窄至约 -4%（IC -15% 到 +9%），部分子群相对研究 1 基准显示高达 +18 个百分点的改善。METR 将这些部分数据定性为"非常弱的证据"。实际结论：结果在很大程度上取决于开发者个人情况、任务复杂度和模型版本。目前没有已发表的随机对照试验记录有经验的开发者在复杂生产代码库上的净生产力收益，但效果的幅度似乎在不同上下文中差异显著。
 
-**DeputyDev enterprise cohort:** arXiv 2509.19708 tracked 300 engineers over 12 months (September 2024 to August 2025) with statistical controls on PR cycle time. Adoption curve: 4% in month 1, 83% by month 6, then stabilization at around 60% sustained use. A 31.8% reduction in PR cycle time (p=0.0018). This is observational, not a RCT, but it is the best longitudinal data available on team-level adoption.
+**DeputyDev 企业群体**：arXiv 2509.19708 跟踪 300 名工程师 12 个月（2024 年 9 月至 2025 年 8 月），在 PR 周期时间上有统计控制。采用曲线：第 1 个月 4%，第 6 个月 83%，然后稳定在约 60% 的持续使用。PR 周期时间减少 31.8%（p=0.0018）。这是观察性研究，而非随机对照试验，但这是可用的最佳团队级采用纵向数据。
 
-**What this means for your team:** Self-reported productivity gains in the 20-64% range that circulate from McKinsey, BCG, and GitHub's own studies are not replicated in controlled conditions. Use them as motivation, not as targets. The realistic trajectory follows the J-curve: a slowdown during transition, then sustained gains for teams who invest in the L3 infrastructure. The teams that skip the investment and stay at L2 rarely see the large efficiency claims materialize.
+**这对你的团队意味着什么**：来自麦肯锡、BCG 和 GitHub 自己研究的 20-64% 范围内的自我报告生产力收益没有在受控条件下复现。将它们用作激励，而非目标。现实轨迹遵循 J 曲线：过渡期间的减慢，然后投资于 L3 基础设施的团队获得持续收益。停留在 L2、跳过投入的团队很少看到大的效率声明实现。
 
-### Level-specific guidance
+### 级别特定指导
 
-| Level | First investment that unlocks the next level |
+| 级别 | 解锁下一级别的第一项投入 |
 |-------|---------------------------------------------|
-| L0 → L1 | Add CLAUDE.md with project context. One hour. |
-| L1 → L2 | Install Claude Code. Run real tasks on real code with `/plan` and `/compact`. Two to three days of practice. |
-| L2 → L3 | Write structured specs before implementation. Learn context engineering basics. Commit to the L0→L5 maturity model. Weeks to months. |
-| L3 → L4 | Build or adopt a harness: while-loop engine, tool registry, session persistence, lifecycle hooks. Requires dedicated engineering time. |
-| L4 → L5 | No proven general playbook exists as of May 2026. Early examples are domain-specific. |
+| L0 → L1 | 添加包含项目上下文的 CLAUDE.md。需要一个小时。 |
+| L1 → L2 | 安装 Claude Code。用 `/plan` 和 `/compact` 在真实代码上执行真实任务。需要 2-3 天练习。 |
+| L2 → L3 | 在实现之前写结构化规格。学习上下文工程基础。承诺 L0→L5 成熟度模型。需要数周到数月。 |
+| L3 → L4 | 构建或采用框架：while 循环引擎、工具注册表、会话持久化、生命周期 Hooks。需要专门的工程时间。 |
+| L4 → L5 | 截至 2026 年 5 月不存在经过验证的通用路径。早期案例是领域特定的。 |
 
 ---
 
-## Quick Reference
+## 快速参考
 
-### Useful Commands
+### 有用命令
 
-| Command    | Purpose                          |
+| 命令 | 目的 |
 |------------|----------------------------------|
-| `/status`  | Check context usage              |
-| `/compact` | Compress context when it's high  |
-| `/clear`   | Reset context entirely           |
-| `/plan`    | Enter planning mode              |
-| `/model`   | Switch between models            |
+| `/status` | 检查上下文使用情况 |
+| `/compact` | 上下文较高时压缩上下文 |
+| `/clear` | 完全重置上下文 |
+| `/plan` | 进入计划模式 |
+| `/model` | 在模型之间切换 |
 
-How often you use these depends on your workflow.
+使用频率取决于你的工作流。
 
-### Model Costs (Relative)
+### 模型成本（相对）
 
-| Model  | Cost | Typical use cases              |
+| 模型 | 成本 | 典型用例 |
 |--------|------|--------------------------------|
-| Haiku  | $    | Simple tasks, quick responses  |
-| Sonnet | $$   | General development            |
-| Opus   | $$$  | Complex analysis, architecture |
+| Haiku | $ | 简单任务，快速响应 |
+| Sonnet | $$ | 通用开发 |
+| Opus | $$$ | 复杂分析，架构 |
 
-Most people start with Sonnet. Adjust based on your experience.
-
----
-
-## Related Resources
-
-- [Personalized Onboarding](../../tools/onboarding-prompt.md) — Interactive setup
-- [Setup Audit](../../tools/audit-prompt.md) — Diagnose configuration issues
-- [Examples Library](../../examples/README.md) — Templates to adapt
-- [Main Guide](../ultimate-guide.md) — Full reference
-- [Reference YAML](../../machine-readable/reference.yaml) — Condensed lookup
+大多数人从 Sonnet 开始。根据你的经验调整。
 
 ---
 
-*This guide reflects current observations, not proven best practices. The field is young — adapt heavily to your context. Feedback welcome: [CONTRIBUTING.md](../../CONTRIBUTING.md)*
+## 相关资源
+
+- [个性化入职](../../tools/onboarding-prompt.md) — 交互式设置
+- [设置审计](../../tools/audit-prompt.md) — 诊断配置问题
+- [示例库](../../examples/README.md) — 可适配的模板
+- [主指南](../ultimate-guide.md) — 完整参考
+- [参考 YAML](../../machine-readable/reference.yaml) — 精简查询
+
+---
+
+*本指南反映当前观察，而非经过验证的最佳实践。该领域还很年轻——请大量适配到你的具体情况。欢迎反馈：[CONTRIBUTING.md](../../CONTRIBUTING.md)*

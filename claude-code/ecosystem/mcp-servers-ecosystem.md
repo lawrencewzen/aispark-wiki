@@ -1,175 +1,175 @@
 > 📚 **AI Spark Wiki** · Claude Code 知识库
 
 ---
-title: "MCP Servers Ecosystem"
-description: "Validated community MCP servers evaluated for production readiness and security"
+title: "MCP 服务器生态系统"
+description: "经过验证的社区 MCP 服务器，已针对生产就绪性与安全性进行评估"
 tags: [mcp, reference, integration]
 ---
 
-# MCP Servers Ecosystem
+# MCP 服务器生态系统
 
-**Last updated**: May 2026 • **Next review**: June 2026
+**最后更新**：2026 年 5 月 • **下次审阅**：2026 年 6 月
 
-This guide covers validated community MCP servers beyond the official Anthropic servers. All servers listed have been evaluated for production readiness, maintenance activity, and security.
+本指南涵盖 Anthropic 官方服务器之外经过验证的社区 MCP 服务器。所有列出的服务器均已针对生产就绪性、维护活跃度和安全性进行评估。
 
-> **Not sure whether to use an MCP server or a CLI tool?** See the [MCP vs CLI Decision Guide](./mcp-vs-cli.md) for a full breakdown of tradeoffs, a decision matrix, and guidance by situation.
+> **不确定该用 MCP 服务器还是 CLI 工具？** 请参阅 [MCP 与 CLI 决策指南](./mcp-vs-cli.md)，其中包含完整的权衡分析、决策矩阵和场景化建议。
 
-## Table of Contents
+## 目录
 
-- [Official vs Community Servers](#official-vs-community-servers)
-- [Evaluation Framework](#evaluation-framework)
-- [Ecosystem Evolution](#ecosystem-evolution)
-- [Validated Community Servers](#validated-community-servers)
-  - [Browser Automation](#browser-automation)
-  - [DevOps & Infrastructure](#devops--infrastructure)
-  - [Security & Code Analysis](#security--code-analysis)
-  - [Code Search & Analysis](#code-search--analysis)
-  - [Documentation & Knowledge](#documentation--knowledge)
-  - [Project Management](#project-management)
-  - [Orchestration](#orchestration)
-- [Production Deployment](#production-deployment)
-- [Monthly Watch Methodology](#monthly-watch-methodology)
-- [Excluded Servers](#excluded-servers)
+- [官方服务器与社区服务器](#官方服务器与社区服务器)
+- [评估框架](#评估框架)
+- [生态系统演进](#生态系统演进)
+- [经验证的社区服务器](#经验证的社区服务器)
+  - [浏览器自动化](#浏览器自动化)
+  - [DevOps 与基础设施](#devops-与基础设施)
+  - [安全与代码分析](#安全与代码分析)
+  - [代码搜索与分析](#代码搜索与分析)
+  - [文档与知识](#文档与知识)
+  - [项目管理](#项目管理)
+  - [编排](#编排)
+- [生产部署](#生产部署)
+- [每月监测方法论](#每月监测方法论)
+- [排除的服务器](#排除的服务器)
 
 ---
 
-## Official vs Community Servers
+## 官方服务器与社区服务器
 
-| Type | Examples | Characteristics | Use When |
+| 类型 | 示例 | 特征 | 适用场景 |
 |------|----------|-----------------|----------|
-| **Official** | filesystem, memory, brave-search, github | Anthropic-maintained, guaranteed stability | Default choice, core functionality |
-| **Community** | Playwright, Semgrep, Kubernetes | Maintained by orgs/individuals, can be production-ready | Specialized needs, ecosystem integration |
+| **官方** | filesystem、memory、brave-search、github | Anthropic 维护，稳定性有保障 | 默认首选，核心功能 |
+| **社区** | Playwright、Semgrep、Kubernetes | 由组织/个人维护，可达生产级 | 专项需求、生态集成 |
 
-**Key difference**: Official servers have Anthropic SLA backing, community servers require individual evaluation.
+**核心区别**：官方服务器有 Anthropic SLA 背书，社区服务器需要逐一评估。
 
 ---
 
-## Evaluation Framework
+## 评估框架
 
-All community servers are evaluated against these criteria:
+所有社区服务器均按以下标准评估：
 
-| Criterion | Threshold | Justification |
+| 标准 | 阈值 | 说明 |
 |-----------|-----------|---------------|
-| **GitHub Stars** | ≥50 | Minimum community validation |
-| **Recent Release** | <3 months | Active maintenance |
-| **Documentation** | README + examples + config | Reduces adoption friction |
-| **Tests/CI** | ✅ Automated | Ensures stability |
-| **Use Case** | Not covered by official servers | Avoids redundancy |
-| **License** | OSS required | Sustainability and auditability |
+| **GitHub Stars** | ≥50 | 最低社区认可度 |
+| **近期发布** | <3 个月 | 积极维护 |
+| **文档** | README + 示例 + 配置 | 降低采用门槛 |
+| **测试/CI** | ✅ 自动化 | 保证稳定性 |
+| **使用场景** | 官方服务器未覆盖 | 避免重复 |
+| **许可证** | 必须开源 | 可持续性与可审计性 |
 
-**Quality Score Components**:
-- Maintenance (10 points): Release frequency, issue response time
-- Documentation (10 points): README completeness, examples, troubleshooting
-- Tests (10 points): Test coverage, CI/CD automation
-- Performance (10 points): Response time, resource efficiency
-- Adoption (10 points): Community usage, production deployments
+**质量评分维度**：
+- 维护性（10 分）：发布频率、Issue 响应时间
+- 文档（10 分）：README 完整性、示例、故障排查
+- 测试（10 分）：测试覆盖率、CI/CD 自动化
+- 性能（10 分）：响应时间、资源效率
+- 采用度（10 分）：社区使用量、生产部署情况
 
-**Total Score**: `/50` → Normalized to `/10` for final rating.
-
----
-
-## Ecosystem Evolution
-
-**Major developments (January 2026)**:
-
-### Linux Foundation Standardization
-
-MCP becomes official standard via **Agentic AI Foundation** under Linux Foundation governance.
-
-- **Announcement**: [YouTube - Linux Foundation](https://www.youtube.com/watch?v=btNbIY7KYwg)
-- **Impact**: Enterprise adoption, long-term stability guarantee
-
-### Advanced MCP Tool Use
-
-Anthropic deploys optimizations for MCP context management:
-
-- **Deferred loading**: Tools loaded on-demand, not upfront
-- **Search-based tools**: Efficient tool discovery in large sets
-- **Announcement**: [Josh Twist LinkedIn](https://www.linkedin.com/posts/joshtwist_anthropic-recently-dropped-advanced-mcp-activity-7399492619581718528-g-Ip)
-
-### MCPB Bundle Format
-
-Standardized bundle format for one-click MCP server installation (replaces runtime dependency management).
-
-- **Discussion**: [Reddit - r/ClaudeAI](https://www.reddit.com/r/ClaudeAI/comments/1qkzdh0/mcp_server_installs_are_nondeterministic_heres/)
-- **Benefit**: Deterministic installations, reduced setup friction
-
-### MCP Apps (Interactive Work Tools)
-
-Claude now supports interactive tools via MCP Apps spec:
-
-- **Examples**: Slack drafting, Figma diagrams, Asana timelines
-- **Announcement**: [Smol.ai Newsletter](https://news.smol.ai/issues/26-01-26-mcp-apps)
-- **Deep dive**: See [guide/architecture.md:656](../core/architecture.md#mcp-extensions-apps-sep-1865)
-
-### IDE Integration
-
-**Visual Studio 2026** natively integrates Azure MCP Server, GitHub Copilot Chat, and MCP clients.
-
-- **Announcement**: [Microsoft DevBlogs](https://devblogs.microsoft.com/visualstudio/azure-mcp-server-now-built-in-with-visual-studio-2026-a-new-era-for-agentic-workflows/)
+**总分**：`/50` → 归一化为 `/10` 作为最终评级。
 
 ---
 
-## Version Control (Official Servers)
+## 生态系统演进
 
-These foundational MCP servers provide version control automation for all development workflows. **Official Anthropic servers** with guaranteed stability.
+**重大进展（2026 年 1 月）**：
 
-### Git MCP (Anthropic)
+### Linux 基金会标准化
 
-**Official Anthropic server** for Git repository interaction via Model Context Protocol. Provides programmatic access to Git operations with structured output and cross-platform safety.
+MCP 通过 Linux 基金会治理下的 **Agentic AI Foundation** 成为官方标准。
 
-**Repository**: [modelcontextprotocol/servers/git](https://github.com/modelcontextprotocol/servers/tree/main/src/git)
-**License**: MIT
-**Status**: Early development (API subject to change)
-**Stars**: 77,908+ (parent repo)
+- **公告**：[YouTube - Linux Foundation](https://www.youtube.com/watch?v=btNbIY7KYwg)
+- **影响**：企业采用加速，长期稳定性得到保障
 
-**Use Cases**:
-- **Automated commit workflows**: AI generates commit messages, stages changes, commits
-- **Log analysis**: Filter commits by date, author, branch with structured output
-- **Branch management**: Create feature branches, checkout, filter by SHA
-- **Token-efficient diffs**: Control context lines for focused code reviews
-- **Multi-repo automation**: Manage multiple repositories in monorepo setups
+### 高级 MCP 工具调用
 
-#### Key Features
+Anthropic 为 MCP 上下文管理部署优化措施：
 
-| Tool | Description | Parameters |
+- **延迟加载**：工具按需加载，而非预先全部加载
+- **基于搜索的工具**：在大型工具集中高效发现工具
+- **公告**：[Josh Twist LinkedIn](https://www.linkedin.com/posts/joshtwist_anthropic-recently-dropped-advanced-mcp-activity-7399492619581718528-g-Ip)
+
+### MCPB 包格式
+
+标准化的一键安装包格式（替代运行时依赖管理）。
+
+- **讨论**：[Reddit - r/ClaudeAI](https://www.reddit.com/r/ClaudeAI/comments/1qkzdh0/mcp_server_installs_are_nondeterministic_heres/)
+- **优势**：安装结果确定性，降低配置复杂度
+
+### MCP Apps（交互式工作工具）
+
+Claude 现在通过 MCP Apps 规范支持交互式工具：
+
+- **示例**：Slack 草稿撰写、Figma 图表、Asana 时间线
+- **公告**：[Smol.ai Newsletter](https://news.smol.ai/issues/26-01-26-mcp-apps)
+- **深度解析**：参见 [guide/architecture.md:656](../core/architecture.md#mcp-extensions-apps-sep-1865)
+
+### IDE 集成
+
+**Visual Studio 2026** 原生集成 Azure MCP Server、GitHub Copilot Chat 与 MCP 客户端。
+
+- **公告**：[Microsoft DevBlogs](https://devblogs.microsoft.com/visualstudio/azure-mcp-server-now-built-in-with-visual-studio-2026-a-new-era-for-agentic-workflows/)
+
+---
+
+## 版本控制（官方服务器）
+
+这些基础 MCP 服务器为所有开发工作流提供版本控制自动化能力。均为 **Anthropic 官方服务器**，稳定性有保障。
+
+### Git MCP（Anthropic）
+
+**Anthropic 官方服务器**，通过模型上下文协议实现 Git 仓库交互。提供对 Git 操作的编程化访问，具备结构化输出和跨平台安全性。
+
+**仓库**：[modelcontextprotocol/servers/git](https://github.com/modelcontextprotocol/servers/tree/main/src/git)
+**许可证**：MIT
+**状态**：早期开发阶段（API 可能变更）
+**Stars**：77,908+（父仓库）
+
+**使用场景**：
+- **自动化提交工作流**：AI 生成提交信息、暂存变更、执行提交
+- **日志分析**：按日期、作者、分支过滤提交，输出结构化结果
+- **分支管理**：创建特性分支、切换分支、按 SHA 过滤
+- **Token 高效的差异对比**：控制上下文行数，专注于代码审查
+- **多仓库自动化**：在 Monorepo 中管理多个仓库
+
+#### 核心功能
+
+| 工具 | 描述 | 参数 |
 |------|-------------|------------|
-| `git_status` | Working tree status (staged, unstaged, untracked) | - |
-| `git_log` | Commit history with advanced filtering | `max_count`, `skip`, `start_timestamp`, `end_timestamp`, `author` |
-| `git_diff` | Diff between commits/branches | `target`, `source`, `context_lines` |
-| `git_diff_unstaged` | Unstaged changes | `context_lines` |
-| `git_diff_staged` | Staged changes | `context_lines` |
-| `git_commit` | Create commit | `message` |
-| `git_add` | Stage files/patterns | `files` |
-| `git_reset` | Unstage files | `files` |
-| `git_branch` | List/filter branches | `contains`, `not_contains` |
-| `git_create_branch` | Create new branch | `name` |
-| `git_checkout` | Switch branches/commits | `ref` |
-| `git_show` | Show commit details | `revision` |
+| `git_status` | 工作区状态（已暂存、未暂存、未跟踪） | - |
+| `git_log` | 带高级过滤的提交历史 | `max_count`、`skip`、`start_timestamp`、`end_timestamp`、`author` |
+| `git_diff` | 提交/分支间的差异 | `target`、`source`、`context_lines` |
+| `git_diff_unstaged` | 未暂存的变更 | `context_lines` |
+| `git_diff_staged` | 已暂存的变更 | `context_lines` |
+| `git_commit` | 创建提交 | `message` |
+| `git_add` | 暂存文件/模式 | `files` |
+| `git_reset` | 取消暂存文件 | `files` |
+| `git_branch` | 列出/过滤分支 | `contains`、`not_contains` |
+| `git_create_branch` | 创建新分支 | `name` |
+| `git_checkout` | 切换分支/提交 | `ref` |
+| `git_show` | 查看提交详情 | `revision` |
 
-**Advanced Filtering** (`git_log`):
-- **ISO 8601 dates**: `2024-01-15T14:30:25`
-- **Relative dates**: `2 weeks ago`, `yesterday`, `last month`
-- **Absolute dates**: `2024-01-15`, `Jan 15 2024`
-- **Author filtering**: `--author="John Doe"`
+**高级过滤**（`git_log`）：
+- **ISO 8601 日期**：`2024-01-15T14:30:25`
+- **相对日期**：`2 weeks ago`、`yesterday`、`last month`
+- **绝对日期**：`2024-01-15`、`Jan 15 2024`
+- **作者过滤**：`--author="John Doe"`
 
-#### Setup
+#### 配置方法
 
-**Installation (3 methods)**:
+**安装（3 种方式）**：
 
 ```bash
-# Method 1: UV (recommended) - one-liner
+# 方式 1：UV（推荐）——一行命令
 uvx mcp-server-git --repository /path/to/repo
 
-# Method 2: pip + Python module
+# 方式 2：pip + Python 模块
 pip install mcp-server-git
 python -m mcp_server_git
 
-# Method 3: Docker (sandboxed)
+# 方式 3：Docker（沙箱隔离）
 docker run -v /path/to/repo:/repo ghcr.io/modelcontextprotocol/mcp-server-git
 ```
 
-**Claude Code Configuration** (`~/.claude.json`):
+**Claude Code 配置**（`~/.claude.json`）：
 
 ```json
 {
@@ -182,7 +182,7 @@ docker run -v /path/to/repo:/repo ghcr.io/modelcontextprotocol/mcp-server-git
 }
 ```
 
-**Multi-repo support**:
+**多仓库支持**：
 
 ```json
 {
@@ -199,120 +199,120 @@ docker run -v /path/to/repo:/repo ghcr.io/modelcontextprotocol/mcp-server-git
 }
 ```
 
-#### IDE Integrations
+#### IDE 集成
 
-**One-click install buttons available for**:
-- **Claude Desktop** (macOS/Windows/Linux)
-- **VS Code** (Stable + Insiders)
+**支持一键安装的平台**：
+- **Claude Desktop**（macOS/Windows/Linux）
+- **VS Code**（稳定版 + Insiders）
 - **Zed**
 - **Zencoder**
 
-See [official README](https://github.com/modelcontextprotocol/servers/tree/main/src/git#quickstart) for integration links.
+集成链接详见 [官方 README](https://github.com/modelcontextprotocol/servers/tree/main/src/git#quickstart)。
 
-#### Quality Score
+#### 质量评分
 
 **8.5/10** ⭐⭐⭐⭐⭐
 
-| Criterion | Score | Notes |
+| 标准 | 得分 | 说明 |
 |-----------|-------|-------|
-| Maintenance | 10/10 | Anthropic-backed, active development |
-| Documentation | 9/10 | Comprehensive README, examples, but early dev warnings |
-| Tests | 8/10 | Automated CI, improving coverage |
-| Performance | 8/10 | Fast (<100ms), structured output reduces tokens |
-| Adoption | 8/10 | Official server, 77K+ stars, wide IDE support |
+| 维护性 | 10/10 | Anthropic 背书，积极开发中 |
+| 文档 | 9/10 | README 详尽、有示例，但含早期开发警告 |
+| 测试 | 8/10 | 自动化 CI，覆盖率持续提升 |
+| 性能 | 8/10 | 快速（<100ms），结构化输出减少 Token 消耗 |
+| 采用度 | 8/10 | 官方服务器，77K+ Stars，广泛的 IDE 支持 |
 
-#### Limitations & Workarounds
+#### 局限性与解决方案
 
-| Limitation | Workaround |
+| 局限性 | 解决方案 |
 |------------|-----------|
-| **Early development** (API changes) | Pin version in production, monitor releases |
-| **No interactive rebase** (`-i` flag) | Use Bash tool for `git rebase -i` |
-| **No reflog support** | Use Bash tool for `git reflog` |
-| **No git bisect** | Use Bash tool for `git bisect` |
-| **Single repo per instance** | Configure multiple MCP server instances |
+| **早期开发阶段**（API 可能变更） | 生产环境固定版本，持续关注发布动态 |
+| **不支持交互式变基**（`-i` 参数） | 使用 Bash 工具执行 `git rebase -i` |
+| **不支持 reflog** | 使用 Bash 工具执行 `git reflog` |
+| **不支持 git bisect** | 使用 Bash 工具执行 `git bisect` |
+| **每个实例对应单一仓库** | 配置多个 MCP 服务器实例 |
 
-#### Decision Matrix: Git MCP vs GitHub MCP vs Bash Tool
+#### 决策矩阵：Git MCP vs GitHub MCP vs Bash 工具
 
-**When to use which tool**:
+**各工具适用场景**：
 
-| Operation | Git MCP | GitHub MCP | Bash Tool | Justification |
+| 操作 | Git MCP | GitHub MCP | Bash 工具 | 说明 |
 |-----------|---------|------------|-----------|---------------|
-| **Local commits** | ✅ Best | ❌ | ⚠️ OK | Structured output, cross-platform safe |
-| **Branch management** | ✅ Best | ❌ | ⚠️ OK | `git_branch` filtering, SHA contains/excludes |
-| **Diff/log analysis** | ✅ Best | ❌ | ⚠️ OK | `context_lines` control, token-efficient |
-| **Staging files** | ✅ Best | ❌ | ⚠️ OK | Pattern matching (`git_add`), safer |
-| **PR creation** | ❌ | ✅ Best | ⚠️ gh CLI | GitHub API, labels, assignees, reviewers |
-| **Issue management** | ❌ | ✅ Best | ⚠️ gh CLI | GitHub-specific operations |
-| **CI/CD status checks** | ❌ | ✅ Best | ⚠️ gh CLI | GitHub Actions integration |
-| **Interactive rebase** | ❌ | ❌ | ✅ Best | Git MCP doesn't support `-i` flag |
-| **Reflog recovery** | ❌ | ❌ | ✅ Best | Advanced Git operations |
-| **Git bisect debugging** | ❌ | ❌ | ✅ Best | Complex debugging workflows |
-| **Multi-tool pipelines** | ✅ | ✅ | ❌ | MCP servers compose with other MCP tools |
+| **本地提交** | ✅ 最优 | ❌ | ⚠️ 可用 | 结构化输出，跨平台安全 |
+| **分支管理** | ✅ 最优 | ❌ | ⚠️ 可用 | `git_branch` 过滤，SHA 包含/排除 |
+| **差异/日志分析** | ✅ 最优 | ❌ | ⚠️ 可用 | `context_lines` 控制，Token 高效 |
+| **暂存文件** | ✅ 最优 | ❌ | ⚠️ 可用 | 模式匹配（`git_add`），更安全 |
+| **创建 PR** | ❌ | ✅ 最优 | ⚠️ gh CLI | GitHub API，支持标签、指派、审阅者 |
+| **Issue 管理** | ❌ | ✅ 最优 | ⚠️ gh CLI | GitHub 专属操作 |
+| **CI/CD 状态检查** | ❌ | ✅ 最优 | ⚠️ gh CLI | GitHub Actions 集成 |
+| **交互式变基** | ❌ | ❌ | ✅ 最优 | Git MCP 不支持 `-i` 参数 |
+| **Reflog 恢复** | ❌ | ❌ | ✅ 最优 | 高级 Git 操作 |
+| **Git Bisect 调试** | ❌ | ❌ | ✅ 最优 | 复杂调试工作流 |
+| **多工具流水线** | ✅ | ✅ | ❌ | MCP 服务器可与其他 MCP 工具组合 |
 
-**Decision Tree**:
+**决策树**：
 
 ```
-Is it a GitHub-specific operation (PRs, Issues, Actions)?
-├─ YES → Use GitHub MCP
-└─ NO → Is it a core Git operation (commit, branch, diff, log)?
-    ├─ YES → Use Git MCP (structured, safe, token-efficient)
-    └─ NO → Is it an advanced Git feature (rebase -i, reflog, bisect)?
-        ├─ YES → Use Bash tool (flexibility)
-        └─ NO → Default to Git MCP (safer, structured)
+是否为 GitHub 专属操作（PR、Issue、Actions）？
+├─ 是 → 使用 GitHub MCP
+└─ 否 → 是否为核心 Git 操作（commit、branch、diff、log）？
+    ├─ 是 → 使用 Git MCP（结构化、安全、Token 高效）
+    └─ 否 → 是否为高级 Git 功能（rebase -i、reflog、bisect）？
+        ├─ 是 → 使用 Bash 工具（灵活性）
+        └─ 否 → 默认使用 Git MCP（更安全、结构化）
 ```
 
-**Workflow Examples**:
+**工作流示例**：
 
-| Workflow | Tool Chain | Justification |
+| 工作流 | 工具链 | 说明 |
 |----------|-----------|---------------|
-| **Feature development** | Git MCP (`git_create_branch` + `git_commit`) → GitHub MCP (PR) | Atomic, structured, full lifecycle |
-| **Commit history analysis** | Git MCP (`git_log` with `start_timestamp: "2 weeks ago"`) | Token-efficient filtering, relative dates |
-| **Code review preparation** | Git MCP (`git_diff` with `context_lines: 3`) | Focused context, reduced tokens |
-| **Clean up commits (rebase)** | Bash tool (`git rebase -i HEAD~5`) | Interactive mode not in Git MCP |
-| **Recover lost commits** | Bash tool (`git reflog`) | Reflog not exposed in Git MCP |
-| **Bug hunting with bisect** | Bash tool (`git bisect start/good/bad`) | Bisect workflow not in Git MCP |
-| **Automated release flow** | Git MCP (commit + tag) → GitHub MCP (create release) | Full automation, structured |
+| **功能开发** | Git MCP（`git_create_branch` + `git_commit`）→ GitHub MCP（PR） | 原子化、结构化、全生命周期覆盖 |
+| **提交历史分析** | Git MCP（`git_log`，`start_timestamp: "2 weeks ago"`） | Token 高效过滤，支持相对日期 |
+| **代码审查准备** | Git MCP（`git_diff`，`context_lines: 3`） | 聚焦上下文，减少 Token 消耗 |
+| **整理提交（变基）** | Bash 工具（`git rebase -i HEAD~5`） | Git MCP 不支持交互模式 |
+| **恢复丢失的提交** | Bash 工具（`git reflog`） | Git MCP 未暴露 reflog |
+| **Bisect 排查 Bug** | Bash 工具（`git bisect start/good/bad`） | Git MCP 不支持 bisect 工作流 |
+| **自动化发布流程** | Git MCP（commit + tag）→ GitHub MCP（创建 Release） | 全自动化，结构化 |
 
-#### Resources
+#### 参考资源
 
-- **GitHub**: https://github.com/modelcontextprotocol/servers/tree/main/src/git
-- **Parent Repo**: https://github.com/modelcontextprotocol/servers (77,908+ stars)
-- **MCP Inspector**: Debug tool support for live testing
-- **Docker Hub**: `ghcr.io/modelcontextprotocol/mcp-server-git`
+- **GitHub**：https://github.com/modelcontextprotocol/servers/tree/main/src/git
+- **父仓库**：https://github.com/modelcontextprotocol/servers（77,908+ Stars）
+- **MCP Inspector**：支持实时调试测试
+- **Docker Hub**：`ghcr.io/modelcontextprotocol/mcp-server-git`
 
 ---
 
-## Validated Community Servers
+## 经验证的社区服务器
 
-### Browser Automation
+### 浏览器自动化
 
-#### Playwright MCP (Microsoft)
+#### Playwright MCP（Microsoft）
 
-**Official Microsoft server** for browser automation optimized for LLMs. Uses accessibility trees instead of screenshots, reducing token usage.
+**Microsoft 官方服务器**，专为 LLM 优化的浏览器自动化工具。使用无障碍树（accessibility tree）而非截图，降低 Token 消耗。
 
-**Use Case**: AI coding agents verify their work in browsers (E2E testing, bug verification).
+**使用场景**：AI 编程智能体在浏览器中验证自身工作（E2E 测试、Bug 验证）。
 
-**Key Features**:
+**核心功能**：
 
-| Capability | Details |
+| 功能 | 详情 |
 |------------|---------|
-| Browser Automation | Navigate, click, fill, hover (Playwright API) |
-| Content Extraction | Structured data via accessibility trees |
-| Screenshots | Full-page + element-specific |
-| JavaScript Execution | Run code in page context |
-| Session Management | Persistent browser state |
-| Supported Browsers | Chromium, Firefox, WebKit |
+| 浏览器自动化 | 导航、点击、填写、悬停（Playwright API） |
+| 内容提取 | 通过无障碍树提取结构化数据 |
+| 截图 | 全页面 + 指定元素截图 |
+| JavaScript 执行 | 在页面上下文中运行代码 |
+| 会话管理 | 持久化浏览器状态 |
+| 支持的浏览器 | Chromium、Firefox、WebKit |
 
-**Setup**:
+**配置方法**：
 
 ```bash
-# Installation
+# 安装
 npm install @microsoft/playwright-mcp
-# or
+# 或
 npx @microsoft/playwright-mcp
 ```
 
-**Claude Code Configuration** (`~/.claude.json`):
+**Claude Code 配置**（`~/.claude.json`）：
 
 ```json
 {
@@ -325,72 +325,72 @@ npx @microsoft/playwright-mcp
 }
 ```
 
-**Example Usage**:
+**使用示例**：
 
 ```
-User: "Navigate to example.com, log in with email test@example.com, then take a screenshot"
+用户："导航到 example.com，用邮箱 test@example.com 登录，然后截图"
 
-Claude: [Uses playwright_navigate → playwright_type → playwright_click → playwright_screenshot]
+Claude：[执行 playwright_navigate → playwright_type → playwright_click → playwright_screenshot]
 
-Result: Screenshot + accessibility tree in context
+结果：截图 + 无障碍树信息已纳入上下文
 ```
 
-**Quality Score**: **8.8/10** ⭐⭐⭐⭐⭐
+**质量评分**：**8.8/10** ⭐⭐⭐⭐⭐
 
-| Dimension | Score | Notes |
+| 维度 | 得分 | 说明 |
 |-----------|-------|-------|
-| Maintenance | 9/10 | Bi-weekly releases, active Microsoft team |
-| Documentation | 9/10 | README complete, examples, Playwright Live videos |
-| Tests | 10/10 | Extensive test suite, CI/CD automated |
-| Performance | 8/10 | Fast snapshots (~200ms), memory-efficient |
-| Adoption | 8/10 | 2890+ uses (Smithery.ai tracking) |
+| 维护性 | 9/10 | 每两周发布，Microsoft 团队活跃 |
+| 文档 | 9/10 | README 完整，有示例和 Playwright Live 视频 |
+| 测试 | 10/10 | 完整测试套件，CI/CD 自动化 |
+| 性能 | 8/10 | 快速快照（~200ms），内存高效 |
+| 采用度 | 8/10 | 2890+ 次使用（Smithery.ai 统计） |
 
-**Limitations & Workarounds**:
+**局限性与解决方案**：
 
-| Limitation | Workaround |
+| 局限性 | 解决方案 |
 |------------|-----------|
-| Single browser session | Use session ID to persist state |
-| No cross-domain iframe access | Restrict to same-origin content |
-| Screenshot size limits (4K max) | Use element snapshots for large pages |
+| 单浏览器会话 | 使用 session ID 持久化状态 |
+| 不支持跨域 iframe 访问 | 限制为同源内容 |
+| 截图大小限制（最大 4K） | 对大型页面使用元素快照 |
 
-**Alternatives**:
+**备选方案**：
 
-| Server | Advantage | Disadvantage |
+| 服务器 | 优势 | 劣势 |
 |--------|-----------|--------------|
-| **Playwright MCP** | Accessibility trees, LLM-native | No vision model support |
-| Browserbase MCP | Cloud-based, stealth mode | API costs, latency |
-| Puppeteer MCP | Lightweight, JS-only | Less structured data |
+| **Playwright MCP** | 无障碍树，LLM 原生 | 不支持视觉模型 |
+| Browserbase MCP | 云端，支持隐身模式 | API 费用，延迟较高 |
+| Puppeteer MCP | 轻量，仅限 JS | 结构化数据较少 |
 
-**Resources**:
-- **GitHub**: https://github.com/microsoft/playwright-mcp
-- **Releases**: https://github.com/microsoft/playwright-mcp/releases
-- **Playwright Live Demo**: https://youtu.be/CNzg1aPwrKI
+**参考资源**：
+- **GitHub**：https://github.com/microsoft/playwright-mcp
+- **发布记录**：https://github.com/microsoft/playwright-mcp/releases
+- **Playwright Live 演示**：https://youtu.be/CNzg1aPwrKI
 
 ---
 
 #### Browserbase MCP
 
-**Official Browserbase server** for cloud browser automation. Includes Stagehand AI agent for autonomous task execution.
+**Browserbase 官方服务器**，提供云端浏览器自动化，内置 Stagehand AI 智能体用于自主任务执行。
 
-**Use Case**: Complex web interactions requiring stealth mode, proxy support, or autonomous execution (web scraping, form filling, data extraction).
+**使用场景**：需要隐身模式、代理支持或自主执行的复杂 Web 交互（网页抓取、表单填写、数据提取）。
 
-**Key Features**:
+**核心功能**：
 
-| Capability | Details |
+| 功能 | 详情 |
 |------------|---------|
-| Browser Control | Chromium via Browserbase cloud |
-| Stagehand Agent | Autonomous task execution (e.g., "book a flight") |
-| Data Extraction | CSS selectors + schema-based structured extraction |
-| Anti-Detection | Stealth mode, proxy support, rotation |
-| Multi-Model | OpenAI, Claude, Gemini, custom LLM |
+| 浏览器控制 | 通过 Browserbase 云端运行 Chromium |
+| Stagehand 智能体 | 自主任务执行（例如"预订航班"） |
+| 数据提取 | CSS 选择器 + 基于 Schema 的结构化提取 |
+| 反检测 | 隐身模式、代理支持、IP 轮换 |
+| 多模型支持 | OpenAI、Claude、Gemini、自定义 LLM |
 
-**Setup**:
+**配置方法**：
 
 ```bash
 npm install @browserbasehq/mcp-server-browserbase
 ```
 
-**Configuration**:
+**配置**：
 
 ```json
 {
@@ -408,47 +408,47 @@ npm install @browserbasehq/mcp-server-browserbase
 }
 ```
 
-**Quality Score**: **7.6/10** ⭐⭐⭐⭐
+**质量评分**：**7.6/10** ⭐⭐⭐⭐
 
-**Cost**: Freemium (paid API usage), ~$0.10/session
+**费用**：Freemium（按 API 用量付费），约 $0.10/会话
 
-**Limitations**:
+**局限性**：
 
-| Limitation | Workaround |
+| 局限性 | 解决方案 |
 |------------|-----------|
-| Latency (~500ms cloud) | Batch operations, cache results |
-| API costs | Use for high-value extractions only |
-| Stagehand limitations | Fall back to manual playwright_* tools |
+| 云端延迟（~500ms） | 批量操作，缓存结果 |
+| API 费用 | 仅用于高价值提取任务 |
+| Stagehand 能力限制 | 回退到手动 `playwright_*` 工具 |
 
-**Resources**:
-- **GitHub**: https://github.com/browserbase/mcp-server-browserbase
-- **Official Docs**: https://www.browserbase.com
+**参考资源**：
+- **GitHub**：https://github.com/browserbase/mcp-server-browserbase
+- **官方文档**：https://www.browserbase.com
 
 ---
 
 #### Chrome DevTools MCP
 
-**Official Anthropic server** for Chrome DevTools Protocol integration. Provides debugging and inspection capabilities via Chrome's native DevTools APIs.
+**Anthropic 官方服务器**，集成 Chrome DevTools Protocol，通过 Chrome 原生 DevTools API 提供调试与检查能力。
 
-**Use Case**: Debugging web applications, inspecting runtime state, monitoring network requests, and analyzing performance. Complements Playwright MCP (testing) with development-focused debugging capabilities.
+**使用场景**：调试 Web 应用、检查运行时状态、监控网络请求、分析性能。与 Playwright MCP（测试）互补，专注于面向开发的调试能力。
 
-**Key Features**:
+**核心功能**：
 
-| Capability | Details |
+| 功能 | 详情 |
 |------------|---------|
-| Console Access | Read browser console logs, errors, warnings |
-| Network Monitor | Inspect HTTP requests, responses, headers |
-| DOM Inspection | Query DOM structure, element properties |
-| JavaScript Execution | Execute arbitrary JS in page context |
-| Performance Profiling | CPU profiles, memory snapshots |
+| 控制台访问 | 读取浏览器控制台日志、错误、警告 |
+| 网络监控 | 检查 HTTP 请求、响应、请求头 |
+| DOM 检查 | 查询 DOM 结构、元素属性 |
+| JavaScript 执行 | 在页面上下文中执行任意 JS |
+| 性能分析 | CPU 分析、内存快照 |
 
-**Setup**:
+**配置方法**：
 
 ```bash
 npm install @modelcontextprotocol/server-chrome-devtools
 ```
 
-**Configuration**:
+**配置**：
 
 ```json
 {
@@ -461,49 +461,49 @@ npm install @modelcontextprotocol/server-chrome-devtools
 }
 ```
 
-**When to Use**:
+**使用场景对比**：
 
-| Scenario | Use Chrome DevTools MCP | Use Playwright MCP |
+| 场景 | 使用 Chrome DevTools MCP | 使用 Playwright MCP |
 |----------|------------------------|-------------------|
-| Debug runtime errors | ✅ Console logs, stack traces | ❌ Limited error visibility |
-| Inspect network calls | ✅ Full request/response details | ⚠️ Basic navigation only |
-| Test user interactions | ❌ Not designed for testing | ✅ Click, type, navigate |
-| Profile performance | ✅ CPU/memory profiling | ❌ No profiling tools |
-| Automate workflows | ❌ Manual debugging focus | ✅ E2E test automation |
+| 调试运行时错误 | ✅ 控制台日志、堆栈跟踪 | ❌ 错误可见性有限 |
+| 检查网络请求 | ✅ 完整请求/响应详情 | ⚠️ 仅基本导航 |
+| 测试用户交互 | ❌ 非为测试设计 | ✅ 点击、输入、导航 |
+| 性能分析 | ✅ CPU/内存分析 | ❌ 无分析工具 |
+| 自动化工作流 | ❌ 专注手动调试 | ✅ E2E 测试自动化 |
 
-**Limitations**:
-- Requires Chrome browser running with DevTools Protocol enabled
-- Manual setup (launch Chrome with `--remote-debugging-port`)
-- Not suitable for automated testing (use Playwright for that)
-- Performance overhead when profiling enabled
+**局限性**：
+- 需要 Chrome 浏览器以 DevTools Protocol 模式启动
+- 需手动配置（以 `--remote-debugging-port` 启动 Chrome）
+- 不适合自动化测试（请使用 Playwright）
+- 启用性能分析时存在性能开销
 
-**Resources**:
-- **npm**: https://www.npmjs.com/package/@modelcontextprotocol/server-chrome-devtools
-- **Chrome DevTools Protocol**: https://chromedevtools.github.io/devtools-protocol/
+**参考资源**：
+- **npm**：https://www.npmjs.com/package/@modelcontextprotocol/server-chrome-devtools
+- **Chrome DevTools Protocol**：https://chromedevtools.github.io/devtools-protocol/
 
 ---
 
-### DevOps & Infrastructure
+### DevOps 与基础设施
 
-#### Kubernetes MCP (Red Hat)
+#### Kubernetes MCP（Red Hat）
 
-**Official Containers Community server** (Red Hat-backed) for Kubernetes/OpenShift management in natural language.
+**官方 Containers Community 服务器**（Red Hat 背书），支持用自然语言管理 Kubernetes/OpenShift。
 
-**Use Case**: DevOps/SRE uses Claude to query/configure cluster ("kubectl in natural language").
+**使用场景**：DevOps/SRE 工程师通过 Claude 查询/配置集群（"自然语言版 kubectl"）。
 
-**Key Features**:
+**核心功能**：
 
-| Capability | Details |
+| 功能 | 详情 |
 |------------|---------|
-| Resource CRUD | Create, Read, Update, Delete any K8s resource |
-| Pod Operations | Logs, events, exec, metrics (top) |
-| Deployment Management | Scale, rollout, status |
-| Config Management | View/update ConfigMaps, Secrets |
-| CRD Support | Custom Resource Definitions |
-| Multi-Cluster | Switch kubeconfig contexts |
-| OpenShift Support | Native OpenShift resources |
+| 资源 CRUD | 创建、读取、更新、删除任意 K8s 资源 |
+| Pod 操作 | 日志、事件、exec、指标（top） |
+| Deployment 管理 | 扩缩容、滚动更新、状态查询 |
+| 配置管理 | 查看/更新 ConfigMaps、Secrets |
+| CRD 支持 | 自定义资源定义 |
+| 多集群 | 切换 kubeconfig 上下文 |
+| OpenShift 支持 | 原生 OpenShift 资源 |
 
-**Setup**:
+**配置方法**：
 
 ```bash
 # Docker
@@ -511,12 +511,12 @@ docker run -it --rm \
   --mount type=bind,src=$HOME/.kube/config,dst=/home/mcp/.kube/config \
   ghcr.io/containers/kubernetes-mcp-server
 
-# Native (Go binary)
+# 原生（Go 二进制）
 go install github.com/containers/kubernetes-mcp-server@latest
 kubernetes-mcp-server
 ```
 
-**Claude Desktop Configuration**:
+**Claude Desktop 配置**：
 
 ```json
 {
@@ -536,54 +536,54 @@ kubernetes-mcp-server
 }
 ```
 
-**Example Usage**:
+**使用示例**：
 
 ```
-User: "Show me all pods in production namespace with memory usage >500Mi"
-Claude: [Uses list_resources for pods + metrics]
-Result: List of pods with memory stats
+用户："显示 production 命名空间中内存使用超过 500Mi 的所有 Pod"
+Claude：[对 Pod + 指标执行 list_resources]
+结果：含内存统计的 Pod 列表
 
-User: "Scale the backend deployment to 5 replicas"
-Claude: [Uses patch_resource]
-Result: Deployment scaled
+用户："将 backend deployment 扩容到 5 个副本"
+Claude：[执行 patch_resource]
+结果：Deployment 已扩容
 ```
 
-**Quality Score**: **8.4/10** ⭐⭐⭐⭐
+**质量评分**：**8.4/10** ⭐⭐⭐⭐
 
-**Security**: RBAC enforcement, kubeconfig auth, no privilege escalation
+**安全性**：RBAC 强制执行，kubeconfig 鉴权，无权限提升
 
-**Limitations**:
+**局限性**：
 
-| Limitation | Workaround |
+| 局限性 | 解决方案 |
 |------------|-----------|
-| Requires kubeconfig access | Use ServiceAccount + RBAC for safety |
-| Limited node shell access | Use `kubectl exec` for debugging |
-| CRD discovery lag | Pre-document CRDs for AI context |
+| 需要 kubeconfig 访问权限 | 使用 ServiceAccount + RBAC 确保安全 |
+| 节点 Shell 访问受限 | 使用 `kubectl exec` 进行调试 |
+| CRD 发现有延迟 | 为 AI 上下文预先记录 CRD |
 
-**Resources**:
-- **GitHub**: https://github.com/containers/kubernetes-mcp-server
-- **Red Hat Docs**: https://developers.redhat.com/articles/2025/09/25/kubernetes-mcp-server-ai-powered-cluster-management
+**参考资源**：
+- **GitHub**：https://github.com/containers/kubernetes-mcp-server
+- **Red Hat 文档**：https://developers.redhat.com/articles/2025/09/25/kubernetes-mcp-server-ai-powered-cluster-management
 
 ---
 
 #### Vercel MCP
 
-**Community server** for Vercel platform (deployments, projects, env vars, teams).
+**社区服务器**，支持 Vercel 平台（部署、项目、环境变量、团队）。
 
-**Use Case**: AI assistant generates Next.js code, creates Vercel project, configures env vars, triggers deployment — full CI/CD loop without leaving IDE.
+**使用场景**：AI 助手生成 Next.js 代码，创建 Vercel 项目，配置环境变量，触发部署——在 IDE 内完成完整 CI/CD 闭环。
 
-**Key Features**:
+**核心功能**：
 
-| Capability | Details |
+| 功能 | 详情 |
 |------------|---------|
-| Deployments | List, get details, create, monitor status |
-| Projects | List, create, update settings |
-| Environment Variables | Get, set, manage secrets |
-| Teams | List, create, manage |
-| Domains | List, configure, DNS management |
-| Functions | Monitor Vercel Functions, logs |
+| 部署 | 列出、查看详情、创建、监控状态 |
+| 项目 | 列出、创建、更新设置 |
+| 环境变量 | 获取、设置、管理 Secrets |
+| 团队 | 列出、创建、管理 |
+| 域名 | 列出、配置、DNS 管理 |
+| Functions | 监控 Vercel Functions、日志 |
 
-**Setup**:
+**配置方法**：
 
 ```bash
 git clone https://github.com/nganiet/mcp-vercel
@@ -591,7 +591,7 @@ cd vercel-mcp
 npm install
 ```
 
-**Configuration**:
+**配置**：
 
 ```json
 {
@@ -607,46 +607,46 @@ npm install
 }
 ```
 
-**Quality Score**: **7.6/10** ⭐⭐⭐⭐
+**质量评分**：**7.6/10** ⭐⭐⭐⭐
 
-**Note**: Vercel also has an official MCP server. This community version offers comprehensive API coverage.
+**说明**：Vercel 也有官方 MCP 服务器，本社区版本提供更全面的 API 覆盖。
 
-**Resources**:
-- **GitHub**: https://github.com/nganiet/mcp-vercel
-- **Vercel Docs**: https://vercel.com/docs/mcp/deploy-mcp-servers-to-vercel
-- **Official Vercel MCP**: https://vercel.com/docs/mcp/vercel-mcp
+**参考资源**：
+- **GitHub**：https://github.com/nganiet/mcp-vercel
+- **Vercel 文档**：https://vercel.com/docs/mcp/deploy-mcp-servers-to-vercel
+- **Vercel 官方 MCP**：https://vercel.com/docs/mcp/vercel-mcp
 
 #### Sentry MCP
 
-**Official Sentry server** for error monitoring and observability. Closes the diagnostic loop: Sentry alert fires → Claude reads issue + stack trace → diagnoses root cause → proposes or writes the patch.
+**Sentry 官方服务器**，用于错误监控与可观测性。形成诊断闭环：Sentry 告警触发 → Claude 读取 Issue 和堆栈跟踪 → 诊断根因 → 提出或编写修复方案。
 
-**Repository**: [getsentry/sentry-mcp](https://github.com/getsentry/sentry-mcp)
-**License**: MIT
-**Maintainer**: Sentry (official)
+**仓库**：[getsentry/sentry-mcp](https://github.com/getsentry/sentry-mcp)
+**许可证**：MIT
+**维护方**：Sentry（官方）
 
-**Use Case**: A Sentry alert fires in prod. The engineer asks Claude: "What's causing SEN-4521?". Claude reads the full stack trace, traces the regression through the codebase, and drafts a fix — without leaving the IDE. The observability loop closes inside Claude Code.
+**使用场景**：生产环境触发 Sentry 告警，工程师问 Claude："SEN-4521 是什么原因？"。Claude 读取完整堆栈跟踪，追踪代码库中的回归路径，起草修复方案——全程无需离开 IDE。可观测性闭环在 Claude Code 内完成。
 
-**Key Features**:
+**核心功能**：
 
-| Tool | Description |
+| 工具 | 描述 |
 |------|-------------|
-| `list_issues` | Fetch unresolved issues with Sentry query syntax (`is:unresolved level:error`) |
-| `get_issue` | Full issue details — stack trace, affected users, first/last seen timestamps |
-| `get_event` | Specific event by ID, useful for time-scoped investigations |
-| `search_events` | Full-text search across raw events with field filters |
-| `list_projects` | List projects in your Sentry organization |
+| `list_issues` | 使用 Sentry 查询语法获取未解决的 Issue（`is:unresolved level:error`） |
+| `get_issue` | 完整 Issue 详情——堆栈跟踪、受影响用户、首次/最近出现时间戳 |
+| `get_event` | 通过 ID 获取特定事件，适用于时间范围调查 |
+| `search_events` | 带字段过滤的原始事件全文搜索 |
+| `list_projects` | 列出 Sentry 组织中的项目 |
 
-**Setup**:
+**配置方法**：
 
 ```bash
-# Via npx (recommended — verify package name against official docs)
+# 通过 npx（推荐——请对照官方文档确认包名）
 npx -y @sentry/mcp-server
 
-# One-liner for Claude Code
+# Claude Code 一键添加
 claude mcp add sentry -- npx -y @sentry/mcp-server
 ```
 
-**Claude Code Configuration** (`~/.claude/settings.json`):
+**Claude Code 配置**（`~/.claude/settings.json`）：
 
 ```json
 {
@@ -663,109 +663,109 @@ claude mcp add sentry -- npx -y @sentry/mcp-server
 }
 ```
 
-> Auth token: [sentry.io/settings/account/api/auth-tokens/](https://sentry.io/settings/account/api/auth-tokens/) — scopes needed: `project:read`, `event:read`, `org:read`
+> 认证 Token：[sentry.io/settings/account/api/auth-tokens/](https://sentry.io/settings/account/api/auth-tokens/)——所需权限：`project:read`、`event:read`、`org:read`
 
-**Example Usage**:
+**使用示例**：
 
 ```
-User: "What's causing SEN-4521? It's been firing since yesterday's deploy."
+用户："SEN-4521 是什么原因？昨天部署后一直在触发。"
 
-Claude:
+Claude：
   [list_issues: query="is:unresolved level:error project:api-service"]
   [get_issue: issue_id="4521"]
 
-Result: NullPointerException in UserController.getProfile() at line 142.
-  Introduced in commit a3f8c2 (yesterday 14:32 UTC) — null check removed
-  in the profile refactor. Fix: restore Optional.ofNullable at line 142.
-  Opening a PR now.
+结果：UserController.getProfile() 第 142 行 NullPointerException。
+  在昨天 14:32 UTC 的提交 a3f8c2 中引入——Profile 重构时移除了 null 检查。
+  修复方案：在第 142 行恢复 Optional.ofNullable。
+  正在创建 PR。
 ```
 
-**Query Syntax** (critical for effective use — the most common source of call failures):
+**查询语法**（影响调用效果的关键——最常见的调用失败来源）：
 
 ```
-is:unresolved                         # unresolved issues only
-is:unresolved level:error             # errors only (excludes warnings, info)
-is:unresolved has:user                # issues with identified users
-is:unresolved times_seen:>100         # high-frequency issues
-project:api-service is:unresolved     # scope to one project
-assigned:me is:unresolved             # issues assigned to you
-!has:assignee is:unresolved           # unassigned issues
+is:unresolved                         # 仅未解决的 Issue
+is:unresolved level:error             # 仅错误（排除警告、info）
+is:unresolved has:user                # 已识别用户的 Issue
+is:unresolved times_seen:>100         # 高频 Issue
+project:api-service is:unresolved     # 限定单个项目
+assigned:me is:unresolved             # 分配给自己的 Issue
+!has:assignee is:unresolved           # 未分配的 Issue
 ```
 
-> **Reference file**: `examples/skills/mcp-integration-reference/references/sentry-mcp.md` in this repo — complete parameter docs, gotchas, pagination patterns, and a curated noise-exclusion list. Copy it to your CLAUDE.md includes or project skills.
+> **参考文件**：本仓库 `examples/skills/mcp-integration-reference/references/sentry-mcp.md`——包含完整参数文档、注意事项、分页模式及精选降噪列表。可将其复制到 CLAUDE.md includes 或项目 Skills 中。
 
-**Quality Score**: **8.5/10** ⭐⭐⭐⭐⭐
+**质量评分**：**8.5/10** ⭐⭐⭐⭐⭐
 
-| Dimension | Score | Notes |
+| 维度 | 得分 | 说明 |
 |-----------|-------|-------|
-| Maintenance | 10/10 | Official Sentry server, enterprise-backed |
-| Documentation | 8/10 | Good README + Sentry docs cover edge cases |
-| Tests | 8/10 | CI present, TypeScript type safety |
-| Performance | 8/10 | API-bound (~200–400ms), pagination required for large orgs |
-| Adoption | 9/10 | Sentry is the de facto error monitoring standard (100K+ organizations) |
+| 维护性 | 10/10 | Sentry 官方服务器，企业级背书 |
+| 文档 | 8/10 | README 良好，Sentry 文档涵盖边界情况 |
+| 测试 | 8/10 | 存在 CI，TypeScript 类型安全 |
+| 性能 | 8/10 | API 受限（~200–400ms），大型组织需分页 |
+| 采用度 | 9/10 | Sentry 是事实标准错误监控平台（100K+ 组织） |
 
-**Limitations & Workarounds**:
+**局限性与解决方案**：
 
-| Limitation | Workaround |
+| 局限性 | 解决方案 |
 |------------|-----------|
-| `organization_slug` ≠ display name | Read slug from URL: `sentry.io/organizations/<slug>/` |
-| `search_events` times out in large orgs | Always scope with `project_slug` when searching events |
-| 100 issues max per call | Use cursor-based pagination for complete sweeps |
-| Read-only by default | Resolve/assign operations need additional token scopes |
-| 90-day event retention | Events older than 90 days unavailable on default Sentry plan |
+| `organization_slug` ≠ 显示名称 | 从 URL 读取 Slug：`sentry.io/organizations/<slug>/` |
+| 大型组织中 `search_events` 超时 | 搜索事件时始终指定 `project_slug` |
+| 每次调用最多返回 100 个 Issue | 使用基于游标的分页进行完整扫描 |
+| 默认只读 | 解决/指派操作需要额外的 Token 权限 |
+| 事件保留 90 天 | 默认 Sentry 方案下 90 天前的事件不可用 |
 
-**When to Use vs Alternatives**:
+**适用场景对比**：
 
-| Tool | Best For | Not Worth It When |
+| 工具 | 最适合 | 不推荐的情况 |
 |------|----------|-------------------|
-| **Sentry MCP** | Error diagnosis loop: alert → stack trace → patch | Pure alerting (use webhooks or PagerDuty directly) |
-| **Datadog MCP** | APM, distributed traces, metrics dashboards | Error-only workflows — overengineered for that use case |
-| **Bash + Sentry CLI** | Bulk operations, scripted data exports | Interactive debugging sessions |
+| **Sentry MCP** | 错误诊断闭环：告警 → 堆栈跟踪 → 修复 | 纯告警（直接用 Webhook 或 PagerDuty） |
+| **Datadog MCP** | APM、分布式追踪、指标仪表盘 | 仅处理错误——对该场景过于复杂 |
+| **Bash + Sentry CLI** | 批量操作、脚本化数据导出 | 交互式调试会话 |
 
-**Resources**:
-- **GitHub**: https://github.com/getsentry/sentry-mcp
-- **Sentry MCP Docs**: https://docs.sentry.io/product/sentry-mcp/
-- **Reference File**: `examples/skills/mcp-integration-reference/references/sentry-mcp.md`
-- **Auth Token Setup**: https://sentry.io/settings/account/api/auth-tokens/
+**参考资源**：
+- **GitHub**：https://github.com/getsentry/sentry-mcp
+- **Sentry MCP 文档**：https://docs.sentry.io/product/sentry-mcp/
+- **参考文件**：`examples/skills/mcp-integration-reference/references/sentry-mcp.md`
+- **Auth Token 配置**：https://sentry.io/settings/account/api/auth-tokens/
 
 ---
 
-### Security & Code Analysis
+### 安全与代码分析
 
 #### Semgrep MCP
 
-**Official Semgrep server** for vulnerability scanning (SAST, secrets, supply chain). Includes custom rules engine.
+**Semgrep 官方服务器**，用于漏洞扫描（SAST、Secrets、供应链）。内置自定义规则引擎。
 
-**Use Case**: Claude Code generates code, Semgrep automatically scans for security issues, proposes fixes ("secure by default").
+**使用场景**：Claude Code 生成代码，Semgrep 自动扫描安全问题，提出修复方案（"默认安全"）。
 
-**Key Features**:
+**核心功能**：
 
-| Capability | Details |
+| 功能 | 详情 |
 |------------|---------|
-| Quick Scan | Fast security check on code snippet |
-| Full Scan | Comprehensive SAST using p/ci ruleset |
-| Custom Rules | Scan with user-provided Semgrep rules |
-| AST Generation | Abstract Syntax Tree for analysis |
-| Ruleset Support | Pre-built rulesets (OWASP, CWE, etc.) |
-| Language Coverage | Python, JS/TS, Java, Go, C#, Rust, PHP, etc. |
+| 快速扫描 | 对代码片段进行快速安全检查 |
+| 全量扫描 | 使用 p/ci 规则集进行全面 SAST |
+| 自定义规则 | 使用用户提供的 Semgrep 规则扫描 |
+| AST 生成 | 抽象语法树分析 |
+| 规则集支持 | 预置规则集（OWASP、CWE 等） |
+| 语言覆盖 | Python、JS/TS、Java、Go、C#、Rust、PHP 等 |
 
-**Setup**:
+**配置方法**：
 
 ```bash
-# Via uvx (recommended)
+# 通过 uvx（推荐）
 uvx semgrep-mcp
 
-# Or pip
+# 或 pip
 pip install semgrep-mcp
 ```
 
-**Claude Code Configuration**:
+**Claude Code 配置**：
 
 ```bash
 claude mcp add semgrep -- uvx semgrep-mcp
 ```
 
-**Cursor Configuration** (`~/.cursor/mcp.json`):
+**Cursor 配置**（`~/.cursor/mcp.json`）：
 
 ```json
 {
@@ -781,107 +781,107 @@ claude mcp add semgrep -- uvx semgrep-mcp
 }
 ```
 
-**Example Usage**:
+**使用示例**：
 
 ```
-User: "Scan this Python code for SQL injection vulnerabilities"
+用户："扫描这段 Python 代码中的 SQL 注入漏洞"
 
-Code:
+代码：
   def search(query):
       return db.execute(f"SELECT * FROM users WHERE name = '{query}'")
 
-Claude: [Uses security_check tool]
+Claude：[使用 security_check 工具]
 
-Result: [VULNERABLE] SQL injection detected at line 2.
-  Fix: Use parameterized queries:
+结果：[存在漏洞] 第 2 行检测到 SQL 注入。
+  修复方案：使用参数化查询：
   return db.execute("SELECT * FROM users WHERE name = ?", [query])
 ```
 
-**Quality Score**: **9.0/10** ⭐⭐⭐⭐⭐
+**质量评分**：**9.0/10** ⭐⭐⭐⭐⭐
 
-| Dimension | Score | Notes |
+| 维度 | 得分 | 说明 |
 |-----------|-------|-------|
-| Maintenance | 10/10 | Official, frequent releases |
-| Documentation | 9/10 | Comprehensive docs, examples |
-| Tests | 10/10 | Extensive test coverage |
-| Performance | 7/10 | Good, complexity-dependent (~500ms per scan) |
-| Adoption | 9/10 | Enterprise standard (5000+ companies) |
+| 维护性 | 10/10 | 官方维护，频繁发布 |
+| 文档 | 9/10 | 文档完整，有示例 |
+| 测试 | 10/10 | 广泛测试覆盖 |
+| 性能 | 7/10 | 良好，复杂度相关（每次扫描约 500ms） |
+| 采用度 | 9/10 | 企业标准（5000+ 家公司） |
 
-**Alternatives**:
+**备选方案**：
 
-| Server | Advantage | Disadvantage |
+| 服务器 | 优势 | 劣势 |
 |--------|-----------|--------------|
-| **Semgrep** | Comprehensive SAST, custom rules | Slower on large codebases |
-| GitGuardian | Secrets-focused, fast | Limited SAST coverage |
-| SonarQube | Enterprise, detailed reports | Heavier, more setup |
+| **Semgrep** | 全面 SAST，自定义规则 | 大型代码库较慢 |
+| GitGuardian | 专注 Secrets，速度快 | SAST 覆盖有限 |
+| SonarQube | 企业级，报告详细 | 较重，配置复杂 |
 
-**Resources**:
-- **GitHub**: https://github.com/semgrep/mcp
-- **Official Docs**: https://semgrep.dev/docs/mcp
-- **Rules Registry**: https://semgrep.dev/r
-- **Pricing**: https://semgrep.dev/pricing (free tier for MCP)
+**参考资源**：
+- **GitHub**：https://github.com/semgrep/mcp
+- **官方文档**：https://semgrep.dev/docs/mcp
+- **规则注册表**：https://semgrep.dev/r
+- **定价**：https://semgrep.dev/pricing（MCP 有免费层）
 
 ---
 
-### Code Search & Analysis
+### 代码搜索与分析
 
 #### Grepai MCP
 
-**Community server** for semantic code search and call graph analysis via local Ollama embeddings. Searches code by intent ("payment flow", "auth logic") instead of exact patterns, and traces function call relationships.
+**社区服务器**，通过本地 Ollama Embeddings 提供语义代码搜索和调用图分析。按意图（"支付流程"、"认证逻辑"）而非精确模式搜索代码，并追踪函数调用关系。
 
-**Repository**: [yoanbernabeu/grepai](https://github.com/yoanbernabeu/grepai)
-**License**: MIT
-**Status**: Active development
-**Privacy**: Fully local (Ollama + nomic-embed-text), no data leaves your machine
+**仓库**：[yoanbernabeu/grepai](https://github.com/yoanbernabeu/grepai)
+**许可证**：MIT
+**状态**：积极开发中
+**隐私保护**：完全本地运行（Ollama + nomic-embed-text），数据不离开本机
 
-**Use Case**: Developer needs to understand unfamiliar codebase → grepai finds relevant code by natural language description and maps function dependencies, without reading entire files.
+**使用场景**：开发者需要理解陌生代码库 → grepai 通过自然语言描述找到相关代码并映射函数依赖，无需读取完整文件。
 
-**Key Features**:
+**核心功能**：
 
-| Capability | Details |
+| 功能 | 详情 |
 |------------|---------|
-| `grepai_search` | Semantic search by natural language query (e.g., "error handling middleware") |
-| `grepai_trace_callers` | Find all functions that call a given symbol |
-| `grepai_trace_callees` | Find all functions called by a given symbol |
-| `grepai_trace_graph` | Full call graph (callers + callees) with configurable depth |
-| `grepai_index_status` | Health check: indexed files, chunks, configuration |
+| `grepai_search` | 自然语言语义搜索（例如"错误处理中间件"） |
+| `grepai_trace_callers` | 查找调用指定符号的所有函数 |
+| `grepai_trace_callees` | 查找指定符号调用的所有函数 |
+| `grepai_trace_graph` | 完整调用图（调用者 + 被调用者），支持配置深度 |
+| `grepai_index_status` | 健康检查：已索引文件数、分块数、配置信息 |
 
-**Token Efficiency**:
+**Token 效率对比**：
 
-| Workflow | Tokens | Verdict |
+| 工作流 | Token 数 | 评价 |
 |----------|--------|---------|
-| Grep + Read files (brute force) | ~15K | Noisy, lots of irrelevant context |
-| grepai search + trace | ~4K | Targeted, relevant results only |
-| grepai alone (no follow-up) | ~2-3K | Fast discovery |
+| Grep + 读取文件（暴力方式） | ~15K | 噪音大，大量无关上下文 |
+| grepai 搜索 + 追踪 | ~4K | 精准，只返回相关结果 |
+| grepai 单独使用（无后续） | ~2-3K | 快速发现 |
 
-**Setup**:
+**配置方法**：
 
 ```bash
-# Install grepai
+# 安装 grepai
 curl -sSL https://raw.githubusercontent.com/yoanbernabeu/grepai/main/install.sh | sh
 
-# Install Ollama + embedding model
+# 安装 Ollama + Embedding 模型
 brew install ollama
 ollama pull nomic-embed-text
 
-# Initialize in your project
+# 在项目中初始化
 cd /path/to/project
-grepai init  # Choose: ollama, nomic-embed-text, gob
+grepai init  # 选择：ollama, nomic-embed-text, gob
 
-# Index your codebase
+# 索引代码库
 grepai index
 
-# Optional: watch for file changes (auto-reindex)
+# 可选：监听文件变更（自动重新索引）
 grepai watch
 ```
 
-**Claude Code Configuration**:
+**Claude Code 配置**：
 
 ```bash
 claude mcp add grepai -- grepai mcp
 ```
 
-**`.mcp.json` (project-scoped)**:
+**`.mcp.json`（项目级作用域）**：
 
 ```json
 {
@@ -894,238 +894,238 @@ claude mcp add grepai -- grepai mcp
 }
 ```
 
-**Example Usage**:
+**使用示例**：
 
 ```
-User: "Find the authentication flow in this codebase"
+用户："在这个代码库中找到认证流程"
 
-Claude: [Uses grepai_search query="authentication flow" limit=5]
+Claude：[执行 grepai_search query="authentication flow" limit=5]
 
-Result: 3 relevant files with line numbers and similarity scores
+结果：3 个相关文件及行号和相似度分数
   - src/auth/middleware.ts:12-45 (0.89)
   - src/routes/login.ts:8-32 (0.85)
   - src/utils/jwt.ts:1-28 (0.78)
 
-User: "What calls the validateToken function?"
+用户："哪些函数调用了 validateToken？"
 
-Claude: [Uses grepai_trace_callers symbol="validateToken"]
+Claude：[执行 grepai_trace_callers symbol="validateToken"]
 
-Result: Call graph showing 4 callers across 3 files
+结果：调用图显示 3 个文件中的 4 个调用方
   - authMiddleware → validateToken
   - refreshHandler → validateToken
   - wsAuthGuard → validateToken
   - testHelper → validateToken
 ```
 
-**Quality Score**: **7.8/10** ⭐⭐⭐⭐
+**质量评分**：**7.8/10** ⭐⭐⭐⭐
 
-| Dimension | Score | Notes |
+| 维度 | 得分 | 说明 |
 |-----------|-------|-------|
-| Maintenance | 8/10 | Active development, responsive maintainer |
-| Documentation | 7/10 | Good README, MCP integration docs |
-| Tests | 7/10 | CI present, growing coverage |
-| Performance | 8/10 | Fast local embeddings (~2s search), no network latency |
-| Adoption | 9/10 | Growing community, production use in Claude Code setups |
+| 维护性 | 8/10 | 积极开发，维护者响应及时 |
+| 文档 | 7/10 | README 良好，有 MCP 集成文档 |
+| 测试 | 7/10 | 有 CI，覆盖率持续提升 |
+| 性能 | 8/10 | 本地 Embeddings 速度快（~2s 搜索），无网络延迟 |
+| 采用率 | 9/10 | 社区不断壮大，已在 Claude Code 生产环境中使用 |
 
-**Limitations & Workarounds**:
+**限制与解决方案**：
 
-| Limitation | Workaround |
+| 限制 | 解决方案 |
 |------------|-----------|
-| Requires Ollama running locally | `brew services start ollama` (auto-start) |
-| Index can become stale | Use `grepai watch` for auto-reindex |
-| Not ideal for exact pattern matching | Use native Grep tool for regex patterns |
-| Embedding model download (~270MB) | One-time `ollama pull nomic-embed-text` |
+| 需要本地运行 Ollama | `brew services start ollama`（开机自启） |
+| 索引可能过期 | 使用 `grepai watch` 自动重建索引 |
+| 不适合精确模式匹配 | 使用原生 Grep 工具处理正则表达式 |
+| 需下载嵌入模型（约 270MB） | 一次性执行 `ollama pull nomic-embed-text` |
 
-**Alternatives**:
+**替代方案**：
 
-| Server | Advantage | Disadvantage |
+| 服务器 | 优点 | 缺点 |
 |--------|-----------|--------------|
-| **Grepai** | Local, private, semantic + call graphs | Requires Ollama setup |
-| Native Grep | Instant, exact patterns | No semantic understanding |
-| GitHub Code Search | Cloud-based, cross-repo | Requires GitHub, no call graphs |
+| **Grepai** | 本地私有，支持语义搜索和调用图谱 | 需要配置 Ollama |
+| 原生 Grep | 即时响应，支持精确模式 | 不具备语义理解 |
+| GitHub 代码搜索 | 基于云端，支持跨仓库 | 需要 GitHub，不支持调用图谱 |
 
-**Cross-reference**: See [ultimate-guide.md — MCP Servers: Grepai](../ultimate-guide.md) for detailed usage patterns, prompt strategies, and integration with other MCP servers.
+**交叉参考**：详细用法、提示策略及与其他 MCP 服务器的集成方式，请参阅 [ultimate-guide.md — MCP 服务器：Grepai](../ultimate-guide.md)。
 
-**Resources**:
-- **GitHub**: https://github.com/yoanbernabeu/grepai
-- **Ollama**: https://ollama.com
-- **Embedding Model**: nomic-embed-text (nomic-ai)
+**相关资源**：
+- **GitHub**：https://github.com/yoanbernabeu/grepai
+- **Ollama**：https://ollama.com
+- **嵌入模型**：nomic-embed-text（nomic-ai）
 
 ---
 
-### Documentation & Knowledge
+### 文档与知识
 
 #### Context7 MCP
 
-**Official Upstash server** for real-time library documentation (LangChain, Anthropic SDK, etc.). Eliminates API hallucination.
+用于实时获取库文档（LangChain、Anthropic SDK 等）的**官方 Upstash 服务器**，可消除 API 幻觉问题。
 
-**Use Case**: Claude Code needs to use a library API → Context7 provides up-to-date docs + examples.
+**使用场景**：Claude Code 需要调用某个库的 API → Context7 提供最新文档及示例代码。
 
-**Key Features**:
+**核心功能**：
 
-| Capability | Details |
+| 功能 | 详情 |
 |------------|---------|
-| Library Search | Find docs for 500+ libraries |
-| Code Examples | Language-specific examples (Python, TS, etc.) |
-| API Reference | Detailed function signatures, parameters |
-| Version Filtering | Docs for specific library versions |
-| Smart Ranking | AI-ranked by relevance + project usage |
+| 库搜索 | 检索 500+ 个库的文档 |
+| 代码示例 | 各语言专属示例（Python、TS 等） |
+| API 参考 | 详细的函数签名与参数说明 |
+| 版本筛选 | 获取特定库版本的文档 |
+| 智能排序 | AI 按相关性和项目使用频率排序 |
 
-**Setup**:
+**安装方式**：
 
 ```bash
-# Local
+# 本地运行
 npx -y @upstash/context7-mcp --api-key YOUR_API_KEY
 ```
 
-**Claude Code Configuration (local)**:
+**Claude Code 配置（本地）**：
 
 ```bash
 claude mcp add context7 -- npx -y @upstash/context7-mcp --api-key YOUR_API_KEY
 ```
 
-**Claude Code Configuration (remote/HTTP)**:
+**Claude Code 配置（远程/HTTP）**：
 
 ```bash
 claude mcp add --transport http --header "CONTEXT7_API_KEY: YOUR_API_KEY" \
   context7 https://mcp.context7.com/mcp
 ```
 
-**Example Usage**:
+**使用示例**：
 
 ```
-User: "Show me how to use Claude's streaming API with the Python SDK"
+用户："告诉我如何用 Python SDK 调用 Claude 的流式 API"
 
-Claude: [Uses context7 search]
+Claude：[使用 context7 搜索]
 
-Result: Official Python SDK docs + example code for streaming
+结果：官方 Python SDK 文档 + 流式输出示例代码
 ```
 
-**Quality Score**: **8.2/10** ⭐⭐⭐⭐
+**质量评分**：**8.2/10** ⭐⭐⭐⭐
 
-**Limitations**:
+**限制**：
 
-| Limitation | Workaround |
+| 限制 | 解决方案 |
 |------------|-----------|
-| Limited library coverage | Fallback to web search for obscure libs |
-| Version lag (1-2 days) | Use official repo for cutting-edge |
-| Hallucination risk (low but exists) | Cross-verify with official docs |
+| 库覆盖范围有限 | 冷门库退回至网页搜索 |
+| 版本延迟（1-2 天） | 前沿内容直接查官方仓库 |
+| 存在幻觉风险（较低） | 与官方文档交叉验证 |
 
-**Alternatives**:
+**替代方案**：
 
-| Server | Advantage | Disadvantage |
+| 服务器 | 优点 | 缺点 |
 |--------|-----------|--------------|
-| **Context7** | Real-time, version-specific | API key required |
-| Web Search | Comprehensive, free | Slow, hallucination risk |
-| Static RAG | Fast, local | Outdated, no versions |
+| **Context7** | 实时更新，版本精准 | 需要 API Key |
+| 网页搜索 | 覆盖全面，免费 | 速度慢，存在幻觉风险 |
+| 静态 RAG | 速度快，本地运行 | 内容过期，不支持版本 |
 
-**Resources**:
-- **GitHub**: https://github.com/upstash/context7
-- **Official Site**: https://context7.com
-- **LobeHub Registry**: https://lobehub.com/mcp/upstash-context7
+**相关资源**：
+- **GitHub**：https://github.com/upstash/context7
+- **官网**：https://context7.com
+- **LobeHub 注册表**：https://lobehub.com/mcp/upstash-context7
 
-**ctx7 CLI companion**: Context7 also ships a CLI (`npx ctx7`) that handles skill discovery and MCP setup from the terminal. `ctx7 skills suggest` auto-detects project dependencies and recommends matching skills; `ctx7 setup --claude` runs a wizard that configures MCP or CLI+Skills mode automatically. See §5.5 of the ultimate guide for the full workflow.
+**ctx7 CLI 配套工具**：Context7 还附带了一个 CLI（`npx ctx7`），用于从终端进行技能发现和 MCP 配置。`ctx7 skills suggest` 可自动检测项目依赖并推荐匹配技能；`ctx7 setup --claude` 会运行向导，自动配置 MCP 或 CLI+Skills 模式。完整工作流程详见终极指南第 5.5 节。
 
 ---
 
-### Project Management
+### 项目管理
 
 #### Linear MCP
 
-**Community server** for Linear (project management SaaS). GraphQL API with issue management, projects, teams, comments.
+用于 Linear（项目管理 SaaS）的**社区服务器**，支持 GraphQL API，可进行问题管理、项目、团队、评论等操作。
 
-**Use Case**: Claude Code automatically creates tickets, updates status, links issues in Linear (closes loop between development and project management).
+**使用场景**：Claude Code 自动创建工单、更新状态、在 Linear 中关联问题（打通开发与项目管理之间的闭环）。
 
-**Key Features**:
+**核心功能**：
 
-| Capability | Details |
+| 功能 | 详情 |
 |------------|---------|
-| Issue Management | List, get, create, update, delete, search |
-| Projects | List, create, update, assign |
-| Teams & Users | Team management, member assignment |
-| Comments | Add, list, with position tracking |
-| Cycles | Sprint/cycle management |
-| Webhooks | Subscribe to Linear events (optional) |
+| 问题管理 | 列出、获取、创建、更新、删除、搜索 |
+| 项目 | 列出、创建、更新、分配 |
+| 团队与成员 | 团队管理、成员分配 |
+| 评论 | 添加、列出，支持位置追踪 |
+| 周期 | Sprint/周期管理 |
+| Webhooks | 订阅 Linear 事件（可选） |
 
-**Setup**:
+**安装方式**：
 
 ```bash
-# NPM or uvx
+# NPM 或 uvx
 npm install mcp-linear
-# or
+# 或
 uvx mcp-linear
 ```
 
-**Claude Code Configuration**:
+**Claude Code 配置**：
 
 ```bash
 claude mcp add linear -- npx -y mcp-linear --api-key YOUR_LINEAR_API_KEY
 ```
 
-**Example Usage**:
+**使用示例**：
 
 ```
-User: "Create a bug ticket in Linear for the CSS layout issue I just found"
+用户："在 Linear 中为我刚发现的 CSS 布局问题创建一个 Bug 工单"
 
-Claude: [Uses linear.issues.create with team key, title, description]
+Claude：[使用 linear.issues.create，附带团队标识、标题、描述]
 
-Result: Ticket created, issue ID returned
+结果：工单创建成功，返回问题 ID
 
-User: "Update ticket SOFT-123 status to 'In Progress'"
+用户："将工单 SOFT-123 的状态更新为'进行中'"
 
-Claude: [Uses linear.issues.update]
+Claude：[使用 linear.issues.update]
 
-Result: Status changed
+结果：状态已更改
 ```
 
-**Quality Score**: **7.6/10** ⭐⭐⭐⭐
+**质量评分**：**7.6/10** ⭐⭐⭐⭐
 
-**Note**: Community-maintained (not Linear Inc.), but active and well-documented.
+**备注**：由社区维护（非 Linear 官方），但活跃且文档完善。
 
-**Limitations**:
+**限制**：
 
-| Limitation | Workaround |
+| 限制 | 解决方案 |
 |------------|-----------|
-| Timeout issues (fixed after 1h) | Implement heartbeat, firewall checks |
-| 65KB field limit | Auto-chunking for comments |
-| GraphQL complexity | Split complex queries automatically |
+| 超时问题（1 小时后恢复） | 实现心跳检测，检查防火墙配置 |
+| 字段 65KB 上限 | 评论内容自动分块 |
+| GraphQL 复杂度限制 | 自动拆分复杂查询 |
 
-**Alternatives**:
+**替代方案**：
 
-| Server | Advantage | Disadvantage |
+| 服务器 | 优点 | 缺点 |
 |--------|-----------|--------------|
-| **Linear MCP** | Modern GraphQL, startup-friendly | Community-maintained |
-| Jira MCP | Enterprise, complex workflows | Heavier, older API |
-| GitHub Issues | Built-in, free | Limited project management |
+| **Linear MCP** | 现代 GraphQL，适合初创团队 | 社区维护 |
+| Jira MCP | 企业级，支持复杂工作流 | 体量较重，API 较旧 |
+| GitHub Issues | 内置，免费 | 项目管理功能有限 |
 
-**Resources**:
-- **GitHub**: https://github.com/tacticlaunch/mcp-linear
-- **Linear API**: https://developers.linear.app
-- **Docs**: https://jan.ai/docs/desktop/mcp-examples/productivity/linear
+**相关资源**：
+- **GitHub**：https://github.com/tacticlaunch/mcp-linear
+- **Linear API**：https://developers.linear.app
+- **文档**：https://jan.ai/docs/desktop/mcp-examples/productivity/linear
 
 ---
 
-### Orchestration
+### 编排
 
 #### MCP-Compose
 
-**Community tool** for managing multiple MCP servers Docker Compose-style. Declarative YAML configuration, multi-transport support (STDIO/HTTP/SSE).
+用于以 Docker Compose 风格管理多个 MCP 服务器的**社区工具**，支持声明式 YAML 配置和多传输协议（STDIO/HTTP/SSE）。
 
-**Use Case**: Developer needs 5+ MCP servers; Docker Compose-like config simplifies lifecycle management.
+**使用场景**：开发者需要管理 5 个以上 MCP 服务器时，Docker Compose 风格的配置大幅简化生命周期管理。
 
-**Key Features**:
+**核心功能**：
 
-| Capability | Details |
+| 功能 | 详情 |
 |------------|---------|
-| YAML Configuration | Docker Compose-style server definitions |
-| Multi-Transport | STDIO, HTTP, SSE, TCP support |
-| Container Runtimes | Docker, Podman, native processes |
-| Network Management | Automatic Docker network creation |
-| Health Monitoring | Connection pooling, session management |
-| HTTP Proxy | Single unified HTTP endpoint |
-| Hot Reload | Update config without restart |
+| YAML 配置 | Docker Compose 风格的服务器定义 |
+| 多传输协议 | 支持 STDIO、HTTP、SSE、TCP |
+| 容器运行时 | 支持 Docker、Podman 及原生进程 |
+| 网络管理 | 自动创建 Docker 网络 |
+| 健康监控 | 连接池与会话管理 |
+| HTTP 代理 | 统一单一 HTTP 端点 |
+| 热重载 | 无需重启即可更新配置 |
 
-**Setup**:
+**安装方式**：
 
 ```bash
 git clone https://github.com/phildougherty/mcp-compose
@@ -1133,7 +1133,7 @@ cd mcp-compose
 cargo build --release
 ```
 
-**Configuration** (`mcp-compose.yaml`):
+**配置**（`mcp-compose.yaml`）：
 
 ```yaml
 version: "1.0"
@@ -1165,76 +1165,76 @@ proxy:
   listen: "127.0.0.1"
 ```
 
-**Generate Claude Desktop Config**:
+**生成 Claude Desktop 配置**：
 
 ```bash
 ./mcp-compose create-config --type claude --output ~/.claude.json
 ```
 
-**Start Servers**:
+**启动服务器**：
 
 ```bash
 ./mcp-compose up
-# Single unified HTTP proxy at http://localhost:3000
+# 统一 HTTP 代理运行于 http://localhost:3000
 ```
 
-**Quality Score**: **7.4/10** ⭐⭐⭐⭐
+**质量评分**：**7.4/10** ⭐⭐⭐⭐
 
-**Limitations**:
+**限制**：
 
-| Limitation | Workaround |
+| 限制 | 解决方案 |
 |------------|-----------|
-| Cargo build required | Use pre-built binary (if available) |
-| YAML learning curve | Provide templates for common setups |
-| Debug complexity | Use mcp-compose logs for troubleshooting |
+| 需要 Cargo 编译 | 使用预编译二进制（如有） |
+| YAML 学习曲线 | 提供常见配置模板 |
+| 调试较复杂 | 使用 `mcp-compose logs` 排查问题 |
 
-**Resources**:
-- **GitHub**: https://github.com/phildougherty/mcp-compose
-- **Docker Compose Docs**: https://docs.docker.com/compose/
-- **MCP Protocol Spec**: https://modelcontextprotocol.io
+**相关资源**：
+- **GitHub**：https://github.com/phildougherty/mcp-compose
+- **Docker Compose 文档**：https://docs.docker.com/compose/
+- **MCP 协议规范**：https://modelcontextprotocol.io
 
 ---
 
 #### Packmind
 
-**Community tool** for distributing engineering standards as AI context across multiple agents and repositories. Exposes an MCP server for creating and managing playbook standards directly from Claude Code (or any MCP-capable agent).
+**社区工具**，用于将工程规范作为 AI 上下文跨多个智能体和仓库分发。提供一个 MCP 服务器，支持直接在 Claude Code（或任何支持 MCP 的智能体）中创建和管理 Playbook 规范。
 
-**Use Case**: Engineering team maintains one playbook; Packmind MCP server lets Claude Code propose new standards or update existing ones during a session without leaving the editor.
+**使用场景**：工程团队维护一份统一的 Playbook；Packmind MCP 服务器允许 Claude Code 在会话过程中直接提出新规范或更新现有规范，无需离开编辑器。
 
-**Key Features**:
+**核心功能**：
 
-| Capability | Details |
+| 功能 | 详情 |
 |------------|---------|
-| Standards Creation | Create/update playbook entries via MCP tools |
-| Multi-Agent Output | Generates CLAUDE.md, .cursor/rules, Copilot instructions from one source |
-| Knowledge Ingestion | Pull context from GitHub, Slack, Jira, GitLab, Confluence, Notion via their MCP servers |
-| Self-hosted | Docker/Kubernetes, Apache-2.0 CLI |
+| 规范创建 | 通过 MCP 工具创建/更新 Playbook 条目 |
+| 多智能体输出 | 从单一来源生成 CLAUDE.md、.cursor/rules、Copilot 说明 |
+| 知识导入 | 通过各自的 MCP 服务器从 GitHub、Slack、Jira、GitLab、Confluence、Notion 拉取上下文 |
+| 自托管 | 支持 Docker/Kubernetes，CLI 采用 Apache-2.0 授权 |
 
-**Resources**:
-- **GitHub**: https://github.com/PackmindHub/packmind
-- **Demo use cases**: https://github.com/PackmindHub/demo-use-case-skills
+**相关资源**：
+- **GitHub**：https://github.com/PackmindHub/packmind
+- **示例用例**：https://github.com/PackmindHub/demo-use-case-skills
 
-> **Cross-ref**: Full tool evaluation in [third-party-tools.md — Engineering Standards Distribution](./third-party-tools.md#engineering-standards-distribution).
+> **交叉参考**：完整工具评估详见 [third-party-tools.md — 工程规范分发](./third-party-tools.md#engineering-standards-distribution)。
 
 ---
 
-## Production Deployment
+## 生产部署
 
-### Security Checklist
+### 安全检查清单
 
-- [ ] **API keys** stored in `.env`, not in config files
-- [ ] **RBAC/permissions** reviewed (especially Kubernetes, Semgrep)
-- [ ] **Rate limits** understood (Linear GraphQL complexity, Vercel API)
-- [ ] **Fallback mechanisms** for API downtime implemented
-- [ ] **Monitoring + logging** enabled for all MCP servers
+- [ ] **API Keys** 存储在 `.env` 中，不写入配置文件
+- [ ] **RBAC/权限** 已审查（尤其是 Kubernetes、Semgrep）
+- [ ] **速率限制** 已了解（Linear GraphQL 复杂度、Vercel API）
+- [ ] **已实现 API 故障的回退机制**
+- [ ] **所有 MCP 服务器已启用监控和日志记录**
 
-### Error Handling & Reliability
+### 错误处理与可靠性
 
-MCP tools can fail for many reasons, and how you signal those failures to Claude matters. The protocol provides a dedicated mechanism: the `isError` flag in tool responses.
+MCP 工具可能因多种原因失败，如何向 Claude 传达失败信息至关重要。该协议提供了专用机制：工具响应中的 `isError` 标志。
 
-**The `isError` flag**
+**`isError` 标志**
 
-When a tool call fails, set `isError: true` in the response instead of raising an exception or returning a fake success. This tells Claude the call failed and invites it to decide what to do next: retry, try a different approach, or surface the issue to the user.
+工具调用失败时，在响应中设置 `isError: true`，而不是抛出异常或返回虚假的成功结果。这样 Claude 就能知道调用失败，并决定下一步操作：重试、换其他方式，或将问题告知用户。
 
 ```json
 {
@@ -1248,22 +1248,22 @@ When a tool call fails, set `isError: true` in the response instead of raising a
 }
 ```
 
-Without `isError: true`, Claude may interpret the error message as data and continue confidently with a broken state. With it, Claude understands the step failed and can reason about recovery.
+不设置 `isError: true` 时，Claude 可能将错误消息误认为数据，并在错误状态下继续执行。设置后，Claude 能理解该步骤失败，从而推理如何恢复。
 
-**Error taxonomy: four categories**
+**错误分类：四个类别**
 
-Different failure types warrant different recovery strategies. Structuring your error messages around these four categories makes it easier for Claude to pick the right recovery action:
+不同类型的失败需要不同的恢复策略。围绕以下四个类别构建错误消息，有助于 Claude 选择正确的恢复动作：
 
-| Category | When | Claude's expected response | Example |
+| 类别 | 触发时机 | Claude 的预期响应 | 示例 |
 |----------|------|---------------------------|---------|
-| **Transient** | Temporary unavailability, network flap, rate limit | Retry after a delay | `503 Service Unavailable`, timeout |
-| **Validation** | Bad input — wrong type, missing field, format error | Fix the input, retry immediately | `invalid date format: expected ISO8601` |
-| **Business** | Correct input but operation not permitted by domain rules | Escalate or skip | `cannot delete: record has active dependencies` |
-| **Permission** | Caller lacks authorization | Stop and explain to user | `403 Forbidden: insufficient scope` |
+| **暂时性** | 临时不可用、网络抖动、速率限制 | 延迟后重试 | `503 Service Unavailable`、超时 |
+| **验证错误** | 输入有误——类型错误、缺少字段、格式错误 | 修正输入后立即重试 | `invalid date format: expected ISO8601` |
+| **业务错误** | 输入正确但操作违反领域规则 | 上报或跳过 | `cannot delete: record has active dependencies` |
+| **权限错误** | 调用方无授权 | 停止并向用户说明 | `403 Forbidden: insufficient scope` |
 
-**Implementation pattern**
+**实现模式**
 
-Include the category in your error messages so Claude can act without guessing:
+在错误消息中包含类别信息，让 Claude 无需猜测即可采取行动：
 
 ```python
 def call_tool(params):
@@ -1292,35 +1292,35 @@ def call_tool(params):
         }
 ```
 
-Transient errors are the only category where automatic retry makes sense. Validation errors should be retried with corrected input, not blindly. Business and permission errors should stop and surface to the user rather than loop.
+只有暂时性错误才适合自动重试。验证错误应修正输入后重试，而不是盲目重试。业务错误和权限错误应停止执行并反馈给用户，而不是循环重试。
 
-### Tool Description Design Patterns
+### 工具描述设计模式
 
-Tool descriptions are the most impactful part of an MCP server. Claude uses them to decide which tool to call — and a vague or overlapping description causes misrouting more reliably than any other design mistake.
+工具描述是 MCP 服务器中影响最大的部分。Claude 依赖它来决定调用哪个工具——描述模糊或重叠会导致路由错误，这比其他任何设计失误都更可靠地触发问题。
 
-**The core problem: overlapping descriptions cause misrouting**
+**核心问题：描述重叠导致路由错误**
 
-Two tools with similar-sounding descriptions create ambiguity. Claude will pick one, often inconsistently, because it's guessing from the description which one applies.
+两个描述听起来相似的工具会产生歧义。Claude 会选择其中一个，但往往不一致，因为它在凭描述猜测哪个适用。
 
 ```json
-// Bad — ambiguous, Claude will guess
+// 差——描述模糊，Claude 只能猜
 { "name": "analyze_content", "description": "Analyzes content" }
 { "name": "analyze_document", "description": "Analyzes document content" }
 
-// Good — each description carves out a specific input type
+// 好——每个描述明确界定特定输入类型
 { "name": "analyze_content", "description": "Analyzes raw text strings or inline content (not files). Use for clipboard content, API responses, or text passed directly as a string." }
 { "name": "analyze_document", "description": "Analyzes content from a file path or URL. Use when the content lives on disk or at a remote endpoint, not when you already have the text in memory." }
 ```
 
-The test: can you read the description alone and know exactly when NOT to use this tool? If not, add the boundary.
+检验标准：只看描述，你能否明确知道什么情况下**不该**使用这个工具？如果不能，就补充边界说明。
 
-**Description anatomy**
+**描述的结构**
 
-A good tool description has three parts, in this order:
+一个好的工具描述由三部分组成，按顺序排列：
 
-1. **What it does** — one sentence, present tense, action verb
-2. **What it takes** — the key input type or constraint (file path vs string, single vs batch)
-3. **When to use it vs similar tools** — the decision boundary, explicitly stated
+1. **它做什么** — 一句话，用现在时、动词开头
+2. **它接受什么** — 关键输入类型或约束（文件路径还是字符串、单个还是批量）
+3. **什么时候用它而不是类似工具** — 明确说明决策边界
 
 ```json
 {
@@ -1329,27 +1329,27 @@ A good tool description has three parts, in this order:
 }
 ```
 
-**Naming conventions that prevent misrouting**
+**防止路由错误的命名规范**
 
-| Pattern | Example pair | Why it works |
+| 模式 | 示例对比 | 原因 |
 |---------|-------------|--------------|
-| Verb distinguishes intent | `get_user` vs `search_users` | Fetch known ID vs discover by criteria |
-| Noun distinguishes input type | `analyze_file` vs `analyze_text` | Path on disk vs inline string |
-| Scope suffix | `list_tickets` vs `list_project_tickets` | Global vs scoped |
-| Action granularity | `create_record` vs `bulk_create_records` | One vs batch |
+| 动词区分意图 | `get_user` vs `search_users` | 按已知 ID 获取 vs 按条件查找 |
+| 名词区分输入类型 | `analyze_file` vs `analyze_text` | 磁盘上的路径 vs 内联字符串 |
+| 范围后缀 | `list_tickets` vs `list_project_tickets` | 全局 vs 限定范围 |
+| 操作粒度 | `create_record` vs `bulk_create_records` | 单条 vs 批量 |
 
-Avoid synonyms as tool names — `fetch`, `get`, `retrieve` all mean the same thing to Claude. Pick one verb family per semantic operation.
+避免将同义词用作工具名——`fetch`、`get`、`retrieve` 对 Claude 来说意思相同。每个语义操作只选一个动词系列。
 
-**Anti-patterns to avoid**
+**需避免的反模式**
 
-- **Generic verbs without scope**: `process`, `handle`, `manage` tell Claude nothing about when to call the tool
-- **Missing the boundary**: "Searches the database" — which database? All of it? A specific table?
-- **Boolean flags that change semantics**: A tool that does completely different things based on a flag should be two tools
-- **Descriptions longer than 3 sentences**: If you need more, the tool does too much
+- **缺乏范围的通用动词**：`process`、`handle`、`manage` 对 Claude 来说毫无信息量
+- **缺少边界**："搜索数据库"——哪个数据库？全表？某个特定表？
+- **会改变语义的布尔标志**：行为完全不同的工具应拆分为两个
+- **描述超过 3 句话**：如果需要更多，说明工具职责过多
 
-**`input_examples` as a complement**
+**`input_examples` 作为补充**
 
-When a schema isn't enough to express which parameter combinations are valid or typical, add `input_examples` (supported by Anthropic API since February 2026). These show Claude concrete usage patterns, especially useful for optional parameters:
+当 schema 不足以表达哪些参数组合有效或常见时，可添加 `input_examples`（Anthropic API 自 2026 年 2 月起支持）。它们为 Claude 展示具体用法，尤其适合可选参数：
 
 ```json
 {
@@ -1362,19 +1362,19 @@ When a schema isn't enough to express which parameter combinations are valid or 
 }
 ```
 
-Examples teach what the description can't: that `assignee` is only set for critical items, and `priority` can be omitted for routine tasks.
+示例能传达描述无法表达的内容：`assignee` 只在紧急情况下设置，`priority` 对于常规任务可以省略。
 
 ---
 
-## Advanced MCP Tool Design
+## 高级 MCP 工具设计
 
-Beyond basic error taxonomy, three design decisions significantly affect how Claude uses MCP tools in production: error response semantics, the distinction between Resources and Tools, and tool naming.
+除基本错误分类外，三个设计决策会显著影响 Claude 在生产环境中使用 MCP 工具的效果：错误响应语义、资源与工具的区别，以及工具命名。
 
 ---
 
-### isRetryable: Application-Level Convention
+### isRetryable：应用层约定
 
-The MCP specification does not include an `isRetryable` field in the error response schema. However, the convention of embedding retry guidance in `structuredContent` has emerged as a practical pattern for tools that call fallible external services.
+MCP 规范的错误响应 schema 中不包含 `isRetryable` 字段。然而，在 `structuredContent` 中嵌入重试指导已成为调用易失败外部服务的工具的一种实用模式。
 
 ```json
 {
@@ -1397,7 +1397,7 @@ The MCP specification does not include an `isRetryable` field in the error respo
 }
 ```
 
-For non-retryable errors:
+不可重试的错误：
 
 ```json
 {
@@ -1419,22 +1419,22 @@ For non-retryable errors:
 }
 ```
 
-The `isRetryable` flag is not something Claude reads natively from the MCP spec. It is read by your orchestration layer, which decides whether to retry or escalate. The pattern works because `structuredContent` is machine-readable and your code can check it before Claude does.
+`isRetryable` 标志不是 Claude 从 MCP 规范中原生读取的字段，而是由你的编排层读取，由它决定是重试还是上报。该模式之所以有效，是因为 `structuredContent` 是机器可读的，你的代码可以在 Claude 处理之前先行检查。
 
 ---
 
-### isError: false + Empty Content vs isError: true
+### isError: false + 空内容 vs isError: true
 
-These two response shapes have completely different semantics. Confusing them causes silent failures that are hard to debug.
+这两种响应形式的语义完全不同，混淆它们会导致难以调试的静默失败。
 
-| Response | Meaning |
+| 响应 | 含义 |
 |---|---|
-| `isError: false` + non-empty content | Tool succeeded, here is the result |
-| `isError: false` + empty content | Tool succeeded, zero results found (legitimate empty state) |
-| `isError: true` | Tool failed: the operation could not complete |
+| `isError: false` + 非空内容 | 工具执行成功，返回结果 |
+| `isError: false` + 空内容 | 工具执行成功，未找到任何结果（合法的空状态） |
+| `isError: true` | 工具失败：操作无法完成 |
 
 ```json
-// Search returning no results: NOT an error
+// 搜索无结果：不是错误
 {
     "isError": false,
     "content": [
@@ -1445,7 +1445,7 @@ These two response shapes have completely different semantics. Confusing them ca
     ]
 }
 
-// Search that failed to execute: IS an error
+// 搜索执行失败：是错误
 {
     "isError": true,
     "content": [
@@ -1457,25 +1457,25 @@ These two response shapes have completely different semantics. Confusing them ca
 }
 ```
 
-When a search returns zero results, Claude should report that to the user and potentially try different terms. When a search fails to execute, Claude should report a tool failure and the orchestrator should consider retrying or escalating. These paths diverge, and only correct error semantics makes them diverge correctly.
+搜索返回零结果时，Claude 应告知用户并尝试不同的关键词。搜索执行失败时，Claude 应报告工具故障，编排层应考虑重试或上报。这两条路径应当分开，而只有正确的错误语义才能让它们正确分开。
 
 ---
 
-### MCP Resources vs Tools
+### MCP 资源与工具
 
-Resources and Tools serve different purposes and are controlled by different actors. Mixing them up leads to tools that cannot be indexed and resources that cannot be parameterized.
+资源和工具服务于不同目的，由不同的参与方控制。混淆两者会导致工具无法被索引，而资源无法接受参数。
 
-| Dimension | Resources | Tools |
+| 维度 | 资源 | 工具 |
 |---|---|---|
-| Who controls access | Application (pre-defined, not model-initiated) | Model (calls as needed during conversation) |
-| Parameters | None (read by URI) | Full parameter schema |
-| Use case | Read-only data catalog: config files, reference data, documents | Parameterized operations: search, compute, write, API calls |
-| Discovery | Listed at startup, browsable | Described in system prompt, called on demand |
-| Side effects | None (read-only by convention) | Allowed |
-| Example | Company policy document | `search_policy_documents(query, date_range)` |
+| 访问控制方 | 应用程序（预定义，非模型发起） | 模型（在对话过程中按需调用） |
+| 参数 | 无（通过 URI 读取） | 完整参数 schema |
+| 使用场景 | 只读数据目录：配置文件、参考数据、文档 | 参数化操作：搜索、计算、写入、API 调用 |
+| 发现方式 | 启动时列出，可浏览 | 在系统提示中描述，按需调用 |
+| 副作用 | 无（按惯例只读） | 允许 |
+| 示例 | 公司政策文档 | `search_policy_documents(query, date_range)` |
 
 ```python
-# Resource: static reference data, application-controlled
+# 资源：静态参考数据，由应用程序控制
 @server.list_resources()
 async def list_resources():
     return [
@@ -1501,7 +1501,7 @@ async def read_resource(uri: str) -> str:
         return read_file("docs/api-reference.md")
     raise ValueError(f"Unknown resource: {uri}")
 
-# Tool: parameterized operation, model-controlled
+# 工具：参数化操作，由模型控制
 @server.list_tools()
 async def list_tools():
     return [
@@ -1521,7 +1521,7 @@ async def list_tools():
     ]
 ```
 
-**ResourceLink bridge:** When a tool returns a reference to a resource (rather than inline content), use a ResourceLink:
+**ResourceLink 桥接：** 当工具返回资源引用（而非内联内容）时，使用 ResourceLink：
 
 ```json
 {
@@ -1541,21 +1541,21 @@ async def list_tools():
 
 ---
 
-### Tool Naming and System Prompt Conflicts
+### 工具命名与系统提示冲突
 
-Tool names that appear as keywords in the system prompt cause Claude to associate the tool with unrelated instructions. A tool named `process` will be mentally linked to any occurrence of the word "process" in the system prompt, creating unpredictable activation patterns.
+工具名称若与系统提示中的关键词相同，会导致 Claude 将该工具与无关指令关联起来。名为 `process` 的工具会被 Claude 与系统提示中所有出现"process"一词的地方关联，产生不可预测的触发模式。
 
-Rules for tool names:
-- Use specific, compound names: `search_customer_records` not `search`
-- Avoid generic verbs that appear in system prompts: `run`, `process`, `execute`, `handle`, `manage`
-- Use underscores, not camelCase or hyphens (MCP convention)
-- Prefix with domain when there are many tools: `crm_get_contact`, `crm_update_contact`, `crm_search`
+工具命名规则：
+- 使用具体的复合名称：`search_customer_records` 而非 `search`
+- 避免系统提示中常见的通用动词：`run`、`process`、`execute`、`handle`、`manage`
+- 使用下划线，不用驼峰命名或连字符（MCP 约定）
+- 工具较多时加领域前缀：`crm_get_contact`、`crm_update_contact`、`crm_search`
 
 ```python
-# Bad: generic names that conflict with system prompt keywords
+# 差：通用名称与系统提示关键词冲突
 tools = ["search", "process", "run", "execute", "get", "update"]
 
-# Good: specific compound names with domain prefix
+# 好：带领域前缀的具体复合名称
 tools = [
     "crm_search_contacts",
     "crm_get_contact_by_id",
@@ -1567,9 +1567,9 @@ tools = [
 
 ---
 
-### Task-Scoped Tool Profiles
+### 任务范围工具配置
 
-Providing every available tool to every agent call is wasteful and increases the risk of unintended writes during read-only phases. Task-scoped tool profiles restrict the available tools based on the current task phase.
+向每次智能体调用提供所有可用工具既低效，又增加了只读阶段发生意外写操作的风险。任务范围工具配置根据当前任务阶段限制可用工具。
 
 ```python
 TOOL_PROFILES = {
@@ -1597,15 +1597,15 @@ def get_tools_for_phase(phase: str) -> list[str]:
     return TOOL_PROFILES.get(phase, TOOL_PROFILES["exploration"])
 ```
 
-The exploration profile is read-only. The execution profile adds write operations. Claude cannot accidentally call `delete_document` during an analysis phase because the tool simply is not present in the call.
+探索配置是只读的，执行配置增加了写操作。由于工具在分析阶段根本不存在，Claude 无法意外调用 `delete_document`。
 
-For multi-role systems where different user roles can access different tools, scope at the role level rather than filtering post-call:
+对于不同用户角色可访问不同工具的多角色系统，应在角色层面进行范围控制，而不是在调用后过滤：
 
 ```python
 ROLE_TOOL_ACCESS = {
     "viewer": ["search_documents", "get_document_by_id"],
     "editor": ["search_documents", "get_document_by_id", "create_document", "update_document"],
-    "admin": ["*"]  # all tools
+    "admin": ["*"]  # 所有工具
 }
 
 def get_tools_for_role(role: str, all_tools: list) -> list:
@@ -1615,241 +1615,241 @@ def get_tools_for_role(role: str, all_tools: list) -> list:
     return [t for t in all_tools if t.name in allowed]
 ```
 
-Scoped access is particularly valuable for the `verify_fact` tool pattern: a subagent that only needs to verify a single claim can be given only `verify_fact`, reducing both latency (fewer tools to describe in the context) and risk (no write tools in scope).
+范围访问对 `verify_fact` 工具模式尤其有价值：只需验证单个断言的子智能体可以只获得 `verify_fact`，从而降低延迟（上下文中需要描述的工具更少）和风险（范围内没有写工具）。
 
 ---
 
-### Quick Start Stack
+### 快速入门套件
 
-**MVP (Essentials)**:
+**最小可行方案（核心）**：
 
-1. **Playwright MCP** — E2E testing, web verification
-2. **Semgrep MCP** — Security-first coding
+1. **Playwright MCP** — E2E 测试、网页验证
+2. **Semgrep MCP** — 安全优先编码
 
-**Important Additions**:
+**重要补充**：
 
-3. **Context7 MCP** — API reference accuracy
-4. **Linear MCP** (optional) — Issue tracking integration
+3. **Context7 MCP** — API 参考准确性
+4. **Linear MCP**（可选）— 问题追踪集成
 
-**DevOps/SRE Stack**:
+**DevOps/SRE 套件**：
 
-5. **Kubernetes MCP** — Cluster management
-6. **Vercel MCP** — Next.js deployment automation
+5. **Kubernetes MCP** — 集群管理
+6. **Vercel MCP** — Next.js 部署自动化
 
-**Complex Setups**:
+**复杂环境**：
 
-7. **MCP-Compose** — Multi-server orchestration
-8. **Browserbase MCP** — Heavy web automation (premium)
+7. **MCP-Compose** — 多服务器编排
+8. **Browserbase MCP** — 重度网页自动化（付费）
 
-### Installation Examples
+### 安装示例
 
 ```bash
-# Playwright (browser testing)
+# Playwright（浏览器测试）
 npm install @microsoft/playwright-mcp
 
-# Semgrep (security)
+# Semgrep（安全）
 uvx semgrep-mcp
 
-# Context7 (documentation)
+# Context7（文档）
 npx -y @upstash/context7-mcp --api-key YOUR_API_KEY
 
-# Linear (project management)
+# Linear（项目管理）
 npm install mcp-linear
 ```
 
-### Performance Metrics
+### 性能指标
 
-| Metric | Median | Range | Notes |
+| 指标 | 中位数 | 范围 | 备注 |
 |--------|--------|-------|-------|
-| **Response Time** | ~200ms | 100-500ms | Cloud-dependent (Browserbase ~500ms) |
-| **Token Overhead** | ~200-500 tokens | Minimal for structured output | Accessibility trees vs screenshots |
-| **Setup Time** | ~5 minutes | 2-10 minutes | Cargo build (MCP-Compose) = 10 min |
+| **响应时间** | 约 200ms | 100–500ms | 取决于云端（Browserbase 约 500ms） |
+| **Token 开销** | 约 200–500 Token | 结构化输出较少 | 可访问性树 vs 截图 |
+| **配置时间** | 约 5 分钟 | 2–10 分钟 | Cargo 编译（MCP-Compose）约 10 分钟 |
 
 ---
 
-## Monthly Watch Methodology
+## 月度跟踪方法论
 
-This section documents the process for maintaining this guide with monthly ecosystem updates.
+本节记录维护本指南并进行月度生态更新的流程。
 
-### Sources to Monitor
+### 监控来源
 
-**Official Sources**:
+**官方来源**：
 - [Anthropic MCP GitHub](https://github.com/modelcontextprotocol/servers)
-- [Anthropic Blog](https://www.anthropic.com/news)
-- [MCP Protocol Spec](https://modelcontextprotocol.io)
+- [Anthropic 博客](https://www.anthropic.com/news)
+- [MCP 协议规范](https://modelcontextprotocol.io)
 
-**Community Sources**:
-- [GitHub topic: mcp-servers](https://github.com/topics/mcp-servers) (7260+ servers)
-- [Awesome MCP Servers](https://github.com/punkpeye/awesome-mcp-servers) (75.5k stars)
-- [MCP Registry](https://github.blog/ai-and-ml/generative-ai/how-to-find-install-and-manage-mcp-servers-with-the-github-mcp-registry/)
+**社区来源**：
+- [GitHub 话题：mcp-servers](https://github.com/topics/mcp-servers)（7260+ 个服务器）
+- [Awesome MCP Servers](https://github.com/punkpeye/awesome-mcp-servers)（75.5k 星）
+- [MCP 注册表](https://github.blog/ai-and-ml/generative-ai/how-to-find-install-and-manage-mcp-servers-with-the-github-mcp-registry/)
 
-**Discussions**:
+**讨论社区**：
 - [Reddit r/ClaudeAI](https://www.reddit.com/r/ClaudeAI/)
 - [Reddit r/mcp](https://www.reddit.com/r/mcp/)
 - [X/Twitter #MCPServer](https://twitter.com/search?q=%23MCPServer)
 
-**Technical Articles**:
+**技术文章**：
 - [Blog Skyvia](https://blog.skyvia.com/best-mcp-servers/)
-- [Builder.io Blog](https://www.builder.io/blog/best-mcp-servers-2026)
+- [Builder.io 博客](https://www.builder.io/blog/best-mcp-servers-2026)
 - [Cyberpress](https://cyberpress.org/best-mcp-servers/)
 
-### Monthly Review Checklist
+### 月度审查清单
 
-- [ ] **Official servers**: Check Anthropic GitHub for new releases
-- [ ] **Community servers**: Review GitHub topics for trending servers (≥50 stars, <3 months release)
-- [ ] **Ecosystem changes**: Monitor Anthropic blog for protocol updates
-- [ ] **Server health**: Re-evaluate existing servers (releases, issues, maintenance)
-- [ ] **Security**: Check for disclosed vulnerabilities (GitHub Security Advisories)
-- [ ] **Deprecations**: Identify archived or unmaintained servers
-- [ ] **Update guide**: Add new validated servers, remove deprecated ones
+- [ ] **官方服务器**：检查 Anthropic GitHub 的新版本发布
+- [ ] **社区服务器**：查看 GitHub 话题中的热门服务器（≥50 星，发布时间 <3 个月）
+- [ ] **生态变化**：关注 Anthropic 博客的协议更新
+- [ ] **服务器健康**：重新评估现有服务器（版本发布、问题、维护情况）
+- [ ] **安全**：检查已披露的漏洞（GitHub 安全公告）
+- [ ] **废弃情况**：识别已归档或无人维护的服务器
+- [ ] **更新指南**：添加新验证的服务器，移除已废弃的服务器
 
-### Evaluation Template
+### 评估模板
 
-For each candidate server:
+对每个候选服务器：
 
-1. **Basic Validation**:
-   - GitHub stars ≥50?
-   - Last release <3 months?
-   - Documentation complete (README + examples + config)?
-   - Tests/CI present?
+1. **基础验证**：
+   - GitHub 星数 ≥50？
+   - 最近发布时间 <3 个月？
+   - 文档完整（README + 示例 + 配置）？
+   - 是否有测试/CI？
 
-2. **Quality Scoring** (see [Evaluation Framework](#evaluation-framework)):
-   - Maintenance: `/10`
-   - Documentation: `/10`
-   - Tests: `/10`
-   - Performance: `/10`
-   - Adoption: `/10`
-   - **Total**: `/50` → Normalized to `/10`
+2. **质量评分**（参见[评估框架](#evaluation-framework)）：
+   - 维护活跃度：`/10`
+   - 文档质量：`/10`
+   - 测试覆盖：`/10`
+   - 性能：`/10`
+   - 采用率：`/10`
+   - **总分**：`/50` → 归一化为 `/10`
 
-3. **Use Case Analysis**:
-   - What gap does it fill?
-   - Is it already covered by official servers?
-   - What are the alternatives?
+3. **使用场景分析**：
+   - 填补了什么空白？
+   - 是否已被官方服务器覆盖？
+   - 有哪些替代方案？
 
-4. **Decision**:
-   - **Integrate** (score ≥8): Add full section to guide
-   - **Monitor** (score 6-7): Add to [Watch List](../../docs/resource-evaluations/watch-list.md), re-evaluate next month
-   - **Reject** (score <6): Document reason in [Excluded Servers](#excluded-servers)
+4. **决策**：
+   - **收录**（评分 ≥8）：在指南中添加完整章节
+   - **观察**（评分 6–7）：添加至[观察列表](../../docs/resource-evaluations/watch-list.md)，下月重新评估
+   - **拒绝**（评分 <6）：在[已排除服务器](#excluded-servers)中记录原因
 
-### Integration Workflow
+### 集成工作流程
 
-When adding a new server:
+新增服务器时：
 
-1. Create section in appropriate category (Browser Automation, DevOps, etc.)
-2. Include:
-   - Use case description
-   - Key features table
-   - Setup instructions
-   - Configuration examples
-   - Quality score
-   - Limitations & workarounds
-   - Alternatives comparison
-   - Resources (GitHub, docs, tutorials)
-3. Update [Quick Start Stack](#quick-start-stack) if MVP-relevant
-4. Update [Production Deployment](#production-deployment) checklist if security-critical
+1. 在对应类别下创建章节（浏览器自动化、DevOps 等）
+2. 包含以下内容：
+   - 使用场景描述
+   - 核心功能表格
+   - 安装说明
+   - 配置示例
+   - 质量评分
+   - 限制与解决方案
+   - 替代方案对比
+   - 资源（GitHub、文档、教程）
+3. 若与最小可行方案相关，更新[快速入门套件](#quick-start-stack)
+4. 若涉及安全关键内容，更新[生产部署](#production-deployment)清单
 
 ---
 
-## Documenting an MCP for Claude: The Reference File Pattern
+## 为 Claude 记录 MCP：参考文件模式
 
-When you integrate an MCP server into a skill, Claude has to figure out the query syntax, required parameter combinations, and quirky behavior on its own. For simple MCPs this is fine. For anything production-facing (observability tools, project management APIs, log aggregators), it breaks down fast. Claude guesses at parameter format, gets a cryptic error, retries with a different guess, and burns your budget on noise.
+将 MCP 服务器集成到技能中时，Claude 必须自行摸索查询语法、必填参数组合和奇怪的行为。对于简单的 MCP 来说这没问题，但对于面向生产环境的工具（可观测性工具、项目管理 API、日志聚合器），这很快就会出问题。Claude 会猜参数格式，收到晦涩的错误，换种方式再试，最终把预算都浪费在无效重试上。
 
-The fix from the Packmind engineering team (open-sourced under Apache 2.0): add a `references/<mcp-name>.md` file alongside the skill, and have the skill read it as its first step before any MCP call.
+来自 Packmind 工程团队（Apache 2.0 开源）的解决方案：在技能目录下添加 `references/<mcp-name>.md` 文件，并在技能的第一步读取它，然后再进行任何 MCP 调用。
 
-### What Goes in the Reference File
+### 参考文件包含的内容
 
-Three types of content that Claude cannot reliably infer on its own:
+Claude 无法可靠推断的三类内容：
 
-**1. Parameter semantics that differ from the tool name**
+**1. 与工具名称不符的参数语义**
 
-For example, a Datadog "search" tool that uses Datadog query syntax (not regex). Or a Sentry tool that requires an `organization_slug` (the URL slug, not the display name). These are not bugs in the MCP; they are just non-obvious.
+例如，使用 Datadog 查询语法（而非正则表达式）的 Datadog "search" 工具；或需要 `organization_slug`（URL slug，而非显示名称）的 Sentry 工具。这些不是 MCP 的 Bug，只是不够直观。
 
-**2. Known error patterns and what triggers them**
+**2. 已知错误模式及其触发原因**
 
-For example: "If you use `SELECT` aliases in `GROUP BY` with DDSQL, you get a cryptic error. Repeat the full expression instead." This turns a 10-minute debug session into a zero-second lookup.
+例如："在 DDSQL 的 `GROUP BY` 中使用 `SELECT` 别名会导致晦涩错误，请改用完整表达式。"这将一个 10 分钟的调试过程变成了零秒的查阅。
 
-**3. Working query examples for the 80% case**
+**3. 覆盖 80% 场景的可用查询示例**
 
-Copy-paste examples that cover the most common queries. Claude can adapt them rather than constructing from scratch.
+提供覆盖最常见查询的可复制粘贴示例，让 Claude 直接修改复用，而不是从头构建。
 
-### File Structure
+### 文件结构
 
 ```
 .claude/skills/my-mcp-skill/
-├── SKILL.md                    # Main skill file
+├── SKILL.md                    # 主技能文件
 └── references/
-    └── <mcp-name>.md           # MCP reference file (this pattern)
+    └── <mcp-name>.md           # MCP 参考文件（此模式）
 ```
 
-The SKILL.md reads the reference file in its first step:
+SKILL.md 在第一步读取参考文件：
 
 ```markdown
-## Step 1: Read the MCP Reference File
+## 第一步：读取 MCP 参考文件
 
-Before doing anything else, read `references/<mcp-name>.md`.
-This contains the query syntax and known gotchas for this MCP.
-Do not skip this step.
+在做任何其他事情之前，先读取 `references/<mcp-name>.md`。
+其中包含该 MCP 的查询语法和已知注意事项。
+不得跳过此步骤。
 ```
 
-### Why This Works
+### 为何有效
 
-The reference file is not documentation for humans. It is a structured context injection. Every piece of information in it reduces the probability of a malformed MCP call by Claude. Done well, it eliminates retry loops caused by syntax errors and makes the skill reliable enough to run on a schedule without supervision.
+参考文件不是写给人看的文档，而是结构化的上下文注入。其中的每条信息都能降低 Claude 发出错误 MCP 调用的概率。做得好的话，它能消除因语法错误引起的重试循环，使技能可靠到足以无人值守地定时运行。
 
-This pattern generalizes to any MCP with non-obvious behavior: Datadog, Sentry, PagerDuty, Linear, Jira, Mixpanel, Posthog. If the MCP has a query language, pagination quirks, or required parameters with non-intuitive names, a reference file pays for itself in the first run.
+这个模式适用于任何行为不够直观的 MCP：Datadog、Sentry、PagerDuty、Linear、Jira、Mixpanel、Posthog。如果 MCP 有查询语言、分页细节或名称不直观的必填参数，参考文件在第一次运行时就能证明其价值。
 
-### Fork-Ready Template
+### 开箱即用模板
 
-A complete template skill demonstrating this pattern (with a Sentry example) is available at:
+演示此模式的完整模板技能（含 Sentry 示例）位于：
 
-`examples/skills/mcp-integration-reference/` in this repository
+本仓库的 `examples/skills/mcp-integration-reference/`
 
-The template includes:
-- `SKILL.md` with the 5-step structure (read reference, gather scope, fetch, analyze, report)
-- `references/sentry-mcp.md` with complete parameter docs, gotchas, query examples, and noise exclusion list
-- Instructions for adapting to any MCP server
+模板包含：
+- 具有 5 步结构的 `SKILL.md`（读取参考、收集范围、获取、分析、报告）
+- 包含完整参数文档、注意事项、查询示例和噪音排除列表的 `references/sentry-mcp.md`
+- 适配任意 MCP 服务器的操作说明
 
-> Inspired by the Datadog MCP reference file from the [Packmind open-source repo](https://github.com/packmind/packmind) (Apache 2.0, Cédric Teyton). See [Credits](../core/credits.md) for full attribution.
+> 灵感来源于 [Packmind 开源仓库](https://github.com/packmind/packmind)（Apache 2.0，Cédric Teyton）的 Datadog MCP 参考文件。完整致谢见 [Credits](../core/credits.md)。
 
 ---
 
-## Excluded Servers
+## 已排除服务器
 
-Servers evaluated but not included in the validated list:
+经过评估但未纳入验证列表的服务器：
 
-| Server | Reason | Source | Date Evaluated |
+| 服务器 | 排除原因 | 来源 | 评估日期 |
 |--------|--------|--------|----------------|
-| **X/Twitter MCP** | API instability, frequent auth issues, inconsistent maintenance | [Cursor Forum](https://forum.cursor.com/t/linear-mcp-commonly-errors-out-and-requires-turning-off-then-on/148816) | Jan 2026 |
-| **Vector Search MCP** | <50 stars, incomplete documentation | [LobeHub](https://lobehub.com/mcp/hugoduncan-mcp-vector-search) | Jan 2026 |
-| **GitHub MCP** | Archived, migrated to official Go SDK | [GitHub Changelog](https://github.blog/changelog/2025-12-10-the-github-mcp-server-adds-support-for-tool-specific-configuration-and-more/) | Jan 2026 |
-| **Jira MCP (sooperset)** | No recent release (last: June 2025), less stable than Linear | [GitHub Releases](https://github.com/sooperset/mcp-atlassian/releases) | Jan 2026 |
+| **X/Twitter MCP** | API 不稳定，认证问题频发，维护不一致 | [Cursor 论坛](https://forum.cursor.com/t/linear-mcp-commonly-errors-out-and-requires-turning-off-then-on/148816) | 2026 年 1 月 |
+| **Vector Search MCP** | 星数 <50，文档不完整 | [LobeHub](https://lobehub.com/mcp/hugoduncan-mcp-vector-search) | 2026 年 1 月 |
+| **GitHub MCP** | 已归档，迁移至官方 Go SDK | [GitHub 变更日志](https://github.blog/changelog/2025-12-10-the-github-mcp-server-adds-support-for-tool-specific-configuration-and-more/) | 2026 年 1 月 |
+| **Jira MCP（sooperset）** | 近期无版本发布（最后更新：2025 年 6 月），稳定性不如 Linear | [GitHub 发布页](https://github.com/sooperset/mcp-atlassian/releases) | 2026 年 1 月 |
 
 ---
 
-## Statistics & Insights
+## 统计与洞察
 
-### Distribution by Category
+### 按类别分布
 
-| Category | Servers | Use Cases |
+| 类别 | 服务器数量 | 使用场景 |
 |----------|---------|-----------|
-| **Browser Automation** | 3 (Playwright, Browserbase, Chrome DevTools) | Testing, debugging, data extraction |
-| **DevOps/Infrastructure** | 3 (Vercel, Kubernetes, Sentry) | Deployment, cluster management, observability |
-| **Security/Code Analysis** | 1 (Semgrep) | Vulnerability scanning, secure coding |
-| **Code Search/Analysis** | 1 (Grepai) | Semantic search, call graph analysis |
-| **Documentation/Knowledge** | 1 (Context7) | API reference, code examples |
-| **Project Management** | 1 (Linear) | Issue tracking, sprint planning |
-| **Orchestration** | 1 (MCP-Compose) | Multi-server management |
+| **浏览器自动化** | 3（Playwright、Browserbase、Chrome DevTools） | 测试、调试、数据提取 |
+| **DevOps/基础设施** | 3（Vercel、Kubernetes、Sentry） | 部署、集群管理、可观测性 |
+| **安全/代码分析** | 1（Semgrep） | 漏洞扫描、安全编码 |
+| **代码搜索/分析** | 1（Grepai） | 语义搜索、调用图谱分析 |
+| **文档/知识** | 1（Context7） | API 参考、代码示例 |
+| **项目管理** | 1（Linear） | 问题追踪、Sprint 规划 |
+| **编排** | 1（MCP-Compose） | 多服务器管理 |
 
-### Maintainer Types
+### 维护方类型
 
-- **Official Servers** (6): Playwright (Microsoft), Browserbase, Semgrep, Context7, Kubernetes (Red Hat), Chrome DevTools (Anthropic)
-- **Community Servers** (4): Linear, Vercel, MCP-Compose, Grepai (well-designed, actively maintained)
-
----
-
-**Last updated**: May 2026
-**Next review**: June 2026
-**Maintainer**: Claude Code Ultimate Guide Team
+- **官方服务器**（6 个）：Playwright（微软）、Browserbase、Semgrep、Context7、Kubernetes（红帽）、Chrome DevTools（Anthropic）
+- **社区服务器**（4 个）：Linear、Vercel、MCP-Compose、Grepai（设计良好，积极维护）
 
 ---
 
-*Back to [main guide](../ultimate-guide.md) | [README](../README.md)*
+**最后更新**：2026 年 5 月
+**下次审查**：2026 年 6 月
+**维护方**：Claude Code 终极指南团队
+
+---
+
+*返回 [主指南](../ultimate-guide.md) | [README](../README.md)*

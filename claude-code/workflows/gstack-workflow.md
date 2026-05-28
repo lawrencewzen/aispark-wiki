@@ -1,220 +1,218 @@
 > 📚 **AI Spark Wiki** · Claude Code 知识库
 
 ---
-title: "Cognitive Mode Switching"
-description: "Switch between specialist roles across your ship cycle — strategic gate, architecture, paranoid review, release, browser QA, retrospective"
+title: "认知模式切换"
+description: "在整个发布周期中切换专业角色——战略门控、架构、偏执审查、发布、浏览器 QA、复盘"
 tags: [workflow, skills, planning, review, shipping, browser-automation]
 ---
 
-# Cognitive Mode Switching
+# 认知模式切换
 
-> **Confidence**: Tier 2 — Reference implementation: [gstack](https://github.com/garrytan/gstack) by Garry Tan (Y Combinator CEO), 1,100+ stars in 24h of launch (March 2026).
+> **可信度**：Tier 2 — 参考实现：[gstack](https://github.com/garrytan/gstack)，由 Garry Tan（Y Combinator CEO）开发，发布 24 小时内获得 1,100+ 星（2026 年 3 月）。
 
-**Reading time**: ~10 min
-**Prerequisites**: Claude Code skills basics, plan mode
-**Related**: [Plan Pipeline](./plan-pipeline.md), [Plan-Driven Development](./plan-driven.md)
+**阅读时间**：约 10 分钟
+**前置条件**：Claude Code Skills（技能模块）基础、计划模式
+**相关**：[计划流水线](./plan-pipeline.md)、[计划驱动开发](./plan-driven.md)
 
 ---
 
 ## TL;DR
 
-One generic assistant blurs all phases together. This pattern gives each phase a distinct cognitive mode: you summon the right brain for the job, then switch when the work changes.
+一个通用助手会将所有阶段混在一起。这个模式为每个阶段提供独特的认知模式：你为手头的工作召唤合适的大脑，当工作性质改变时切换。
 
 ```
-/plan-ceo-review  → "Are we building the right thing?"
-/plan-eng-review  → "How do we make this buildable?"
-/review           → "What will blow up in production?"
-/ship             → Execute the release, no debate
-/browse           → Does it actually work in the browser?
-/retro            → How well did we ship this week?
+/plan-ceo-review  → 「我们在构建正确的东西吗？」
+/plan-eng-review  → 「我们如何让这个可实现？」
+/review           → 「什么会在生产中炸掉？」
+/ship             → 执行发布，不再争论
+/browse           → 它在浏览器中实际能用吗？
+/retro            → 这周我们交付得怎么样？
 ```
 
-The insight is that planning, reviewing, and shipping require fundamentally different cognitive postures — and a single assistant left in generic mode will blend them badly.
+洞察在于：规划、审查和交付需要根本不同的认知姿态——一个处于通用模式的单一助手会把它们混淆得很糟糕。
 
 ---
 
-## The 6 Gears
+## 六个档位
 
-| Command | Role | Core question | When to switch |
+| 命令 | 角色 | 核心问题 | 何时切换 |
 |---------|------|---------------|----------------|
-| `/plan-ceo-review` | Founder / CEO | "Are we building the right thing?" | Before writing any code |
-| `/plan-eng-review` | Eng manager / tech lead | "How do we make this buildable?" | After direction is locked |
-| `/review` | Paranoid staff engineer | "What can still break in prod?" | Before merging |
-| `/ship` | Release engineer | "Get the plane landed" | Branch is ready, no more debate |
-| `/browse` | QA engineer | "Does it actually work?" | After deploy, against staging or prod |
-| `/retro` | Engineering manager | "How well did we ship?" | Weekly or post-launch |
+| `/plan-ceo-review` | 创始人 / CEO | 「我们在构建正确的东西吗？」 | 写任何代码之前 |
+| `/plan-eng-review` | 工程经理 / 技术负责人 | 「我们如何让这个可实现？」 | 方向锁定后 |
+| `/review` | 偏执的资深工程师 | 「还有什么可能在生产中崩溃？」 | 合并之前 |
+| `/ship` | 发布工程师 | 「让飞机着陆」 | 分支就绪，不再争论 |
+| `/browse` | QA 工程师 | 「它实际上能用吗？」 | 部署后，针对 staging 或 prod |
+| `/retro` | 工程经理 | 「我们交付得怎么样？」 | 每周或发布后 |
 
 ---
 
-## The Gap This Fills: Pre-Implementation Strategic Gate
+## 填补的空缺：实现前的战略门控
 
-The hardest thing to get right with an AI coding assistant is not the implementation. It is the question that comes before: **are we building the right thing?**
+AI 编程助手最难做对的事不是实现。而是在此之前的问题：**我们在构建正确的东西吗？**
 
-Claude Code is optimized to build what you ask. If you say "add photo upload", it will add photo upload. It will not ask whether photo upload is actually the product. That is the problem `/plan-ceo-review` solves.
+Claude Code 被优化为构建你要求的东西。如果你说「添加照片上传」，它就会添加照片上传。它不会问照片上传是否真的是产品需要的。这就是 `/plan-ceo-review` 要解决的问题。
 
-**Example**: You are building a Craigslist-style listing app.
+**示例**：你在构建一个类 Craigslist 的挂牌应用。
 
-- Request: "Let sellers upload a photo for their item"
-- Literal implementation: file picker + image save
-- What the real product is: helping sellers create listings that actually sell
+- 请求：「让卖家为商品上传照片」
+- 字面实现：文件选择器 + 图片保存
+- 真实产品是什么：帮助卖家创建真正能卖出去的挂牌
 
-If you run `/plan-ceo-review` first, the assistant is explicitly asked to challenge the literal request and find the product hiding inside it. The output becomes a different brief entirely: auto-identify the product from the photo, pull specs and pricing comps, draft title and description, suggest the hero image, detect low-quality photos before they go live.
+如果你先运行 `/plan-ceo-review`，助手会被明确要求挑战字面请求，找出其中隐藏的产品。输出变成了完全不同的简报：从照片自动识别产品、拉取规格和定价对比、起草标题和描述、建议主图、在上线前检测低质量照片。
 
-That is a different feature. A better one. And you only get it by inserting an explicit gate before implementation starts.
+这是一个不同的功能。更好的功能。而你只有通过在实现开始前插入一个明确的门控才能得到它。
 
-**The three modes inside `/plan-ceo-review`**:
-- **SCOPE EXPANSION** — find the 10-star product, ask "what would make this 10x better for 2x the effort?"
-- **HOLD SCOPE** — accept the direction, make the plan bulletproof
-- **SCOPE REDUCTION** — strip to the minimum viable version ruthlessly
+**`/plan-ceo-review` 内部的三种模式**：
+- **扩展范围** — 寻找 10 星产品，问「付出 2 倍的努力，什么能让这个好 10 倍？」
+- **保持范围** — 接受方向，让计划无懈可击
+- **缩减范围** — 无情地精简到最小可行版本
 
-The user selects the mode. The assistant commits to it and does not drift.
-
----
-
-## /plan-eng-review: Making the Idea Buildable
-
-Once direction is locked, the cognitive mode shifts from product intuition to engineering rigor. `/plan-eng-review` is where ideation stops and architecture starts.
-
-What it should produce:
-- Architecture diagram (components, boundaries, data flow)
-- State machine for the core flow
-- Sync vs async boundary decisions
-- Failure modes and retry logic
-- Trust boundaries (where do you accept external input?)
-- Test matrix
-
-The key unlock is **forcing diagram generation**. Diagrams surface hidden assumptions that prose conceals. A sequence diagram makes you specify who calls what. A state machine makes you enumerate every failure mode. Without them, "the system will handle it" stays vague indefinitely.
+用户选择模式。助手承诺并不偏离。
 
 ---
 
-## /review: Paranoid Staff Engineer Mode
+## /plan-eng-review：让想法变得可构建
 
-Passing tests do not mean the branch is safe. `/review` exists for the class of bugs that survive CI and hit production anyway.
+一旦方向锁定，认知模式从产品直觉转向工程严谨。`/plan-eng-review` 是理想化停止、架构开始的地方。
 
-What it checks:
-- N+1 queries
-- Race conditions (two tabs overwriting the same state)
-- Trust boundary violations (accepting client-provided metadata without validation)
-- Orphaned data on failure paths
-- Missing indexes
-- Bad retry logic
-- Tests that pass while missing the real failure mode
-- Prompt injection when LLM output flows into further processing
+应产生的内容：
+- 架构图（组件、边界、数据流）
+- 核心流程的状态机
+- 同步 vs 异步边界决策
+- 失败模式和重试逻辑
+- 信任边界（你在哪里接受外部输入？）
+- 测试矩阵
 
-The posture is deliberate: imagine the production incident before it happens.
+关键突破是**强制生成图表**。图表能发现散文掩盖的隐藏假设。时序图让你明确谁调用什么。状态机让你枚举每一个失败模式。没有它们，「系统会处理它」会无限期地保持模糊。
 
 ---
 
-## /browse: Non-MCP Native Browser Automation
+## /review：偏执资深工程师模式
 
-`/browse` is the most technically distinct piece of gstack. It is not a MCP server. It is a compiled native binary (TypeScript + Bun) that runs a persistent headless Chromium daemon.
+通过测试并不意味着分支是安全的。`/review` 针对的是那类通过 CI 却仍然影响生产的 bug。
 
-**Why the architecture matters**:
+它检查什么：
+- N+1 查询
+- 竞态条件（两个标签页覆盖相同状态）
+- 信任边界违规（接受客户端提供的元数据而不验证）
+- 失败路径上的孤立数据
+- 缺失索引
+- 糟糕的重试逻辑
+- 通过了但遗漏真实失败模式的测试
+- LLM 输出流入后续处理时的提示注入
 
-| Approach | Cold start | Subsequent calls | State persistence |
+这种姿态是刻意的：在生产事故发生之前想象它。
+
+---
+
+## /browse：非 MCP 原生浏览器自动化
+
+`/browse` 是 gstack 中技术上最独特的部分。它不是 MCP 服务器。它是一个编译的原生二进制文件（TypeScript + Bun），运行一个持久的无头 Chromium 守护进程。
+
+**为什么架构很重要**：
+
+| 方案 | 冷启动 | 后续调用 | 状态持久性 |
 |----------|-----------|-----------------|-------------------|
-| MCP browser server | New connection per session | ~500ms+ | Lost between sessions |
-| `/browse` native daemon | ~3s (once) | ~100-200ms | Cookies, tabs, auth persist |
+| MCP 浏览器服务器 | 每次会话新建连接 | ~500ms+ | 会话间丢失 |
+| `/browse` 原生守护进程 | ~3 秒（一次） | ~100-200ms | Cookie、标签页、认证持久保存 |
 
-This matters for QA workflows: logging into a staging environment once and then running a full navigation sequence stays fast because the daemon never restarts. No MCP socket overhead, no session reset.
+这对 QA 工作流很重要：登录 staging 环境一次，然后运行完整的导航序列，因为守护进程不会重启所以速度很快。没有 MCP socket 开销，没有会话重置。
 
-**Available operations**: navigate, read page text, take screenshots, snapshot accessibility tree with refs, click/fill by ref, run JavaScript, inspect console logs, capture network requests.
+**可用操作**：导航、读取页面文本、截图、快照带引用的无障碍树、按引用点击/填充、运行 JavaScript、检查控制台日志、捕获网络请求。
 
-**When to prefer this over MCP browser tools**:
-- Latency-sensitive QA loops (10+ page checks in sequence)
-- Environments where MCP server connections are restricted
-- When you need browser state (auth, cookies) to persist across multiple commands in one session
+**何时优先选择此方案而非 MCP 浏览器工具**：
+- 延迟敏感的 QA 循环（顺序检查 10+ 个页面）
+- 限制 MCP 服务器连接的环境
+- 需要浏览器状态（认证、Cookie）在一次会话的多个命令中持久保存时
 
-**When to stick with MCP**: single-page checks, simpler environments, or when MCP browser tooling is already in place.
+**何时坚持用 MCP**：单页检查、更简单的环境，或 MCP 浏览器工具已就位时。
 
 ---
 
-## Full Cycle Demo
+## 完整周期演示
 
 ```
-# 1. Strategic gate — challenge the brief
-[plan mode]
-You: I want to add seller photo upload to the listing app.
-     Sellers should be able to upload a photo and we create the listing from it.
+# 1. 战略门控——挑战简报
+[计划模式]
+你：我想为挂牌应用添加卖家照片上传。
+    卖家应该能上传照片，我们从中创建挂牌。
 
-You: /plan-ceo-review   (select SCOPE EXPANSION mode)
+你：/plan-ceo-review   （选择扩展范围模式）
 
-Claude: "Photo upload" is not the feature. The real job is helping sellers
-        create listings that actually sell. Here's the 10-star version:
-        auto-identify the product, pull specs and pricing comps from the web,
-        draft title and description, suggest the best hero image...
+Claude：「照片上传」不是功能。真正的工作是帮助卖家
+        创建实际能卖出去的挂牌。以下是 10 星版本：
+        自动识别产品，从网络获取规格和定价对比，
+        起草标题和描述，建议最佳主图……
 
-# 2. Engineering gate — lock the architecture
-You: /plan-eng-review
+# 2. 工程门控——锁定架构
+你：/plan-eng-review
 
-Claude: [Architecture diagram, async job boundaries, state machine for
-        upload → classify → enrich → draft pipeline, failure modes,
-        trust boundaries, test matrix]
+Claude：[架构图、异步任务边界、上传 → 分类 → 丰富 → 草稿
+        流水线的状态机、失败模式、信任边界、测试矩阵]
 
-# 3. Implement the plan
-[exit plan mode, write code]
+# 3. 实现计划
+[退出计划模式，编写代码]
 
-# 4. Paranoid review — find what tests missed
-You: /review
+# 4. 偏执审查——找出测试遗漏的问题
+你：/review
 
-Claude: Race condition: two tabs can overwrite cover-photo selection.
-        Trust boundary: pulling web data into draft generation creates
-        a prompt injection vector.
-        Missing: orphan cleanup for failed uploads.
+Claude：竞态条件：两个标签页可能覆盖封面图片选择。
+        信任边界：将网络数据拉入草稿生成产生提示注入向量。
+        缺失：失败上传的孤立清理。
 
-You: [fix the issues]
+你：[修复问题]
 
-# 5. Ship
-You: /ship
+# 5. 发布
+你：/ship
 
-Claude: [Syncs main, runs tests, pushes branch, opens PR — done]
+Claude：[同步主分支，运行测试，推送分支，开启 PR——完成]
 
-# 6. Browser QA against staging
-You: /browse staging.myapp.com — test the listing flow
+# 6. 针对 staging 的浏览器 QA
+你：/browse staging.myapp.com——测试挂牌流程
 
-Claude: [Navigates routes, fills upload form, verifies enrichment renders,
-        checks console for errors, screenshots each step]
-        All pages load correctly. Listing flow works end to end.
+Claude：[导航路由，填写上传表单，验证丰富结果渲染，
+        检查控制台错误，每步截图]
+        所有页面正常加载。挂牌流程端到端正常运行。
 ```
 
 ---
 
-## Install
+## 安装
 
 ```bash
-# Install globally (~/.claude/skills/)
+# 全局安装（~/.claude/skills/）
 git clone https://github.com/garrytan/gstack.git ~/.claude/skills/gstack
 cd ~/.claude/skills/gstack && ./setup
 ```
 
-Or paste this directly into Claude Code and it handles the rest:
+或将以下内容直接粘贴到 Claude Code，它会处理其余的：
 
 > Install gstack: run `git clone https://github.com/garrytan/gstack.git ~/.claude/skills/gstack && cd ~/.claude/skills/gstack && ./setup`
 
-For team installs (committed to repo so `git clone` just works for teammates), see the [gstack README](https://github.com/garrytan/gstack).
+对于团队安装（提交到仓库，队友 `git clone` 即可使用），参见 [gstack README](https://github.com/garrytan/gstack)。
 
-> **Note (March 2026)**: gstack was released March 11, 2026. The patterns are solid; the implementation is new. Verify the repository is actively maintained before adopting in a production workflow.
-
----
-
-## When to Use This vs. Other Workflows
-
-| Situation | This workflow | Alternative |
-|-----------|---------------|-------------|
-| Complex feature, direction uncertain | `/plan-ceo-review` first | [Spec-First](./spec-first.md) |
-| Direction clear, architecture complex | `/plan-eng-review` | [Plan Pipeline](./plan-pipeline.md) |
-| Need independent validation of plan | [Plan Pipeline](./plan-pipeline.md) `/plan-validate` | — |
-| Browser automation, single page check | Any MCP browser tool | `/browse` (overkill) |
-| Browser automation, multi-step QA loop | `/browse` | MCP tools (slower) |
-| Want structured ADR learning loop | [Plan Pipeline](./plan-pipeline.md) | — |
-
-The main differentiator from [Plan Pipeline](./plan-pipeline.md): gstack is a linear gear sequence you control manually. Plan Pipeline is a more automated orchestration with ADR memory and parallel agent teams. For solo developers who want explicit control over each phase, gstack is faster to adopt.
+> **注意（2026 年 3 月）**：gstack 于 2026 年 3 月 11 日发布。模式很扎实；实现是新的。在生产工作流中采用之前，请验证仓库是否在积极维护。
 
 ---
 
-## See Also
+## 何时使用此工作流 vs 其他工作流
 
-- [Plan Pipeline](./plan-pipeline.md) — Automated 3-command workflow with ADR learning loop
-- [Plan-Driven Development](./plan-driven.md) — Fundamentals of planning before coding
-- [Iterative Refinement](./iterative-refinement.md) — Quality improvement cycles
-- [gstack on GitHub](https://github.com/garrytan/gstack) — Source, install instructions, full skill prompts
+| 情况 | 此工作流 | 替代方案 |
+|-----------|---------------|------------|
+| 复杂功能，方向不确定 | 先 `/plan-ceo-review` | [规格优先](./spec-first.md) |
+| 方向明确，架构复杂 | `/plan-eng-review` | [计划流水线](./plan-pipeline.md) |
+| 需要独立验证计划 | [计划流水线](./plan-pipeline.md) `/plan-validate` | — |
+| 浏览器自动化，单页检查 | 任何 MCP 浏览器工具 | `/browse`（过杀） |
+| 浏览器自动化，多步 QA 循环 | `/browse` | MCP 工具（更慢） |
+| 需要结构化 ADR 学习循环 | [计划流水线](./plan-pipeline.md) | — |
+
+与[计划流水线](./plan-pipeline.md)的主要区别：gstack 是你手动控制的线性档位序列。计划流水线是带有 ADR 记忆和并行智能体团队的更自动化编排。对于想要明确控制每个阶段的单独开发者，gstack 采用起来更快。
+
+---
+
+## 延伸阅读
+
+- [计划流水线](./plan-pipeline.md) — 带 ADR 学习循环的自动化三命令工作流
+- [计划驱动开发](./plan-driven.md) — 编码前规划的基础
+- [迭代优化](./iterative-refinement.md) — 质量改进循环
+- [gstack on GitHub](https://github.com/garrytan/gstack) — 源码、安装说明、完整 Skills（技能模块）提示词

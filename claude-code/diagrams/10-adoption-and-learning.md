@@ -1,43 +1,43 @@
 > 📚 **AI Spark Wiki** · Claude Code 知识库
 
 ---
-title: "Claude Code — Adoption & Learning Diagrams"
-description: "Onboarding paths, UVAL learning protocol, trust calibration matrix"
-tags: [adoption, learning, onboarding, teams, trust]
+title: "Claude Code — 采用与学习图表"
+description: "入门路径、UVAL 学习协议、信任校准矩阵"
+tags: [采用, 学习, 入门, 团队, 信任]
 ---
 
-# Adoption & Learning
+# 采用与学习
 
-How individuals and teams successfully adopt Claude Code without losing skills or control.
+个人和团队如何成功采用 Claude Code，同时不丧失技能或控制权。
 
 ---
 
-### Onboarding Adaptive Learning Paths
+### 入门自适应学习路径
 
-Different backgrounds require different onboarding approaches. Forcing developers through a beginner path wastes time; dropping non-technical users into advanced features causes frustration.
+不同背景需要不同的入门方式。强迫开发者走新手路径会浪费时间；把非技术用户直接扔进高级功能会让人沮丧。
 
 ```mermaid
 flowchart TD
-    A([Start: New to Claude Code]) --> B{Your background?}
+    A([开始：刚接触 Claude Code]) --> B{你的背景？}
 
-    B -->|Developer| C["🧑‍💻 Developer Path<br/>~2 days to productivity"]
-    C --> C1(Quick Start: first session)
-    C1 --> C2(Workflows: TDD, spec-first, plan-driven)
-    C2 --> C3(Advanced: agents, hooks, MCP servers)
-    C3 --> C4([Productive developer ✓])
+    B -->|开发者| C["🧑‍💻 开发者路径<br/>~2 天上手"]
+    C --> C1(快速入门：第一次会话)
+    C1 --> C2(工作流：TDD、规范优先、计划驱动)
+    C2 --> C3(进阶：智能体、Hooks、MCP 服务器)
+    C3 --> C4([高效开发者 ✓])
 
-    B -->|Non-technical| D["👤 Non-Tech Path<br/>~1 week to basic usage"]
-    D --> D1(What is Claude Code?<br/>Key concepts only)
-    D1 --> D2(Basic usage: editing,<br/>explaining, simple tasks)
-    D2 --> D3(Limited scope: no<br/>production deployments)
-    D3 --> D4([Safe basic user ✓])
+    B -->|非技术人员| D["👤 非技术路径<br/>~1 周基础使用"]
+    D --> D1(什么是 Claude Code？<br/>仅核心概念)
+    D1 --> D2(基础用法：编辑、<br/>解释、简单任务)
+    D2 --> D3(有限范围：不涉及<br/>生产部署)
+    D3 --> D4([安全的基础用户 ✓])
 
-    B -->|Team lead| E["👔 Team Lead Path<br/>~2 weeks to team adoption"]
-    E --> E1(ROI assessment<br/>value vs cost analysis)
-    E1 --> E2(CLAUDE.md strategy<br/>team conventions)
-    E2 --> E3(Pilot with 2-3 devs<br/>collect feedback)
-    E3 --> E4(Gradual rollout<br/>with guardrails)
-    E4 --> E5([Team adoption ✓])
+    B -->|团队负责人| E["👔 团队负责人路径<br/>~2 周团队采用"]
+    E --> E1(ROI 评估<br/>价值 vs 成本分析)
+    E1 --> E2(CLAUDE.md 策略<br/>团队规范)
+    E2 --> E3(2-3 名开发者试点<br/>收集反馈)
+    E3 --> E4(渐进式推广<br/>配套护栏)
+    E4 --> E5([团队采用 ✓])
 
     style A fill:#F5E6D3,color:#333
     style B fill:#E87E2F,color:#fff
@@ -48,65 +48,65 @@ flowchart TD
     style D4 fill:#7BC47F,color:#333
     style E5 fill:#7BC47F,color:#333
 
-    click A href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/roles/adoption-approaches.md" "Start: New to Claude Code"
-    click B href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/roles/adoption-approaches.md" "Your background?"
-    click C href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#12-first-workflow" "Developer Path"
-    click C1 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#12-first-workflow" "Quick Start: first session"
-    click C2 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#12-first-workflow" "Workflows: TDD, spec-first, plan-driven"
-    click C3 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#41-what-are-agents" "Advanced: agents, hooks, MCP"
-    click C4 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/roles/adoption-approaches.md" "Productive developer"
-    click D href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/roles/adoption-approaches.md" "Non-Tech Path"
-    click D1 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/roles/adoption-approaches.md" "What is Claude Code?"
-    click D2 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/roles/adoption-approaches.md" "Basic usage"
-    click D3 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/roles/adoption-approaches.md" "Limited scope"
-    click D4 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/roles/adoption-approaches.md" "Safe basic user"
-    click E href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/roles/adoption-approaches.md" "Team Lead Path"
-    click E1 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/roles/adoption-approaches.md" "ROI assessment"
-    click E2 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#31-memory-files-claudemd" "CLAUDE.md strategy"
-    click E3 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/roles/adoption-approaches.md" "Pilot with 2-3 devs"
-    click E4 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/roles/adoption-approaches.md" "Gradual rollout"
-    click E5 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/roles/adoption-approaches.md" "Team adoption"
+    click A href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/roles/adoption-approaches.md" "开始：刚接触 Claude Code"
+    click B href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/roles/adoption-approaches.md" "你的背景？"
+    click C href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#12-first-workflow" "开发者路径"
+    click C1 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#12-first-workflow" "快速入门：第一次会话"
+    click C2 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#12-first-workflow" "工作流：TDD、规范优先、计划驱动"
+    click C3 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#41-what-are-agents" "进阶：智能体、Hooks、MCP"
+    click C4 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/roles/adoption-approaches.md" "高效开发者"
+    click D href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/roles/adoption-approaches.md" "非技术路径"
+    click D1 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/roles/adoption-approaches.md" "什么是 Claude Code？"
+    click D2 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/roles/adoption-approaches.md" "基础用法"
+    click D3 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/roles/adoption-approaches.md" "有限范围"
+    click D4 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/roles/adoption-approaches.md" "安全的基础用户"
+    click E href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/roles/adoption-approaches.md" "团队负责人路径"
+    click E1 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/roles/adoption-approaches.md" "ROI 评估"
+    click E2 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#31-memory-files-claudemd" "CLAUDE.md 策略"
+    click E3 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/roles/adoption-approaches.md" "2-3 名开发者试点"
+    click E4 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/roles/adoption-approaches.md" "渐进式推广"
+    click E5 href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/roles/adoption-approaches.md" "团队采用"
 ```
 
 <details>
-<summary>ASCII version</summary>
+<summary>ASCII 版本</summary>
 
 ```
-Your background?
-├─ Developer (~2 days):
-│  Quick Start → Workflows (TDD/spec/plan) → Advanced (agents/hooks/MCP)
+你的背景？
+├─ 开发者（~2 天）：
+│  快速入门 → 工作流（TDD/规范/计划）→ 进阶（智能体/Hooks/MCP）
 │
-├─ Non-technical (~1 week):
-│  What is CC? → Basic usage → Limited scope (no prod deploys)
+├─ 非技术人员（~1 周）：
+│  什么是 Claude Code？→ 基础用法 → 有限范围（不涉及生产部署）
 │
-└─ Team lead (~2 weeks):
-   ROI assessment → CLAUDE.md strategy → Pilot 2-3 devs → Gradual rollout
+└─ 团队负责人（~2 周）：
+   ROI 评估 → CLAUDE.md 策略 → 2-3 名开发者试点 → 渐进式推广
 ```
 
 </details>
 
-> **Source**: [Adoption Approaches](../roles/adoption-approaches.md)
+> **来源**：[采用方法](../roles/adoption-approaches.md)
 
 ---
 
-### UVAL Learning Protocol
+### UVAL 学习协议
 
-The UVAL protocol prevents the "copy-paste trap" — where you use Claude Code without understanding what it did. Each cycle builds real competency that survives tool unavailability.
+UVAL 协议可以防止「复制粘贴陷阱」——在不理解 Claude Code 做了什么的情况下直接使用。每个循环都建立真正的能力，即便工具不可用时也能保留。
 
 ```mermaid
 flowchart LR
-    U([U — Use It<br/>Try the feature<br/>yourself first]) --> V
+    U([U — 使用（Use）<br/>先亲自尝试<br/>这个功能]) --> V
 
-    V([V — Verify<br/>Understand what<br/>Claude did and why]) --> A
+    V([V — 验证（Verify）<br/>理解 Claude<br/>做了什么以及为什么]) --> A
 
-    A([A — Adapt<br/>Modify the approach,<br/>experiment with variants]) --> L
+    A([A — 调整（Adapt）<br/>修改这种方法，<br/>尝试变体]) --> L
 
-    L([L — Learn<br/>Note the pattern<br/>for future use]) --> NEXT
+    L([L — 学习（Learn）<br/>记录这个模式<br/>以备将来使用]) --> NEXT
 
-    NEXT{More tasks<br/>using this pattern?} -->|Yes| U
-    NEXT -->|No| DONE([Pattern internalized ✓])
+    NEXT{更多任务<br/>使用这个模式？} -->|是| U
+    NEXT -->|否| DONE([模式已内化 ✓])
 
-    TRAP["❌ Copy-Paste Trap:<br/>Accept output →<br/>Deploy → Bug →<br/>'Claude broke it'"] -.->|avoid| V
+    TRAP["❌ 复制粘贴陷阱：<br/>接受输出 →<br/>部署 → Bug →<br/>「是 Claude 弄坏的」"] -.->|避免| V
 
     style U fill:#6DB3F2,color:#fff
     style V fill:#E87E2F,color:#fff
@@ -116,60 +116,60 @@ flowchart LR
     style DONE fill:#7BC47F,color:#333
     style TRAP fill:#E85D5D,color:#fff
 
-    click U href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/roles/learning-with-ai.md" "Use It"
-    click V href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/roles/learning-with-ai.md" "Verify"
-    click A href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/roles/learning-with-ai.md" "Adapt"
-    click L href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/roles/learning-with-ai.md" "Learn"
-    click NEXT href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/roles/learning-with-ai.md" "More tasks using this pattern?"
-    click DONE href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/roles/learning-with-ai.md" "Pattern internalized"
-    click TRAP href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/roles/learning-with-ai.md" "Copy-Paste Trap"
+    click U href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/roles/learning-with-ai.md" "使用"
+    click V href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/roles/learning-with-ai.md" "验证"
+    click A href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/roles/learning-with-ai.md" "调整"
+    click L href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/roles/learning-with-ai.md" "学习"
+    click NEXT href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/roles/learning-with-ai.md" "更多任务使用这个模式？"
+    click DONE href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/roles/learning-with-ai.md" "模式已内化"
+    click TRAP href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/roles/learning-with-ai.md" "复制粘贴陷阱"
 ```
 
 <details>
-<summary>ASCII version</summary>
+<summary>ASCII 版本</summary>
 
 ```
-USE → VERIFY → ADAPT → LEARN → (repeat with next task)
+使用 → 验证 → 调整 → 学习 → （下一个任务重复）
 
-U: Try the feature yourself first
-V: Understand what Claude did and why ← (anti: just copy-paste)
-A: Modify the approach, experiment
-L: Note pattern for future use
+U：先亲自尝试这个功能
+V：理解 Claude 做了什么以及为什么 ← （反面：只是复制粘贴）
+A：修改方法，进行实验
+L：记录模式以备将来使用
 
-Anti-pattern (AVOID): Accept output → Deploy → Bug → "Claude broke it"
+反模式（避免）：接受输出 → 部署 → Bug → 「是 Claude 弄坏的」
 ```
 
 </details>
 
-> **Source**: [Learning with AI](../roles/learning-with-ai.md) — Line ~127
+> **来源**：[与 AI 共同学习](../roles/learning-with-ai.md) — 第 ~127 行
 
 ---
 
-### Trust Calibration Matrix
+### 信任校准矩阵
 
-Knowing when to trust Claude's output and when to verify is the most important skill in AI-assisted development. Over-trust causes bugs; under-trust eliminates productivity gains.
+知道何时信任 Claude 的输出，何时需要验证，是 AI 辅助开发中最重要的技能。过度信任会导致 Bug；过度不信任则消除了生产力提升。
 
 ```mermaid
 flowchart TD
-    A([Claude produces output]) --> B{Can I test<br/>this output?}
+    A([Claude 产生输出]) --> B{我能测试<br/>这个输出吗？}
 
-    B -->|Yes| C{Do the tests<br/>actually pass?}
-    C -->|Yes| D([Trust with test coverage ✓])
-    C -->|No| E([Fix before using])
+    B -->|是| C{测试<br/>实际通过了吗？}
+    C -->|是| D([有测试覆盖的信任 ✓])
+    C -->|否| E([使用前先修复])
 
-    B -->|No| F{Do I understand<br/>what it did?}
-    F -->|No| G(Ask Claude to explain<br/>step by step)
+    B -->|否| F{我理解<br/>它做了什么吗？}
+    F -->|否| G(让 Claude 逐步解释)
     G --> F
 
-    F -->|Yes| H{Is this<br/>reversible?}
-    H -->|Yes, easily| I([Trust with git safety net ✓])
-    H -->|No: hard to undo| J(Extra review required<br/>check before applying)
-    J --> K{Is it<br/>security-critical?}
+    F -->|是| H{这是<br/>可逆的吗？}
+    H -->|是，容易撤销| I([有 Git 安全网的信任 ✓])
+    H -->|否：难以撤销| J(需要额外审查<br/>应用前检查)
+    J --> K{是否涉及<br/>安全关键？}
 
-    K -->|Yes: auth, crypto, perms| L([Human expert review<br/>never trust blindly])
-    K -->|No| M{Familiar<br/>domain?}
-    M -->|Yes| I
-    M -->|No| N([Pair with domain expert<br/>or verify by testing])
+    K -->|是：认证、加密、权限| L([人类专家审查<br/>绝不盲目信任])
+    K -->|否| M{熟悉的<br/>领域？}
+    M -->|是| I
+    M -->|否| N([与领域专家配对<br/>或通过测试验证])
 
     style A fill:#F5E6D3,color:#333
     style B fill:#E87E2F,color:#fff
@@ -185,44 +185,44 @@ flowchart TD
     style N fill:#6DB3F2,color:#fff
     style J fill:#F5E6D3,color:#333
 
-    click A href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#17-trust-calibration-when-and-how-much-to-verify" "Claude produces output"
-    click B href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#17-trust-calibration-when-and-how-much-to-verify" "Can I test this output?"
-    click C href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#17-trust-calibration-when-and-how-much-to-verify" "Do the tests pass?"
-    click D href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#17-trust-calibration-when-and-how-much-to-verify" "Trust with test coverage"
-    click E href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#17-trust-calibration-when-and-how-much-to-verify" "Fix before using"
-    click F href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#17-trust-calibration-when-and-how-much-to-verify" "Do I understand what it did?"
-    click G href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#17-trust-calibration-when-and-how-much-to-verify" "Ask Claude to explain"
-    click H href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#17-trust-calibration-when-and-how-much-to-verify" "Is this reversible?"
-    click I href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#17-trust-calibration-when-and-how-much-to-verify" "Trust with git safety net"
-    click J href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#17-trust-calibration-when-and-how-much-to-verify" "Extra review required"
-    click K href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#17-trust-calibration-when-and-how-much-to-verify" "Is it security-critical?"
-    click L href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#17-trust-calibration-when-and-how-much-to-verify" "Human expert review"
-    click M href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#17-trust-calibration-when-and-how-much-to-verify" "Familiar domain?"
-    click N href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#17-trust-calibration-when-and-how-much-to-verify" "Pair with domain expert"
+    click A href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#17-trust-calibration-when-and-how-much-to-verify" "Claude 产生输出"
+    click B href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#17-trust-calibration-when-and-how-much-to-verify" "我能测试这个输出吗？"
+    click C href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#17-trust-calibration-when-and-how-much-to-verify" "测试通过了吗？"
+    click D href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#17-trust-calibration-when-and-how-much-to-verify" "有测试覆盖的信任"
+    click E href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#17-trust-calibration-when-and-how-much-to-verify" "使用前先修复"
+    click F href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#17-trust-calibration-when-and-how-much-to-verify" "我理解它做了什么吗？"
+    click G href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#17-trust-calibration-when-and-how-much-to-verify" "让 Claude 解释"
+    click H href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#17-trust-calibration-when-and-how-much-to-verify" "这是可逆的吗？"
+    click I href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#17-trust-calibration-when-and-how-much-to-verify" "有 Git 安全网的信任"
+    click J href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#17-trust-calibration-when-and-how-much-to-verify" "需要额外审查"
+    click K href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#17-trust-calibration-when-and-how-much-to-verify" "是否涉及安全关键？"
+    click L href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#17-trust-calibration-when-and-how-much-to-verify" "人类专家审查"
+    click M href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#17-trust-calibration-when-and-how-much-to-verify" "熟悉的领域？"
+    click N href "https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md#17-trust-calibration-when-and-how-much-to-verify" "与领域专家配对"
 ```
 
 <details>
-<summary>ASCII version</summary>
+<summary>ASCII 版本</summary>
 
 ```
-Can I test it?
-├─ Yes → Tests pass? → Yes → Trust with tests ✓
-│                  → No  → Fix before using
-└─ No  → Do I understand it?
-         ├─ No  → Ask Claude to explain → understand → continue
-         └─ Yes → Is it reversible?
-                  ├─ Yes     → Trust with git safety net ✓
-                  └─ No      → Security-critical?
-                               ├─ Yes → Human expert review (never skip)
-                               └─ No  → Familiar domain?
-                                        ├─ Yes → Trust with care ✓
-                                        └─ No  → Pair with expert
+我能测试它吗？
+├─ 是 → 测试通过？ → 是 → 有测试覆盖的信任 ✓
+│                  → 否  → 使用前先修复
+└─ 否  → 我理解它做了什么吗？
+         ├─ 否  → 让 Claude 解释 → 理解后继续
+         └─ 是 → 这是可逆的吗？
+                  ├─ 是     → 有 Git 安全网的信任 ✓
+                  └─ 否     → 涉及安全关键？
+                               ├─ 是 → 人类专家审查（绝不跳过）
+                               └─ 否  → 熟悉的领域？
+                                        ├─ 是 → 谨慎信任 ✓
+                                        └─ 否  → 与专家配对
 ```
 
 </details>
 
-> **Source**: [Trust and Verification](../ultimate-guide.md#trust-verification) — Line ~1039
+> **来源**：[信任与验证](../ultimate-guide.md#trust-verification) — 第 ~1039 行
 
 ---
 
-*Back to [diagrams/README.md](./README.md) | Next: [Cost Optimization](./09-cost-and-optimization.md)*
+*返回 [diagrams/README.md](./README.md) | 下一节：[成本优化](./09-cost-and-optimization.md)*

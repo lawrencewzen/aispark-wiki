@@ -1,181 +1,181 @@
 > 📚 **AI Spark Wiki** · Claude Code 知识库
 
 ---
-title: "Enterprise AI Governance for Claude Code"
-description: "Org-level governance for teams deploying Claude Code at scale: usage charters, MCP approval workflows, guardrail tiers, and compliance"
+title: "Claude Code 企业 AI 治理"
+description: "在组织层面为大规模部署 Claude Code 的团队提供治理方案：使用章程、MCP 审批流程、护栏级别与合规指南"
 tags: [security, enterprise, governance, compliance]
 ---
 
-# Enterprise AI Governance for Claude Code
+# Claude Code 企业 AI 治理
 
-> **Audience**: Tech leads, engineering managers, security officers deploying Claude Code across teams.
+> **目标读者**：在团队中大规模部署 Claude Code 的技术负责人、工程经理、安全负责人。
 >
-> **Scope**: Org-level governance (policies, approval workflows, tiers, compliance). For individual dev security (injection defense, MCP vetting, CVEs), see [security-hardening.md](./security-hardening.md). For the 6 non-negotiable production rules, see [production-safety.md](./production-safety.md).
+> **范围**：组织层面治理（策略、审批流程、级别、合规）。个人开发者安全（注入防御、MCP 审查、CVE）请参见 [security-hardening.md](./security-hardening.md)。6 条不可妥协的生产规则请参见 [production-safety.md](./production-safety.md)。
 
 ---
 
-## TL;DR
+## 速览
 
-**The governance gap**: Claude Code security docs cover what individual devs should do. They don't cover what happens when your entire organization is using it — 50 developers, different risk profiles, no shared policy.
+**治理盲区**：Claude Code 安全文档涵盖了个人开发者应做的事情，但没有涵盖整个组织使用时的情况——50 名开发者、不同的风险画像、缺乏统一策略。
 
-**What this covers**:
+**本文涵盖内容**：
 
-| Section | What it gives you |
+| 章节 | 提供的内容 |
 |---------|------------------|
-| [Local vs Shared](#1-local-vs-shared-the-governance-split) | Risk matrix + decision framework |
-| [Usage Charter](#2-ai-usage-charter) | Lean template, ready to adapt |
-| [MCP Governance](#3-mcp-governance-workflow) | Approval workflow + YAML registry |
-| [Guardrail Tiers](#4-guardrail-tiers) | 4 pre-configured tiers, copy-paste settings.json |
-| [Policy at Scale](#5-policy-enforcement-at-scale) | Rollout, onboarding, CI/CD gates |
-| [Audit & Compliance](#6-audit-compliance--governance-structure) | What SOC2/ISO27001 auditors actually ask |
+| [本地 vs 共享](#1-本地-vs-共享治理分界) | 风险矩阵 + 决策框架 |
+| [使用章程](#2-ai-使用章程) | 精简模板，可直接改编 |
+| [MCP 治理](#3-mcp-治理流程) | 审批流程 + YAML 注册表 |
+| [护栏级别](#4-护栏级别) | 4 个预配置级别，可直接复制 settings.json |
+| [规模化策略执行](#5-规模化策略执行) | 发布、入职、CI/CD 门控 |
+| [审计与合规](#6-审计合规与治理结构) | SOC2/ISO27001 审计师实际关注的内容 |
 
 ---
 
-## 1. Local vs Shared: The Governance Split
+## 1. 本地 vs 共享：治理分界
 
-The biggest mistake in enterprise AI governance is applying the same rules to everything. Local usage and shared usage have fundamentally different risk profiles.
+企业 AI 治理中最大的错误是对所有情况应用相同的规则。本地使用和共享使用具有根本不同的风险画像。
 
-### 1.1 Risk Matrix
+### 1.1 风险矩阵
 
-| Dimension | Local usage | Shared usage |
+| 维度 | 本地使用 | 共享使用 |
 |-----------|-------------|--------------|
-| **Data exposure** | Developer's own files | Customer data, shared codebases, secrets |
-| **Blast radius** | One machine | Entire repo, CI/CD, production |
-| **Accountability** | Individual | Team / org |
-| **Reproducibility** | Session ends, history gone | Needs audit trail |
-| **Compliance scope** | Usually none | SOC2, ISO27001, HIPAA (if applicable) |
-| **Config drift** | Personal preference | Team consistency matters |
+| **数据暴露** | 开发者自己的文件 | 客户数据、共享代码库、密钥 |
+| **影响范围** | 单台机器 | 整个代码库、CI/CD、生产环境 |
+| **责任归属** | 个人 | 团队/组织 |
+| **可重现性** | 会话结束，历史消失 | 需要审计跟踪 |
+| **合规范围** | 通常无 | SOC2、ISO27001、HIPAA（如适用） |
+| **配置漂移** | 个人偏好 | 团队一致性至关重要 |
 
-### 1.2 What You Can and Can't Control
+### 1.2 可以和不能控制的内容
 
-**You CAN control** (via committed config):
-- Which MCP servers are approved (`settings.json` in repo)
-- Which tools Claude can use (`permissions.deny`)
-- What CLAUDE.md says about project conventions
-- Hook scripts that run pre/post tool use
-- CI/CD gates that validate AI-generated code
+**可以控制**（通过提交的配置）：
+- 哪些 MCP 服务器已获批准（代码库中的 `settings.json`）
+- Claude 可以使用哪些工具（`permissions.deny`）
+- CLAUDE.md 中的项目规范
+- 工具调用前后运行的 Hook（钩子）脚本
+- 验证 AI 生成代码的 CI/CD 门控
 
-**You CANNOT directly control**:
-- Which personal `~/.claude/settings.json` developers have
-- Which models they use on personal API keys
-- What they do in personal projects outside your repos
-- Memory / session content between sessions
+**无法直接控制**：
+- 开发者的个人 `~/.claude/settings.json`
+- 他们在个人 API 密钥上使用的模型
+- 他们在代码库之外的个人项目中的行为
+- 会话间的记忆/会话内容
 
-**The practical implication**: Focus governance on what's committed to your repos and deployed in shared environments. Personal dev workflow is the developer's responsibility.
+**实际含义**：将治理重点放在提交到代码库和部署在共享环境中的内容上。个人开发工作流是开发者自己的责任。
 
-### 1.3 Decision Framework: When to Govern
+### 1.3 决策框架：何时需要治理
 
-Not everything needs heavy governance. Apply controls proportionally.
+并非所有内容都需要严格治理，按比例应用控制措施。
 
 ```
-What are you governing?
+您在治理什么？
 │
-├─ Personal dev workflow (local, throwaway code)
-│   └─ Minimal: CLAUDE.md guidelines + basic hooks
+├─ 个人开发工作流（本地、临时代码）
+│   └─ 最小化：CLAUDE.md 指导方针 + 基础钩子
 │
-├─ Team codebase (shared repo, not production)
-│   └─ Standard: shared settings.json + MCP registry + PR gates
+├─ 团队代码库（共享代码库，非生产环境）
+│   └─ 标准：共享 settings.json + MCP 注册表 + PR 门控
 │
-├─ Production system (customer-facing, real data)
-│   └─ Strict: full tier config + approval workflow + audit log
+├─ 生产系统（面向客户、真实数据）
+│   └─ 严格：完整级别配置 + 审批流程 + 审计日志
 │
-└─ Regulated environment (HIPAA, SOC2, PCI, finance)
-    └─ Regulated: all of above + compliance audit trail
+└─ 受监管环境（HIPAA、SOC2、PCI、金融）
+    └─ 合规：以上所有 + 合规审计跟踪
 ```
 
 ---
 
-## 2. AI Usage Charter
+## 2. AI 使用章程
 
-A usage charter answers the fundamental question: "What are we allowed to do with Claude Code at this company?" Without it, each team answers differently, creating inconsistent risk exposure.
+使用章程回答了一个根本性问题："我们在公司使用 Claude Code 允许做什么？"没有它，每个团队的回答都不同，造成不一致的风险敞口。
 
-This is the lean version. For a full charter with legal considerations, see [Whitepaper #11: Enterprise AI Governance](../../whitepapers/en/11-enterprise-ai-governance.qmd) (when available).
+这是精简版。完整章程（含法律注意事项）请参见 [白皮书 #11：企业 AI 治理](../../whitepapers/en/11-enterprise-ai-governance.qmd)（待发布）。
 
-### 2.1 Lean Charter Template
+### 2.1 精简章程模板
 
-Copy this into your org's `docs/ai-usage-charter.md` and adapt:
+将以下内容复制到您组织的 `docs/ai-usage-charter.md` 并进行改编：
 
 ```markdown
-# AI Coding Tools Usage Charter
+# AI 编码工具使用章程
 
-**Applies to**: Claude Code (and any AI coding assistant)
-**Effective date**: [DATE]
-**Owner**: Engineering Lead / CTO
-**Review cadence**: Quarterly
+**适用范围**：Claude Code（及任何 AI 编码助手）
+**生效日期**：[日期]
+**负责人**：工程负责人/CTO
+**审查周期**：季度
 
 ---
 
-## Approved Tools
+## 已批准的工具
 
-| Tool | Scope | Data Classification |
+| 工具 | 范围 | 数据分类 |
 |------|-------|---------------------|
-| Claude Code (Pro/Team/Enterprise) | All dev work | Up to CONFIDENTIAL |
-| Claude Code (personal accounts) | Personal dev only | PUBLIC/INTERNAL only |
-| [Other approved tools] | [Scope] | [Classification] |
+| Claude Code（Pro/团队/企业版） | 所有开发工作 | 最高至机密级 |
+| Claude Code（个人账户） | 仅限个人开发 | 仅公开/内部级别 |
+| [其他已批准工具] | [范围] | [分类] |
 
 ---
 
-## Data Classification Rules
+## 数据分类规则
 
-| Classification | Examples | Allowed with Claude Code? |
+| 分类 | 示例 | 是否允许使用 Claude Code？ |
 |----------------|----------|--------------------------|
-| **PUBLIC** | Open source, public docs | Yes, no restrictions |
-| **INTERNAL** | Internal tools, non-sensitive code | Yes, standard config |
-| **CONFIDENTIAL** | Internal business secrets, non-regulated IP | Yes, Enterprise plan only |
-| **RESTRICTED** | Customer PII, PCI card data, PHI, credentials | No — never in AI context without legal/compliance sign-off |
+| **公开** | 开源、公共文档 | 是，无限制 |
+| **内部** | 内部工具、非敏感代码 | 是，标准配置 |
+| **机密** | 内部商业机密、非受监管的 IP | 是，仅限企业版 |
+| **受限** | 客户个人身份信息、PCI 卡数据、PHI、凭证 | 否——未经法律/合规审批，绝不纳入 AI 上下文 |
 
-**Hard rule**: RESTRICTED data never enters an AI context window. Not in prompts, not in files Claude reads, not as examples. Configure `permissions.deny` to block access to restricted files.
-
----
-
-## Approved Use Cases
-
-- Code completion, review, refactoring
-- Test generation
-- Documentation drafting
-- Debugging and root cause analysis
-- Architecture analysis (internal systems only)
-- CLI scripting and automation
+**硬性规定**：受限数据绝不进入 AI 上下文窗口。无论是提示词中、Claude 读取的文件中，还是示例中都不行。配置 `permissions.deny` 阻止访问受限文件。
 
 ---
 
-## Prohibited Use Cases
+## 已批准的使用场景
 
-- Processing payment card data (PCI scope)
-- Generating code that handles raw PHI without security review
-- Autonomous deployment to production without human approval
-- Using personal AI accounts for CONFIDENTIAL or higher data
-- Sharing customer data in prompts as examples
+- 代码补全、审查、重构
+- 测试生成
+- 文档起草
+- 调试和根因分析
+- 架构分析（仅限内部系统）
+- CLI 脚本和自动化
 
 ---
 
-## Who Approves What
+## 禁止的使用场景
 
-| Action | Approver |
+- 处理支付卡数据（PCI 范围）
+- 生成处理原始 PHI 的代码（未经安全审查）
+- 未经人工审批的自主生产部署
+- 在机密或更高级别数据上使用个人 AI 账户
+- 在提示词中以客户数据为示例
+
+---
+
+## 审批权限
+
+| 操作 | 审批人 |
 |--------|---------|
-| Add new MCP server to team config | Tech Lead + Security review |
-| Enable Claude Code in new project | Team Lead |
-| Use Enterprise features (Zero Trust, SSO) | IT/Security team |
-| Exception to any charter rule | Engineering Director |
+| 向团队配置添加新 MCP 服务器 | 技术负责人 + 安全审查 |
+| 在新项目中启用 Claude Code | 团队负责人 |
+| 启用企业功能（零信任、SSO） | IT/安全团队 |
+| 对任何章程规则的豁免 | 工程总监 |
 
 ---
 
-## Compliance Obligations
+## 合规义务
 
-By using Claude Code on company systems, you agree to:
-1. Follow this charter
-2. Report suspected data exposure to security@[company] within 24h
-3. Not circumvent governance controls (hooks, permission deny rules)
-4. Participate in quarterly access reviews
+使用公司系统上的 Claude Code，即表示您同意：
+1. 遵守本章程
+2. 在 24 小时内向 security@[公司] 报告疑似数据泄露
+3. 不绕过治理控制（钩子、权限拒绝规则）
+4. 参与季度访问审查
 
 ---
 
-**Charter violations**: Follow standard disciplinary process. First occurrence: coaching. Repeated or severe: escalation.
+**章程违规**：遵循标准纪律程序。首次：辅导。重复或严重：升级处理。
 ```
 
-### 2.2 Data Classification and Claude Code Settings
+### 2.2 数据分类与 Claude Code 设置
 
-Translate data classification into actual configuration:
+将数据分类转化为实际配置：
 
 ```json
 {
@@ -196,77 +196,77 @@ Translate data classification into actual configuration:
 ```
 
 ```markdown
-<!-- CLAUDE.md — data handling rules -->
-## Data Handling
+<!-- CLAUDE.md — 数据处理规则 -->
+## 数据处理
 
-**NEVER** read, reference, or include in output:
-- Files matching: .env, *.pem, *.key, credentials.*, secrets/
-- Customer PII fields (fields named: email, phone, ssn, dob, card_*)
-- Credentials or API keys (even masked/redacted examples)
+**绝不**读取、引用或在输出中包含以下内容：
+- 匹配以下模式的文件：.env、*.pem、*.key、credentials.*、secrets/
+- 客户个人身份信息字段（字段名为：email、phone、ssn、dob、card_*）
+- 凭证或 API 密钥（即使已遮蔽/脱敏的示例）
 
-If you encounter restricted data while reading a file, stop and inform the user.
-Do not proceed until explicitly told to skip that content.
+如果在读取文件时遇到受限数据，请停止并告知用户。
+在被明确告知跳过该内容之前，不要继续处理。
 ```
 
 ---
 
-## 3. MCP Governance Workflow
+## 3. MCP 治理流程
 
-Individual MCP vetting (the 5-minute audit) is covered in [security-hardening.md §1.1](./security-hardening.md#11-mcp-vetting-workflow). This section covers the organizational workflow: how new MCPs get approved, deployed, and monitored across your team.
+个人 MCP 审查（5 分钟审计）已在 [security-hardening.md §1.1](./security-hardening.md#11-mcp-vetting-workflow) 中介绍。本节涵盖组织工作流：新 MCP 如何在整个团队中获得批准、部署和监控。
 
-### 3.1 Approval Workflow
+### 3.1 审批流程
 
 ```
-Developer wants new MCP
+开发者需要新 MCP
         │
         ▼
-[1] Submit MCP Request
-    - Name, source URL, version
-    - Proposed use case
-    - Data scope (what will it access?)
+[1] 提交 MCP 申请
+    - 名称、来源 URL、版本
+    - 拟定使用场景
+    - 数据范围（将访问什么？）
         │
         ▼
-[2] Security Review (Tech Lead + optionally Security team)
-    - 5-min MCP audit (see security-hardening.md)
-    - Check: Stars >50, recent commits, no dangerous flags
-    - Check: No CVEs (search NVD + GitHub security advisories)
-    - Classify risk: LOW / MEDIUM / HIGH
+[2] 安全审查（技术负责人 + 可选安全团队）
+    - 5 分钟 MCP 审计（参见 security-hardening.md）
+    - 检查：Star 数 >50、近期提交、无危险标记
+    - 检查：无 CVE（搜索 NVD + GitHub 安全公告）
+    - 风险分类：低/中/高
         │
      ┌──┴──┐
-   LOW   MED/HIGH
+   低风险  中/高风险
      │      │
      ▼      ▼
-  Approve  Extended review
-           (2-week trial in sandbox)
-           + approval from Security team
+  批准    扩展审查
+          （2 周沙箱试验）
+          + 安全团队审批
         │
         ▼
-[3] Add to Approved Registry
-    - Pin exact version
-    - Document approved scope
-    - Set expiry date (6 months)
+[3] 添加至已批准注册表
+    - 固定精确版本
+    - 记录批准范围
+    - 设置到期日期（6 个月）
         │
         ▼
-[4] Deploy via shared settings.json
-    - Committed to repo
-    - No local overrides for approved MCPs
+[4] 通过共享 settings.json 部署
+    - 提交至代码库
+    - 已批准的 MCP 不允许本地覆盖
         │
         ▼
-[5] Monitor + Periodic Re-review
-    - Check for security advisories every 30 days
-    - Re-approve at version bumps (patch: auto, minor+: manual)
-    - Quarterly full registry review
+[5] 监控 + 定期重审
+    - 每 30 天检查安全公告
+    - 版本升级时重新批准（补丁版本：自动；次版本+：手动）
+    - 季度全面注册表审查
 ```
 
-### 3.2 MCP Registry Format
+### 3.2 MCP 注册表格式
 
-Maintain an approved MCP registry at `.claude/mcp-registry.yaml` in your team's shared config repo:
+在您团队的共享配置库中维护已批准的 MCP 注册表 `.claude/mcp-registry.yaml`：
 
 ```yaml
 # .claude/mcp-registry.yaml
-# Approved MCP servers for [Organization Name]
-# Last updated: 2026-03-10
-# Reviewer: [Name, Role]
+# [组织名称] 已批准的 MCP 服务器
+# 最后更新：2026-03-10
+# 审查人：[姓名、职位]
 
 metadata:
   review_cycle: quarterly
@@ -282,7 +282,7 @@ approved:
     expires: "2026-07-15"
     data_scope: PUBLIC
     risk: LOW
-    rationale: "Read-only documentation lookup. No data egress."
+    rationale: "只读文档查询，无数据外发。"
     config:
       command: npx
       args: ["-y", "@context7/mcp-server@1.2.3"]
@@ -295,7 +295,7 @@ approved:
     expires: "2026-07-15"
     data_scope: INTERNAL
     risk: LOW
-    rationale: "Local reasoning only. No network access."
+    rationale: "仅本地推理，无网络访问。"
     config:
       command: npx
       args: ["-y", "@modelcontextprotocol/server-sequential-thinking@0.6.2"]
@@ -305,13 +305,13 @@ approved:
     source: "internal"
     approved_by: "security@company.com"
     approved_date: "2026-02-01"
-    expires: "2026-05-01"  # shorter expiry for higher risk
+    expires: "2026-05-01"  # 较高风险，到期时间更短
     data_scope: CONFIDENTIAL
     risk: MEDIUM
-    rationale: "Read-only replica access. No PII tables in allowlist."
+    rationale: "只读副本访问，允许列表中无个人身份信息表。"
     restrictions:
-      - "Read-only credentials only"
-      - "No access to users, payments, or audit tables"
+      - "仅限只读凭证"
+      - "不访问 users、payments 或 audit 表"
     config:
       command: npx
       args: ["-y", "@company/db-mcp@2.1.0"]
@@ -320,42 +320,42 @@ pending_review:
   - name: github-mcp
     requested_by: "dev@company.com"
     requested_date: "2026-03-05"
-    use_case: "PR automation"
+    use_case: "PR 自动化"
     status: under_review
 
 denied:
   - name: browser-automation-mcp
     denied_date: "2026-02-10"
-    reason: "Full browser access with no scope restriction. Risk too high."
+    reason: "全浏览器访问，无范围限制，风险过高。"
 ```
 
-### 3.3 Enforcing the Registry via Hook
+### 3.3 通过 Hook（钩子）强制执行注册表
 
-Use a governance hook to validate that only approved MCPs are in use. The script below is a minimal inline version you can drop into `.claude/hooks/governance-check.sh`. For a more complete implementation with additional checks (deny list enforcement, dangerous allow-list detection), see [`examples/hooks/bash/governance-enforcement-hook.sh`](../../examples/hooks/bash/governance-enforcement-hook.sh).
+使用治理 Hook（钩子）验证只有已批准的 MCP 在使用中。以下脚本是一个可放入 `.claude/hooks/governance-check.sh` 的精简内联版本。如需包含更多检查（拒绝列表强制执行、危险允许列表检测）的更完整实现，请参见 [`examples/hooks/bash/governance-enforcement-hook.sh`](../../examples/hooks/bash/governance-enforcement-hook.sh)。
 
 ```bash
 #!/bin/bash
 # .claude/hooks/governance-check.sh
-# Event: SessionStart
-# Validates active MCP config against approved registry
+# 事件：SessionStart
+# 验证活跃 MCP 配置是否在已批准的注册表中
 
 REGISTRY=".claude/mcp-registry.yaml"
 SETTINGS="${HOME}/.claude.json"
 
 if [[ ! -f "$REGISTRY" ]]; then
-  exit 0  # No registry = no enforcement (opt-in governance)
+  exit 0  # 无注册表 = 不强制执行（选择性治理）
 fi
 
-# Check for unapproved MCPs (requires yq and jq)
+# 检查未批准的 MCP（需要 yq 和 jq）
 if command -v jq &>/dev/null && command -v yq &>/dev/null; then
   ACTIVE=$(jq -r '.mcpServers | keys[]' "$SETTINGS" 2>/dev/null)
   APPROVED=$(yq e '.approved[].name' "$REGISTRY" 2>/dev/null)
 
   for mcp in $ACTIVE; do
     if ! echo "$APPROVED" | grep -q "^${mcp}$"; then
-      echo "GOVERNANCE WARNING: MCP '${mcp}' is not in approved registry."
-      echo "Submit a request at: https://your-internal-wiki/mcp-requests"
-      echo "Session continues — please remediate within 48 hours."
+      echo "治理警告：MCP '${mcp}' 不在已批准注册表中。"
+      echo "提交申请请访问：https://your-internal-wiki/mcp-requests"
+      echo "会话继续——请在 48 小时内处理。"
     fi
   done
 fi
@@ -363,17 +363,17 @@ fi
 exit 0
 ```
 
-**Note**: This hook warns, it does not block. Blocking at session start creates too much friction. Use periodic compliance checks instead (see §5.3).
+**注意**：此钩子发出警告，不会阻断。在会话启动时阻断会产生过多摩擦，请改用定期合规检查（参见 §5.3）。
 
 ---
 
-## 4. Guardrail Tiers
+## 4. 护栏级别
 
-Pre-configured guardrail tiers for four common scenarios. Copy the relevant tier into your project's `.claude/settings.json` and `CLAUDE.md`.
+针对四种常见场景预配置的护栏级别。将相关级别复制到您项目的 `.claude/settings.json` 和 `CLAUDE.md` 中。
 
-### Tier 1: Starter
+### 级别 1：入门级
 
-**When**: Small team (<5), internal projects, no production data, low compliance requirements.
+**适用场景**：小型团队（<5 人）、内部项目、无生产数据、低合规要求。
 
 ```json
 {
@@ -397,18 +397,18 @@ Pre-configured guardrail tiers for four common scenarios. Copy the relevant tier
 ```
 
 ```markdown
-<!-- CLAUDE.md additions — Starter tier -->
-## Security Basics
-- Never read .env files or credential files
-- Ask before running destructive commands (DROP, DELETE, rm -rf)
-- Follow the codebase's existing patterns
+<!-- CLAUDE.md 补充内容——入门级 -->
+## 安全基础
+- 绝不读取 .env 文件或凭证文件
+- 运行破坏性命令前先询问（DROP、DELETE、rm -rf）
+- 遵循代码库现有模式
 ```
 
-**Investment**: 10 minutes setup. Covers basics.
+**投入**：10 分钟配置，覆盖基础内容。
 
-### Tier 2: Standard
+### 级别 2：标准级
 
-**When**: Team 5–20, production-adjacent code, some sensitive data, no hard compliance requirements.
+**适用场景**：5–20 人团队、接近生产的代码、部分敏感数据、无强制合规要求。
 
 {
   "permissions": {
@@ -452,23 +452,23 @@ Pre-configured guardrail tiers for four common scenarios. Copy the relevant tier
 ```
 
 ```markdown
-<!-- CLAUDE.md additions — Standard tier -->
-## Production Safety
-- Infrastructure files (docker-compose, terraform, CI/CD) are locked.
-  Request permission before modifying.
-- New dependencies require Tech Lead approval. Do not run npm install <pkg>.
-- Database destructive operations (DROP, DELETE, TRUNCATE) require backup confirmation.
+<!-- CLAUDE.md 补充内容——标准级 -->
+## 生产安全
+- 基础设施文件（docker-compose、terraform、CI/CD）已锁定。
+  修改前需获得权限。
+- 新依赖需要技术负责人审批，不要运行 npm install <pkg>。
+- 数据库破坏性操作（DROP、DELETE、TRUNCATE）需要备份确认。
 
-## Code Review Gate
-- All AI-generated code touching auth, payments, or data access must be flagged
-  with a "AI-generated: review required" comment in the PR description.
+## 代码审查门控
+- 所有涉及 auth、支付或数据访问的 AI 生成代码，必须在 PR 描述中
+  标注"AI 生成：需要审查"注释。
 ```
 
-**Investment**: 30–45 minutes setup. Covers most teams.
+**投入**：30–45 分钟配置，覆盖大多数团队需求。
 
-### Tier 3: Strict
+### 级别 3：严格级
 
-**When**: Team 20+, production-critical systems, customer data, informal compliance expectations.
+**适用场景**：20+ 人团队、生产关键系统、客户数据、非正式合规预期。
 
 ```json
 {
@@ -531,40 +531,40 @@ Pre-configured guardrail tiers for four common scenarios. Copy the relevant tier
 ```
 
 ```markdown
-<!-- CLAUDE.md additions — Strict tier -->
-## Security Posture: STRICT
+<!-- CLAUDE.md 补充内容——严格级 -->
+## 安全态势：严格
 
-You are operating in a strict security environment. Follow these rules without exception.
+您正在严格安全环境中运行。请无例外地遵守以下规则。
 
-### Locked Files
-These files cannot be modified without explicit permission in this conversation:
-- docker-compose.yml, Dockerfile, .github/workflows/**, terraform/**, kubernetes/**
-- prisma/schema.prisma (database schema)
-- Any file in /src/auth/, /src/payments/, /src/crypto/
+### 锁定文件
+以下文件未经本次对话明确授权不可修改：
+- docker-compose.yml、Dockerfile、.github/workflows/**、terraform/**、kubernetes/**
+- prisma/schema.prisma（数据库架构）
+- /src/auth/、/src/payments/、/src/crypto/ 中的任何文件
 
-### Dependency Protocol
-Before adding any dependency:
-1. State the dependency name and purpose
-2. List 2+ alternatives considered
-3. Wait for explicit approval before running any install command
+### 依赖协议
+添加任何依赖前：
+1. 说明依赖名称和用途
+2. 列出至少 2 个考虑过的替代方案
+3. 等待明确批准后再运行任何安装命令
 
-### Data Access Protocol
-Before reading any file not in the project root:
-1. State the file path and why you need it
-2. Wait for approval if the path looks sensitive
+### 数据访问协议
+读取项目根目录以外的任何文件前：
+1. 说明文件路径及需要它的原因
+2. 如果路径看起来敏感，等待批准
 
-### AI Attribution
-All code blocks you generate must be prefixed with `// AI-generated` in PRs.
-Tests generated by AI must include `// AI-generated test` comment.
+### AI 归因
+您在 PR 中生成的所有代码块必须以 `// AI 生成` 为前缀。
+AI 生成的测试必须包含 `// AI 生成测试` 注释。
 ```
 
-**Investment**: 1–2 hours setup. Suitable for most production teams.
+**投入**：1–2 小时配置，适合大多数生产团队。
 
-### Tier 4: Regulated
+### 级别 4：合规级
 
-**When**: Finance, healthcare, regulated industries. HIPAA, SOC2, PCI, ISO27001 compliance required.
+**适用场景**：金融、医疗、受监管行业。需要 HIPAA、SOC2、PCI、ISO27001 合规。
 
-This tier adds compliance-specific controls on top of Strict.
+在严格级基础上增加合规特定控制。
 
 ```json
 {
@@ -633,139 +633,139 @@ This tier adds compliance-specific controls on top of Strict.
 ```
 
 ```markdown
-<!-- CLAUDE.md additions — Regulated tier -->
-## Compliance Mode: [HIPAA | SOC2 | PCI] — ACTIVE
+<!-- CLAUDE.md 补充内容——合规级 -->
+## 合规模式：[HIPAA | SOC2 | PCI]——已激活
 
-You are operating under regulatory compliance requirements. These rules are non-negotiable.
+您正在法规合规要求下运行。以下规则不可商量。
 
-### Prohibited Data
-NEVER include in your output, suggestions, or examples:
-- PHI (patient health information), PII (names, emails, phones in customer context)
-- Card numbers, CVVs, bank accounts
-- SSNs, tax IDs, government IDs
-- Raw authentication tokens, session cookies, API keys
+### 禁止的数据
+绝不在输出、建议或示例中包含：
+- PHI（患者健康信息）、PII（客户场景下的姓名、邮箱、电话）
+- 卡号、CVV、银行账户
+- 身份证号、税号、政府 ID
+- 原始认证令牌、会话 cookie、API 密钥
 
-### Mandatory Review Gates
-These changes require human approval BEFORE code is committed:
-- Any change to authentication or authorization logic
-- Any change to encryption or key management
-- Any database migration
-- Any new external API integration
+### 强制审查门控
+以下变更在代码提交前需要人工审批：
+- 对认证或授权逻辑的任何修改
+- 对加密或密钥管理的任何修改
+- 任何数据库迁移
+- 任何新的外部 API 集成
 
-### Audit Trail
-Every session operating on regulated data must have:
-- User ID noted at session start ("This session is for: [your-email]")
-- Task description at session start ("Task: [brief description]")
-- Checkpoint comment at natural breakpoints
+### 审计跟踪
+每个在受监管数据上运行的会话必须：
+- 在会话开始时注明用户 ID（"本次会话用户：[您的邮箱]"）
+- 在会话开始时说明任务描述（"任务：[简要描述]"）
+- 在自然断点处添加检查点注释
 
-### AI Attribution (Mandatory for Regulated)
-All AI-generated code must include:
-- `// AI-generated: [date] [model] [reviewer]` comment
-- PR description must include AI disclosure section
+### AI 归因（合规级强制要求）
+所有 AI 生成的代码必须包含：
+- `// AI 生成：[日期] [模型] [审查人]` 注释
+- PR 描述必须包含 AI 披露部分
 ```
 
-**Additional tool for regulated environments**: Consider Entire CLI for full session audit trails with approval gates. See [AI Traceability §5.1](../ops/ai-traceability.md#51-entire-cli) for details and a go/no-go evaluation checklist.
+**受监管环境的附加工具**：考虑使用 Entire CLI 进行完整会话审计跟踪和审批门控。详情及评估清单请参见 [AI 可追溯性 §5.1](../ops/ai-traceability.md#51-entire-cli)。这是多个可选工具之一，请根据您的具体合规需求进行评估。
 
 ---
 
-## 5. Policy Enforcement at Scale
+## 5. 规模化策略执行
 
-Having a policy is not the same as enforcing it. This section covers how to actually get governance to stick across a team of 10–100 developers.
+拥有策略和执行策略是两回事。本节介绍如何让治理在 10–100 名开发者的团队中真正落地。
 
-### 5.1 Config Distribution
+### 5.1 配置分发
 
-**The core principle**: Governance config lives in the repo, not on individual machines.
+**核心原则**：治理配置放在代码库中，而非个人机器上。
 
 ```
-your-org-config/                 ← separate "platform config" repo
+your-org-config/                 ← 独立的"平台配置"代码库
 ├── .claude/
-│   ├── settings.json            ← shared settings (tier-based)
-│   ├── mcp-registry.yaml        ← approved MCPs
+│   ├── settings.json            ← 共享设置（基于级别）
+│   ├── mcp-registry.yaml        ← 已批准的 MCP
 │   ├── hooks/
-│   │   ├── governance-check.sh  ← MCP registry check
-│   │   ├── session-logger.sh    ← audit trail
-│   │   └── velocity-governor.sh ← rate limiting
+│   │   ├── governance-check.sh  ← MCP 注册表检查
+│   │   ├── session-logger.sh    ← 审计跟踪
+│   │   └── velocity-governor.sh ← 速率限制
 │   └── agents/
-│       └── security-reviewer.md ← shared agent for code review
+│       └── security-reviewer.md ← 代码审查共享智能体
 ├── templates/
-│   ├── CLAUDE.md.starter        ← per-tier CLAUDE.md templates
+│   ├── CLAUDE.md.starter        ← 各级别 CLAUDE.md 模板
 │   ├── CLAUDE.md.standard
 │   ├── CLAUDE.md.strict
 │   └── CLAUDE.md.regulated
 └── scripts/
-    └── setup-project.sh         ← bootstraps new project with correct tier
+    └── setup-project.sh         ← 用正确级别初始化新项目
 ```
 
-**Bootstrapping a new project**:
+**初始化新项目**：
 
 ```bash
 #!/bin/bash
 # scripts/setup-project.sh
-# Usage: ./setup-project.sh [starter|standard|strict|regulated]
+# 用法：./setup-project.sh [starter|standard|strict|regulated]
 
 TIER=${1:-standard}
 CONFIG_REPO="https://github.com/your-org/claude-code-config"
 
-echo "Setting up Claude Code governance: $TIER tier"
+echo "设置 Claude Code 治理：$TIER 级"
 
-# Create .claude directory
+# 创建 .claude 目录
 mkdir -p .claude/hooks
 
-# Copy tier config
+# 复制级别配置
 curl -s "$CONFIG_REPO/raw/main/templates/.claude/settings.${TIER}.json" \
   -o .claude/settings.json
 
-# Copy CLAUDE.md template
+# 复制 CLAUDE.md 模板
 curl -s "$CONFIG_REPO/raw/main/templates/CLAUDE.md.${TIER}" \
   -o CLAUDE.md
 
-# Copy governance hooks
+# 复制治理钩子
 curl -s "$CONFIG_REPO/raw/main/hooks/governance-check.sh" \
   -o .claude/hooks/governance-check.sh
 chmod +x .claude/hooks/governance-check.sh
 
-echo "Done. Commit .claude/ and CLAUDE.md to your repo."
+echo "完成。请将 .claude/ 和 CLAUDE.md 提交到您的代码库。"
 ```
 
-### 5.2 Onboarding Checklist
+### 5.2 入职检查清单
 
-New developer joining a team that uses Claude Code should complete this checklist:
+加入使用 Claude Code 团队的新开发者应完成此检查清单：
 
 ```markdown
-## Claude Code Onboarding Checklist
+## Claude Code 入职检查清单
 
-### Setup (30 minutes)
-- [ ] Install Claude Code: `npm i -g @anthropic-ai/claude-code`
-- [ ] Configure global safety hooks: `./scripts/install-global-hooks.sh`
-- [ ] Verify project config loads: `claude` then ask "What tier is this project?"
-- [ ] Read the AI Usage Charter (link to your doc)
-- [ ] Review approved MCP list: `.claude/mcp-registry.yaml`
+### 配置（30 分钟）
+- [ ] 安装 Claude Code：`npm i -g @anthropic-ai/claude-code`
+- [ ] 配置全局安全钩子：`./scripts/install-global-hooks.sh`
+- [ ] 验证项目配置已加载：运行 `claude` 然后询问"这个项目是哪个级别？"
+- [ ] 阅读 AI 使用章程（链接至您的文档）
+- [ ] 查看已批准的 MCP 列表：`.claude/mcp-registry.yaml`
 
-### Security Basics
-- [ ] Confirm `~/.claude/settings.json` has no `permissions.allow` overrides
-  that bypass project's deny rules
-- [ ] Confirm no personal MCP servers running that access production data
-- [ ] Know how to report a data exposure: security@[company]
+### 安全基础
+- [ ] 确认 `~/.claude/settings.json` 中没有 `permissions.allow` 覆盖
+  能绕过项目的拒绝规则
+- [ ] 确认没有访问生产数据的个人 MCP 服务器在运行
+- [ ] 知道如何报告数据泄露：security@[公司]
 
-### First Week
-- [ ] Complete one task with Claude Code (bug fix, small feature)
-- [ ] Submit at least one PR with proper AI attribution section
-- [ ] Flag any friction points to Tech Lead for config improvement
+### 第一周
+- [ ] 用 Claude Code 完成一项任务（修 bug、小功能）
+- [ ] 提交至少一个带有适当 AI 归因部分的 PR
+- [ ] 向技术负责人反馈任何摩擦点以改进配置
 
-### Quarterly
-- [ ] Participate in MCP registry review
-- [ ] Review AI Usage Charter updates
-- [ ] Confirm no personal config overrides in place
+### 季度
+- [ ] 参与 MCP 注册表审查
+- [ ] 审查 AI 使用章程更新
+- [ ] 确认没有个人配置覆盖项在运行
 ```
 
-### 5.3 Compliance Checking
+### 5.3 合规检查
 
-Automated periodic compliance check to detect configuration drift:
+自动化定期合规检查，以检测配置漂移：
 
 ```bash
 #!/bin/bash
 # scripts/claude-governance-audit.sh
-# Run weekly via CI/CD or cron
+# 通过 CI/CD 或 cron 每周运行
 
 PASS=0
 FAIL=0
@@ -777,122 +777,122 @@ check() {
   local severity="${3:-FAIL}"
 
   if [[ "$result" == "OK" ]]; then
-    echo "  PASS: $name"
+    echo "  通过：$name"
     ((PASS++))
   else
-    echo "  $severity: $name — $result"
+    echo "  $severity：$name — $result"
     [[ "$severity" == "FAIL" ]] && ((FAIL++)) || ((WARN++))
   fi
 }
 
-echo "=== Claude Code Governance Audit ==="
+echo "=== Claude Code 治理审计 ==="
 echo ""
 
-# Check: settings.json present and committed
-echo "1. Repository Config"
+# 检查：settings.json 是否存在且已提交
+echo "1. 代码库配置"
 [[ -f ".claude/settings.json" ]] \
-  && check "settings.json present" "OK" \
-  || check "settings.json present" "Missing — team config not enforced" "FAIL"
+  && check "settings.json 存在" "OK" \
+  || check "settings.json 存在" "缺失——团队配置未强制执行" "FAIL"
 
 git ls-files --error-unmatch .claude/settings.json &>/dev/null \
-  && check "settings.json committed" "OK" \
-  || check "settings.json committed" "Not tracked by git — won't apply to team" "WARN"
+  && check "settings.json 已提交" "OK" \
+  || check "settings.json 已提交" "未被 git 跟踪——不会应用于团队" "WARN"
 
-# Check: deny rules for secrets
+# 检查：密钥的拒绝规则
 echo ""
-echo "2. Secret Protection"
+echo "2. 密钥保护"
 if [[ -f ".claude/settings.json" ]]; then
   jq -e '.permissions.deny[]? | select(test("env|pem|key"))' \
     .claude/settings.json &>/dev/null \
-    && check ".env protection rules" "OK" \
-    || check ".env protection rules" "No deny rules for .env or key files" "FAIL"
+    && check ".env 保护规则" "OK" \
+    || check ".env 保护规则" "没有针对 .env 或密钥文件的拒绝规则" "FAIL"
 fi
 
-# Check: hooks installed and executable
+# 检查：钩子已安装且可执行
 echo ""
-echo "3. Hook Stack"
+echo "3. 钩子堆栈"
 for hook in ".claude/hooks/governance-check.sh"; do
   if [[ -f "$hook" ]]; then
     [[ -x "$hook" ]] \
-      && check "$hook executable" "OK" \
-      || check "$hook executable" "Not executable — run chmod +x $hook" "FAIL"
+      && check "$hook 可执行" "OK" \
+      || check "$hook 可执行" "不可执行——运行 chmod +x $hook" "FAIL"
   else
-    check "$hook present" "Missing" "WARN"
+    check "$hook 存在" "缺失" "WARN"
   fi
 done
 
-# Check: MCP registry present
+# 检查：MCP 注册表是否存在
 echo ""
-echo "4. MCP Governance"
+echo "4. MCP 治理"
 [[ -f ".claude/mcp-registry.yaml" ]] \
-  && check "MCP registry present" "OK" \
-  || check "MCP registry present" "No registry — MCP usage ungoverned" "WARN"
+  && check "MCP 注册表存在" "OK" \
+  || check "MCP 注册表存在" "无注册表——MCP 使用无治理" "WARN"
 
-# Check: CLAUDE.md present and committed
+# 检查：CLAUDE.md 是否存在且已提交
 echo ""
-echo "5. Documentation"
+echo "5. 文档"
 [[ -f "CLAUDE.md" ]] || [[ -f ".claude/CLAUDE.md" ]] \
-  && check "CLAUDE.md present" "OK" \
-  || check "CLAUDE.md present" "Missing — no project context for AI" "WARN"
+  && check "CLAUDE.md 存在" "OK" \
+  || check "CLAUDE.md 存在" "缺失——AI 没有项目上下文" "WARN"
 
 echo ""
-echo "=== Summary ==="
-echo "  Passed:   $PASS"
-echo "  Failed:   $FAIL (must fix)"
-echo "  Warnings: $WARN (should fix)"
+echo "=== 摘要 ==="
+echo "  通过：   $PASS"
+echo "  失败：   $FAIL（必须修复）"
+echo "  警告：   $WARN（应该修复）"
 echo ""
 
 [[ $FAIL -gt 0 ]] && exit 1 || exit 0
 ```
 
-### 5.4 Role-Based Guardrails
+### 5.4 基于角色的护栏
 
-Different developers have different risk profiles. Tailor Claude Code settings accordingly.
+不同的开发者有不同的风险画像，相应地定制 Claude Code 设置。
 
-**Approach: tier by experience/role in CLAUDE.md**
+**方式：在 CLAUDE.md 中按经验/角色分层**
 
 ```markdown
-<!-- CLAUDE.md — role-aware guidelines -->
-## Developer Context
+<!-- CLAUDE.md — 角色感知指南 -->
+## 开发者上下文
 
-This is a [JUNIOR|SENIOR|LEAD] developer project context.
+这是一个[初级|高级|负责人]开发者项目上下文。
 
-### If JUNIOR (< 1 year at company)
-- Always confirm architecture decisions before implementing
-- Do not modify database schemas, migrations, or auth code without pairing with a senior
-- Every PR must have a human reviewer check the AI-generated sections explicitly
-- Use /plan mode before implementing anything > 50 lines
+### 如果是初级（入职 <1 年）
+- 实施前始终确认架构决策
+- 未与高级开发者结对，不要修改数据库架构、迁移或认证代码
+- 每个 PR 都必须有人工审查员明确检查 AI 生成部分
+- 实施任何超过 50 行的内容前使用计划模式
 
-### If SENIOR (1+ years at company)
-- Standard review applies
-- Can modify most files, but auth/payment/crypto still require lead review
-- AI attribution in PRs required
+### 如果是高级（入职 1 年以上）
+- 适用标准审查
+- 可以修改大多数文件，但 auth/支付/加密仍需负责人审查
+- PR 中需要 AI 归因
 
-### If LEAD/PRINCIPAL
-- Full access, judgment-based restrictions
-- Responsible for setting guardrail tier for their team projects
-- Must conduct quarterly MCP registry review
+### 如果是负责人/主任工程师
+- 完全访问，基于判断的限制
+- 负责为其团队项目设置护栏级别
+- 必须主持季度 MCP 注册表审查
 ```
 
-**Approach: different settings.json per environment**
+**方式：每个环境使用不同的 settings.json**
 
-In CI/CD, check the active `settings.json` path at pipeline start to enforce the correct tier. Claude Code reads `.claude/settings.json` from the project root — commit your strict-tier config there so CI always picks it up, regardless of what developers have locally.
+在 CI/CD 中，在流水线启动时检查活跃的 `settings.json` 路径以强制执行正确的级别。Claude Code 从项目根目录读取 `.claude/settings.json`——在那里提交您的严格级别配置，使 CI 始终能获取它，无论开发者本地有什么配置。
 
 ```bash
-# In your CI pipeline setup step, verify the correct tier is committed
+# 在 CI 流水线设置步骤中，验证提交了正确的级别
 if ! grep -q '"Bash(curl \*)"' .claude/settings.json; then
-  echo "ERROR: CI requires Regulated-tier settings.json (curl must be denied)"
+  echo "错误：CI 需要合规级 settings.json（必须拒绝 curl）"
   exit 1
 fi
 ```
 
-### 5.5 CI/CD Gates
+### 5.5 CI/CD 门控
 
-Block non-compliant AI usage from reaching production:
+阻止不合规的 AI 使用到达生产环境：
 
 ```yaml
 # .github/workflows/ai-governance.yml
-name: AI Governance Check
+name: AI 治理检查
 
 on: [pull_request]
 
@@ -902,27 +902,27 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Check governance config present
+      - name: 检查治理配置是否存在
         run: |
           if [[ ! -f ".claude/settings.json" ]]; then
-            echo "::error::Missing .claude/settings.json — governance config required"
+            echo "::error::缺少 .claude/settings.json——需要治理配置"
             exit 1
           fi
 
-      - name: Check no credential access permissions
+      - name: 检查无凭证访问权限
         run: |
           if jq -e '.permissions.allow[]? | select(test("env|pem|key|secret"))' \
             .claude/settings.json 2>/dev/null; then
-            echo "::error::Dangerous permissions.allow detected — credentials may be exposed"
+            echo "::error::检测到危险的 permissions.allow——凭证可能暴露"
             exit 1
           fi
 
-      - name: Run governance audit
+      - name: 运行治理审计
         run: |
           chmod +x scripts/claude-governance-audit.sh
           ./scripts/claude-governance-audit.sh
 
-      - name: Check AI attribution in PR description
+      - name: 检查 PR 描述中的 AI 归因
         if: ${{ env.REQUIRE_AI_ATTRIBUTION == 'true' }}
         uses: actions/github-script@v7
         with:
@@ -932,45 +932,45 @@ jobs:
                                    body.includes('Claude') ||
                                    body.includes('AI-generated');
             if (!hasAttribution) {
-              core.warning('No AI attribution section found. Please disclose AI usage.');
+              core.warning('未找到 AI 归因部分，请披露 AI 使用情况。');
             }
 ```
 
 ---
 
-## 6. Audit, Compliance & Governance Structure
+## 6. 审计、合规与治理结构
 
-### 6.1 What SOC2 and ISO27001 Auditors Actually Ask
+### 6.1 SOC2 和 ISO27001 审计师实际关注的内容
 
-When auditors review AI coding tool usage, they typically look for evidence of these controls:
+审计师审查 AI 编码工具使用时，通常会寻找以下控制措施的证据：
 
-| Auditor question | What they want to see | Claude Code implementation |
+| 审计师问题 | 他们希望看到的 | Claude Code 实现 |
 |-----------------|----------------------|---------------------------|
-| "Do you have a policy for AI tool usage?" | Written charter, signed/acknowledged | `docs/ai-usage-charter.md` + onboarding checklist |
-| "How do you control data sent to AI vendors?" | Data classification + technical controls | `permissions.deny` for sensitive files |
-| "How do you vet third-party AI components?" | Approval workflow + registry | MCP registry + approval process |
-| "Do you have an audit trail of AI actions?" | Log of tool calls, files accessed | Session JSONL logs + `compliance-audit-logger.sh` |
-| "How do you review AI-generated code?" | Code review process with AI disclosure | PR template + attribution policy |
-| "What happens when an incident occurs?" | Incident response procedure | Existing IR process + AI-specific additions |
+| "您是否有 AI 工具使用策略？" | 书面章程，已签署/确认 | `docs/ai-usage-charter.md` + 入职检查清单 |
+| "您如何控制发送给 AI 供应商的数据？" | 数据分类 + 技术控制 | `permissions.deny` 拦截敏感文件 |
+| "您如何审查第三方 AI 组件？" | 审批流程 + 注册表 | MCP 注册表 + 审批流程 |
+| "您是否有 AI 操作的审计跟踪？" | 工具调用、文件访问日志 | 会话 JSONL 日志 + `compliance-audit-logger.sh` |
+| "您如何审查 AI 生成的代码？" | 带有 AI 披露的代码审查流程 | PR 模板 + 归因策略 |
+| "发生事故时如何处理？" | 事故响应程序 | 现有 IR 流程 + AI 特定补充 |
 
-**For SOC2 specifically**: The relevant Trust Services Criteria are CC6.1 (logical access controls), CC6.3 (access removal), CC7.1 (monitoring), and CC9.2 (vendor risk). Your Claude Code governance should map to these.
+**对于 SOC2**：相关的信任服务标准是 CC6.1（逻辑访问控制）、CC6.3（访问删除）、CC7.1（监控）和 CC9.2（供应商风险）。您的 Claude Code 治理应映射到这些标准。
 
-**For ISO27001 specifically**: Relevant Annex A controls include A.8.3 (information access restriction), A.8.24 (use of cryptography), A.8.25 (secure development lifecycle), and A.5.23 (information security for use of cloud services).
+**对于 ISO27001**：相关的附录 A 控制包括 A.8.3（信息访问限制）、A.8.24（密码学使用）、A.8.25（安全开发生命周期）和 A.5.23（云服务信息安全）。
 
-### 6.2 Audit Trail Setup
+### 6.2 审计跟踪设置
 
-Claude Code sessions are already logged to `~/.claude/projects/<project>/*.jsonl`. The challenge is making them:
-1. Accessible after the fact (not lost when developer leaves)
-2. Tamper-evident (can't be retroactively edited)
-3. Queryable for audit purposes
+Claude Code 会话已记录到 `~/.claude/projects/<project>/*.jsonl`。挑战在于让它们：
+1. 事后可访问（开发者离职后不丢失）
+2. 防篡改（不能事后编辑）
+3. 可查询以用于审计目的
 
-**Minimal audit trail (no additional tools)**:
+**最小审计跟踪（无需额外工具）**：
 
 ```bash
 #!/bin/bash
 # .claude/hooks/compliance-audit-logger.sh
-# Event: PostToolUse (all tools)
-# Appends structured audit entries to a shared log
+# 事件：PostToolUse（所有工具）
+# 将结构化审计条目追加到共享日志
 
 LOG_DIR="${COMPLIANCE_LOG_DIR:-/var/log/claude-audit}"
 LOG_FILE="$LOG_DIR/$(date +%Y-%m-%d).jsonl"
@@ -987,45 +987,45 @@ echo "{\"timestamp\":\"$TIMESTAMP\",\"user\":\"$USER\",\"project\":\"$PROJECT\",
   >> "$LOG_FILE"
 ```
 
-**Shipping logs to immutable storage** (recommended for regulated environments):
+**将日志传送至不可变存储**（受监管环境推荐）：
 
 ```bash
-# Daily: sync session logs to immutable bucket
+# 每日：将会话日志同步至不可变存储桶
 aws s3 sync ~/.claude/projects/ \
   s3://your-audit-bucket/claude-sessions/$(whoami)/ \
   --storage-class GLACIER_INSTANT_RETRIEVAL \
   --exclude "*.tmp"
 ```
 
-**For full compliance audit trails with approval gates**, consider Entire CLI — it captures complete session context (prompts, reasoning, tool calls, file diffs) with cryptographic linking to git commits. See [AI Traceability §5.1](../ops/ai-traceability.md#51-entire-cli) for setup and evaluation criteria. This is one tool among several options; evaluate against your specific compliance requirements.
+**对于具有审批门控的完整合规审计跟踪**，可考虑 Entire CLI——它通过密码学链接到 git 提交来捕获完整会话上下文（提示词、推理、工具调用、文件差异）。详情及设置请参见 [AI 可追溯性 §5.1](../ops/ai-traceability.md#51-entire-cli)。这是多个可选工具之一，请根据您的具体合规需求进行评估。
 
-### 6.3 AI Governance Committee (Compact Reference)
+### 6.3 AI 治理委员会（精简参考）
 
-For organizations managing AI risk at scale, a lightweight AI Governance Committee provides the accountability structure auditors expect. This is a coordination mechanism, not a bottleneck.
+对于在规模上管理 AI 风险的组织，轻量级的 AI 治理委员会提供了审计师期望的问责结构。这是一个协调机制，而非瓶颈。
 
-**Minimal structure** (works for 10–100 developers):
+**最小结构**（适用于 10–100 名开发者）：
 
-| Role | Person | Responsibility |
+| 角色 | 人员 | 职责 |
 |------|--------|----------------|
-| **Governance Lead** | Engineering Manager or Lead | Policy updates, quarterly review, escalations |
-| **Security Rep** | SecEng or DevSecOps | MCP risk review, incident response |
-| **Dev Rep** | Senior dev rotation (3-month term) | Developer feedback, usability balance |
-| **Compliance Rep** | Legal/Compliance (regulated only) | Charter, regulatory mapping |
+| **治理负责人** | 工程经理或负责人 | 策略更新、季度审查、升级处理 |
+| **安全代表** | SecEng 或 DevSecOps | MCP 风险审查、事故响应 |
+| **开发代表** | 高级开发者轮换（3 个月任期） | 开发者反馈、可用性平衡 |
+| **合规代表** | 法律/合规（仅受监管行业） | 章程、法规映射 |
 
-**Meeting cadence**: Quarterly (30 min). Standing agenda:
-1. MCP registry review — anything to add, remove, or flag?
-2. Incident review — any AI-related security events since last meeting?
-3. Policy updates — any charter changes needed?
-4. Metrics — governance audit results, compliance check status
+**会议频率**：季度（30 分钟）。固定议程：
+1. MCP 注册表审查——有什么需要添加、删除或标记的？
+2. 事故审查——上次会议以来有什么 AI 相关安全事件？
+3. 策略更新——章程是否需要任何变更？
+4. 指标——治理审计结果、合规检查状态
 
-For detailed AI governance committee structures, RACI matrices, and compliance mapping, see Whitepaper #11: Enterprise AI Governance (FR/EN).
+详细的 AI 治理委员会结构、RACI 矩阵和合规映射，请参见白皮书 #11：企业 AI 治理（法语/英语）。
 
-### 6.4 Monitoring for Compliance
+### 6.4 合规监控
 
-The observability layer for governance is covered in [observability.md](../ops/observability.md). For compliance specifically, these monitoring queries are most relevant:
+治理的可观测层在 [observability.md](../ops/observability.md) 中介绍。对于合规而言，以下监控查询最为相关：
 
 ```bash
-# Which files did Claude access in the last 30 days?
+# Claude 在过去 30 天访问了哪些文件？
 # macOS: date -v-30d; Linux: date -d '30 days ago'
 if [[ "$OSTYPE" == "darwin"* ]]; then
   SINCE=$(date -v-30d +%Y-%m-%d)
@@ -1039,11 +1039,11 @@ find ~/.claude/projects/ -name "*.jsonl" -newer "$SINCE" | \
     select(.type == "tool_use" and .name == "Read") |
     .input.file_path' 2>/dev/null | sort -u
 
-# Any access to sensitive patterns?
-# (Run after the above, pipe through grep)
+# 是否有访问敏感模式的记录？
+# （在上面的命令之后运行，通过 grep 过滤）
 grep -E '\.(env|pem|key)$|secrets/|credentials'
 
-# Bash commands run by Claude this week
+# Claude 本周运行了哪些 Bash 命令？
 if [[ "$OSTYPE" == "darwin"* ]]; then
   SINCE_WEEK=$(date -v-7d +%Y-%m-%d)
 else
@@ -1059,64 +1059,64 @@ find ~/.claude/projects/ -name "*.jsonl" -newer "$SINCE_WEEK" | \
 
 ---
 
-## Quick Reference
+## 快速参考
 
-### Tier Selection
+### 级别选择
 
-| Your situation | Tier | Setup time |
+| 您的情况 | 级别 | 配置时间 |
 |----------------|------|------------|
-| Side project, personal use | Starter | 10 min |
-| Small team, internal project | Starter | 10 min |
-| Team 5–20, any production code | Standard | 45 min |
-| Team 20+, customer data | Strict | 2 hours |
-| Regulated industry (HIPAA/SOC2/PCI) | Regulated | Half day |
+| 个人项目、个人使用 | 入门级 | 10 分钟 |
+| 小型团队、内部项目 | 入门级 | 10 分钟 |
+| 5–20 人团队、任何生产代码 | 标准级 | 45 分钟 |
+| 20+ 人团队、客户数据 | 严格级 | 2 小时 |
+| 受监管行业（HIPAA/SOC2/PCI） | 合规级 | 半天 |
 
-### Governance Maturity Levels
+### 治理成熟度级别
 
-| Maturity | What you have | What's missing |
+| 成熟度 | 您拥有的 | 缺少的 |
 |----------|---------------|----------------|
-| **Ad hoc** | Each dev configures own setup | Consistency, accountability |
-| **Basic** | Shared CLAUDE.md + settings.json | MCP governance, audit trail |
-| **Managed** | + MCP registry + hooks | Compliance reporting |
-| **Compliant** | + Audit logs + charter + review cycle | Nothing critical |
-| **Audited** | + External validation + traceability | — |
+| **临时** | 每个开发者自行配置 | 一致性、责任制 |
+| **基础** | 共享 CLAUDE.md + settings.json | MCP 治理、审计跟踪 |
+| **管理** | + MCP 注册表 + 钩子 | 合规报告 |
+| **合规** | + 审计日志 + 章程 + 审查周期 | 无关键缺失 |
+| **审计** | + 外部验证 + 可追溯性 | — |
 
-### Common Mistakes
+### 常见错误
 
-| Mistake | Fix |
+| 错误 | 修复方法 |
 |---------|-----|
-| Governance only in `~/.claude` (personal) | Move to `.claude/` in repo |
-| `permissions.allow` overrides team's `deny` | Review personal config quarterly |
-| No MCP registry → every dev adds different MCPs | Start registry even if just 3 entries |
-| CLAUDE.md too long → Claude ignores rules | Keep under 8KB, prioritize critical rules |
-| Auditors ask for AI logs → nothing saved | Set up session log sync to S3 |
+| 治理仅在 `~/.claude`（个人）中 | 移至代码库的 `.claude/` 中 |
+| `permissions.allow` 覆盖团队的 `deny` | 每季度审查个人配置 |
+| 无 MCP 注册表 → 每个开发者添加不同的 MCP | 即使只有 3 个条目也要建立注册表 |
+| CLAUDE.md 太长 → Claude 忽略规则 | 保持在 8KB 以下，优先显示关键规则 |
+| 审计师要求 AI 日志 → 什么都没保存 | 设置会话日志同步到 S3 |
 
 ---
 
-## See Also
+## 另见
 
-- [Security Hardening](./security-hardening.md) — Individual dev security: MCP CVEs, injection defense, 5-min audit
-- [Production Safety Rules](./production-safety.md) — 6 non-negotiable rules for prod teams (ports, DB safety, infra lock)
-- [Data Privacy Guide](./data-privacy.md) — What data Claude Code sends to Anthropic, retention policies
-- [AI Traceability](../ops/ai-traceability.md) — Attribution policies, Entire CLI, git-ai, compliance frameworks
-- [Observability](../ops/observability.md) — Session monitoring, cost tracking, activity audit queries
-- [Adoption Approaches](../roles/adoption-approaches.md) — Team rollout patterns, CLAUDE.md strategies
-- [MCP Registry Template](../../examples/scripts/mcp-registry-template.yaml) — Ready-to-use registry format
-- [Governance Hook](../../examples/hooks/bash/governance-enforcement-hook.sh) — Hook validating config against policy
-- [AI Usage Charter Template](../../examples/scripts/ai-usage-charter-template.md) — Charter template ready to adapt
-
----
-
-## References
-
-- [Liminal AI Enterprise Governance Guide](https://www.liminal.ai/blog/enterprise-ai-governance-guide) — Practical implementation
-- [Databricks AI Governance Framework](https://www.databricks.com/blog/practical-ai-governance-framework-enterprises) — Enterprise-scale framework
-- [Augmentcode AI Code Governance](https://www.augmentcode.com/guides/ai-code-governance-framework-for-enterprise-dev-teams) — Dev team specific
-- [Partnership on AI — Six Governance Priorities 2026](https://partnershiponai.org/resource/six-governance-priorities/) — Evaluation frameworks, accountability
-- [EU AI Act](https://www.europarl.europa.eu/doceo/document/TA-9-2024-0138_EN.html) — Kill switch requirements for high-risk AI systems
-- [NIST AI RMF](https://airc.nist.gov/RMF/Overview) — Risk management framework
-- [SOC2 Trust Services Criteria](https://www.aicpa.org/resources/article/soc-2-trust-services-criteria) — CC6.1, CC7.1, CC9.2
+- [安全加固](./security-hardening.md) — 个人开发者安全：MCP CVE、注入防御、5 分钟审计
+- [生产安全规则](./production-safety.md) — 生产团队的 6 条不可妥协规则（端口、数据库安全、基础设施锁定）
+- [数据隐私指南](./data-privacy.md) — Claude Code 向 Anthropic 发送什么数据、保留策略
+- [AI 可追溯性](../ops/ai-traceability.md) — 归因策略、Entire CLI、git-ai、合规框架
+- [可观测性](../ops/observability.md) — 会话监控、成本跟踪、活动审计查询
+- [采用方式](../roles/adoption-approaches.md) — 团队发布模式、CLAUDE.md 策略
+- [MCP 注册表模板](../../examples/scripts/mcp-registry-template.yaml) — 即用型注册表格式
+- [治理钩子](../../examples/hooks/bash/governance-enforcement-hook.sh) — 验证配置是否符合策略的钩子
+- [AI 使用章程模板](../../examples/scripts/ai-usage-charter-template.md) — 可直接改编的章程模板
 
 ---
 
-*Version 1.0.0 | March 2026 | Part of [Claude Code Ultimate Guide](../README.md)*
+## 参考资料
+
+- [Liminal AI 企业治理指南](https://www.liminal.ai/blog/enterprise-ai-governance-guide) — 实践实现
+- [Databricks AI 治理框架](https://www.databricks.com/blog/practical-ai-governance-framework-enterprises) — 企业规模框架
+- [Augmentcode AI 代码治理](https://www.augmentcode.com/guides/ai-code-governance-framework-for-enterprise-dev-teams) — 开发团队专项
+- [Partnership on AI — 2026 年六大治理优先级](https://partnershiponai.org/resource/six-governance-priorities/) — 评估框架、问责制
+- [欧盟 AI 法案](https://www.europarl.europa.eu/doceo/document/TA-9-2024-0138_EN.html) — 高风险 AI 系统的强制停止要求
+- [NIST AI RMF](https://airc.nist.gov/RMF/Overview) — 风险管理框架
+- [SOC2 信任服务标准](https://www.aicpa.org/resources/article/soc-2-trust-services-criteria) — CC6.1、CC7.1、CC9.2
+
+---
+
+*版本 1.0.0 | 2026 年 3 月 | [Claude Code 终极指南](../README.md)的一部分*

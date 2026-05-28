@@ -1,81 +1,81 @@
 > 📚 **AI Spark Wiki** · Claude Code 知识库
 
 ---
-title: "TDD with Claude Code"
-description: "Test-Driven Development workflow with explicit prompting for red-green-refactor cycles"
+title: "使用 Claude Code 进行 TDD（测试驱动开发）"
+description: "使用明确提示词进行红-绿-重构循环的测试驱动开发工作流"
 tags: [workflow, tdd, testing]
 ---
 
-# TDD with Claude Code
+# 使用 Claude Code 进行 TDD（测试驱动开发）
 
-> **Confidence**: Tier 1 — Based on official Anthropic best practices and extensive community validation.
+> **可信度**：Tier 1 — 基于 Anthropic 官方最佳实践和广泛的社区验证。
 
-Test-Driven Development with Claude requires explicit prompting. Claude naturally writes implementation first, then tests. TDD requires the inverse.
+使用 Claude 进行 TDD（测试驱动开发）需要明确的提示词。Claude 天然会先写实现，再写测试。TDD（测试驱动开发）要求相反的顺序。
 
 ---
 
-## Table of Contents
+## 目录
 
 1. [TL;DR](#tldr)
-2. [The Problem](#the-problem)
-3. [Setup](#setup)
-4. [The Red-Green-Refactor Cycle](#the-red-green-refactor-cycle)
-5. [Integration with Claude Code Features](#integration-with-claude-code-features)
-6. [Anti-Patterns](#anti-patterns)
-7. [Advanced Patterns](#advanced-patterns)
-8. [See Also](#see-also)
+2. [问题所在](#问题所在)
+3. [配置](#配置)
+4. [红-绿-重构循环](#红-绿-重构循环)
+5. [与 Claude Code 功能集成](#与-claude-code-功能集成)
+6. [反模式](#反模式)
+7. [进阶模式](#进阶模式)
+8. [延伸阅读](#延伸阅读)
 
 ---
 
 ## TL;DR
 
 ```
-Red → Green → Refactor
+红 → 绿 → 重构
 
-But you MUST prompt Claude explicitly:
-"Write a FAILING test for [feature]. Do NOT write implementation yet."
+但你必须明确提示 Claude：
+"为 [功能] 编写一个失败的测试。暂不编写实现。"
 ```
 
 ---
 
-## The Problem
+## 问题所在
 
-Without explicit instruction, Claude will:
-1. Write implementation code
-2. Then write tests that pass against that implementation
+没有明确指令时，Claude 会：
+1. 编写实现代码
+2. 然后编写能通过该实现的测试
 
-This defeats TDD's purpose: tests should drive design, not validate existing code.
+这违背了 TDD（测试驱动开发）的目的：测试应该驱动设计，而非验证已有代码。
 
 ---
 
-## Setup
+## 配置
 
-### CLAUDE.md Configuration
+### CLAUDE.md 配置
 
-Add to your project's CLAUDE.md:
+添加到你的项目 CLAUDE.md：
 
 ```markdown
-## Testing Conventions
+## 测试约定
 
-### TDD Workflow
-- Always write failing tests BEFORE implementation
-- Use AAA pattern: Arrange-Act-Assert
-- One assertion per test when possible
-- Test names describe behavior: "should_return_empty_when_no_items"
+### TDD（测试驱动开发）工作流
+- 始终在实现前编写失败的测试
+- 使用 AAA 模式：Arrange（准备）-Act（执行）-Assert（断言）
+- 每个测试尽量只有一个断言
+- 测试名称描述行为："should_return_empty_when_no_items"
 
-### Test-First Rules
-- When I ask for a feature, write tests first
-- Tests should FAIL initially (no implementation exists)
-- Only after tests are written, implement minimal code to pass
+### 测试优先规则
+- 当我要求实现功能时，先写测试
+- 测试最初应该失败（无实现存在）
+- 只有在测试编写完成后，才实现让测试通过的最少代码
 ```
 
-### Hook for Auto-Run Tests (Optional)
+### 自动运行测试的钩子（可选）
 
-Create `.claude/hooks/test-on-save.sh`:
+创建 `.claude/hooks/test-on-save.sh`：
 
 ```bash
 #!/bin/bash
-# Auto-run tests when test files change
+# 测试文件变更时自动运行测试
 if [[ "$1" == *test* ]] || [[ "$1" == *spec* ]]; then
   npm test --watchAll=false 2>&1 | head -20
 fi
@@ -83,105 +83,105 @@ fi
 
 ---
 
-## The Red-Green-Refactor Cycle
+## 红-绿-重构循环
 
-### Phase 1: Red (Write Failing Test)
+### 第一阶段：红（编写失败的测试）
 
-**Prompt**:
+**提示词**：
 ```
-Write a failing test for [feature description].
-Do NOT write the implementation yet.
-The test should fail because the function/method doesn't exist.
-```
-
-**Example**:
-```
-Write a failing test for a function that calculates the total price
-of items in a cart, applying a 10% discount if total exceeds $100.
-Do NOT implement the function yet.
+为 [功能描述] 编写一个失败的测试。
+暂不编写实现。
+测试应该失败，因为函数/方法不存在。
 ```
 
-**Expected Claude behavior**:
-- Creates test file with test cases
-- Tests reference function that doesn't exist
-- Running tests would fail with "function not defined" or similar
+**示例**：
+```
+为一个计算购物车商品总价的函数编写失败的测试，
+如果总价超过 100 元则应用 10% 折扣。
+暂不实现该函数。
+```
 
-**Verification**:
+**预期 Claude 行为**：
+- 创建包含测试用例的测试文件
+- 测试引用不存在的函数
+- 运行测试会失败，提示「函数未定义」或类似错误
+
+**验证**：
 ```bash
-npm test  # Should fail with "calculateCartTotal is not defined"
+npm test  # 应该失败，提示「calculateCartTotal is not defined」
 ```
 
-### Phase 2: Green (Minimal Implementation)
+### 第二阶段：绿（最小实现）
 
-**Prompt**:
+**提示词**：
 ```
-Now implement the minimum code to make these tests pass.
-Only write enough code to pass the current tests, nothing more.
+现在实现让这些测试通过的最少代码。
+只写足够通过当前测试的代码，不要多。
 ```
 
-**Expected Claude behavior**:
-- Creates implementation file
-- Writes minimal code to satisfy tests
-- Avoids over-engineering
+**预期 Claude 行为**：
+- 创建实现文件
+- 编写满足测试的最少代码
+- 避免过度工程化
 
-**Verification**:
+**验证**：
 ```bash
-npm test  # Should pass
+npm test  # 应该通过
 ```
 
-### Phase 3: Refactor (Clean Up)
+### 第三阶段：重构（清理代码）
 
-**Prompt**:
+**提示词**：
 ```
-Refactor the implementation to improve code quality.
-Tests must stay green after refactoring.
-Focus on: [readability / performance / removing duplication]
+重构实现以提升代码质量。
+重构后测试必须保持绿色。
+重点关注：[可读性 / 性能 / 消除重复]
 ```
 
-**Expected Claude behavior**:
-- Improves code without changing behavior
-- Runs tests to verify they still pass
-- Documents any significant changes
+**预期 Claude 行为**：
+- 在不改变行为的前提下改善代码
+- 运行测试验证仍能通过
+- 记录任何重大变更
 
 ---
 
-## Integration with Claude Code Features
+## 与 Claude Code 功能集成
 
-### With TodoWrite
+### 配合 TodoWrite
 
-Track TDD phases in your task list:
-
-```
-User: "Implement user authentication with TDD"
-
-Claude creates todos:
-- [ ] RED: Write failing tests for login
-- [ ] GREEN: Implement login to pass tests
-- [ ] REFACTOR: Clean up login implementation
-- [ ] RED: Write failing tests for logout
-- [ ] GREEN: Implement logout
-- [ ] REFACTOR: Clean up
-```
-
-### With Plan Mode
-
-Use planning for test strategy:
+在任务列表中追踪 TDD（测试驱动开发）阶段：
 
 ```
-[Press Shift+Tab to enter Plan Mode]
+用户：「使用 TDD（测试驱动开发）实现用户认证」
 
-I need to implement a shopping cart with TDD.
-Plan the test cases before we start writing any code.
+Claude 创建待办事项：
+- [ ] 红：为登录编写失败的测试
+- [ ] 绿：实现登录以通过测试
+- [ ] 重构：清理登录实现
+- [ ] 红：为登出编写失败的测试
+- [ ] 绿：实现登出
+- [ ] 重构：清理
 ```
 
-Claude will explore codebase in read-only mode, then propose test plan before any implementation.
+### 配合计划模式
 
-### With Hooks
+使用计划模式规划测试策略：
 
-Auto-run tests after edits using a PostToolUse hook:
+```
+[按 Shift+Tab 进入计划模式]
+
+我需要用 TDD（测试驱动开发）实现一个购物车。
+在我们开始写任何代码之前，先规划测试用例。
+```
+
+Claude 会以只读方式探索代码库，然后在任何实现之前提出测试计划。
+
+### 配合 Hooks（钩子）
+
+使用工具后钩子在编辑后自动运行测试：
 
 ```json
-// In .claude/settings.json
+// 在 .claude/settings.json 中
 {
   "hooks": {
     "PostToolUse": [
@@ -194,148 +194,148 @@ Auto-run tests after edits using a PostToolUse hook:
 }
 ```
 
-### With Sub-Agents
+### 配合子智能体
 
-Delegate test writing to scope-focused agent:
+将测试编写委托给专注范围的智能体：
 
 ```
-Use the test-writer agent to create comprehensive tests for
-the UserService class, covering all edge cases.
-Then I'll implement to pass those tests.
+使用 test-writer 智能体为 UserService 类创建全面的测试，
+覆盖所有边缘情况。
+然后我会按照这些测试来实现。
 ```
 
 ---
 
-## Anti-Patterns
+## 反模式
 
-### The Verification Gap
+### 验证缺口
 
-The Verification Gap is the failure mode where an agent reports a feature complete before the verification suite confirms it. It is the most common reliability failure in multi-session agent work, and it is entirely preventable with the right harness design.
+验证缺口是智能体在验证套件确认之前就报告功能完成的失败模式。这是多会话智能体工作中最常见的可靠性故障，完全可以通过正确的框架设计来预防。
 
-Three observable symptoms: the agent prints a success message before any test command runs; tests run but stderr is discarded or not read; only unit tests pass when the acceptance criteria specified end-to-end behavior.
+三个可观察症状：智能体在任何测试命令运行之前就打印成功消息；测试运行但 stderr 被丢弃或未读取；仅单元测试通过，而验收标准规定了端到端行为。
 
-The fix is a three-layer verification stack that must all pass before any feature is marked `passing` in the feature list:
+修复方案是一个三层验证栈，在功能被标记为 `passing` 之前必须全部通过：
 
-1. **Lint** — syntax and style checks (fastest, catches obvious errors before running tests)
-2. **Unit and integration tests** — functional correctness of individual components
-3. **End-to-end tests** — behavioral contract as seen by a user or external caller
+1. **代码检查** — 语法和风格检查（最快，在运行测试前捕获明显错误）
+2. **单元测试和集成测试** — 各组件的功能正确性
+3. **端到端测试** — 用户或外部调用者所见的行为契约
 
-Each layer catches a different class of failure. Unit tests can pass while component boundaries break. End-to-end tests surface state propagation errors and lifecycle issues that unit tests cannot see. Skipping any layer leaves a gap.
+每一层捕获不同类别的故障。单元测试可以通过，而组件边界会断裂。端到端测试能发现单元测试看不到的状态传播错误和生命周期问题。跳过任何一层都会留下缺口。
 
-The independent evaluator principle: the agent that writes the code must not be the same invocation that certifies it done. This is not about distrust of the model; it is about how context affects evaluation. An agent that just spent two hours building a feature interprets ambiguous output charitably. A PostToolUse hook or a second agent reading the exit code independently does not. The hook in `examples/hooks/bash/verification-gate.sh` implements this pattern.
+独立评估者原则：编写代码的智能体不能是同一个调用来认证其完成。这不是对模型的不信任；而是关于上下文如何影响评估。一个刚花了两个小时构建功能的智能体会对模糊输出作出慈善解释。一个独立读取退出代码的工具后钩子或第二个智能体则不会。`examples/hooks/bash/verification-gate.sh` 中的钩子实现了这个模式。
 
-Anthropic documented this failure in their harness design research: in a bare run (no harness), their agent reported the game editor complete after 20 minutes. Nothing worked. With an independent evaluator added to the harness, the same model ran for 6 hours and delivered a functional result. (Source: [https://www.anthropic.com/engineering/harness-design-long-running-apps](https://www.anthropic.com/engineering/harness-design-long-running-apps))
+Anthropic 在其框架设计研究中记录了这个故障：在裸运行（无框架）中，他们的智能体在 20 分钟后报告游戏编辑器完成。什么都不工作。向框架添加独立评估者后，同一模型运行了 6 小时并交付了可用结果。（来源：[https://www.anthropic.com/engineering/harness-design-long-running-apps](https://www.anthropic.com/engineering/harness-design-long-running-apps)）
 
-The WIP=1 rule connects here: keeping only one feature `active` at a time means the verification gap, when it occurs, affects one feature, not several simultaneously.
+WIP=1 规则与此相关：每次只保持一个功能处于 `active` 状态，意味着验证缺口发生时，只影响一个功能，而非同时影响多个。
 
-### What NOT to do
+### 不该做的事
 
-| Anti-Pattern | Why It's Wrong | Correct Approach |
+| 反模式 | 错误原因 | 正确做法 |
 |--------------|----------------|------------------|
-| "Write tests for this feature" | Claude implements first | "Write FAILING tests that don't exist yet" |
-| "Add tests and implementation" | Loses test-first benefit | Separate into two prompts |
-| "Make sure tests pass" | Encourages implementation-first | "Write tests, then implement minimally" |
-| Skipping refactor phase | Accumulates technical debt | Always refactor after green |
-| Multiple features at once | Loses focus | One feature per TDD cycle |
+| 「为这个功能写测试」 | Claude 会先实现 | 「写尚不存在的失败测试」 |
+| 「添加测试和实现」 | 失去测试优先的好处 | 分成两个提示词 |
+| 「确保测试通过」 | 鼓励先实现 | 「写测试，然后最小化实现」 |
+| 跳过重构阶段 | 积累技术债务 | 绿色后始终重构 |
+| 同时处理多个功能 | 失去专注 | 每个 TDD（测试驱动开发）循环一个功能 |
 
-### Common Mistakes
+### 常见错误
 
-**Mistake**: Asking Claude to "test" existing code.
+**错误**：要求 Claude「测试」现有代码。
 ```
-# Wrong
-"Write tests for the existing calculateTotal function"
+# 错误
+「为现有的 calculateTotal 函数写测试」
 
-# Right
-"Write tests for calculateTotal behavior, assuming function doesn't exist.
-Then we'll verify the existing implementation passes."
-```
-
-**Mistake**: Combining red and green phases.
-```
-# Wrong
-"Implement calculateTotal with tests"
-
-# Right
-"Write failing tests for calculateTotal. Stop there."
-[After tests written]
-"Now implement to pass those tests."
+# 正确
+「假设函数不存在，为 calculateTotal 的行为写测试。
+然后我们验证现有实现是否通过。」
 ```
 
----
-
-## Advanced Patterns
-
-### Property-Based Testing
-
+**错误**：合并红色和绿色阶段。
 ```
-Write property-based tests for the sort function.
-Properties to test:
-- Output length equals input length
-- All input elements exist in output
-- Output is ordered
-Use fast-check or similar library.
-```
+# 错误
+「带测试实现 calculateTotal」
 
-### Mutation Testing
-
-```
-After tests pass, run mutation testing to find weak spots.
-Identify tests that don't catch mutations.
-```
-
-> **Going further**: JiTTesting applies mutation testing automatically at PR time — LLM-generated, ephemeral, zero maintenance. Meta deployed this at scale with 4x regression catch improvement over traditional tests. See [Just-in-Time Catching Test Generation at Meta](https://arxiv.org/abs/2601.22832) and the [methodologies guide](../core/methodologies.md#jittesting-just-in-time-testing) for the approximation pattern with Claude Code today.
-
-### TDD with Legacy Code
-
-```
-I need to refactor legacyFunction.
-First, write characterization tests that capture current behavior.
-Then we'll refactor with confidence.
+# 正确
+「为 calculateTotal 写失败的测试。到此为止。」
+[测试写完后]
+「现在实现以通过这些测试。」
 ```
 
 ---
 
-## Example Session
+## 进阶模式
 
-### User Request
-```
-Implement a URL shortener service with TDD.
-```
+### 基于属性的测试
 
-### Phase 1: Red
 ```
-Let's use TDD. First, write failing tests for:
-1. Shortening a URL returns a short code
-2. Retrieving a short code returns original URL
-3. Invalid URLs are rejected
-4. Expired links return error
-
-Do NOT implement anything yet.
+为排序函数编写基于属性的测试。
+需要测试的属性：
+- 输出长度等于输入长度
+- 所有输入元素都存在于输出中
+- 输出是有序的
+使用 fast-check 或类似库。
 ```
 
-### Phase 2: Green
+### 变异测试
+
 ```
-Tests are written and failing. Now implement the minimum
-code to make them pass. Use an in-memory store for now.
+测试通过后，运行变异测试来发现薄弱点。
+识别无法捕获变异的测试。
 ```
 
-### Phase 3: Refactor
-```
-Tests pass. Now refactor:
-- Extract URL validation to separate function
-- Add proper error types
-- Improve variable names
+> **更进一步**：JiTTesting 在 PR 时自动应用变异测试——由 LLM 生成，短暂存在，零维护。Meta 大规模部署了这项技术，与传统测试相比回归捕获率提升了 4 倍。参见 [Meta 的即时捕获测试生成](https://arxiv.org/abs/2601.22832)和[方法论指南](../core/methodologies.md#jittesting-just-in-time-testing)，了解当今 Claude Code 的近似模式。
 
-Run tests after each change to ensure they stay green.
+### 遗留代码的 TDD（测试驱动开发）
+
+```
+我需要重构 legacyFunction。
+首先，编写记录当前行为的特征测试。
+然后我们可以有信心地重构。
 ```
 
 ---
 
-## See Also
+## 示例会话
 
-- [../core/methodologies.md](../core/methodologies.md) — Full methodology reference
-- [Tight Feedback Loops](../ultimate-guide.md) — Section 9.5
-- [examples/skills/tdd-workflow.md](../../examples/skills/tdd-workflow.md) — TDD skill template
-- [Anthropic Best Practices](https://www.anthropic.com/engineering/claude-code-best-practices)
-- [task-management.md](./task-management.md) — Track TDD cycles across sessions with Tasks API
-- [Superpowers](https://github.com/obra/superpowers) — Plugin suite that enforces TDD as a mandatory gate: code written before a failing test exists gets deleted and redone from scratch. Stricter enforcement than manual prompting.
+### 用户请求
+```
+使用 TDD（测试驱动开发）实现一个 URL 缩短服务。
+```
+
+### 第一阶段：红
+```
+让我们使用 TDD（测试驱动开发）。首先，为以下情况编写失败的测试：
+1. 缩短 URL 返回一个短代码
+2. 检索短代码返回原始 URL
+3. 无效 URL 被拒绝
+4. 过期链接返回错误
+
+暂不实现任何内容。
+```
+
+### 第二阶段：绿
+```
+测试已编写且失败。现在实现让它们通过的最少代码。
+暂时使用内存存储。
+```
+
+### 第三阶段：重构
+```
+测试已通过。现在重构：
+- 将 URL 验证提取到独立函数
+- 添加合适的错误类型
+- 改善变量名
+
+每次修改后运行测试以确保保持绿色。
+```
+
+---
+
+## 延伸阅读
+
+- [../core/methodologies.md](../core/methodologies.md) — 完整方法论参考
+- [紧密反馈循环](../ultimate-guide.md) — 第 9.5 节
+- [examples/skills/tdd-workflow.md](../../examples/skills/tdd-workflow.md) — TDD（测试驱动开发）Skills（技能模块）模板
+- [Anthropic 最佳实践](https://www.anthropic.com/engineering/claude-code-best-practices)
+- [task-management.md](./task-management.md) — 使用 Tasks API 跨会话追踪 TDD（测试驱动开发）循环
+- [Superpowers](https://github.com/obra/superpowers) — 将 TDD（测试驱动开发）作为强制门控的插件套件：在失败测试存在之前编写的代码会被删除并从头重做。比手动提示词更严格的执行。

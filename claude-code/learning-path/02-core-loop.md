@@ -1,223 +1,223 @@
 > 📚 **AI Spark Wiki** · Claude Code 知识库
 
-# Module 02: Core Loop
+# 模块 02：核心循环
 
-**Time**: 45 minutes | **Complexity**: ⭐ Beginner
+**用时**：45 分钟 | **难度**：⭐ 入门
 
-## Goal
+## 目标
 
-Understand how Claude Code actually works—the decision loop, context, and how to structure requests effectively.
-
----
-
-## What You'll Learn
-
-- The complete interaction loop (prompt → analysis → decision → action)
-- How Claude reads and understands your project
-- How context works and why it matters
-- Modes: Normal, Plan, and Think modes
-- How to structure effective requests
+理解 Claude Code 的实际工作原理——决策循环、上下文机制，以及如何有效地构建请求。
 
 ---
 
-## The Complete Loop (Deep Dive)
+## 你将学到
 
-Every interaction with Claude Code follows this sequence:
+- 完整交互循环（提示词 → 分析 → 决策 → 行动）
+- Claude 如何读取并理解你的项目
+- 上下文的运作机制及其重要性
+- 模式：普通模式、计划模式和思考模式
+- 如何构建高效的请求
+
+---
+
+## 完整循环（深度解析）
+
+与 Claude Code 的每次交互都遵循以下序列：
 
 ```
 ┌──────────────────────────────────────────────────────────────┐
-│ 1. YOU PROMPT                                                │
+│ 1. 你提问                                                    │
 │    "Fix the bug in auth.js on line 45"                      │
 └────────────────────┬─────────────────────────────────────────┘
                      │
                      ▼
 ┌──────────────────────────────────────────────────────────────┐
-│ 2. CLAUDE READS                                              │
-│    - Reads auth.js (full file)                              │
-│    - Reads related files (auth-test.js, config.js, etc)     │
-│    - Understands the error context                          │
-│    - Analyzes call sites where auth.js is used              │
+│ 2. Claude 读取                                               │
+│    - 读取 auth.js（完整文件）                               │
+│    - 读取相关文件（auth-test.js、config.js 等）             │
+│    - 理解错误上下文                                         │
+│    - 分析 auth.js 的调用位置                                │
 └────────────────────┬─────────────────────────────────────────┘
                      │
                      ▼
 ┌──────────────────────────────────────────────────────────────┐
-│ 3. CLAUDE ANALYZES                                           │
-│    - Identifies the root cause                              │
-│    - Considers side effects                                 │
-│    - Plans minimal changes                                  │
-│    - Checks for tests                                       │
+│ 3. Claude 分析                                               │
+│    - 定位根本原因                                           │
+│    - 评估副作用                                             │
+│    - 规划最小变更                                           │
+│    - 检查测试用例                                           │
 └────────────────────┬─────────────────────────────────────────┘
                      │
                      ▼
 ┌──────────────────────────────────────────────────────────────┐
-│ 4. CLAUDE DECIDES                                            │
-│    Does the change need tests? → Suggest test updates       │
-│    Is the change safe? → Proceed or ask for confirmation    │
-│    Should multiple files change? → Show full scope           │
+│ 4. Claude 决策                                               │
+│    变更是否需要测试？→ 建议更新测试                         │
+│    变更是否安全？→ 继续或请求确认                           │
+│    是否涉及多个文件？→ 展示完整影响范围                     │
 └────────────────────┬─────────────────────────────────────────┘
                      │
                      ▼
 ┌──────────────────────────────────────────────────────────────┐
-│ 5. CLAUDE PROPOSES                                           │
-│    Shows you:                                               │
-│    - Description of changes                                 │
-│    - diff view (what's changing)                            │
-│    - Reasoning                                              │
+│ 5. Claude 提案                                               │
+│    向你展示：                                               │
+│    - 变更说明                                               │
+│    - 差异对比（diff）视图（显示变更内容）                   │
+│    - 推理过程                                               │
 └────────────────────┬─────────────────────────────────────────┘
                      │
                      ▼
 ┌──────────────────────────────────────────────────────────────┐
-│ 6. YOU REVIEW                                                │
-│    - Read the diff carefully                                │
-│    - Ask questions if unclear                               │
-│    - Accept or reject the changes                           │
+│ 6. 你审阅                                                    │
+│    - 仔细阅读差异对比（diff）                               │
+│    - 如有疑问可提问                                         │
+│    - 接受或拒绝变更                                         │
 └────────────────────┬─────────────────────────────────────────┘
                      │
                      ▼
 ┌──────────────────────────────────────────────────────────────┐
-│ 7. CHANGES APPLIED                                           │
-│    - Files updated on disk                                  │
-│    - You can now test/run the code                          │
-│    - Next iteration begins                                  │
+│ 7. 变更应用                                                  │
+│    - 文件已更新到磁盘                                       │
+│    - 你现在可以测试/运行代码                                │
+│    - 下一轮迭代开始                                         │
 └──────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## How Claude Reads Your Project
+## Claude 如何读取你的项目
 
-Claude doesn't read everything. It's **intelligent about scope**.
+Claude 不会读取所有内容，它在**范围判断上很智能**。
 
-### Example: You ask "Fix the login bug"
+### 示例：你问"修复登录 bug"
 
-Claude will:
+Claude 会：
 
-1. **Search for "login"** in your codebase
-2. **Find auth.js, login.js, auth-controller.js**
-3. **Read those files first** (full content)
-4. **Find callers** (what calls these files?)
-5. **Read tests** (if they exist)
-6. **Find related config** (environment variables, constants)
+1. 在代码库中**搜索"login"**
+2. **找到** auth.js、login.js、auth-controller.js
+3. **优先读取这些文件**（完整内容）
+4. **找调用方**（哪些文件调用了这些文件？）
+5. **读测试文件**（如果存在）
+6. **找相关配置**（环境变量、常量）
 
-Claude **won't** read:
-- node_modules (excluded automatically)
-- .git history (too much data)
-- Every file in the project (too slow)
-- Your entire codebase unless relevant
+Claude **不会**读取：
+- node_modules（自动排除）
+- .git 历史（数据量太大）
+- 项目中的每个文件（太慢）
+- 与问题无关的整个代码库
 
-### Pro Tip
+### 专业技巧
 
-Be specific about scope:
-- ❌ "Fix the bugs" → Claude has to guess which files
-- ✅ "Fix the login bug in auth.js on line 45" → Claude reads exactly what matters
+明确指定范围：
+- ❌ "Fix the bugs" → Claude 必须猜测读哪些文件
+- ✅ "Fix the login bug in auth.js on line 45" → Claude 精准读取相关内容
 
 ---
 
-## Context: The Key Concept
+## 上下文：核心概念
 
-**Context** is how much of your conversation Claude remembers. It's finite (~200K tokens).
+**上下文**是 Claude 能记住的对话量，是有限的（约 200K Token（词元））。
 
-### What Uses Context?
+### 什么会消耗上下文？
 
 ```
-Your prompt:           50 tokens
-Claude's response:     500 tokens
-File reads:            2000 tokens per file
-Previous messages:     accumulated tokens
+你的提示词：       50 个 Token（词元）
+Claude 的回复：    500 个 Token（词元）
+文件读取：         每个文件 2000 个 Token（词元）
+历史消息：         累积的 Token（词元）
 ```
 
-### The Context Meter
+### 上下文计量表
 
 ```bash
 /status
 ```
 
-Shows:
+显示：
 ```
 Context: 67%
 ```
 
-This means:
-- 0-50%: Lots of room remaining, work freely
-- 50-70%: Half-used, be mindful
-- 70-90%: Getting tight, use `/compact`
-- 90%+: Critical, you must clean up
+含义：
+- 0-50%：剩余空间充足，自由工作
+- 50-70%：已用一半，注意节省
+- 70-90%：快满了，使用 `/compact`
+- 90%+：临界状态，必须清理
 
-### `/compact` - Your Safety Valve
+### `/compact` —— 你的安全阀
 
-When context reaches 70%+, use:
+当上下文达到 70%+ 时，使用：
 
 ```bash
 /compact
 ```
 
-This:
-1. Summarizes previous conversation
-2. Discards old messages
-3. Frees up ~40% context
-4. Keeps you working in the same session
+这会：
+1. 对之前的对话进行摘要
+2. 丢弃旧消息
+3. 释放约 40% 的上下文空间
+4. 让你继续在同一会话中工作
 
-You can compact multiple times in one session.
+一次会话中可以多次压缩。
 
 ---
 
-## Modes: Normal vs Plan vs Think
+## 模式：普通 vs 计划 vs 思考
 
-Claude Code has three interaction modes.
+Claude Code 有三种交互模式。
 
-### Normal Mode (Default)
+### 普通模式（默认）
 
-Claude makes changes immediately after analyzing. Use for:
-- Simple bug fixes
-- Small feature additions
-- Refactoring small sections
+Claude 分析后立即进行变更。适用于：
+- 简单 bug 修复
+- 小功能添加
+- 小范围重构
 
-**Flow**: Ask → Analyze (1-2 sec) → Propose → Apply
+**流程**：提问 → 分析（1-2 秒）→ 提案 → 应用
 
-### Plan Mode (`/plan`)
+### 计划模式（`/plan`）
 
-Claude thinks first, proposes a plan, waits for approval before making changes. Use for:
-- Complex features
-- Risky changes
-- System-wide refactors
-- When you're unsure about approach
+Claude 先思考，提出计划，等你批准后再进行变更。适用于：
+- 复杂功能
+- 高风险变更
+- 全系统重构
+- 不确定方向时
 
-**Flow**: Ask → Think → Propose plan → You approve → Analyze → Apply
+**流程**：提问 → 思考 → 提出计划 → 你批准 → 分析 → 应用
 
-**Example**:
+**示例**：
 ```bash
 /plan
 Refactor the authentication system to use JWT instead of sessions
 ```
 
-Claude responds with a step-by-step plan for you to review.
+Claude 会给出分步计划供你审阅。
 
-### Think Mode (`/think`)
+### 思考模式（`/think`）
 
-Claude shows extended reasoning, thinking through the problem step-by-step. Use for:
-- Understanding complex bugs
-- Architectural decisions
-- Security analysis
-- Performance optimization
+Claude 展示扩展推理过程，逐步思考问题。适用于：
+- 理解复杂 bug
+- 架构决策
+- 安全分析
+- 性能优化
 
-**Flow**: Ask → Extended reasoning → Analysis → Proposal
+**流程**：提问 → 扩展推理 → 分析 → 提案
 
 ---
 
-## Structuring Effective Requests
+## 构建高效请求
 
-### The Framework: WHAT, WHERE, HOW, VERIFY
+### 框架：WHAT、WHERE、HOW、VERIFY
 
-Good requests follow this pattern:
+好的请求遵循以下模式：
 
-| Part | Purpose | Example |
+| 部分 | 用途 | 示例 |
 |------|---------|---------|
-| **WHAT** | The goal | "Fix the null pointer bug" |
-| **WHERE** | The scope | "in `src/auth/login.js` on line 45" |
-| **HOW** | Constraints | "without changing the API signature" |
-| **VERIFY** | Expected result | "All existing tests should pass" |
+| **WHAT** | 目标 | "修复空指针 bug" |
+| **WHERE** | 范围 | "在 `src/auth/login.js` 第 45 行" |
+| **HOW** | 约束条件 | "不改变 API 签名" |
+| **VERIFY** | 预期结果 | "所有现有测试应通过" |
 
-### Example Good Request
+### 好请求示例
 
 ```
 Fix the bug where login fails for emails with + symbols
@@ -226,47 +226,47 @@ HOW: Update the regex to allow + in emails, but keep existing validation otherwi
 VERIFY: Existing tests in tests/auth.test.js should pass
 ```
 
-### Example Poor Request
+### 差请求示例
 
 ```
 Fix the bugs
 ```
 
-Claude has to ask follow-up questions instead of solving immediately.
+Claude 必须先追问才能解决问题。
 
 ---
 
-## Session Context
+## 会话上下文
 
-A **session** is your current conversation with Claude.
+**会话**是你当前与 Claude 的对话。
 
-### Session Facts
+### 会话基本事实
 
-- Starts when you run `claude`
-- Ends when you exit or run `/clear`
-- Not saved by default
-- Scoped to one project
-- Can be managed with `/rewind` (go back N steps)
+- 运行 `claude` 时开始
+- 退出或运行 `/clear` 时结束
+- 默认不保存
+- 限定在单个项目范围内
+- 可用 `/rewind`（回退 N 步）管理
 
-### Checkpoint Sessions
+### 会话检查点
 
-To save a session (optional):
+要保存会话（可选）：
 ```bash
 /checkpoint save "fixed login, added tests"
 ```
 
-Later, restore:
+之后恢复：
 ```bash
 /checkpoint load "fixed login, added tests"
 ```
 
 ---
 
-## Exercise: The Complete Loop
+## 练习：完整循环
 
-### Task: Create a simple utility function
+### 任务：创建一个简单的工具函数
 
-1. **Ask with WHAT/WHERE/HOW/VERIFY:**
+1. **使用 WHAT/WHERE/HOW/VERIFY 提问：**
 
 ```
 Create a utility function to validate email addresses
@@ -275,62 +275,62 @@ HOW: export as validateEmail(email), return boolean, handle edge cases
 VERIFY: Write tests in tests/validators.test.js
 ```
 
-2. **Claude analyzes:**
-   - Finds src/utils/
-   - Reads existing validators
-   - Checks tests directory structure
-   - Proposes solution
+2. **Claude 分析：**
+   - 找到 src/utils/
+   - 读取已有的验证器
+   - 检查测试目录结构
+   - 提出解决方案
 
-3. **Review the diff:**
-   - Check the function signature
-   - Check the validation logic
-   - Review the test cases
+3. **审阅差异对比（diff）：**
+   - 检查函数签名
+   - 检查验证逻辑
+   - 审查测试用例
 
-4. **Accept or iterate:**
+4. **接受或迭代：**
    ```
    Looks good, but make the regex more permissive for + symbols
    ```
 
-5. **Claude updates** and you review again
+5. **Claude 更新**，你再次审阅
 
-6. **Done:** You have a tested, working function
-
----
-
-## Key Takeaways
-
-✓ Every request follows: read → analyze → decide → propose → apply
-
-✓ Be specific (WHAT/WHERE/HOW/VERIFY) for faster results
-
-✓ Context is finite—watch your percentage and `/compact` at 70%+
-
-✓ `/plan` for risky changes, normal mode for safe ones
-
-✓ Sessions are temporary—use `/checkpoint` to save important work
+6. **完成：** 你有了一个经过测试的可用函数
 
 ---
 
-## Validation: You're Ready If...
+## 关键要点
 
-✓ You can explain the 7-step loop to someone else
-✓ You understand what "context" means and why it matters
-✓ You know the difference between Plan and Normal modes
-✓ You've used `/plan` for a complex task
-✓ You can check `/status` and understand the output
+✓ 每次请求都遵循：读取 → 分析 → 决策 → 提案 → 应用
 
----
+✓ 具体描述（WHAT/WHERE/HOW/VERIFY）可获得更快的结果
 
-## What's Next?
+✓ 上下文是有限的——关注使用百分比，70%+ 时使用 `/compact`
 
-**Module 03: Memory & Config** covers:
-- Creating your first CLAUDE.md
-- How Claude remembers preferences
-- Project vs global settings
-- Custom configuration
+✓ 高风险变更用计划模式，安全变更用普通模式
 
-This will teach you how to make Claude Code remember your style and preferences.
+✓ 会话是临时的——用 `/checkpoint` 保存重要工作
 
 ---
 
-**Completed Module 02?** → Ready for Module 03: Memory & Config
+## 验证：以下都满足说明你已准备好
+
+✓ 能向别人解释 7 步循环
+✓ 理解"上下文"的含义及其重要性
+✓ 知道计划模式和普通模式的区别
+✓ 已用 `/plan` 处理过复杂任务
+✓ 能查看 `/status` 并理解输出内容
+
+---
+
+## 下一步
+
+**模块 03：记忆与配置**涵盖：
+- 创建你的第一个 CLAUDE.md
+- Claude 如何记住你的偏好
+- 项目级 vs 全局级设置
+- 自定义配置
+
+这将教你如何让 Claude Code 记住你的风格和偏好。
+
+---
+
+**完成模块 02？** → 进入模块 03：记忆与配置

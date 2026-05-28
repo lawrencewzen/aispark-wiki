@@ -1,803 +1,803 @@
 > 📚 **AI Spark Wiki** · Claude Code 知识库
 
 ---
-title: "AI Roles & Career Paths: The New Engineering Landscape"
-description: "Comprehensive map of emerging AI roles — from Prompt Engineer to Harness Engineer — with responsibilities, required skills, and career trajectories"
+title: "AI 角色与职业路径：新工程格局"
+description: "新兴 AI 角色全景图——从提示词工程师到框架工程师——包含职责、必备技能与职业发展路径"
 tags: [roles, careers, ai-engineer, prompt-engineer, harness-engineer, context-engineer, guide]
 ---
 
-# AI Roles & Career Paths: The New Engineering Landscape
+# AI 角色与职业路径：新工程格局
 
-> **Last updated**: March 2026
+> **最后更新**：2026 年 3 月
 >
-> **Confidence**: Tier 2 — Based on job market data, industry publications, and emerging field research
+> **可信度**：Tier 2 — 基于职位市场数据、行业出版物和新兴领域研究
 >
-> **Reading time**: ~20 minutes
+> **阅读时间**：约 20 分钟
 
-The AI wave didn't just create new tools. It created new jobs that didn't exist 3 years ago and is reshaping what existing roles mean. This guide maps the full landscape: what each role does, what skills it requires, how they relate to each other, and where each one is heading.
+这波 AI 浪潮不仅带来了新工具，也催生了 3 年前还不存在的新工作，并正在重塑现有角色的含义。本指南全面梳理该格局：每个角色的工作内容、所需技能、相互关系，以及各自的发展方向。
 
 ---
 
-## Table of Contents
+## 目录
 
-1. [The Landscape in One View](#1-the-landscape-in-one-view)
-2. [Prompt Engineer](#2-prompt-engineer)
-3. [Context Engineer](#3-context-engineer)
-4. [AI Engineer](#4-ai-engineer)
-5. [LLM Engineer](#5-llm-engineer)
-6. [AI Agent Engineer](#6-ai-agent-engineer)
-7. [Founding AI Engineer](#7-founding-ai-engineer)
-8. [AI Architect](#8-ai-architect)
-9. [Platform Engineer (AI context)](#9-platform-engineer-ai-context)
-10. [Harness Engineer](#10-harness-engineer)
-11. [AI Product Manager](#11-ai-product-manager)
-12. [AI Safety & Eval Engineer](#12-ai-safety--eval-engineer)
-13. [ML Engineer](#13-ml-engineer)
-14. [MLOps Engineer](#14-mlops-engineer)
-15. [AI Developer Advocate](#15-ai-developer-advocate)
-16. [AI Orchestration Engineer](#16-ai-orchestration-engineer)
-17. [Spec Engineer](#17-spec-engineer)
-18. [Agent Identity Architect](#18-agent-identity-architect)
-19. [AI Eval Engineer](#19-ai-eval-engineer)
-20. [Career Decision Matrix](#20-career-decision-matrix)
-21. [Salary Benchmarks (2025-2026)](#21-salary-benchmarks-2025-2026)
-22. [What's Not a Role (Yet)](#22-whats-not-a-role-yet)
-23. [Job Listings](#23-job-listings)
+1. [一图览全貌](#1-一图览全貌)
+2. [提示词工程师](#2-提示词工程师)
+3. [上下文工程师](#3-上下文工程师)
+4. [AI 工程师](#4-ai-工程师)
+5. [LLM 工程师](#5-llm-工程师)
+6. [AI 智能体工程师](#6-ai-智能体工程师)
+7. [创始 AI 工程师](#7-创始-ai-工程师)
+8. [AI 架构师](#8-ai-架构师)
+9. [平台工程师（AI 语境）](#9-平台工程师ai-语境)
+10. [框架工程师](#10-框架工程师)
+11. [AI 产品经理](#11-ai-产品经理)
+12. [AI 安全与评估工程师](#12-ai-安全与评估工程师)
+13. [ML 工程师](#13-ml-工程师)
+14. [MLOps 工程师](#14-mlops-工程师)
+15. [AI 开发者倡导者](#15-ai-开发者倡导者)
+16. [AI 编排工程师](#16-ai-编排工程师)
+17. [规格工程师](#17-规格工程师)
+18. [智能体身份架构师](#18-智能体身份架构师)
+19. [AI 评估工程师](#19-ai-评估工程师)
+20. [职业决策矩阵](#20-职业决策矩阵)
+21. [薪资基准（2025-2026）](#21-薪资基准2025-2026)
+22. [尚不是角色的内容](#22-尚不是角色的内容)
+23. [职位列表](#23-职位列表)
 
 ---
 
-## 1. The Landscape in One View
+## 1. 一图览全貌
 
-Two axes structure this landscape: **proximity to the model** (are you training it, prompting it, or building infrastructure around it?) and **proximity to production** (research vs. shipped product).
+两个坐标轴构成这个格局：**与模型的距离**（你是在训练它、提示它，还是围绕它构建基础设施？）以及**与生产的距离**（研究 vs 已交付产品）。
 
 ```
-              ← Closer to the model          Closer to infrastructure →
+              ← 更靠近模型          更靠近基础设施 →
 
-Research    ML Engineer ←────────────────────────── AI Architect
-            AI Safety Engineer                       Platform Engineer
-                  │                                        │
-                  │                                        │
-Production   LLM Engineer ──── AI Engineer ──── AI Agent Engineer
-             Context Engineer                    Harness Engineer
-             Prompt Engineer                     Founding AI Engineer
-                                                 AI Product Manager
+研究    ML 工程师 ←────────────────────────── AI 架构师
+        AI 安全工程师                         平台工程师
+              │                                     │
+              │                                     │
+生产    LLM 工程师 ──── AI 工程师 ──── AI 智能体工程师
+        上下文工程师                   框架工程师
+        提示词工程师                   创始 AI 工程师
+                                       AI 产品经理
 ```
 
-Most new job demand sits in the **bottom-right**: building reliable AI systems that ship and stay reliable in production. The "pure research" quadrant remains competitive and specialized. The highest growth is in the applied, product-facing roles.
+大多数新工作需求集中在**右下方**：构建可靠、能在生产中保持稳定的 AI 系统。"纯研究"象限依然竞争激烈且高度专业化。增长最快的是应用型、面向产品的角色。
 
 ---
 
-## 2. Prompt Engineer
+## 2. 提示词工程师
 
-**Status**: First wave (2022-2023), partially commoditized but still relevant in specialized contexts.
+**状态**：第一波（2022-2023 年），部分商品化，但在特定情境下仍然相关。
 
-### What they do
+### 工作内容
 
-Craft and optimize the instructions sent to AI models to get reliable, high-quality outputs. The scope ranges from one-shot prompts to complex multi-step prompt chains for production systems.
+设计并优化发送给 AI 模型的指令，以获得可靠、高质量的输出。范围从一次性提示词到生产系统的复杂多步骤提示词链。
 
-### Responsibilities
+### 职责
 
-- Design prompt templates for specific use cases (customer support, code generation, document analysis)
-- Run systematic A/B tests to measure prompt performance
-- Document prompt libraries and version them
-- Optimize prompts for cost (fewer tokens, same quality)
-- Work with domain experts to encode knowledge into prompts
+- 为特定用例（客服、代码生成、文档分析）设计提示词模板
+- 运行系统化 A/B 测试以衡量提示词性能
+- 记录提示词库并进行版本管理
+- 优化提示词以降低成本（更少 Token（词元），同等质量）
+- 与领域专家合作将知识编码为提示词
 
-### Required skills
+### 必备技能
 
-| Technical | Soft |
+| 技术能力 | 软技能 |
 |-----------|------|
-| Understanding of LLM behavior and failure modes | Communication with non-technical stakeholders |
-| Basic Python (for automation and testing) | Systematic experimentation mindset |
-| Familiarity with evaluation frameworks | Attention to edge cases |
-| Versioning practices | Documentation discipline |
+| 理解 LLM 行为和失败模式 | 与非技术利益相关者的沟通能力 |
+| 基础 Python（用于自动化和测试） | 系统性实验思维 |
+| 熟悉评估框架 | 关注边缘情况 |
+| 版本管理实践 | 文档规范 |
 
-### Where it's heading
+### 发展方向
 
-The "prompt engineer" title as a standalone role is consolidating into broader AI Engineer or Context Engineer roles. Where it persists: companies with very specific, high-stakes prompt domains (legal, medical, financial compliance). Upskill toward context engineering or AI engineering if you're in this role.
+"提示词工程师"作为独立职位正在整合到更广泛的 AI 工程师或上下文工程师角色中。持续存在的场景：拥有高度特定、高风险提示词领域的公司（法律、医疗、金融合规）。如果你在这个角色，请向上下文工程或 AI 工程方向提升技能。
 
-### Entry paths
+### 入职路径
 
-Technical writer, QA engineer, domain expert (law, medicine, finance), content strategist.
+技术写作、QA 工程师、领域专家（法律、医疗、金融）、内容策略师。
 
 ---
 
-## 3. Context Engineer
+## 3. 上下文工程师
 
-**Status**: Emerging — one of the fastest-growing specializations in 2025.
+**状态**：新兴——2025 年增长最快的专业化方向之一。
 
-### What they do
+### 工作内容
 
-Context engineering is the evolution of prompt engineering. Where prompt engineers craft instructions, context engineers design **systems** that give AI models the right information, at the right time, in the right format. Andrej Karpathy explicitly moved from "vibe coding" framing to "context engineering" as the more precise description of this work.
+上下文工程是提示词工程的进化。提示词工程师编写指令，上下文工程师设计**系统**，在正确的时机、以正确的格式给 AI 模型提供正确的信息。Andrej Karpathy 明确地从"凭感觉编程"的框架转向了"上下文工程"，认为后者是更精确的描述。
 
-See the [Context Engineering reference](./context-engineering.md) for the full discipline — including the ACE pipeline (Section 6), the L0→L5 maturity model (Section 9), and the operational mechanisms that separate a Level 4 from a Level 5 system: signal taxonomy and causal attribution (Section 10), PR-based loop closure (Section 11), ejection of dormant rules (Section 12), constitutional audits (Section 13), and multi-dev profile reconciliation (Section 14).
+完整学科见[上下文工程参考](./context-engineering.md)——包括 ACE 流水线（第 6 节）、L0→L5 成熟度模型（第 9 节），以及区分 Level 4 和 Level 5 系统的操作机制：信号分类与因果归因（第 10 节）、基于 PR 的循环闭合（第 11 节）、休眠规则的淘汰（第 12 节）、体质审计（第 13 节）和多开发者档案协调（第 14 节）。
 
-> "Context Engineering is providing the right information and tools, in the right format, at the right time." — Philipp Schmid, Google
+> "上下文工程是在正确时机、以正确格式提供正确信息和工具。" — Philipp Schmid，Google
 
-### Responsibilities
+### 职责
 
-- Design RAG (Retrieval-Augmented Generation) systems and knowledge bases
-- Manage context windows across multi-turn interactions and long-horizon tasks
-- Define what agents remember, retrieve, or forget during task execution
-- Structure information hierarchies (system prompts, conversation history, retrieved docs, tool definitions, safety constraints)
-- Optimize context for accuracy and cost simultaneously
-- Measure context quality through systematic evals
+- 设计 RAG（检索增强生成）系统和知识库
+- 管理跨多轮交互和长期任务的上下文窗口
+- 定义智能体在任务执行期间记住什么、检索什么或遗忘什么
+- 构建信息层级（系统提示、对话历史、检索文档、工具定义、安全约束）
+- 同时优化上下文的准确性和成本
+- 通过系统化评估衡量上下文质量
 
-### Required skills
+### 必备技能
 
-| Technical | Soft |
+| 技术能力 | 软技能 |
 |-----------|------|
-| Python (context pipeline automation) | Systems thinking |
-| Vector databases (Pinecone, Chroma, Weaviate) | Information architecture instinct |
-| SQL and NoSQL (context retrieval) | Cross-functional collaboration |
-| Cloud platforms (AWS/Azure/GCP) | Curiosity and continuous learning |
-| RAG architectures, embedding models | Precision in documentation |
+| Python（上下文流水线自动化） | 系统性思维 |
+| 向量数据库（Pinecone、Chroma、Weaviate） | 信息架构直觉 |
+| SQL 和 NoSQL（上下文检索） | 跨职能协作 |
+| 云平台（AWS/Azure/GCP） | 好奇心与持续学习 |
+| RAG 架构、嵌入模型 | 文档精准性 |
 
-### Relationship to other roles
+### 与其他角色的关系
 
-Context engineers work upstream of AI engineers (they define what context is available) and downstream of domain experts (they encode domain knowledge into retrievable structures). Closely related to platform engineers in large organizations.
+上下文工程师在 AI 工程师的上游工作（他们定义可用的上下文），在领域专家的下游工作（他们将领域知识编码为可检索的结构）。在大型组织中与平台工程师密切相关。
 
-### Entry paths
+### 入职路径
 
-Data engineer, backend engineer, ML engineer, information architect.
+数据工程师、后端工程师、ML 工程师、信息架构师。
 
 ---
 
-## 4. AI Engineer
+## 4. AI 工程师
 
-**Status**: Mainstream — the generalist role for building AI-powered products.
+**状态**：主流——构建 AI 驱动产品的通才角色。
 
-### What they do
+### 工作内容
 
-Build end-to-end AI systems. Not researchers (they don't train models from scratch), but not just integrators either. They take LLMs and orchestration frameworks and build systems that ship. Think of them as software engineers who've added LLM integration, evals, and AI product intuition to their stack.
+从头到尾构建 AI 系统。不是研究员（他们不从头训练模型），但也不只是集成者。他们拿 LLM 和编排框架，构建能交付的系统。将其理解为在技术栈中加入了 LLM 集成、评估和 AI 产品直觉的软件工程师。
 
-### Responsibilities
+### 职责
 
-- Design and implement LLM-powered applications (chatbots, agents, pipelines)
-- Build evaluation frameworks to measure model output quality
-- Integrate AI capabilities into existing software systems
-- Monitor AI systems in production (latency, cost, quality drift)
-- Select appropriate models for specific tasks (capability vs. cost tradeoffs)
-- Implement fine-tuning or RAG when base models aren't sufficient
+- 设计和实现 LLM 驱动的应用（聊天机器人、智能体、流水线）
+- 构建评估框架以衡量模型输出质量
+- 将 AI 能力集成到现有软件系统
+- 在生产中监控 AI 系统（延迟、成本、质量漂移）
+- 为特定任务选择合适的模型（能力 vs 成本权衡）
+- 在基础模型不足时实现微调或 RAG
 
-### Required skills
+### 必备技能
 
-| Technical | Soft |
+| 技术能力 | 软技能 |
 |-----------|------|
-| Strong software engineering foundations | Product judgment |
-| Python (primary), JavaScript (often needed) | Pragmatism over research purity |
-| Familiarity with major LLM APIs (Anthropic, OpenAI, Gemini) | Fast iteration mindset |
-| Eval design and measurement | Ability to work with ambiguous requirements |
-| Understanding of embeddings, RAG, agent frameworks | Communication of AI limitations to stakeholders |
-| MLOps basics (deployment, monitoring, versioning) | |
+| 扎实的软件工程基础 | 产品判断力 |
+| Python（主要）、JavaScript（通常需要） | 实用主义而非研究纯粹性 |
+| 熟悉主要 LLM API（Anthropic、OpenAI、Gemini） | 快速迭代思维 |
+| 评估设计与测量 | 处理模糊需求的能力 |
+| 理解嵌入、RAG、智能体框架 | 向利益相关者传达 AI 局限性 |
+| MLOps 基础（部署、监控、版本控制） | |
 
-### The critical distinction from ML Engineer
+### 与 ML 工程师的关键区别
 
-AI engineers work with existing models. ML engineers build and train models. In practice, most companies hiring in 2025-2026 need AI engineers (apply the models) not ML engineers (build the models).
+AI 工程师使用现有模型。ML 工程师构建和训练模型。实践中，2025-2026 年大多数公司招聘的是 AI 工程师（应用模型），而非 ML 工程师（构建模型）。
 
-### Entry paths
+### 入职路径
 
-Software engineer (most common), backend engineer, data engineer, ML engineer transitioning to applied work.
+软件工程师（最常见）、后端工程师、数据工程师、转向应用工作的 ML 工程师。
 
 ---
 
-## 5. LLM Engineer
+## 5. LLM 工程师
 
-**Status**: Specialized variant of AI Engineer, prominent in model-heavy companies.
+**状态**：AI 工程师的专业化变体，在模型密集型公司中突出。
 
-### What they do
+### 工作内容
 
-Deep specialization in large language model integration and optimization. Where AI engineers are generalists, LLM engineers go deep on the model layer: fine-tuning, RLHF, model selection, prompt optimization at scale, and evaluation infrastructure.
+深度专注于大型语言模型的集成和优化。AI 工程师是通才，LLM 工程师深入模型层：微调、RLHF、模型选择、规模化提示词优化和评估基础设施。
 
-### Responsibilities
+### 职责
 
-- Fine-tuning base models for domain-specific tasks
-- Designing and running systematic model evaluations (evals)
-- Implementing RLHF or similar feedback mechanisms
-- Model performance benchmarking and regression testing
-- Managing model versions and A/B testing new model releases
-- Building tooling for model monitoring and drift detection
+- 针对领域特定任务微调基础模型
+- 设计和运行系统化模型评估
+- 实施 RLHF 或类似反馈机制
+- 模型性能基准测试和回归测试
+- 管理模型版本并对新模型发布进行 A/B 测试
+- 构建模型监控和漂移检测工具
 
-### Required skills
+### 必备技能
 
-| Technical | Soft |
+| 技术能力 | 软技能 |
 |-----------|------|
-| Python (fluent) | Scientific rigor |
-| PyTorch or JAX | Statistical thinking |
-| Transformers architecture knowledge | Patience with slow feedback loops |
-| Evaluation framework design | Documentation of experiments |
-| Distributed training basics | |
+| Python（流利） | 科学严谨性 |
+| PyTorch 或 JAX | 统计思维 |
+| Transformer 架构知识 | 对缓慢反馈循环的耐心 |
+| 评估框架设计 | 实验文档化 |
+| 分布式训练基础 | |
 
-### Where it's heading
+### 发展方向
 
-Strong demand at AI companies (Anthropic, OpenAI, scale-ups) and in large enterprises building proprietary models. Distinct from AI engineer in its proximity to the model itself. Expect this role to bifurcate: pure research at labs vs. applied fine-tuning at enterprises.
+在 AI 公司（Anthropic、OpenAI、扩展期公司）和构建专有模型的大型企业中需求强劲。在模型本身方面与 AI 工程师有所区别。预计这个角色将分化：实验室中的纯研究 vs 企业中的应用微调。
 
 ---
 
-## 6. AI Agent Engineer
+## 6. AI 智能体工程师
 
-**Status**: High growth — one of the most in-demand specialized roles in 2025-2026.
+**状态**：高增长——2025-2026 年需求最旺盛的专业化角色之一。
 
-### What they do
+### 工作内容
 
-Design and build autonomous agent systems. While AI engineers build general AI products, agent engineers specialize in systems that plan, reason, use tools, and execute multi-step tasks without constant human intervention.
+设计和构建自主智能体系统。虽然 AI 工程师构建通用 AI 产品，智能体工程师专注于能够规划、推理、使用工具并在无持续人工干预的情况下执行多步骤任务的系统。
 
-### Responsibilities
+### 职责
 
-- Design multi-agent architectures (orchestrator + specialist agents)
-- Build agent memory systems (short-term, long-term, episodic)
-- Implement tool use and API integrations for agents
-- Design guardrails and safety mechanisms for autonomous systems
-- Build human-in-the-loop checkpoints for high-risk decisions
-- Monitor agent behavior in production (reliability, cost, anomaly detection)
-- Test agent systems systematically (agentic eval is a distinct discipline)
+- 设计多智能体架构（编排者 + 专家智能体）
+- 构建智能体记忆系统（短期、长期、情节式）
+- 为智能体实现工具使用和 API 集成
+- 为自主系统设计护栏和安全机制
+- 为高风险决策构建人在循环中的检查点
+- 在生产中监控智能体行为（可靠性、成本、异常检测）
+- 系统化测试智能体系统（智能体评估是一个独特的学科）
 
-### Required skills
+### 必备技能
 
-| Technical | Soft |
+| 技术能力 | 软技能 |
 |-----------|------|
-| Agent frameworks (LangChain, AutoGen, Claude Agent SDK, CrewAI) | Systems thinking |
-| Orchestration patterns | Risk judgment (when to let agents act autonomously) |
-| Tool/API integration | User experience intuition |
-| Async programming | Debugging patience (agents fail in non-deterministic ways) |
-| Observability and tracing (LangSmith, Langfuse, etc.) | |
+| 智能体框架（LangChain、AutoGen、Claude Agent SDK、CrewAI） | 系统性思维 |
+| 编排模式 | 风险判断（何时让智能体自主行动） |
+| 工具/API 集成 | 用户体验直觉 |
+| 异步编程 | 调试耐心（智能体以不可复现的方式失败） |
+| 可观测性和追踪（LangSmith、Langfuse 等） | |
 
-### Key challenge specific to this role
+### 这个角色特有的关键挑战
 
-Non-determinism. Agent systems fail in ways that are hard to reproduce. Observability tooling (tracing every agent step) is as critical as the agent code itself. Engineers who treat agent debugging like debugging traditional code struggle.
-
----
-
-## 7. Founding AI Engineer
-
-**Status**: Highly sought after in AI-native startups and seed-to-Series A companies.
-
-### What they do
-
-A hybrid role unique to early-stage companies: part AI engineer, part product engineer, part technical co-founder. They own core product functionality end-to-end, from architecture decisions to customer interactions, while building on top of AI capabilities.
-
-> Typically targets engineers with 0-4 years of experience who are comfortable with ambiguity, figure things out independently, and already use AI tools daily in their workflow.
-
-### Responsibilities
-
-- Build entire product features from architecture to deployment, not just assigned tickets
-- Make foundational technical decisions that will shape the company's stack for years
-- Work directly with founders on product strategy and prioritization
-- Use AI coding tools as force multipliers to ship at startup speed
-- Interact directly with early customers to understand problems
-- Define engineering culture before it calcifies
-
-### What makes this role different
-
-Scope of ownership and ambiguity. A senior engineer at a large company works within defined systems. A founding engineer defines the systems. The leverage is massive in both directions: great decisions compound, bad ones become technical debt that's hard to escape.
-
-### Required profile
-
-- Bias toward action over analysis paralysis
-- Comfort shipping imperfect things and iterating
-- Product intuition alongside technical skills
-- Already fluent with AI coding tools (Claude Code, Cursor, Copilot)
-- Able to context-switch from infra to product to customer research in the same day
-
-### Entry paths
-
-Strong mid-level engineers at established companies who want more ownership. Common source: engineers who've been quietly building side projects with AI tools.
+非确定性。智能体系统以难以复现的方式失败。可观测性工具（追踪每个智能体步骤）与智能体代码本身同等重要。把智能体调试当成传统代码调试的工程师会遇到困难。
 
 ---
 
-## 8. AI Architect
+## 7. 创始 AI 工程师
 
-**Status**: Senior/Staff level — emerging role in larger organizations.
+**状态**：在 AI 原生初创公司和种子轮到 A 轮公司中极为抢手。
 
-### What they do
+### 工作内容
 
-Design enterprise AI systems at the system level. Where AI engineers ship features, AI architects define the patterns, platforms, and decision frameworks that multiple teams use. They make the technology choices that others live with for years.
+早期公司特有的混合角色：部分 AI 工程师、部分产品工程师、部分技术联合创始人。他们端到端拥有核心产品功能，从架构决策到客户交互，同时基于 AI 能力构建。
 
-### Responsibilities
+> 通常面向 0-4 年工作经验、对模糊性感到舒适、能独立弄清楚事情、并且每天都在工作流中使用 AI 工具的工程师。
 
-- Define AI technology strategy and stack decisions (which models, which frameworks, which providers)
-- Design enterprise AI reference architectures
-- Set standards for AI system observability, security, and governance
-- Evaluate build vs. buy decisions for AI capabilities
-- Ensure AI systems are scalable, cost-effective, and auditable
-- Bridge between business requirements and technical AI implementation
+### 职责
 
-### Required skills
+- 从架构到部署完整构建产品功能，而非只完成分配的工单
+- 做出将塑造公司未来数年技术栈的基础技术决策
+- 直接与创始人在产品策略和优先级上合作
+- 将 AI 编程工具用作力量倍增器，以初创公司的速度交付
+- 直接与早期客户交流以理解问题
+- 在文化固化之前定义工程文化
 
-- Deep experience across AI/ML stack (models, infrastructure, MLOps)
-- Strong communication skills (presenting to C-suite, working with legal/compliance)
-- Understanding of cloud provider AI offerings (AWS Bedrock, Azure OpenAI, Vertex AI)
-- Security and compliance awareness (GDPR, AI Act, SOC2)
-- Experience designing distributed systems at scale
+### 这个角色的独特之处
 
-### Entry paths
+所有权范围和模糊性。大公司的高级工程师在已定义的系统内工作。创始工程师定义系统。两个方向的杠杆都很大：好的决策复利，坏的决策成为难以摆脱的技术债务。
 
-Senior AI engineer → Staff → Architect. Often takes 5-8 years in AI-adjacent roles. Alternatively: cloud architect + strong AI self-study.
+### 必备条件
 
----
+- 偏向行动而非分析麻痹
+- 能接受交付不完美的东西并迭代
+- 技术技能外加产品直觉
+- 已经熟练使用 AI 编程工具（Claude Code、Cursor、Copilot）
+- 能在同一天在基础设施、产品和客户研究之间切换
 
-## 9. Platform Engineer (AI context)
+### 入职路径
 
-**Status**: Established role, significantly reshaped by AI.
-
-### What they do
-
-Build and maintain the internal developer platform. With AI, this role has expanded to include the "golden path" for AI development: standardized ways for teams to integrate LLMs, common observability infrastructure, cost controls, and guardrails so individual teams don't reinvent the wheel or create security risks.
-
-### AI-specific responsibilities added to traditional platform work
-
-- Provide standardized LLM integration patterns (internal SDKs, proxies, abstractions)
-- Manage API keys, rate limits, and cost allocation across teams
-- Build AI observability infrastructure (tracing, logging, alerting)
-- Enforce security policies for AI outputs (PII filtering, output validation)
-- Maintain model registries and versioning systems
-- Create "paved roads" for RAG patterns, agent architectures, eval pipelines
-
-### Why this role matters more with AI
-
-When every team is building their own LLM integrations, you get: duplicated cost, inconsistent security, no centralized observability, and no shared learnings. Platform engineers who understand AI prevent this fragmentation. They're the reason the AI investment in a company scales instead of sprawling.
-
-### Required skills (AI additions)
-
-MLOps tooling, LLM gateway products (LiteLLM, Portkey), cloud AI services, cost optimization patterns, security for AI (prompt injection mitigation, output filtering).
+在大公司中想要更多所有权的优秀中级工程师。常见来源：悄悄用 AI 工具构建副业项目的工程师。
 
 ---
 
-## 10. Harness Engineer
+## 8. AI 架构师
 
-**Status**: Emerging — formalized by Martin Fowler in 2025, not yet institutionalized as a standalone title.
+**状态**：高级/员工级别——在较大组织中新兴的角色。
 
-### What they do
+### 工作内容
 
-Build the infrastructure that keeps AI agents "under harness" — under control. As agentic AI systems generate code, take actions, and operate with increasing autonomy, harness engineers build the systems that ensure they stay within architectural constraints, produce coherent output, and don't accumulate entropy over time.
+在系统层面设计企业 AI 系统。AI 工程师交付功能，AI 架构师定义多个团队使用的模式、平台和决策框架。他们做出别人要承受多年的技术选型。
 
-> Source: [Martin Fowler — Harness Engineering](https://martinfowler.com/articles/exploring-gen-ai/harness-engineering.html)
+### 职责
 
-### The three pillars
+- 定义 AI 技术战略和技术栈决策（哪些模型、哪些框架、哪些提供商）
+- 设计企业 AI 参考架构
+- 为 AI 系统可观测性、安全性和治理设置标准
+- 评估 AI 能力的自建 vs 购买决策
+- 确保 AI 系统可扩展、具成本效益且可审计
+- 在业务需求和技术 AI 实现之间架桥
 
-**1. Context engineering (knowledge infrastructure)**
-Not one-off prompts, but a continuously updated knowledge base embedded in the codebase. Agents know your conventions, architecture decisions, and domain context. Dynamic access to observability data and documentation.
+### 必备技能
 
-**2. Architectural constraints (agent guardrails)**
-- LLM-based watchdog agents that review generated code
-- Custom deterministic linters enforcing your specific architectural patterns
-- Structural tests (ArchUnit-style) that run automatically
-- Pre-commit hooks that reject code violating established constraints
+- 跨 AI/ML 技术栈的深度经验（模型、基础设施、MLOps）
+- 强大的沟通技能（向 C 级高管展示，与法务/合规合作）
+- 理解云提供商 AI 产品（AWS Bedrock、Azure OpenAI、Vertex AI）
+- 安全与合规意识（GDPR、AI 法案、SOC2）
+- 规模化设计分布式系统的经验
 
-**3. Entropy management (drift prevention)**
-Periodic agents that scan the codebase for: outdated documentation, architectural violations that slipped through, abandoned patterns that reappeared, inconsistencies introduced by multiple agents working in parallel.
+### 入职路径
 
-### The core insight
-
-Without a harness, AI agents produce code that individually looks fine but collectively drifts away from your architecture, your patterns, and your documentation. The harness is what makes "AI generates most of the code" sustainable at scale rather than a path to unmaintainable systems.
-
-### The formal framework (arXiv 2605.18747, May 2026)
-
-"Code as Agent Harness" (arXiv 2605.18747) formalizes three properties that a production harness must satisfy. These serve as evaluation criteria when choosing between harness frameworks or assessing whether an internal toolchain qualifies as a harness rather than a wrapper.
-
-**Executability.** The harness actually runs the code the model produces and verifies the result objectively. Text or code generation alone does not qualify. A harness that validates syntax but not behavior fails this property. Anthropic SDK, OpenAI Agents SDK, and LangGraph each implement the while-loop execution engine that makes executability concrete.
-
-**Inspectability.** Every step the agent takes is traceable for diagnosis and feedback generation. OpenInference (maintained by Arize) and OpenLLMetry (Traceloop) are the two instrumentation layers that standardize this property within the OpenTelemetry ecosystem. The OTel GenAI SIG defines `gen_ai.client` spans as stable and `gen_ai.agent` spans as experimental as of May 2026.
-
-**Statefulness.** The harness maintains continuity between sessions and sequential tool calls. Without statefulness, each agent interaction starts blind, forcing re-discovery of context that was already established. E2B and Northflank implement this at the infrastructure level; Anthropic Claude Managed Agents and AWS Bedrock AgentCore implement it at the product level.
-
-Martin Fowler summarizes the distinction precisely: "A raw model is not an agent. It becomes one when connected to a harness." O'Reilly characterizes the harness as "the new frontier of reliable AI systems" (2026). Nine concrete components make up a prod-grade harness: while-loop engine, context management, tool registry, sub-agent management, built-in skills, session persistence, dynamic prompt assembly, lifecycle hooks, and permission enforcement.
-
-### Organizational impact
-
-This role pushes toward **intentional technological convergence**: organizations with 2-3 primary tech stacks benefit far more from standardized harnesses than organizations with 10 different stacks. It's a deliberate trade of technical freedom for reliability.
-
-> "Ce n'est pas quelque chose dans lequel vous pouvez vous lancer pour des résultats rapides." — Martin Fowler
-
-### Where this role will emerge
-
-Currently absorbed by: platform engineers, staff/principal engineers, architecture guilds. Likely to become an explicit role in:
-- Companies running autonomous coding agents at scale
-- Large enterprises with 50+ engineers using AI coding tools
-- Organizations that've experienced "AI entropy" firsthand (code that works but nobody understands anymore)
-
-### Required skills
-
-Software architecture, linter/static analysis tooling, LLM orchestration, observability, codebase knowledge management, entropy detection patterns.
+高级 AI 工程师 → 员工级 → 架构师。通常需要 5-8 年 AI 相关角色经验。另一条路：云架构师 + 扎实的 AI 自学。
 
 ---
 
-## 11. AI Product Manager
+## 9. 平台工程师（AI 语境）
 
-**Status**: Mainstream and growing, with significant premium over traditional PM roles.
+**状态**：成熟角色，被 AI 显著重塑。
 
-### What they do
+### 工作内容
 
-Product management with deep AI fluency. They understand what AI can and can't do, manage the unique product challenges of AI systems (non-determinism, latency, hallucinations, cost), and translate between business needs and AI capabilities.
+构建和维护内部开发者平台。随着 AI 的发展，这个角色扩展到包括 AI 开发的"黄金路径"：标准化的 LLM 集成方式、公共可观测性基础设施、成本控制和护栏，让各个团队不必重新发明轮子或制造安全风险。
 
-### Responsibilities
+### AI 带来的额外职责（在传统平台工作之上）
 
-- Define product requirements for AI features with technical constraints in mind
-- Work with AI engineers on evaluation criteria (what does "good" look like?)
-- Manage the unique UX challenges of AI: uncertainty, latency, error handling
-- Own the cost/quality/speed tradeoffs for AI features
-- Communicate AI limitations and risks to stakeholders
-- Run A/B tests on model versions, prompt changes, feature changes
+- 提供标准化 LLM 集成模式（内部 SDK、代理、抽象层）
+- 跨团队管理 API 密钥、速率限制和成本分配
+- 构建 AI 可观测性基础设施（追踪、日志、告警）
+- 强制执行 AI 输出的安全策略（PII 过滤、输出验证）
+- 维护模型注册表和版本系统
+- 为 RAG 模式、智能体架构、评估流水线创建"铺装道路"
 
-### What makes AI PM different from traditional PM
+### 为什么这个角色在 AI 时代更重要
 
-Traditional PM ships features that behave deterministically. AI PMs ship systems where outputs vary. They need to think probabilistically: not "will this work?" but "what % of the time will this work, and what happens in the other cases?" Quality measurement is continuous, not binary.
+当每个团队都在构建自己的 LLM 集成时，你会看到：重复的成本、不一致的安全性、没有集中可观测性、没有共享学习。理解 AI 的平台工程师防止这种碎片化。他们是公司 AI 投资扩展而非蔓延的原因。
 
-### Required skills
+### 必备技能（AI 新增内容）
 
-Standard PM skills (roadmapping, prioritization, user research) plus: LLM API familiarity, eval design, basic Python for running experiments, understanding of model tradeoffs (accuracy vs. cost vs. latency), AI UX patterns.
-
-### Salary context
-
-FAANG-level: $160K-$200K+ entry-level AI PM. Senior: $200K-$300K+ total compensation.
+MLOps 工具、LLM 网关产品（LiteLLM、Portkey）、云 AI 服务、成本优化模式、AI 安全（提示注入缓解、输出过滤）。
 
 ---
 
-## 12. AI Safety & Eval Engineer
+## 10. 框架工程师
 
-**Status**: Specialized — primarily at AI labs and companies with regulated AI deployments.
+**状态**：新兴——2025 年由 Martin Fowler 正式化，目前尚未作为独立职位确立。
 
-### What they do
+### 工作内容
 
-Ensure AI systems behave safely, reliably, and in alignment with intended values. Two related but distinct specializations: **Eval Engineers** (build systems to measure model behavior) and **AI Safety Engineers** (identify and mitigate risks in AI systems).
+构建让 AI 智能体"在控制之下"的基础设施。随着智能体 AI 系统生成代码、采取行动并以越来越高的自主性运作，框架工程师构建确保它们保持在架构约束内、产生连贯输出并不随时间积累熵的系统。
 
-### Eval Engineer responsibilities
+> 来源：[Martin Fowler — 框架工程](https://martinfowler.com/articles/exploring-gen-ai/harness-engineering.html)
 
-- Design evaluation frameworks (evals) to measure model quality, safety, and capabilities
-- Build automated eval pipelines that run on every model version change
-- Define metrics that capture real-world performance (not just benchmark gaming)
-- Implement human evaluation workflows for subjective quality dimensions
-- Detect regressions before they reach production
+### 三大支柱
 
-### AI Safety Engineer responsibilities
+**1. 上下文工程（知识基础设施）**
+不是一次性提示词，而是嵌入代码库中持续更新的知识库。智能体了解你的约定、架构决策和领域上下文。动态访问可观测性数据和文档。
 
-- Red-team AI systems to find failure modes, jailbreaks, and harmful outputs
-- Implement content filtering, output validation, and guardrail systems
-- Design human-in-the-loop checkpoints for high-risk decisions
-- Monitor production systems for harmful outputs or unexpected behavior
-- Work with legal/compliance on AI governance
+**2. 架构约束（智能体护栏）**
+- 审查生成代码的基于 LLM 的看门狗智能体
+- 强制执行特定架构模式的自定义确定性 Linter
+- 自动运行的结构测试（ArchUnit 风格）
+- 拒绝违反既定约束的代码的预提交 Hooks
 
-### Required skills
+**3. 熵管理（漂移预防）**
+定期扫描代码库的智能体，查找：过时文档、漏过的架构违规、重新出现的废弃模式、多个智能体并行工作引入的不一致性。
 
-Rigorous experimental design, statistics, Python, strong understanding of LLM failure modes, communication skills for risk reporting.
+### 核心洞察
 
-### Where to find these roles
+没有框架，AI 智能体生成的代码单独看起来没问题，但整体上远离了你的架构、模式和文档。框架是让"AI 生成大多数代码"在规模上可持续，而非走向无人理解的不可维护系统的关键。
 
-Primarily: Anthropic, OpenAI, Google DeepMind, Meta AI, Microsoft AI. Growing in: healthcare, finance, legal tech — regulated industries where AI errors have serious consequences.
+### 正式框架（arXiv 2605.18747，2026 年 5 月）
 
----
+"代码作为智能体框架"（arXiv 2605.18747）正式化了生产框架必须满足的三个属性。这些可以作为评估框架框架或评估内部工具链是否构成框架的标准。
 
-## 13. ML Engineer
+**可执行性**：框架实际运行模型生成的代码，并客观验证结果。仅文本或代码生成不符合要求。只验证语法而非行为的框架未满足此属性。Anthropic SDK、OpenAI Agents SDK 和 LangGraph 各自实现了使可执行性具体化的 while 循环执行引擎。
 
-**Status**: Established — the most traditional of the AI engineering roles.
+**可检查性**：智能体采取的每一步都可追踪，用于诊断和反馈生成。OpenInference（由 Arize 维护）和 OpenLLMetry（Traceloop）是在 OpenTelemetry 生态系统中标准化此属性的两个工具层。OTel GenAI SIG 将 `gen_ai.client` spans 定义为稳定，`gen_ai.agent` spans 截至 2026 年 5 月为实验性。
 
-### What they do
+**有状态性**：框架在会话间和顺序工具调用间保持连续性。没有有状态性，每次智能体交互都从盲目开始，迫使重新发现已建立的上下文。E2B 和 Northflank 在基础设施层实现了这一点；Anthropic Claude 托管智能体和 AWS Bedrock AgentCore 在产品层实现了这一点。
 
-Develop, train, deploy, and maintain machine learning models. In the LLM era, many ML engineers have pivoted toward fine-tuning and applied AI work rather than building models from scratch — that work is increasingly concentrated at a small number of frontier labs.
+Martin Fowler 精确总结了这一区别："原始模型不是智能体。当连接到框架时，它才成为一个智能体。"O'Reilly 将框架描述为"可靠 AI 系统的新前沿"（2026 年）。九个具体组件构成了生产级框架：while 循环引擎、上下文管理、工具注册表、子智能体管理、内置 Skills（技能模块）、会话持久化、动态提示词组装、生命周期 Hooks 和权限执行。
 
-### Responsibilities
+### 组织影响
 
-- Data pipeline development (collection, cleaning, transformation)
-- Model training and fine-tuning
-- Feature engineering
-- Model serving and deployment (MLOps)
-- Performance optimization and model compression
-- Production monitoring for model drift
+这个角色推动**有意的技术收敛**：拥有 2-3 个主要技术栈的组织从标准化框架中受益远超拥有 10 个不同技术栈的组织。这是以技术自由换取可靠性的刻意权衡。
 
-### How the role is evolving
+> "Ce n'est pas quelque chose dans lequel vous pouvez vous lancer pour des résultats rapides."（这不是你能为了快速结果而仓促投入的事情）— Martin Fowler
 
-The "build a model from scratch" path is increasingly rare outside frontier labs. ML engineers in most companies now work on: fine-tuning existing models, building RAG systems, deploying and monitoring models in production, and bridging between AI engineers and data infrastructure. The practical overlap with AI engineer is large.
+### 这个角色将在哪里出现
 
-### Required skills
+目前被以下角色吸收：平台工程师、员工/首席工程师、架构工会。可能成为明确角色的场景：
+- 以自主编程智能体为基础规模运营的公司
+- 拥有 50+ 名工程师使用 AI 编程工具的大型企业
+- 亲历过"AI 熵"的组织（代码可以运行，但没人再理解了）
 
-Python (fluent), PyTorch or TensorFlow, distributed computing, data pipeline tools (Spark, Airflow, dbt), cloud ML platforms (SageMaker, Vertex AI, Azure ML), statistical foundations.
+### 必备技能
+
+软件架构、Linter/静态分析工具、LLM 编排、可观测性、代码库知识管理、熵检测模式。
 
 ---
 
-## 14. MLOps Engineer
+## 11. AI 产品经理
 
-**Status**: Established — distinct from ML Engineer, growing in enterprises deploying models at scale.
+**状态**：主流且持续增长，比传统 PM 角色有显著溢价。
 
-### What they do
+### 工作内容
 
-Bridge the gap between model development and production infrastructure. While ML engineers build and fine-tune models and AI engineers build applications, MLOps engineers own the operational layer: CI/CD pipelines for models, deployment infrastructure, monitoring for drift and degradation, and the systems that keep models reliable in production over time.
+具备深度 AI 素养的产品管理。他们理解 AI 能做什么不能做什么，管理 AI 系统特有的产品挑战（非确定性、延迟、幻觉、成本），并在业务需求和 AI 能力之间架桥。
 
-### Responsibilities
+### 职责
 
-- Build and maintain CI/CD pipelines for model training, evaluation, and deployment
-- Monitor production models for performance drift, data drift, and prediction quality degradation
-- Design feature stores and model registries
-- Implement A/B testing and canary deployments for new model versions
-- Manage compute infrastructure for training and inference (cost optimization)
-- Build observability tooling: metrics, logging, alerting for model behavior in production
-- Establish model versioning and rollback procedures
+- 在考虑技术约束的情况下定义 AI 功能的产品需求
+- 与 AI 工程师就评估标准合作（"好"是什么样的？）
+- 管理 AI 的独特 UX 挑战：不确定性、延迟、错误处理
+- 拥有 AI 功能的成本/质量/速度权衡
+- 向利益相关者传达 AI 局限性和风险
+- 对模型版本、提示词变更、功能变更运行 A/B 测试
 
-### Required skills
+### AI PM 与传统 PM 的不同
 
-| Technical | Soft |
+传统 PM 交付确定性行为的功能。AI PM 交付输出会变化的系统。他们需要概率性思考：不是"这会有效吗？"而是"什么时候会有效，在其他情况下会发生什么？"质量测量是持续的，而非二值的。
+
+### 必备技能
+
+标准 PM 技能（路线图、优先级、用户研究）加上：LLM API 熟悉度、评估设计、运行实验的基础 Python、理解模型权衡（准确性 vs 成本 vs 延迟）、AI UX 模式。
+
+### 薪资参考
+
+FAANG 级：初级 AI PM 160,000-200,000+ 美元。高级：200,000-300,000+ 美元总补偿。
+
+---
+
+## 12. AI 安全与评估工程师
+
+**状态**：专业化——主要在 AI 实验室和拥有受监管 AI 部署的公司。
+
+### 工作内容
+
+确保 AI 系统安全、可靠地行动，并符合预期价值观。两种相关但不同的专业化：**评估工程师**（构建衡量模型行为的系统）和 **AI 安全工程师**（识别和缓解 AI 系统中的风险）。
+
+### 评估工程师职责
+
+- 设计评估框架（evals）以衡量模型质量、安全性和能力
+- 构建在每次模型版本变更时运行的自动评估流水线
+- 定义捕获真实世界绩效的指标（而非只是基准游戏）
+- 为主观质量维度实施人工评估工作流
+- 在回归到达生产前检测
+
+### AI 安全工程师职责
+
+- 对 AI 系统进行红队测试以发现失败模式、越狱和有害输出
+- 实施内容过滤、输出验证和护栏系统
+- 为高风险决策设计人在循环中的检查点
+- 监控生产系统中的有害输出或意外行为
+- 与法务/合规在 AI 治理上合作
+
+### 必备技能
+
+严格的实验设计、统计学、Python、对 LLM 失败模式的深刻理解、风险报告的沟通技能。
+
+### 在哪里找到这些职位
+
+主要在：Anthropic、OpenAI、Google DeepMind、Meta AI、Microsoft AI。在以下领域增长：医疗、金融、法律技术——AI 错误会产生严重后果的受监管行业。
+
+---
+
+## 13. ML 工程师
+
+**状态**：成熟——AI 工程角色中最传统的。
+
+### 工作内容
+
+开发、训练、部署和维护机器学习模型。在 LLM 时代，许多 ML 工程师转向微调和应用 AI 工作，而非从头构建模型——那项工作越来越集中在少数前沿实验室。
+
+### 职责
+
+- 数据流水线开发（收集、清洗、转换）
+- 模型训练和微调
+- 特征工程
+- 模型服务和部署（MLOps）
+- 性能优化和模型压缩
+- 模型漂移的生产监控
+
+### 角色如何演进
+
+"从头构建模型"这条路在前沿实验室之外越来越少见。大多数公司的 ML 工程师现在致力于：微调现有模型、构建 RAG 系统、在生产中部署和监控模型，以及在 AI 工程师和数据基础设施之间架桥。与 AI 工程师的实际重叠很大。
+
+### 必备技能
+
+Python（流利）、PyTorch 或 TensorFlow、分布式计算、数据流水线工具（Spark、Airflow、dbt）、云 ML 平台（SageMaker、Vertex AI、Azure ML）、统计基础。
+
+---
+
+## 14. MLOps 工程师
+
+**状态**：成熟——有别于 ML 工程师，在规模化部署模型的企业中持续增长。
+
+### 工作内容
+
+弥合模型开发和生产基础设施之间的差距。ML 工程师构建和微调模型，AI 工程师构建应用，MLOps 工程师拥有运维层：模型的 CI/CD 流水线、部署基础设施、漂移和退化监控，以及让模型在生产中随时间保持可靠的系统。
+
+### 职责
+
+- 构建和维护模型训练、评估和部署的 CI/CD 流水线
+- 监控生产模型的性能漂移、数据漂移和预测质量退化
+- 设计特征存储和模型注册表
+- 为新模型版本实施 A/B 测试和金丝雀部署
+- 管理训练和推理的计算基础设施（成本优化）
+- 构建可观测性工具：模型生产行为的指标、日志、告警
+- 建立模型版本管理和回滚程序
+
+### 必备技能
+
+| 技术能力 | 软技能 |
 |-----------|------|
-| Python (fluent) | Infrastructure mindset |
-| Cloud ML platforms (SageMaker, Vertex AI, Azure ML) | Cross-team collaboration (ML + Infra) |
-| Kubernetes, Docker, infrastructure as code | Reliability engineering instinct |
-| MLflow, Weights & Biases, or similar experiment tracking | Incident response discipline |
-| Data pipeline tools (Airflow, Prefect, dbt) | |
-| Monitoring and observability (Prometheus, Grafana) | |
+| Python（流利） | 基础设施思维 |
+| 云 ML 平台（SageMaker、Vertex AI、Azure ML） | 跨团队协作（ML + 基础设施） |
+| Kubernetes、Docker、基础设施即代码 | 可靠性工程直觉 |
+| MLflow、Weights & Biases 或类似实验追踪 | 事件响应规范 |
+| 数据流水线工具（Airflow、Prefect、dbt） | |
+| 监控和可观测性（Prometheus、Grafana） | |
 
-### The distinction that matters
+### 关键区别
 
-ML engineers ask: "Does the model work?" MLOps engineers ask: "Does the model keep working?" The operational lifecycle of a model — monitoring, retraining triggers, rollback procedures, cost per inference — is entirely separate from building it. Companies that skip this role discover it when a model silently degrades in production and nobody notices until user complaints spike.
+ML 工程师问："模型有效吗？"MLOps 工程师问："模型一直有效吗？"模型的运营生命周期——监控、重训触发、回滚程序、每次推理成本——与构建它完全分离。跳过这个角色的公司，在模型悄悄退化、没人注意到直到用户投诉激增时才发现它的存在。
 
-### Entry paths
+### 入职路径
 
-DevOps/platform engineer adding ML knowledge, ML engineer who gravitates toward infrastructure, data engineer moving toward model operations.
-
----
-
-## 15. AI Developer Advocate
-
-**Status**: High growth — actively hiring at all major AI companies in 2025-2026.
-
-### What they do
-
-Build the bridge between an AI platform and the developers who use it. Part engineer, part educator, part community builder. They go deep enough technically to build real things with the platform, then turn that knowledge into tutorials, documentation, sample projects, and public presence that helps other developers succeed.
-
-### Responsibilities
-
-- Build technical demos, sample projects, and integrations using the platform's APIs
-- Create developer content: tutorials, blog posts, video walkthroughs, conference talks
-- Represent developer needs and pain points to the product and engineering teams
-- Engage with developer communities (Discord, GitHub, forums, social)
-- Speak at conferences and run workshops
-- Onboard strategic partners and enterprise developers
-- Gather and synthesize developer feedback into product improvements
-
-### Required skills
-
-| Technical | Soft |
-|-----------|------|
-| Solid software engineering foundations | Clear technical writing |
-| Deep familiarity with the platform/API | Public speaking confidence |
-| Ability to build quick, illustrative prototypes | Community instinct |
-| Understanding of developer experience (DX) | Empathy for confused users |
-| Familiarity with AI concepts (prompting, RAG, agents) | Curiosity and continuous learning |
-
-### What makes this role different
-
-The audience is other developers, not end users. DevRel success measures developer activation (do developers try the product?), retention (do they keep using it?), and advocacy (do they tell others?). Credibility is the core asset — which means you have to actually build things, not just talk about them. A DevRel who hasn't shipped real production code with the platform has no credibility with the audience they're trying to reach.
-
-### Salary context
-
-$120K-$180K base (US), senior/lead roles $150K-$250K+. Total compensation includes equity at most AI companies.
-
-### Where these roles are
-
-Actively hiring: Anthropic, OpenAI, Together AI, Mistral, Cohere, Hugging Face, LangChain, and any company building developer-facing AI products. The role is expanding beyond AI labs as enterprise software companies add AI capabilities and need someone to help developers adopt them.
-
-### Entry paths
-
-Software engineer with a public presence (blog, open source, conference talks), technical writer with engineering background, early AI community member who builds in public.
+添加了 ML 知识的 DevOps/平台工程师、倾向基础设施的 ML 工程师、向模型运维迁移的数据工程师。
 
 ---
 
-## 16. AI Orchestration Engineer
+## 15. AI 开发者倡导者
 
-**Status**: Emerging — real job postings in 2025, distinct from AI Agent Engineer in scope.
+**状态**：高增长——2025-2026 年所有主要 AI 公司都在积极招聘。
 
-### What they do
+### 工作内容
 
-Design and build intelligent workflows that connect AI capabilities with existing systems, data sources, and business processes. Where AI agent engineers build autonomous reasoning systems, AI orchestration engineers focus on the integration layer: connecting AI to enterprise tools, designing multi-step automation flows, and making AI reliably operable within existing infrastructure.
+在 AI 平台和使用它的开发者之间架桥。部分工程师、部分教育者、部分社区建设者。他们对平台足够深入以构建真实的东西，然后将这些知识转化为帮助其他开发者成功的教程、文档、示例项目和公开影响力。
 
-### Responsibilities
+### 职责
 
-- Design end-to-end automation architectures using orchestration tools (n8n, LangChain, Power Automate, Zapier)
-- Integrate AI capabilities with CRMs, ERPs, data warehouses, and communication platforms
-- Build retrieval and synthesis stacks (RAG + answer grounding) for enterprise knowledge systems
-- Define workflow reliability patterns: retries, fallbacks, human escalation triggers
-- Set up observability for orchestrated workflows (tracing every step, cost tracking)
-- Operationalize AI across cross-functional systems spanning engineering, product, and domain teams
+- 使用平台 API 构建技术演示、示例项目和集成
+- 创建开发者内容：教程、博客文章、视频演示、会议演讲
+- 向产品和工程团队代表开发者需求和痛点
+- 参与开发者社区（Discord、GitHub、论坛、社交媒体）
+- 在会议上发言并主办工作坊
+- 入职战略合作伙伴和企业开发者
+- 收集和综合开发者反馈以改进产品
 
-### Required skills
+### 必备技能
 
-| Technical | Soft |
+| 技术能力 | 软技能 |
 |-----------|------|
-| Orchestration platforms (n8n, LangChain, LlamaIndex) | Process analysis |
-| API integration (REST, GraphQL, webhooks) | Cross-functional collaboration |
-| Python or JavaScript (workflow scripting) | Systems thinking |
-| Data transformation and mapping | Business process intuition |
-| Observability and tracing (LangSmith, Langfuse) | |
+| 扎实的软件工程基础 | 清晰的技术写作 |
+| 对平台/API 的深度熟悉 | 公开演讲信心 |
+| 快速构建说明性原型的能力 | 社区直觉 |
+| 理解开发者体验（DX） | 对困惑用户的同理心 |
+| 熟悉 AI 概念（提示词、RAG、智能体） | 好奇心和持续学习 |
 
-### Distinction from AI Agent Engineer
+### 这个角色的独特之处
 
-| AI Agent Engineer | AI Orchestration Engineer |
+受众是其他开发者，而非最终用户。DevRel 成功衡量开发者激活（开发者尝试产品吗？）、留存（他们继续使用吗？）和倡导（他们告诉别人吗？）。可信度是核心资产——这意味着你必须真正用平台构建东西，而不只是谈论它。没有用平台在生产中交付真实代码的 DevRel，对他们试图接触的受众没有可信度。
+
+### 薪资参考
+
+120,000-180,000 美元基础薪资（美国），高级/负责人角色 150,000-250,000+ 美元。大多数 AI 公司包含股权的总补偿。
+
+### 这类职位在哪里
+
+积极招聘：Anthropic、OpenAI、Together AI、Mistral、Cohere、Hugging Face、LangChain，以及任何构建面向开发者的 AI 产品的公司。随着企业软件公司添加 AI 能力并需要有人帮助开发者采用它，该角色正在扩展至 AI 实验室之外。
+
+### 入职路径
+
+有公开影响力的软件工程师（博客、开源、会议演讲）、有工程背景的技术写作者、早期在公开场合构建的 AI 社区成员。
+
+---
+
+## 16. AI 编排工程师
+
+**状态**：新兴——2025 年有真实的职位发布，范围与 AI 智能体工程师不同。
+
+### 工作内容
+
+设计和构建将 AI 能力与现有系统、数据源和业务流程连接的智能工作流。AI 智能体工程师构建自主推理系统，AI 编排工程师专注于集成层：将 AI 连接到企业工具、设计多步骤自动化流程，以及让 AI 在现有基础设施中可靠运作。
+
+### 职责
+
+- 使用编排工具（n8n、LangChain、Power Automate、Zapier）设计端到端自动化架构
+- 将 AI 能力与 CRM、ERP、数据仓库和通信平台集成
+- 构建检索和综合栈（RAG + 答案接地）用于企业知识系统
+- 定义工作流可靠性模式：重试、降级、人工上报触发器
+- 为编排工作流设置可观测性（追踪每一步、成本跟踪）
+- 跨工程、产品和领域团队的跨职能系统中操作化 AI
+
+### 必备技能
+
+| 技术能力 | 软技能 |
+|-----------|------|
+| 编排平台（n8n、LangChain、LlamaIndex） | 流程分析 |
+| API 集成（REST、GraphQL、Webhook） | 跨职能协作 |
+| Python 或 JavaScript（工作流脚本） | 系统性思维 |
+| 数据转换和映射 | 业务流程直觉 |
+| 可观测性和追踪（LangSmith、Langfuse） | |
+
+### 与 AI 智能体工程师的区别
+
+| AI 智能体工程师 | AI 编排工程师 |
 |-------------------|--------------------------|
-| Builds autonomous reasoning systems | Builds integration workflows connecting AI to existing systems |
-| Focus: planning, memory, multi-step reasoning | Focus: connectivity, reliability, process automation |
-| Core challenge: non-determinism | Core challenge: integration complexity |
-| Primarily product-facing | Primarily internal/enterprise-facing |
+| 构建自主推理系统 | 构建将 AI 连接到现有系统的集成工作流 |
+| 关注：规划、记忆、多步骤推理 | 关注：连通性、可靠性、流程自动化 |
+| 核心挑战：非确定性 | 核心挑战：集成复杂性 |
+| 主要面向产品 | 主要面向内部/企业 |
 
-### Where this role appears in job postings
+### 在职位描述中出现的地方
 
-Title varies significantly: "AI-First Orchestration Engineer" (Vista Equity Partners), "Staff AI Engineer (Orchestration)" (Heidi Health), "Sr. Software Engineer (AI Orchestration Zone)" (Zapier), "AI Engineer, AI Orchestration" (Adobe). The function is consistent even when the title isn't.
+职位名称差异显著："AI 优先编排工程师"（Vista Equity Partners）、"员工 AI 工程师（编排）"（Heidi Health）、"高级软件工程师（AI 编排区域）"（Zapier）、"AI 工程师，AI 编排"（Adobe）。功能是一致的，即使职位名称不同。
 
-### Entry paths
+### 入职路径
 
-Integration engineer, backend engineer with workflow automation experience, DevOps engineer adding AI tooling, business process automation specialist who's moved into code.
+集成工程师、有工作流自动化经验的后端工程师、添加了 AI 工具的 DevOps 工程师、转向代码的业务流程自动化专家。
 
 ---
 
-## 17. Spec Engineer
+## 17. 规格工程师
 
-**Status**: Emerging in 2026, growing alongside Spec-Driven Development adoption.
+**状态**：2026 年新兴，随着规格驱动开发（SDD）采用而增长。
 
-### What they do
+### 工作内容
 
-Write the structured specifications that AI agents use to plan, implement, and validate code. As organizations move from L2 (assistant) to L3 (orchestrated agents) on the Shapiro scale, spec quality becomes the primary determinant of output quality. Spec Engineers are the "requirements analysts" of the agentic era: they bridge business intent and machine-executable contracts.
+编写 AI 智能体用于规划、实现和验证代码的结构化规格。随着组织从 L2（助手）移向 L3（编排智能体），规格质量成为输出质量的主要决定因素。规格工程师是智能体时代的"需求分析师"：他们在业务意图和机器可执行合同之间架桥。
 
-### Core responsibility
+### 核心职责
 
-Writing specifications that satisfy three conditions simultaneously: precise enough for an agent to generate correct code from them, human-readable enough for a product manager to approve them, and stable enough to serve as the diff-able ground truth when the implementation drifts.
+编写同时满足三个条件的规格：足够精确以让智能体从中生成正确代码，足够可读以让产品经理批准，足够稳定以在实现偏离时作为可差异对比的基准。
 
-GitHub Spec Kit formalizes this as a four-phase pipeline (Constitution, Specify, Plan, Tasks) where the spec file in `.specify/` is the governing artifact. Factory.ai Missions extends this with behavioral validation contracts written before any implementation begins. On a Slack clone, 81 problems were caught by independent validator agents from spec alone, generating 34% of the implementation work as "fix features."
+GitHub Spec Kit 将其正式化为四阶段流水线（体质、规格、计划、任务），其中 `.specify/` 中的规格文件是治理工件。Factory.ai Missions 用在任何实现开始前编写的行为验证合同扩展了这一点。在 Slack 克隆中，独立验证智能体仅从规格就发现了 81 个问题，生成了 34% 的实现工作作为"修复功能"。
 
-### Required skills
+### 必备技能
 
-| Technical | Soft |
+| 技术能力 | 软技能 |
 |-----------|------|
-| Structured writing (Gherkin-style Given-When-Then or equivalent) | Precision under ambiguity |
-| Understanding of agent failure modes (multi-file tasks fail at 19.4% pass@1 without spec) | Negotiation with product, engineering, and LLMs simultaneously |
-| Familiarity with SDD tools (Spec Kit, Kiro, Augment, Factory.ai) | Ability to distinguish what the spec must constrain vs what it should leave open |
-| Version control discipline (specs versioned before code) | |
+| 结构化写作（Gherkin 风格 Given-When-Then 或等效） | 在模糊性下的精确性 |
+| 理解智能体失败模式（无规格时多文件任务 pass@1 失败率 19.4%） | 同时与产品、工程和 LLM 谈判的能力 |
+| 熟悉 SDD（规格驱动开发）工具（Spec Kit、Kiro、Augment、Factory.ai） | 区分规格必须约束什么 vs 应该留白什么的能力 |
+| 版本控制规范（规格在代码之前版本化） | |
 
-### Entry paths
+### 入职路径
 
-Technical writer with engineering background, QA engineer who understands requirements, product engineer frustrated by low signal-to-noise in AI outputs, business analyst moving into AI-adjacent work.
-
----
-
-## 18. Agent Identity Architect
-
-**Status**: Critical gap. 77% of organizations have no formal agent identity strategy as of 2026.
-
-### What they do
-
-Design and enforce the identity layer for AI agents: how agents authenticate to services, what permissions they hold, how those permissions are scoped and audited, and how privilege escalation is prevented when agents chain tool calls across services.
-
-### Why this role exists now
-
-The Lethal Trifecta (Simon Willison, 2025): access to private data + exposure to untrusted content + capability for external communication = documented exfiltration vector. Most organizations understand the threat but have not built the defense. Strata Identity Research 2026 shows 44% of organizations are still using static API keys for agent authentication, 23% have a formal strategy, 18% rely on IAM trust inheritance with no per-agent scoping.
-
-### What the role covers
-
-- **Per-agent service principals**: Microsoft Entra Agent ID provides dedicated service principal types with OAuth On-Behalf-Of (OBO) flows scoped to specific session contexts. Not shared API keys, not team credentials.
-- **MCP gateway governance**: Every MCP tool call passes through an identity enforcement point that validates the calling agent's permissions against the current task scope.
-- **Session tracing**: Each action is attributable to a specific agent session, not just "the AI system."
-- **Privilege escalation prevention**: Sub-agents spawned by orchestrators cannot inherit parent permissions by default; they receive only the minimum scope for their task.
-
-### Required skills
-
-IAM and OAuth/OIDC expertise, zero-trust architecture, Kubernetes RBAC, understanding of MCP security model, incident response for non-deterministic systems.
-
-### Entry paths
-
-Cloud security engineer, identity/access management specialist, platform engineer with security focus.
+有工程背景的技术写作者、理解需求的 QA 工程师、对 AI 输出低信噪比感到沮丧的产品工程师、转向 AI 相关工作的业务分析师。
 
 ---
 
-## 19. AI Eval Engineer
+## 18. 智能体身份架构师
 
-**Status**: Distinct from AI Safety & Eval (Section 12). This role focuses on production measurement, not lab safety.
+**状态**：关键缺口。截至 2026 年，77% 的组织没有正式的智能体身份策略。
 
-### What they do
+### 工作内容
 
-Build and operate the continuous measurement layer that tells the organization whether its AI systems are getting better or worse. Not red-teaming (that's AI Safety), not fine-tuning (that's LLM Engineer). Pure measurement: does the output quality hold up over time, across model upgrades, across traffic distribution shifts?
+为 AI 智能体设计和执行身份层：智能体如何向服务认证、它们持有什么权限、这些权限如何限定范围和审计，以及当智能体在服务间链接工具调用时如何防止权限升级。
 
-### The structural problem they solve
+### 为什么这个角色现在存在
 
-Anthropic's own data shows 93% of permission requests in production are approved without adequate review. JudgeBiasBench (arXiv 2604.23178) documents that LLM-as-judge systems have style bias scores of 0.76-0.92 and true negative rates below 25%, meaning they approve most incorrect outputs. These two facts together mean that relying on human review and LLM-as-judge alone is not a quality strategy. The Eval Engineer builds the third layer: structured evaluation pipelines with explicit pass/fail criteria that do not depend on human attention or LLM approval bias.
+致命三角（Simon Willison，2025 年）：访问私密数据 + 暴露于不可信内容 + 具备外部通信能力 = 有记录的数据窃取向量。大多数组织理解威胁，但没有构建防御。Strata Identity Research 2026 显示 44% 的组织仍在为智能体认证使用静态 API 密钥，23% 有正式策略，18% 依赖 IAM 信任继承但没有每智能体范围限定。
 
-### Responsibilities
+### 角色涵盖的内容
 
-- Design evaluation frameworks with explicit metrics (task completion rate, tool correctness rate, hallucination rate)
-- Build canary pipelines that run A/B comparisons on 1-2% of production traffic before promoting model changes
-- Implement the creator-verifier pattern (independent agent checks agent outputs) for high-stakes workflows; independent verification improves correctness by +12 to +26% versus self-verification
-- Monitor for silent degradation: code generation quality that declines after a model update without any alarm firing
-- Maintain eval benchmarks that don't overfit to the current model's tendencies
+- **每智能体服务主体**：Microsoft Entra Agent ID 提供专用服务主体类型，带有限定于特定会话上下文的 OAuth 代理流程（OBO flows）。不是共享 API 密钥，不是团队凭证。
+- **MCP 网关治理**：每次 MCP 工具调用经过身份执行点，针对当前任务范围验证调用智能体的权限。
+- **会话追踪**：每个操作可归因于特定智能体会话，而不只是"AI 系统"。
+- **权限升级防止**：由编排者派生的子智能体默认无法继承父权限；它们只获得其任务所需的最小范围。
 
-### Required skills
+### 必备技能
 
-Statistical experiment design, Python, understanding of LLM failure modes and bias patterns, CI/CD pipeline integration, working knowledge of OTel GenAI conventions (gen_ai.client spans are stable, gen_ai.agent spans are experimental as of May 2026).
+IAM 和 OAuth/OIDC 专业知识、零信任架构、Kubernetes RBAC、理解 MCP 安全模型、非确定性系统的事件响应。
 
-### Tools
+### 入职路径
 
-Arize Phoenix (1 trillion spans/month in production, self-hostable ELv2), Langfuse (OTel-native v3, MIT open-source), DeepEval (Python-native pytest integration), LangWatch Scenario SDK (multi-turn simulation), AWS Bedrock AgentCore (eval on 1-2% of live traffic).
+云安全工程师、身份/访问管理专家、有安全专注的平台工程师。
 
 ---
 
-## 20. Career Decision Matrix
+## 19. AI 评估工程师
 
-Which role fits your current background and goals?
+**状态**：有别于 AI 安全与评估（第 12 节）。这个角色专注于生产测量，而非实验室安全。
 
-| Your current profile | Best next role | Timeline |
+### 工作内容
+
+构建和运营持续测量层，告诉组织其 AI 系统是在改善还是退化。不是红队测试（那是 AI 安全），不是微调（那是 LLM 工程师）。纯粹的测量：输出质量在时间上、跨模型升级、跨流量分布变化后是否保持？
+
+### 他们解决的结构性问题
+
+Anthropic 自己的数据显示 93% 的生产权限请求在没有充分审查的情况下被批准。JudgeBiasBench（arXiv 2604.23178）记录了 LLM 作为评判者系统的风格偏见得分 0.76-0.92，真阴性率低于 25%，意味着它们批准大多数错误输出。这两个事实加在一起意味着仅依赖人工审查和 LLM 作为评判者不是质量策略。评估工程师构建第三层：带有明确通过/失败标准的结构化评估流水线，不依赖人工注意力或 LLM 批准偏见。
+
+### 职责
+
+- 设计带有明确指标的评估框架（任务完成率、工具正确率、幻觉率）
+- 构建金丝雀流水线，在提升模型变更前对 1-2% 的生产流量运行 A/B 比较
+- 为高风险工作流实施创建者-验证者模式（独立智能体检查智能体输出）；独立验证相比自我验证将正确性提高 +12% 至 +26%
+- 监控静默退化：在没有触发告警的情况下，在模型更新后质量下降的代码生成
+- 维护不过度拟合当前模型倾向的评估基准
+
+### 必备技能
+
+统计实验设计、Python、理解 LLM 失败模式和偏见模式、CI/CD 流水线集成、OTel GenAI 约定的工作知识（截至 2026 年 5 月 gen_ai.client spans 是稳定的，gen_ai.agent spans 是实验性的）。
+
+### 工具
+
+Arize Phoenix（每月 1 万亿 spans，可自托管 ELv2）、Langfuse（OTel 原生 v3，MIT 开源）、DeepEval（Python 原生 pytest 集成）、LangWatch Scenario SDK（多轮模拟）、AWS Bedrock AgentCore（对 1-2% 实时流量进行评估）。
+
+---
+
+## 20. 职业决策矩阵
+
+哪个角色适合你当前的背景和目标？
+
+| 你当前的背景 | 最佳下一步角色 | 时间线 |
 |---------------------|---------------|----------|
-| Software engineer (3+ years) who wants to work with AI | AI Engineer | 3-6 months upskill |
-| Software engineer at early startup who wants ownership | Founding AI Engineer | Now, if opportunity exists |
-| Backend engineer interested in infra + AI | Platform Engineer (AI) | 6-12 months |
-| Senior engineer who thinks in systems | AI Architect or Harness Engineer | 1-2 years experience accumulation |
-| Engineer who likes research and rigor | LLM Engineer or AI Safety/Eval | +ML foundations needed |
-| Non-technical who works with AI daily | Prompt Engineer → Context Engineer | 6-18 months |
-| PM who wants to stay PM but be more relevant | AI Product Manager | 3-6 months upskill |
-| Engineer obsessed with reliability and architecture | Harness Engineer (emerging) | Pioneers' territory |
-| DevOps/platform engineer who wants to work with models | MLOps Engineer | 3-6 months upskill |
-| Engineer with public presence and community instincts | AI Developer Advocate | 6-12 months |
-| Integration or automation engineer adding AI | AI Orchestration Engineer | 3-6 months |
-| Technical writer or QA engineer with engineering background | Spec Engineer | 3-6 months |
-| Cloud/IAM security engineer moving into AI | Agent Identity Architect | 6-12 months |
-| Engineer who wants to measure AI quality rigorously | AI Eval Engineer | 3-6 months upskill |
+| 软件工程师（3+ 年）想要从事 AI 工作 | AI 工程师 | 3-6 个月提升技能 |
+| 想要更多所有权的早期初创软件工程师 | 创始 AI 工程师 | 如有机会立即 |
+| 对基础设施 + AI 感兴趣的后端工程师 | 平台工程师（AI） | 6-12 个月 |
+| 以系统性思维的高级工程师 | AI 架构师或框架工程师 | 1-2 年经验积累 |
+| 喜欢研究和严谨性的工程师 | LLM 工程师或 AI 安全/评估 | 需要 +ML 基础 |
+| 每天与 AI 合作的非技术人员 | 提示词工程师 → 上下文工程师 | 6-18 个月 |
+| 想保持 PM 但更相关的 PM | AI 产品经理 | 3-6 个月提升技能 |
+| 沉迷于可靠性和架构的工程师 | 框架工程师（新兴） | 先锋领域 |
+| 想要从事模型的 DevOps/平台工程师 | MLOps 工程师 | 3-6 个月提升技能 |
+| 有公开影响力和社区直觉的工程师 | AI 开发者倡导者 | 6-12 个月 |
+| 集成或自动化工程师添加 AI | AI 编排工程师 | 3-6 个月 |
+| 有工程背景的技术写作者或 QA 工程师 | 规格工程师 | 3-6 个月 |
+| 转向 AI 的云/IAM 安全工程师 | 智能体身份架构师 | 6-12 个月 |
+| 想要严格衡量 AI 质量的工程师 | AI 评估工程师 | 3-6 个月提升技能 |
 
-### The fastest path to AI employment in 2025-2026
+### 2025-2026 年最快进入 AI 就业的路径
 
-1. Build something with AI APIs (Claude, OpenAI) — a real project, not a tutorial
-2. Write about what you built (blog post, GitHub README, LinkedIn)
-3. Add evaluation: measure your system's quality, show the numbers
-4. Apply for AI Engineer roles — the bar is demonstrated building, not credentials
+1. 用 AI API（Claude、OpenAI）构建一些东西——真实项目，而非教程
+2. 写下你构建的内容（博客文章、GitHub README、LinkedIn）
+3. 添加评估：衡量你的系统质量，展示数字
+4. 申请 AI 工程师职位——标准是已证明的构建能力，而非证书
 
-Note: 76% of candidates claiming AI expertise lack production-level deployment experience (LangChain State of Agent Engineering 2025). The bar is lower than it appears if you've actually shipped something.
+注意：76% 声称具备 AI 专业知识的候选人缺乏生产级部署经验（LangChain 智能体工程状态 2025）。如果你真正交付过东西，门槛比看起来更低。
 
 ---
 
-## 21. Salary Benchmarks (2025-2026)
+## 21. 薪资基准（2025-2026）
 
-> **Indicative only — large variance applies.** These figures are US market base salaries (2025-2026). Europe runs 30-50% lower, other markets 40-60% lower. Total compensation (equity, bonus, RSUs) can significantly exceed base, especially at startups and FAANG. Experience level, location within a country, company stage, and negotiation all create wide variance. Use these as orientation, not negotiation anchors.
+> **仅供参考——存在较大差异。** 这些数字是美国市场基础薪资（2025-2026）。欧洲低 30-50%，其他市场低 40-60%。总补偿（股权、奖金、RSU）可能显著超过基础薪资，尤其是在初创公司和 FAANG。经验水平、国内位置、公司阶段和谈判都会产生较大差异。将这些用作方向参考，而非谈判锚点。
 
-| Role | Entry | Mid | Senior | Notes |
+| 角色 | 初级 | 中级 | 高级 | 备注 |
 |------|-------|-----|--------|-------|
-| Prompt Engineer | $80K-$110K | $110K-$150K | $150K-$180K | Shrinking standalone market |
-| Context Engineer | $100K-$140K | $140K-$180K | $180K-$230K | Growing fast |
-| AI Engineer | $120K-$160K | $160K-$220K | $220K-$300K | Highest volume of open roles |
-| LLM Engineer | $130K-$170K | $170K-$250K | $250K-$350K | Lab-level roles higher |
-| AI Agent Engineer | $130K-$170K | $170K-$240K | $240K-$320K | Strong demand 2025-2026 |
-| Founding AI Engineer | $100K-$150K + equity | — | — | Equity makes total comp wide-ranging |
-| AI Architect | — | $180K-$260K | $260K-$380K | Senior/Staff only |
-| Platform Engineer (AI) | $110K-$150K | $150K-$210K | $210K-$280K | |
-| Harness Engineer | Not yet standardized | — | — | Absorbed into other roles |
-| AI Product Manager | $130K-$170K | $170K-$230K | $230K-$350K | FAANG premium significant |
-| AI Safety/Eval Engineer | $140K-$180K | $180K-$250K | $250K-$400K | Lab compensation highest |
-| ML Engineer | $100K-$140K | $140K-$200K | $200K-$280K | Lower demand outside labs |
-| MLOps Engineer | $110K-$150K | $150K-$200K | $200K-$270K | High demand in enterprises deploying at scale |
-| AI Developer Advocate | $120K-$160K | $160K-$220K | $220K-$300K | Active hiring at AI platforms |
-| AI Orchestration Engineer | $100K-$140K | $140K-$190K | $190K-$260K | Emerging — title varies across companies |
-| Spec Engineer | $90K-$130K | $130K-$180K | $180K-$250K | Often embedded in engineering teams, not standalone |
-| Agent Identity Architect | — | $170K-$240K | $240K-$340K | Senior only; deep IAM expertise required |
-| AI Eval Engineer | $110K-$150K | $150K-$210K | $210K-$290K | Growing rapidly as agentic systems reach production |
+| 提示词工程师 | 8-11 万美元 | 11-15 万美元 | 15-18 万美元 | 独立市场正在收缩 |
+| 上下文工程师 | 10-14 万美元 | 14-18 万美元 | 18-23 万美元 | 快速增长 |
+| AI 工程师 | 12-16 万美元 | 16-22 万美元 | 22-30 万美元 | 开放职位最多 |
+| LLM 工程师 | 13-17 万美元 | 17-25 万美元 | 25-35 万美元 | 实验室级别更高 |
+| AI 智能体工程师 | 13-17 万美元 | 17-24 万美元 | 24-32 万美元 | 2025-2026 需求强劲 |
+| 创始 AI 工程师 | 10-15 万美元 + 股权 | — | — | 股权使总补偿差异很大 |
+| AI 架构师 | — | 18-26 万美元 | 26-38 万美元 | 仅高级/员工 |
+| 平台工程师（AI） | 11-15 万美元 | 15-21 万美元 | 21-28 万美元 | |
+| 框架工程师 | 尚未标准化 | — | — | 被其他角色吸收 |
+| AI 产品经理 | 13-17 万美元 | 17-23 万美元 | 23-35 万美元 | FAANG 溢价显著 |
+| AI 安全/评估工程师 | 14-18 万美元 | 18-25 万美元 | 25-40 万美元 | 实验室补偿最高 |
+| ML 工程师 | 10-14 万美元 | 14-20 万美元 | 20-28 万美元 | 实验室外需求较低 |
+| MLOps 工程师 | 11-15 万美元 | 15-20 万美元 | 20-27 万美元 | 规模化部署企业需求高 |
+| AI 开发者倡导者 | 12-16 万美元 | 16-22 万美元 | 22-30 万美元 | AI 平台积极招聘 |
+| AI 编排工程师 | 10-14 万美元 | 14-19 万美元 | 19-26 万美元 | 新兴——公司间职位名称差异 |
+| 规格工程师 | 9-13 万美元 | 13-18 万美元 | 18-25 万美元 | 通常嵌入工程团队，非独立职位 |
+| 智能体身份架构师 | — | 17-24 万美元 | 24-34 万美元 | 仅高级；需要深厚 IAM 专业知识 |
+| AI 评估工程师 | 11-15 万美元 | 15-21 万美元 | 21-29 万美元 | 随智能体系统进入生产而快速增长 |
 
-> **Sources**: FinalRoundAI (2025), Alcor AI Salary Report (2025), RiseWorks AI Talent Report (2025), job postings analysis. New roles (Spec Engineer, Agent Identity Architect, AI Eval Engineer) are estimated from adjacent role benchmarks and emerging job postings — treat with wider margin.
-
----
-
-## 22. What's Not a Role (Yet)
-
-Some terms you'll hear that describe practices or methodologies, not job titles:
-
-**Vibe coder** — A methodology (use AI coding assistants to handle implementation while you focus on design), not a job. Andrej Karpathy coined the term then himself pivoted toward "context engineering" as more precise. No serious company has "Vibe Coder" on a job description.
-
-**AI-native engineer** — Describes a quality expected of all engineers increasingly, not a specialized role. It means: you use AI tools fluently in your daily workflow. It's the bar, not the title.
-
-These terms are worth knowing (you'll encounter them in job descriptions and articles) but don't represent distinct career paths — yet.
+> **来源**：FinalRoundAI（2025）、Alcor AI 薪资报告（2025）、RiseWorks AI 人才报告（2025）、职位发布分析。新角色（规格工程师、智能体身份架构师、AI 评估工程师）估算来自邻近角色基准和新兴职位发布——请以更宽的误差范围对待。
 
 ---
 
-## 23. Job Listings
+## 22. 尚不是角色的内容
 
-> **Coming soon** — Curated listings for AI roles at companies building seriously with Claude Code and agentic AI.
+一些你会听到的描述实践或方法论而非职位名称的术语：
 
-If you're hiring for any of the roles described in this guide, [reach out](https://florian.) to discuss featuring your opportunity here.
+**凭感觉的程序员（Vibe coder）** — 一种方法论（用 AI 编程助手处理实现，而你专注于设计），而非工作。Andrej Karpathy 创造了这个词，然后他自己转向了"上下文工程"，认为后者更精确。没有认真的公司在职位描述中写"凭感觉的程序员"。
+
+**AI 原生工程师** — 描述越来越被所有工程师所期望的素质，而非专业化角色。意思是：你在日常工作流中流利地使用 AI 工具。这是标准，不是职位名称。
+
+这些术语值得了解（你会在职位描述和文章中遇到），但目前并不代表独特的职业路径。
 
 ---
 
-## See Also
+## 23. 职位列表
 
-- [Learning to Code with AI](./learning-with-ai.md) — skill development for developers using AI
-- [AI Ecosystem: Tools & Integrations](../ecosystem/ai-ecosystem.md) — which tools each role uses
-- [Methodologies](../core/methodologies.md) — TDD, SDD, BDD workflows relevant to AI engineers
-- [Architecture](../core/architecture.md) — how Claude Code works, relevant for AI agent engineers
-- [Security Hardening](../security/security-hardening.md) — critical reading for AI Safety engineers and Platform engineers
+> **即将推出** — 正在认真使用 Claude Code 和智能体 AI 构建的公司中 AI 角色的精选列表。
+
+如果你在为本指南描述的任何角色招聘，欢迎联系讨论在此展示你的机会。
+
+---
+
+## 参见
+
+- [AI 辅助编程学习](./learning-with-ai.md) — 使用 AI 的开发者技能发展
+- [AI 生态系统：工具与集成](../ecosystem/ai-ecosystem.md) — 每个角色使用哪些工具
+- [方法论](../core/methodologies.md) — 与 AI 工程师相关的 TDD、SDD（规格驱动开发）、BDD（行为驱动开发）工作流
+- [架构](../core/architecture.md) — Claude Code 如何工作，与 AI 智能体工程师相关
+- [安全加固](../security/security-hardening.md) — AI 安全工程师和平台工程师的必读内容
