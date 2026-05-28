@@ -1,0 +1,7 @@
+> 📚 **AI Spark Wiki** · Claude Code 知识库
+
+# Moved to Skills
+
+This command was migrated to a skill in Claude Code 2.1.3. See: [`examples/skills/methodology-advisor/SKILL.md`](../skills/methodology-advisor/SKILL.md)
+
+Existing `.claude/commands/` files remain backward-compatible. For new projects, use the skill version.
