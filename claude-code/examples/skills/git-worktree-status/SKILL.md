@@ -2,44 +2,44 @@
 
 ---
 name: git-worktree-status
-description: Check status of background verification tasks running in a git worktree
+description: 检查在 git worktree 中运行的后台验证任务状态
 effort: low
 disable-model-invocation: true
 ---
 
-# Git Worktree Status
+# Git Worktree 状态
 
-Check background verification tasks (type check, tests, build) launched by `/git-worktree`.
+检查由 `/git-worktree` 启动的后台验证任务（类型检查、测试、构建）。
 
-**Core principle:** Non-blocking feedback on worktree health without interrupting development flow.
+**核心原则：** 在不中断开发流程的前提下，对 worktree 健康状态提供非阻塞式反馈。
 
-**Part of:** [Worktree Lifecycle Suite](./git-worktree.md) | [`/git-worktree`](./git-worktree.md) | [`/git-worktree-remove`](./git-worktree-remove.md) | [`/git-worktree-clean`](./git-worktree-clean.md)
+**所属：** [Worktree 生命周期套件](./git-worktree.md) | [`/git-worktree`](./git-worktree.md) | [`/git-worktree-remove`](./git-worktree-remove.md) | [`/git-worktree-clean`](./git-worktree-clean.md)
 
-## Process
+## 流程
 
-1. **Detect Current Worktree**: Verify we're inside a git worktree
-2. **Check Log Files**: Read `.worktree-logs/` for background task results
-3. **Parse Results**: Extract pass/fail counts, errors
-4. **Report Status**: Color-coded summary with actionable next steps
+1. **检测当前 Worktree**：验证当前是否在 git worktree 内
+2. **检查日志文件**：读取 `.worktree-logs/` 中的后台任务结果
+3. **解析结果**：提取通过/失败数量、错误信息
+4. **报告状态**：带颜色的摘要，附可操作的后续步骤
 
-## Worktree Detection
+## Worktree 检测
 
 ```bash
-# Check if inside a worktree (not main repo)
+# 检查是否在 worktree 内（而非主仓库）
 git rev-parse --git-common-dir 2>/dev/null | grep -q "\.git/worktrees" || {
   echo "Not inside a worktree. Use from a worktree directory."
   exit 1
 }
 
-# Get worktree info
+# 获取 worktree 信息
 WORKTREE_PATH=$(git rev-parse --show-toplevel)
 BRANCH=$(git rev-parse --abbrev-ref HEAD)
 MAIN_REPO=$(git rev-parse --git-common-dir | sed 's|/\.git/worktrees/.*||')
 ```
 
-## Background Task Checks
+## 后台任务检查
 
-### Type Check Status
+### 类型检查状态
 
 ```bash
 LOG=".worktree-logs/typecheck.log"
@@ -60,7 +60,7 @@ else
 fi
 ```
 
-### Test Status
+### 测试状态
 
 ```bash
 LOG=".worktree-logs/tests.log"
@@ -82,7 +82,7 @@ else
 fi
 ```
 
-### Build Status
+### 构建状态
 
 ```bash
 LOG=".worktree-logs/build.log"
@@ -101,7 +101,7 @@ else
 fi
 ```
 
-## Report Format
+## 报告格式
 
 ```
 Worktree Status: .worktrees/feat/auth
@@ -118,7 +118,7 @@ Disk usage: 2.3 MB (excl. node_modules)
 Log files: .worktree-logs/
 ```
 
-**If failures detected:**
+**检测到失败时：**
 
 ```
 Worktree Status: .worktrees/feat/auth
@@ -137,32 +137,32 @@ Checks:
 Action: Fix type errors before proceeding. Run `npx tsc --noEmit` for full output.
 ```
 
-## Log Management
+## 日志管理
 
 ```bash
-# Clean old logs (useful for re-running checks)
+# 清理旧日志（适用于重新运行检查）
 rm -rf .worktree-logs/*.log
 
-# Re-run all checks
+# 重新运行所有检查
 npx tsc --noEmit > .worktree-logs/typecheck.log 2>&1 &
 npx vitest run --reporter=json > .worktree-logs/tests.log 2>&1 &
 ```
 
-## Quick Reference
+## 快速参考
 
-| Situation | Output |
-|-----------|--------|
-| All checks pass | Green status, ready to work |
-| Checks still running | "RUNNING..." with PID |
-| Type errors found | Error count + first 5 errors |
-| Test failures | Failure count + failed test names |
-| No logs found | "NOT RUN" (use `--fast` or logs deleted) |
-| Not in worktree | Error message with instructions |
+| 情况 | 输出 |
+|------|------|
+| 所有检查通过 | 绿色状态，可以继续工作 |
+| 检查仍在运行 | "RUNNING..." 及 PID |
+| 发现类型错误 | 错误数量 + 前5个错误 |
+| 测试失败 | 失败数量 + 失败测试名称 |
+| 未找到日志 | "NOT RUN"（使用了 `--fast` 或日志已删除） |
+| 不在 worktree 内 | 附操作说明的错误消息 |
 
-## Usage
+## 用法
 
 ```
 /git-worktree-status
 ```
 
-No arguments needed. Run from inside any worktree directory.
+无需任何参数。在任意 worktree 目录内运行即可。

@@ -1,12 +1,12 @@
 > 📚 **AI Spark Wiki** · Claude Code 知识库
 
-# Review Comment Template
+# Review Comment 模板
 
-Use this template to generate GitHub PR review comments. Fill in each section based on the code-reviewer agent output. Comments are posted in **English** (international audience).
+使用此模板生成 GitHub PR review 评论。根据 code-reviewer 智能体的输出填写各部分。评论以**英文**发布（面向国际受众）。
 
 ---
 
-## Template
+## 模板
 
 ```markdown
 ## Review
@@ -49,16 +49,16 @@ Use this template to generate GitHub PR review comments. Fill in each section ba
 
 ---
 
-## Formatting Rules
+## 格式规则
 
-**Citation format**: `file:42` or `` `code snippet` `` for inline references
+**引用格式**：`file:42` 或 `` `code snippet` `` 用于行内引用
 
-**Issue severity**:
-- Critical: security vulnerability, data loss risk, broken functionality, missing test for new feature
-- Important: error handling gap, performance regression, scope creep, missing validation
-- Suggestion: naming, DRY opportunity, documentation, style
+**问题严重程度**：
+- Critical（严重）：安全漏洞、数据丢失风险、功能损坏、新功能缺少测试
+- Important（重要）：错误处理缺失、性能退化、范围蔓延、缺少验证
+- Suggestion（建议）：命名、DRY 优化机会、文档、风格
 
-**Tone**: Professional, constructive, factual. Challenge the code, not the person.
-No superlatives ("great", "amazing", "perfect"). No filler ("as mentioned", "it's worth noting").
+**语气**：专业、建设性、基于事实。针对代码提出质疑，而非针对人。
+不使用夸大词语（"great"、"amazing"、"perfect"）。不使用填充语（"as mentioned"、"it's worth noting"）。
 
-**Length**: Aim for 200–400 words. Long enough to be useful, short enough to be read.
+**长度**：目标 200–400 词。足够详细有用，足够简洁可读。

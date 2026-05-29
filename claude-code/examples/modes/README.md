@@ -1,41 +1,41 @@
 > 📚 **AI Spark Wiki** · Claude Code 知识库
 
 ---
-title: "Behavioral Modes"
-description: "Ready-to-use behavioral mode files for customizing Claude Code behavior"
+title: "行为模式"
+description: "用于自定义 Claude Code 行为的即用型行为模式文件"
 tags: [config, template, workflows]
 ---
 
-# Behavioral Modes
+# 行为模式
 
-Ready-to-use behavioral mode files for Claude Code. Copy to `~/.claude/` and reference in your `CLAUDE.md`.
+适用于 Claude Code 的即用型行为模式文件。将其复制到 `~/.claude/` 目录并在 `CLAUDE.md` 中引用。
 
-## Available Modes
+## 可用模式
 
-| Mode | File | Purpose |
-|------|------|---------|
-| **Learning** | [MODE_Learning.md](./MODE_Learning.md) | Just-in-time explanations when techniques are first used |
+| 模式 | 文件 | 用途 |
+|------|------|------|
+| **学习模式** | [MODE_Learning.md](./MODE_Learning.md) | 首次使用某技术时提供即时说明 |
 
-## Installation
+## 安装
 
-### 1. Copy the mode file
+### 1. 复制模式文件
 
 ```bash
 cp MODE_Learning.md ~/.claude/
 ```
 
-### 2. Reference in your CLAUDE.md
+### 2. 在 CLAUDE.md 中引用
 
-Add to `~/.claude/CLAUDE.md`:
+在 `~/.claude/CLAUDE.md` 中添加：
 
 ```markdown
 # Behavioral Modes
 @MODE_Learning.md
 ```
 
-### 3. Add flags (optional)
+### 3. 添加标志（可选）
 
-Add to `~/.claude/FLAGS.md` for flag-based activation:
+在 `~/.claude/FLAGS.md` 中添加，以支持基于标志的激活：
 
 ```markdown
 **--learn**
@@ -47,38 +47,38 @@ Add to `~/.claude/FLAGS.md` for flag-based activation:
 - Behavior: Suppress all learning mode offers
 ```
 
-## Usage
+## 用法
 
 ```bash
-# Activate for entire session
+# 在整个会话中激活
 claude --learn
 
-# Focus on specific domain
+# 聚焦于特定领域
 claude --learn focus:git
 claude --learn focus:architecture
 
-# Batch explanations at task end
+# 在任务结束时批量说明
 claude --learn batch
 ```
 
-## More Modes: SuperClaude Framework
+## 更多模式：SuperClaude 框架
 
-This guide includes only **Learning Mode**. For a complete behavioral framework with additional modes, check out [SuperClaude](https://github.com/SuperClaude-Org/SuperClaude_Framework):
+本指南仅包含**学习模式**。如需包含更多模式的完整行为框架，请参阅 [SuperClaude](https://github.com/SuperClaude-Org/SuperClaude_Framework)：
 
-| Mode | Purpose |
-|------|---------|
-| **Orchestration** | Smart tool selection, parallel execution optimization |
-| **Task Management** | Hierarchical task tracking with persistent memory |
-| **Token Efficiency** | Symbol-enhanced compression (30-50% token reduction) |
-| **Learning** | Just-in-time skill development (included here) |
+| 模式 | 用途 |
+|------|------|
+| **编排模式** | 智能工具选择与并行执行优化 |
+| **任务管理模式** | 带持久记忆的层级任务追踪 |
+| **Token 效率模式** | 符号增强压缩（减少 30-50% token） |
+| **学习模式** | 即时技能培养（已包含在本指南中） |
 
-SuperClaude also includes:
-- `FLAGS.md` — Behavioral flags (`--delegate`, `--learn`, etc.) *Note: `--think`/`--ultrathink` are cosmetic only since v2.0.67 — thinking is now on by default with Opus 4.5*
-- `PRINCIPLES.md` — Engineering principles (SOLID, DRY, evidence-based)
-- `RULES.md` — Actionable rules with priority system
-- MCP server documentation (Context7, Sequential, Serena)
+SuperClaude 还包括：
+- `FLAGS.md` — 行为标志（`--delegate`、`--learn` 等）*注意：`--think`/`--ultrathink` 自 v2.0.67 起仅为视觉标记——Opus 4.5 现已默认开启思考*
+- `PRINCIPLES.md` — 工程原则（SOLID、DRY、循证驱动）
+- `RULES.md` — 带优先级系统的可执行规则
+- MCP 服务器文档（Context7、Sequential、Serena）
 
-## See Also
+## 参见
 
-- [Guide Section 10.5: SuperClaude Framework](../../guide/ultimate-guide.md#105-superclaude-framework) — Full documentation
-- [SuperClaude Repository](https://github.com/SuperClaude-Org/SuperClaude_Framework) — Complete framework
+- [指南第 10.5 节：SuperClaude 框架](../../guide/ultimate-guide.md#105-superclaude-framework) — 完整文档
+- [SuperClaude 代码库](https://github.com/SuperClaude-Org/SuperClaude_Framework) — 完整框架

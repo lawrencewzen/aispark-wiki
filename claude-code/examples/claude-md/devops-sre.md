@@ -1,179 +1,179 @@
 > 📚 **AI Spark Wiki** · Claude Code 知识库
 
 ---
-title: "DevOps/SRE CLAUDE.md Template"
-description: "CLAUDE.md configuration for infrastructure projects and SRE workflows"
+title: "DevOps/SRE CLAUDE.md 模板"
+description: "适用于基础设施项目和 SRE 工作流的 CLAUDE.md 配置"
 tags: [claude-md, template, devops, ci-cd, observability]
 ---
 
-# DevOps/SRE CLAUDE.md Template
+# DevOps/SRE CLAUDE.md 模板
 
-A CLAUDE.md configuration optimized for infrastructure projects and SRE workflows.
+为基础设施项目和 SRE 工作流优化的 CLAUDE.md 配置。
 
-## Usage
+## 使用方式
 
-Copy this content to your project's `CLAUDE.md` file and customize the sections marked with `[brackets]`.
+将以下内容复制到项目的 `CLAUDE.md` 文件中，并自定义 `[方括号]` 标注的部分。
 
 ---
 
-## Template
+## 模板
 
 ```markdown
-# DevOps/SRE Project Configuration
+# DevOps/SRE 项目配置
 
-## Infrastructure Context
+## 基础设施上下文
 
-### Environment
-- Cloud Provider: [AWS/GCP/Azure/On-prem]
-- Kubernetes: [EKS/GKE/AKS/k3s/none]
-- IaC Tool: [Terraform/Pulumi/CloudFormation/Ansible]
-- CI/CD: [GitHub Actions/GitLab CI/Jenkins/ArgoCD]
+### 环境
+- 云服务商：[AWS/GCP/Azure/自建]
+- Kubernetes：[EKS/GKE/AKS/k3s/无]
+- IaC 工具：[Terraform/Pulumi/CloudFormation/Ansible]
+- CI/CD：[GitHub Actions/GitLab CI/Jenkins/ArgoCD]
 
-### Service Map
-- [service-1]: [description, critical path: yes/no]
-- [service-2]: [description, critical path: yes/no]
-- [database]: [PostgreSQL/MySQL/MongoDB, hosted where]
+### 服务地图
+- [service-1]：[描述，关键路径：是/否]
+- [service-2]：[描述，关键路径：是/否]
+- [database]：[PostgreSQL/MySQL/MongoDB，托管位置]
 
-### Access Patterns
-- Cluster access: [kubectl context name]
-- Cloud CLI: [aws/gcloud/az profile name]
-- Secrets: [Vault/SSM/Secrets Manager - never share values]
+### 访问方式
+- 集群访问：[kubectl context 名称]
+- 云 CLI：[aws/gcloud/az profile 名称]
+- 密钥：[Vault/SSM/Secrets Manager - 绝不分享实际值]
 
-## FIRE Framework Defaults
+## FIRE 框架默认规则
 
-Use the FIRE framework for all infrastructure issues:
-- **F**irst Response: Clarify symptom, impact, recent changes
-- **I**nvestigate: Systematic diagnosis with evidence
-- **R**emediate: Propose options, wait for approval
-- **E**valuate: Generate postmortem, prevention items
+所有基础设施问题均使用 FIRE 框架处理：
+- **F**irst Response（首响应）：明确症状、影响范围、近期变更
+- **I**nvestigate（排查）：基于证据的系统性诊断
+- **R**emediate（修复）：提出方案，等待批准
+- **E**valuate（评估）：生成事后复盘，整理预防措施
 
-## Safety Rules
+## 安全规则
 
-### Never Execute Without Approval
-- `kubectl delete` or `kubectl scale down`
+### 未经批准禁止执行
+- `kubectl delete` 或 `kubectl scale down`
 - `terraform destroy`
-- Any production database writes
-- IAM/security group modifications
-- Any command in production namespace
+- 任何生产数据库写操作
+- IAM/安全组修改
+- 生产命名空间中的任何命令
 
-### Always Require
-- Rollback plan before changes
-- Environment confirmation (prod vs staging)
-- Impact assessment for scaling operations
+### 必须满足
+- 变更前提供回滚方案
+- 确认环境（生产 vs 预发布）
+- 扩缩容操作的影响评估
 
-## Response Preferences
+## 响应偏好
 
-### For Incidents
-- Start with impact assessment
-- Prioritize mitigation over root cause (initially)
-- Provide exact commands, not just guidance
-- Include timestamps in all actions
+### 处理故障时
+- 以影响评估开始
+- 优先缓解而非排查根因（初期）
+- 提供精确命令，而非泛泛指导
+- 所有操作包含时间戳
 
-### For Code Review
-- Focus on: security, resource limits, idempotency
-- Flag: hardcoded values, missing error handling
-- Suggest: monitoring/alerting additions
+### 代码审查时
+- 关注点：安全性、资源限制、幂等性
+- 标记：硬编码值、缺失的错误处理
+- 建议：补充监控/告警
 
-### For Documentation
-- Format: Markdown with code blocks
-- Style: Runbook format (numbered steps)
-- Include: Prerequisites, rollback, verification steps
+### 编写文档时
+- 格式：带代码块的 Markdown
+- 风格：Runbook 格式（编号步骤）
+- 包含：前置条件、回滚步骤、验证步骤
 
-## Common Contexts
+## 常用上下文
 
-### Kubernetes Namespaces
-- `production`: [critical services, approval required]
-- `staging`: [test freely]
-- `monitoring`: [Prometheus, Grafana]
-- `ingress`: [nginx, cert-manager]
+### Kubernetes 命名空间
+- `production`：[关键服务，需审批]
+- `staging`：[可自由测试]
+- `monitoring`：[Prometheus, Grafana]
+- `ingress`：[nginx, cert-manager]
 
-### Terraform Workspaces/Modules
-- `modules/`: [shared infrastructure components]
-- `environments/prod/`: [production, plan-only by default]
-- `environments/staging/`: [safe to apply]
+### Terraform 工作空间/模块
+- `modules/`：[共享基础设施组件]
+- `environments/prod/`：[生产环境，默认仅 plan]
+- `environments/staging/`：[可安全 apply]
 
-### Monitoring
-- Metrics: [Prometheus/CloudWatch/Datadog URL]
-- Logs: [ELK/CloudWatch/Loki URL]
-- Alerts: [PagerDuty/OpsGenie integration]
+### 监控
+- 指标：[Prometheus/CloudWatch/Datadog URL]
+- 日志：[ELK/CloudWatch/Loki URL]
+- 告警：[PagerDuty/OpsGenie 集成]
 
-## Team Conventions
+## 团队规范
 
-### Commit Messages
-- Format: [conventional commits / your format]
-- Example: `fix(k8s): increase memory limit for payment-service`
+### Commit 消息
+- 格式：[conventional commits / 自定义格式]
+- 示例：`fix(k8s): increase memory limit for payment-service`
 
-### PR Requirements
-- [ ] Terraform plan output included
-- [ ] Affected services listed
-- [ ] Rollback procedure documented
+### PR 要求
+- [ ] 包含 Terraform plan 输出
+- [ ] 列出受影响的服务
+- [ ] 记录回滚流程
 
-### Runbook Format
+### Runbook 格式
 ```
-# [Runbook Title]
-## Symptoms
-## Prerequisites
-## Steps
-## Verification
-## Rollback
-## Escalation
+# [Runbook 标题]
+## 症状
+## 前置条件
+## 步骤
+## 验证
+## 回滚
+## 升级处理
 ```
-```
-
----
-
-## Customization Guide
-
-### For Kubernetes-Heavy Teams
-
-Add to "Common Contexts":
-```markdown
-### Critical Pods
-- `payment-api`: Direct revenue impact, max 30s downtime
-- `auth-service`: Blocks all authenticated requests
-- `api-gateway`: Single point of entry
-
-### Scaling Rules
-- payment-api: min 3, max 10, scale on CPU > 70%
-- auth-service: min 2, max 5, scale on connections
-```
-
-### For Terraform-Heavy Teams
-
-Add section:
-```markdown
-## Terraform Conventions
-- State backend: [S3 bucket / GCS bucket]
-- Lock table: [DynamoDB table name]
-- Module registry: [internal / Terraform registry]
-- Required providers versions: [see versions.tf]
-
-### Module Standards
-- All resources tagged with: var.tags
-- Naming: {project}-{environment}-{resource}
-- Outputs: Always export ARN, ID, name
-```
-
-### For Multi-Cloud Teams
-
-Add to "Environment":
-```markdown
-### Cloud Credentials
-- AWS: Profile `company-prod` / `company-staging`
-- GCP: Project `company-prod-123` / `company-staging-456`
-- Azure: Subscription `prod-sub-id` / `staging-sub-id`
-
-### Cross-Cloud Services
-- DNS: [AWS Route53 / Cloudflare]
-- CDN: [CloudFront / Cloud CDN]
-- Secrets: [HashiCorp Vault - URL]
 ```
 
 ---
 
-## Integration with Agents
+## 定制指南
 
-Pair this CLAUDE.md with the DevOps/SRE agent:
+### 面向 Kubernetes 密集型团队
+
+添加到"常用上下文"：
+```markdown
+### 关键 Pod
+- `payment-api`：直接影响营收，最大停机时间 30 秒
+- `auth-service`：阻断所有已认证请求
+- `api-gateway`：唯一入口
+
+### 扩缩容规则
+- payment-api：最小 3，最大 10，CPU > 70% 时扩容
+- auth-service：最小 2，最大 5，按连接数扩容
+```
+
+### 面向 Terraform 密集型团队
+
+添加以下章节：
+```markdown
+## Terraform 规范
+- State 后端：[S3 存储桶 / GCS 存储桶]
+- 锁表：[DynamoDB 表名]
+- 模块注册表：[内部 / Terraform 官方注册表]
+- 所需 provider 版本：[参见 versions.tf]
+
+### 模块标准
+- 所有资源使用 var.tags 打标签
+- 命名规范：{项目}-{环境}-{资源}
+- 输出：必须导出 ARN、ID、名称
+```
+
+### 面向多云团队
+
+添加到"环境"章节：
+```markdown
+### 云凭证
+- AWS：Profile `company-prod` / `company-staging`
+- GCP：项目 `company-prod-123` / `company-staging-456`
+- Azure：订阅 `prod-sub-id` / `staging-sub-id`
+
+### 跨云服务
+- DNS：[AWS Route53 / Cloudflare]
+- CDN：[CloudFront / Cloud CDN]
+- 密钥：[HashiCorp Vault - URL]
+```
+
+---
+
+## 与智能体集成
+
+将此 CLAUDE.md 与 DevOps/SRE 智能体配合使用：
 
 ```json
 {
@@ -186,12 +186,12 @@ Pair this CLAUDE.md with the DevOps/SRE agent:
 }
 ```
 
-Then invoke with: `@sre investigate this pod crash`
+然后通过以下方式调用：`@sre investigate this pod crash`
 
 ---
 
-## See Also
+## 参见
 
-- [DevOps & SRE Guide](../../guide/ops/devops-sre.md) — Complete FIRE framework documentation
-- [DevOps Agent](../agents/devops-sre.md) — Agent persona for infrastructure tasks
-- [Security Hardening](../../guide/security/security-hardening.md) — Security best practices
+- [DevOps & SRE 指南](../../guide/ops/devops-sre.md) — 完整 FIRE 框架文档
+- [DevOps 智能体](../agents/devops-sre.md) — 基础设施任务的智能体 persona
+- [安全加固](../../guide/security/security-hardening.md) — 安全最佳实践

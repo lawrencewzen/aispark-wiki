@@ -1,124 +1,124 @@
 > 📚 **AI Spark Wiki** · Claude Code 知识库
 
-# Commit Categorization Rules
+# 提交分类规则
 
-This document defines how to categorize commits based on Conventional Commits format.
+本文档定义了如何基于 Conventional Commits 格式对提交进行分类。
 
-## Primary Categories
+## 主要分类
 
-### Features (`feat:`)
-**CHANGELOG**: New Features
-**Slack**: Yes - always include
-**Examples**:
+### 新功能（`feat:`）
+**CHANGELOG**：新功能
+**Slack**：是——始终包含
+**示例**：
 - `feat(dashboard): add export report system`
 - `feat(search): add fuzzy matching`
 - `feat(api): add batch operations endpoint`
 
-### Bug Fixes (`fix:`)
-**CHANGELOG**: Bug Fixes
-**Slack**: Yes - if user-facing; No - if internal
-**Examples**:
-- `fix(auth): correct token refresh flow` -> Include in Slack
-- `fix(test): correct mock setup` -> Do NOT include in Slack
+### Bug 修复（`fix:`）
+**CHANGELOG**：Bug 修复
+**Slack**：是——如果影响用户；否——如果是内部修复
+**示例**：
+- `fix(auth): correct token refresh flow` -> 包含在 Slack 中
+- `fix(test): correct mock setup` -> 不包含在 Slack 中
 
-### Performance (`perf:`)
-**CHANGELOG**: Technical Improvements > Performance
-**Slack**: Yes - simplified ("Performance improvement")
-**Examples**:
+### 性能优化（`perf:`）
+**CHANGELOG**：技术改进 > 性能
+**Slack**：是——简化描述（"性能改进"）
+**示例**：
 - `perf(api): optimize N+1 queries with batching`
 - `perf(build): reduce bundle size by 30%`
 
-### Security (`security:` or `fix(security):`)
-**CHANGELOG**: Security
-**Slack**: Yes - always, with appropriate detail level
-**Examples**:
+### 安全修复（`security:` 或 `fix(security):`）
+**CHANGELOG**：安全
+**Slack**：是——始终包含，并附适当的详细程度
+**示例**：
 - `security: fix CVE-2025-55182 dependency RCE`
 - `fix(security): prevent XSS in user input`
 
-## Secondary Categories (CHANGELOG only)
+## 次要分类（仅 CHANGELOG）
 
-### Refactoring (`refactor:`)
-**CHANGELOG**: Technical Improvements > Architecture
-**Slack**: No
-**Examples**:
+### 代码重构（`refactor:`）
+**CHANGELOG**：技术改进 > 架构
+**Slack**：否
+**示例**：
 - `refactor(hooks): migrate to new pattern`
 - `refactor(permissions): extract to service layer`
 
-### Documentation (`docs:`)
-**CHANGELOG**: Documentation (if significant)
-**Slack**: No
-**Examples**:
+### 文档（`docs:`）
+**CHANGELOG**：文档（如果内容重要）
+**Slack**：否
+**示例**：
 - `docs: update CLAUDE.md with new patterns`
 - `docs(api): add endpoint documentation`
 
-### Tests (`test:`)
-**CHANGELOG**: Tests (count only)
-**Slack**: No
-**Examples**:
+### 测试（`test:`）
+**CHANGELOG**：测试（仅计数）
+**Slack**：否
+**示例**：
 - `test(api): add endpoint integration tests`
 - `test(e2e): add workflow tests`
 
-### Chores (`chore:`)
-**CHANGELOG**: No (unless significant)
-**Slack**: No
-**Examples**:
+### 日常维护（`chore:`）
+**CHANGELOG**：否（除非内容重要）
+**Slack**：否
+**示例**：
 - `chore: update dependencies`
 - `chore(ci): fix workflow permissions`
 
-### Style (`style:`)
-**CHANGELOG**: No
-**Slack**: No
-**Examples**:
+### 样式（`style:`）
+**CHANGELOG**：否
+**Slack**：否
+**示例**：
 - `style: apply prettier formatting`
 - `style(eslint): fix linting errors`
 
-## Scope Patterns
+## Scope 模式
 
-Common scopes:
+常用 scope：
 
-| Scope | Area |
+| Scope | 领域 |
 |-------|------|
-| `auth` | Authentication |
-| `billing` | Billing and payments |
-| `api` | API endpoints |
-| `ui` | UI components |
-| `dashboard` | Dashboard features |
-| `notifications` | Notification system |
-| `search` | Search functionality |
-| `user` | User management |
-| `db` | Database and migrations |
-| `permissions` | Permission system |
-| `admin` | Admin panel |
+| `auth` | 认证 |
+| `billing` | 计费与支付 |
+| `api` | API 端点 |
+| `ui` | UI 组件 |
+| `dashboard` | 仪表板功能 |
+| `notifications` | 通知系统 |
+| `search` | 搜索功能 |
+| `user` | 用户管理 |
+| `db` | 数据库与迁移 |
+| `permissions` | 权限系统 |
+| `admin` | 管理后台 |
 
-## Breaking Changes
+## 破坏性变更
 
-Indicated by `!` after type/scope or `BREAKING CHANGE:` in footer:
+通过 type/scope 后的 `!` 或 footer 中的 `BREAKING CHANGE:` 标注：
 - `feat(api)!: change status enum`
 - `fix(auth)!: require new token format`
 
-**CHANGELOG**: Breaking Changes section
-**Slack**: Yes - with migration instructions
+**CHANGELOG**：破坏性变更章节
+**Slack**：是——附迁移说明
 
-## PR Number Extraction
+## PR 编号提取
 
-Extract PR numbers from:
-1. Commit message: `(#123)`
-2. Merge commit: `Merge pull request #123`
-3. GitHub API: cross-reference with commit SHA
+从以下位置提取 PR 编号：
+1. 提交信息：`(#123)`
+2. Merge commit：`Merge pull request #123`
+3. GitHub API：与提交 SHA 交叉引用
 
-## Error Tracker Issue Linking
+## 错误追踪器 Issue 关联
 
-Match patterns:
+匹配以下模式：
 - `[error-tracker]: PROJECT-XX`
 - `fixes PROJECT-XX`
-- `closes #XX` (GitHub issue)
+- `closes #XX`（GitHub issue）
 
-## Statistics Calculation
+## 统计数据计算
 
-Count for release stats:
-- **PRs**: Unique PR numbers
-- **Features**: `feat:` commits
-- **Bugs**: `fix:` commits (excluding test/internal)
-- **Improvements**: `perf:` + `refactor:` + UI improvements
-- **Security**: `security:` commits
-- **Breaking**: Commits with `!` or `BREAKING CHANGE`
+发布统计计数项：
+- **PR 数**：唯一 PR 编号
+- **功能数**：`feat:` 提交
+- **Bug 修复数**：`fix:` 提交（排除测试/内部修复）
+- **改进数**：`perf:` + `refactor:` + UI 改进
+- **安全修复数**：`security:` 提交
+- **破坏性变更数**：包含 `!` 或 `BREAKING CHANGE` 的提交

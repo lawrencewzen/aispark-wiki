@@ -1,14 +1,14 @@
 > 📚 **AI Spark Wiki** · Claude Code 知识库
 
-# Cyber Defense Agent Team
+# 网络防御智能体团队
 
-A 4-agent pipeline that detects security threats in log files. Built natively with Claude Code Agent Teams.
+一条由 4 个智能体组成的流水线，用于检测日志文件中的安全威胁。原生构建于 Claude Code 智能体团队之上。
 
-**This example exists to compare two approaches**: LangGraph (the Python framework) vs Claude Code Agent Teams (native). Same system, two architectures. The delta tells you when to use which.
+**本示例旨在对比两种方案**：LangGraph（Python 框架）与 Claude Code 智能体团队（原生方案）。同一个系统，两种架构。差异告诉你各自适用的场景。
 
 ---
 
-## Architecture
+## 架构
 
 ```
 log-ingestor (haiku)
@@ -22,17 +22,17 @@ threat-reporter (sonnet)
 cyber-defense-report.md
 ```
 
-Each agent has a single responsibility and passes data to the next via shared JSON files. The orchestration skill (`/cyber-defense-team`) sequences the spawns and reports results.
+每个智能体职责单一，通过共享 JSON 文件向下一个智能体传递数据。编排技能（`/cyber-defense-team`）负责按顺序生成各智能体并汇总结果。
 
-**Usage**: `/cyber-defense-team /var/log/nginx/access.log`
+**用法**：`/cyber-defense-team /var/log/nginx/access.log`
 
 ---
 
-## LangGraph vs Claude Code Agent Teams
+## LangGraph vs Claude Code 智能体团队
 
-Same system built twice. Here's the full comparison.
+同一个系统构建了两次。以下是完整对比。
 
-### The LangGraph Version (~150 lines of Python)
+### LangGraph 版本（约 150 行 Python）
 
 ```python
 from typing import TypedDict, List
@@ -140,71 +140,71 @@ def analyze_logs(logs: str) -> str:
     return result.get("report", "No threats detected.")
 ```
 
-### The Claude Code Version (~60 lines of YAML/Markdown)
+### Claude Code 版本（约 60 行 YAML/Markdown）
 
-Four agent files, one skill file. No graph assembly, no TypedDict, no boilerplate.
+四个智能体文件，一个技能文件。无需图组装、无 TypedDict、无样板代码。
 
 ```
 examples/agents/cyber-defense/
-├── log-ingestor.md       (~40 lines)
-├── anomaly-detector.md   (~50 lines)
-├── risk-classifier.md    (~55 lines)
-└── threat-reporter.md    (~45 lines)
+├── log-ingestor.md       (~40 行)
+├── anomaly-detector.md   (~50 行)
+├── risk-classifier.md    (~55 行)
+└── threat-reporter.md    (~45 行)
 
 examples/skills/cyber-defense-team/
-└── SKILL.md              (~70 lines)
+└── SKILL.md              (~70 行)
 ```
 
-Each agent file is a YAML frontmatter (name, model, tools) + a plain English system prompt describing role, inputs, outputs, and constraints. The skill file sequences the agents with `Agent tool` calls.
+每个智能体文件由 YAML frontmatter（名称、模型、工具）加上一段描述角色、输入、输出和约束的纯英文系统提示词组成。技能文件通过 `Agent tool` 调用按顺序编排各智能体。
 
 ---
 
-## Side-by-Side Comparison
+## 并排对比
 
-| Dimension | LangGraph | Claude Code Agent Teams |
+| 维度 | LangGraph | Claude Code 智能体团队 |
 |-----------|-----------|------------------------|
-| **Total code** | ~150 lines Python | ~60 lines YAML/Markdown |
-| **State management** | Explicit `TypedDict` definition | Implicit — JSON files between agents |
-| **Memory** | Manual `MemorySaver` setup | Native (files persist by default) |
-| **Tool definition** | `@tool` decorated Python functions | MCP servers or built-in tools |
-| **Conditional logic** | `add_conditional_edges()` | Natural language in skill ("if no anomalies, skip to Step 5") |
-| **Model selection** | One model for all nodes | Per-agent (haiku for parsing, sonnet for reasoning) |
-| **Debugging** | `print()` + LangSmith (paid) | Native Claude Code UI |
-| **New agent role** | New function + `add_node()` + `add_edge()` | New `.md` file |
-| **Onboarding** | Learn LangGraph API | Read a Markdown file |
-| **Deployment** | FastAPI or Gradio (~50 more lines) | `claude` CLI, done |
-| **Dependencies** | `langgraph`, `langchain`, `langchain-openai` | None (built into Claude Code) |
+| **总代码量** | ~150 行 Python | ~60 行 YAML/Markdown |
+| **状态管理** | 显式 `TypedDict` 定义 | 隐式——智能体间共享 JSON 文件 |
+| **记忆** | 手动设置 `MemorySaver` | 原生（文件默认持久化） |
+| **工具定义** | `@tool` 装饰的 Python 函数 | MCP 服务器或内置工具 |
+| **条件逻辑** | `add_conditional_edges()` | 技能中的自然语言（"如果没有异常，跳到第 5 步"） |
+| **模型选择** | 所有节点用同一个模型 | 按智能体指定（解析用 haiku，推理用 sonnet） |
+| **调试** | `print()` + LangSmith（付费） | Claude Code 原生 UI |
+| **新增智能体角色** | 新函数 + `add_node()` + `add_edge()` | 新建一个 `.md` 文件 |
+| **上手成本** | 学习 LangGraph API | 读一个 Markdown 文件 |
+| **部署** | FastAPI 或 Gradio（再加约 50 行） | `claude` CLI，搞定 |
+| **依赖** | `langgraph`、`langchain`、`langchain-openai` | 无（内置于 Claude Code） |
 
 ---
 
-## When to Use Which
+## 如何选择
 
-**Use Claude Code Agent Teams when:**
-- You want to move fast — prototype to working system in 30 minutes
-- Your team includes non-developers who may read or edit agent prompts
-- The pipeline is internal tooling (not a public API endpoint)
-- You need to iterate on agent behavior frequently (edit a `.md` file, done)
+**选 Claude Code 智能体团队，当：**
+- 你想快速推进——30 分钟内从原型到可运行系统
+- 团队中有非开发人员需要阅读或编辑智能体提示词
+- 流水线是内部工具（而非公开 API 端点）
+- 需要频繁迭代智能体行为（编辑一个 `.md` 文件即可）
 
-**Use LangGraph when:**
-- You need to embed the system inside a larger Python application
-- You want to expose the pipeline as a REST API for external consumers
-- You need deterministic state transitions that must be unit-tested
-- Your team is already Python-native and has LangGraph expertise
+**选 LangGraph，当：**
+- 需要将系统嵌入更大的 Python 应用
+- 需要将流水线作为 REST API 对外暴露
+- 需要可单元测试的确定性状态转换
+- 团队以 Python 为主且已有 LangGraph 经验
 
-**The honest tradeoff**: LangGraph gives you more programmatic control and Python ecosystem access. Claude Code Agent Teams give you less boilerplate, faster iteration, and no infrastructure to maintain. For internal tooling and knowledge work pipelines, the Claude Code approach typically wins on total cost of ownership.
+**真实的权衡**：LangGraph 提供更强的程序化控制和 Python 生态访问能力。Claude Code 智能体团队则减少样板代码、加快迭代速度，且无需维护任何基础设施。对于内部工具和知识型工作流水线，Claude Code 方案在总体拥有成本上通常更占优。
 
 ---
 
-## Files in This Example
+## 本示例文件说明
 
-| File | Agent Role | Model | Responsibility |
+| 文件 | 智能体角色 | 模型 | 职责 |
 |------|-----------|-------|----------------|
-| `log-ingestor.md` | Stage 1 | haiku | Parse raw logs → `cyber-defense-events.json` |
-| `anomaly-detector.md` | Stage 2 | sonnet | Detect patterns → `cyber-defense-anomalies.json` |
-| `risk-classifier.md` | Stage 3 | sonnet | Score risk → `cyber-defense-risk.json` |
-| `threat-reporter.md` | Stage 4 | sonnet | Generate → `cyber-defense-report.md` |
-| `../skills/cyber-defense-team/SKILL.md` | Orchestrator | — | Sequence agents, handle errors, summarize |
+| `log-ingestor.md` | 阶段 1 | haiku | 解析原始日志 → `cyber-defense-events.json` |
+| `anomaly-detector.md` | 阶段 2 | sonnet | 检测模式 → `cyber-defense-anomalies.json` |
+| `risk-classifier.md` | 阶段 3 | sonnet | 评估风险 → `cyber-defense-risk.json` |
+| `threat-reporter.md` | 阶段 4 | sonnet | 生成报告 → `cyber-defense-report.md` |
+| `../skills/cyber-defense-team/SKILL.md` | 编排器 | — | 顺序调度智能体、处理错误、汇总结果 |
 
 ---
 
-**Inspired by**: Maryam Miradi's SMART COMPASS framework — same system, different stack.
+**灵感来源**：Maryam Miradi 的 SMART COMPASS 框架——同一系统，不同技术栈。

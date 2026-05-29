@@ -2,7 +2,7 @@
 
 ---
 name: ci-status
-description: Show current pipeline status for the active branch — GitLab CI or GitHub Actions
+description: 显示当前分支的流水线状态——GitLab CI 或 GitHub Actions
 argument-hint: "[pr_number optional]"
 allowed-tools: [Bash]
 model: haiku
@@ -10,18 +10,18 @@ effort: low
 disable-model-invocation: true
 ---
 
-# /ci:status — Pipeline status
+# /ci:status — 流水线状态
 
-Quick snapshot of the CI pipeline on the current branch.
+快速查看当前分支的 CI 流水线快照。
 
-## Process
+## 流程
 
 ```bash
-# 1. Current branch
+# 1. 当前分支
 BRANCH=$(git branch --show-current)
 echo "Branch: $BRANCH"
 
-# 2. Last commits
+# 2. 最近提交
 git log -3 --oneline
 ```
 
@@ -67,7 +67,7 @@ if [ -n "$ARGUMENTS" ] && command -v gh &>/dev/null; then
 fi
 ```
 
-## Expected output
+## 预期输出
 
 ```
 Branch: feat/add-payment-retry
@@ -86,11 +86,11 @@ Pipeline: running
 URL: https://gitlab.com/org/my-app/-/pipelines?ref=feat/add-payment-retry
 ```
 
-## Usage
+## 用法
 
 ```
 /ci:status
-/ci:status 42    # MR or PR number 42
+/ci:status 42    # MR 或 PR 编号 42
 ```
 
-Target: $ARGUMENTS
+目标：$ARGUMENTS

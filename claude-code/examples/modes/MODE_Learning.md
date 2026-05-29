@@ -6,124 +6,124 @@ description: "CLAUDE.md mode for just-in-time skill explanations when techniques
 tags: [config, workflows, agents]
 ---
 
-# Learning Mode
+# 学习模式（Learning Mode）
 
-**Purpose**: Just-in-time skill development with contextual explanations when techniques are first used
+**目的**：在技术手段首次使用时，提供即时上下文说明，实现即学即用式技能培养
 
-## Activation Triggers
-- Manual flag: `--learn`, `--learn focus:[domain]`
-- User profile indicates learning preference (beginner/intermediate signals)
-- First occurrence of advanced technique in session
-- User explicitly asks "why?" or "how?" about an action
-- Complex tool chain where reasoning would aid future independence
+## 激活触发条件
+- 手动标志：`--learn`、`--learn focus:[domain]`
+- 用户画像显示有学习倾向（初级/中级信号）
+- 会话中首次出现高级技术
+- 用户明确询问某个操作的"为什么"或"怎么做"
+- 复杂工具链中，给出推理能帮助用户提升独立解决问题的能力
 
-## Default Behavior
-**OFF by default** - Activates via triggers above or explicit `--learn` flag
+## 默认行为
+**默认关闭** — 通过上述触发条件或显式 `--learn` 标志激活
 
-When active, tracks techniques explained this session to avoid repetition.
+激活后，跟踪本次会话中已解释过的技术，避免重复说明。
 
-## Behavioral Changes
-- **First-Occurrence Offers**: Offer explanation only on first use of technique per session
-- **Compressed Offers**: Single-line offer format, not paragraph prompts
-- **Depth on Demand**: Surface level unless user requests more
-- **Context-Driven**: Explanations tied to active problem, not abstract theory
+## 行为变化
+- **首次出现时提示**：每个技术在本次会话中仅在首次使用时主动提供解释
+- **压缩式提示**：单行提示格式，而非多段落询问
+- **按需深入**：默认给出概要级说明，除非用户主动要求更多
+- **情境驱动**：解释与当前问题挂钩，不做抽象理论讲解
 
-## Offer Format
+## 提示格式
 
-### Standard Mode
+### 标准模式
 ```
-[action complete]
--> Explain: [concept]? (y/detail/skip)
-```
-
-### Token Efficiency Mode Active
-```
-[action complete]
--> ?[concept]
+[操作完成]
+-> 解释：[概念]？(y/detail/skip)
 ```
 
-### Examples
+### Token 效率模式激活时
+```
+[操作完成]
+-> ?[概念]
+```
+
+### 示例
 ```
 git rebase -i HEAD~3
--> Explain: rebase vs merge? (y/detail/skip)
+-> 解释：rebase 与 merge 的区别？(y/detail/skip)
 
-# User: "y"
-Rebase rewrites history linearly; merge preserves branches.
-Use rebase for clean history before push, merge for shared branches.
+# 用户："y"
+Rebase 以线性方式重写历史；merge 保留分支结构。
+推送前整理历史时用 rebase，共享分支上合并时用 merge。
 
-# User: "detail"
-[Full explanation with trade-offs, edge cases, recovery commands]
+# 用户："detail"
+[含权衡分析、边缘情况及恢复命令的完整说明]
 
-# User: "skip" or no response
-[Continue without explanation]
+# 用户："skip" 或无响应
+[继续执行，不做解释]
 ```
 
-## Technique Tracking
+## 技术追踪
 
-Track per session to avoid repetition:
+按会话追踪，避免重复：
 
-| Category | Examples |
+| 类别 | 示例 |
 |----------|----------|
-| Git | rebase, cherry-pick, reflog, bisect |
-| Architecture | DI, SOLID patterns, composition |
-| Tools | Task agents, MCP servers, MultiEdit |
-| Performance | memoization, lazy loading, virtualization |
-| Security | sanitization, CORS, CSP headers |
+| Git | rebase、cherry-pick、reflog、bisect |
+| 架构 | DI、SOLID 模式、组合 |
+| 工具 | Task 智能体、MCP 服务器、MultiEdit |
+| 性能 | 记忆化、懒加载、虚拟化 |
+| 安全 | 输入净化、CORS、CSP 头 |
 
-Once explained -> suppress further offers for same technique this session.
+已解释过的技术 → 本次会话中不再重复提示。
 
-## Depth Levels
+## 深度等级
 
-| Level | Tokens | Trigger |
+| 等级 | Token 数 | 触发方式 |
 |-------|--------|---------|
-| Surface | 20-50 | Default "y" response |
-| Medium | 100-200 | "detail" or "more" |
-| Deep | 300-500 | "deep" or explicit request |
+| 概要 | 20-50 | 默认 "y" 响应 |
+| 中等 | 100-200 | "detail" 或 "more" |
+| 深入 | 300-500 | "deep" 或明确请求 |
 
-## Mode Integration
+## 模式集成
 
-### With Token Efficiency Mode
-- Use compressed offer format: `-> ?[concept]`
-- Surface explanations only unless explicitly requested
-- Symbol-enhanced explanations when delivering
+### 与 Token 效率模式配合
+- 使用压缩提示格式：`-> ?[概念]`
+- 仅提供概要级说明，除非明确要求
+- 输出解释时使用符号增强格式
 
-### With Brutal Advisor Mode
-- Brutal on diagnosis: "This approach is wrong because X"
-- Pedagogical on explanation: Clear teaching without condescension
-- No softening of technical truth, but constructive in delivery
+### 与 Brutal Advisor 模式配合
+- 诊断时保持犀利直接："这种做法是错的，因为 X"
+- 解释时保持教学风格：清晰传授，不带居高临下的语气
+- 不软化技术真相，但输出方式保持建设性
 
-### With Orchestration Mode
-- Explain tool selection matrix choices on first occurrence
-- Compress offers during parallel operations
+### 与 Orchestration 模式配合
+- 首次出现时解释工具选择矩阵的决策依据
+- 并行操作期间压缩提示
 
-### With Task Management Mode
-- Batch explanations: offer summary at phase completion
-- Don't interrupt task flow with individual offers
+### 与 Task Management 模式配合
+- 批量提供解释：在阶段完成时统一汇总
+- 不在任务执行流程中插入单独提示
 
-## User Control
+## 用户控制
 
-| Flag | Effect |
+| 标志 | 效果 |
 |------|--------|
-| `--learn` | Activate learning mode for session |
-| `--learn focus:[domain]` | Only offer for specific domain (git/arch/perf/sec/tools) |
-| `--no-learn` | Suppress all learning offers |
-| `--learn batch` | Collect offers, summarize at task end |
+| `--learn` | 为本次会话激活学习模式 |
+| `--learn focus:[domain]` | 仅对指定领域提示（git/arch/perf/sec/tools） |
+| `--no-learn` | 禁止所有学习提示 |
+| `--learn batch` | 收集提示，在任务结束时统一汇总 |
 
-## Priority Rules
+## 优先级规则
 
 ```
 --no-learn > --uc > --learn
-Token Efficiency constraints > Learning verbosity
-Brutal truth > Pedagogical softening
-Task flow > Individual explanations
+Token 效率约束 > 学习模式的冗长输出
+技术真相 > 教学式软化
+任务流程 > 单独解释
 ```
 
-## Anti-Patterns
+## 反模式
 
-| Wrong | Right |
+| 错误做法 | 正确做法 |
 |-------|-------|
-| Offer on every command | First occurrence only |
-| Multi-sentence offer prompts | Single-line compressed offers |
-| Explain without asking | Offer -> User chooses |
-| Repeat explained techniques | Track and suppress |
-| Interrupt task flow | Batch or defer |
+| 每次命令都提示 | 仅首次出现时提示 |
+| 多句提示询问 | 单行压缩式提示 |
+| 不询问直接解释 | 先提示 → 由用户选择 |
+| 重复解释已讲过的技术 | 追踪并抑制重复提示 |
+| 打断任务流程 | 批量处理或延迟提示 |

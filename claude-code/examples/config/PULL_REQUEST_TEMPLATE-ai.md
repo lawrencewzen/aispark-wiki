@@ -1,54 +1,54 @@
 > 📚 **AI Spark Wiki** · Claude Code 知识库
 
 ---
-title: "Pull Request Template with AI Disclosure"
-description: "GitHub PR template with built-in AI assistance disclosure section"
+title: "含 AI 披露的拉取请求模板"
+description: "内置 AI 辅助披露部分的 GitHub PR 模板"
 tags: [template, config, ai-ecosystem]
 ---
 
-# Pull Request Template with AI Disclosure
+# 含 AI 披露的拉取请求模板
 
-> Save as `.github/PULL_REQUEST_TEMPLATE.md` in your repository
+> 保存为仓库中的 `.github/PULL_REQUEST_TEMPLATE.md`
 
 ---
 
-## Description
+## 描述
 
-<!-- Describe your changes in detail -->
+<!-- 详细描述你的变更 -->
 
-## Type of Change
+## 变更类型
 
-<!-- Check the relevant option -->
+<!-- 勾选适用选项 -->
 
-- [ ] Bug fix (non-breaking change that fixes an issue)
-- [ ] New feature (non-breaking change that adds functionality)
-- [ ] Breaking change (fix or feature that would cause existing functionality to not work as expected)
-- [ ] Documentation update
-- [ ] Refactoring (no functional changes)
+- [ ] Bug 修复（修复问题的非破坏性变更）
+- [ ] 新功能（添加功能的非破坏性变更）
+- [ ] 破坏性变更（会导致现有功能无法按预期运行的修复或功能）
+- [ ] 文档更新
+- [ ] 重构（无功能性变更）
 
-## AI Assistance
+## AI 辅助
 
-<!-- Check all that apply -->
+<!-- 勾选所有适用项 -->
 
-- [ ] No AI tools were used for this contribution
-- [ ] AI was used for research/understanding only (no generated code)
-- [ ] AI generated some code (please specify below)
-- [ ] AI generated most of the code (please specify below)
+- [ ] 本次贡献未使用任何 AI 工具
+- [ ] AI 仅用于研究/理解（无生成代码）
+- [ ] AI 生成了部分代码（请在下方说明）
+- [ ] AI 生成了大部分代码（请在下方说明）
 
-<!-- If AI was used, please specify: -->
-**AI Tool(s) Used**: <!-- e.g., Claude Code, GitHub Copilot, ChatGPT, Cursor -->
+<!-- 如果使用了 AI，请说明： -->
+**使用的 AI 工具**：<!-- 例如：Claude Code、GitHub Copilot、ChatGPT、Cursor -->
 
-**What AI Helped With**: <!-- e.g., initial implementation, tests, docs, refactoring -->
+**AI 协助内容**：<!-- 例如：初始实现、测试、文档、重构 -->
 
-## Checklist
+## 检查清单
 
-- [ ] I have reviewed all AI-generated code and understand it
-- [ ] I can answer questions about this code during review
-- [ ] My code follows the project's style guidelines
-- [ ] I have added tests that prove my fix/feature works
-- [ ] New and existing tests pass locally
-- [ ] I have updated documentation if needed
+- [ ] 我已审查所有 AI 生成的代码并理解其内容
+- [ ] 我能在代码审查时回答关于此代码的问题
+- [ ] 我的代码遵循项目的风格规范
+- [ ] 我已添加测试以证明我的修复/功能有效
+- [ ] 新旧测试均在本地通过
+- [ ] 如有需要，我已更新相关文档
 
-## Additional Context
+## 附加上下文
 
-<!-- Add any other context about the PR here -->
+<!-- 在此添加关于本 PR 的其他说明 -->

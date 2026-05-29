@@ -2,84 +2,84 @@
 
 ---
 name: review-pr
-description: Perform a comprehensive code review of a pull request
+description: 对 Pull Request 执行全面的代码审查
 argument-hint: "[PR_number|URL]"
 effort: medium
 disable-model-invocation: true
 ---
 
-# Review Pull Request
+# 审查 Pull Request
 
-Perform a comprehensive code review of a pull request.
+对 Pull Request 执行全面的代码审查。
 
-## Instructions
+## 操作说明
 
-1. Get PR information: `gh pr view $ARGUMENTS --json title,body,files,additions,deletions`
-2. Review each changed file
-3. Provide structured feedback
+1. 获取 PR 信息：`gh pr view $ARGUMENTS --json title,body,files,additions,deletions`
+2. 审查每个变更文件
+3. 提供结构化反馈
 
-## Review Checklist
+## 审查清单
 
-### Code Quality
-- [ ] Code is readable and well-organized
-- [ ] Functions are appropriately sized
-- [ ] No code duplication
-- [ ] Meaningful variable/function names
+### 代码质量
+- [ ] 代码可读且组织良好
+- [ ] 函数大小适当
+- [ ] 无代码重复
+- [ ] 变量/函数命名有意义
 
-### Functionality
-- [ ] Logic is correct
-- [ ] Edge cases handled
-- [ ] Error handling is comprehensive
-- [ ] No obvious bugs
+### 功能性
+- [ ] 逻辑正确
+- [ ] 边界情况已处理
+- [ ] 错误处理全面
+- [ ] 无明显 bug
 
-### Security
-- [ ] No hardcoded secrets
-- [ ] Input validation present
-- [ ] No injection vulnerabilities
-- [ ] Authorization checks in place
+### 安全性
+- [ ] 无硬编码密钥
+- [ ] 存在输入验证
+- [ ] 无注入漏洞
+- [ ] 已实施授权检查
 
-### Testing
-- [ ] Tests added for new code
-- [ ] Existing tests still pass
-- [ ] Edge cases tested
+### 测试
+- [ ] 新代码已添加测试
+- [ ] 现有测试仍可通过
+- [ ] 边界情况已测试
 
-### Documentation
-- [ ] Code is self-documenting or commented
-- [ ] README updated if needed
-- [ ] API changes documented
+### 文档
+- [ ] 代码自文档化或已注释
+- [ ] 如需要已更新 README
+- [ ] API 变更已记录
 
-## Output Format
+## 输出格式
 
 ```markdown
-## PR Review: #[number] - [title]
+## PR 审查：#[编号] - [标题]
 
-### Summary
-[1-2 sentence overview]
+### 总结
+[1-2句概述]
 
-### Approval Status
-[ ] Approved
-[ ] Approved with suggestions
-[ ] Changes requested
+### 审批状态
+[ ] 已批准
+[ ] 附建议批准
+[ ] 要求变更
 
-### Findings
+### 发现
 
-#### Critical (Must Fix)
-- [ ] [Issue description] - `file:line`
+#### 严重问题（必须修复）
+- [ ] [问题描述] - `file:line`
 
-#### Suggestions (Should Consider)
-- [ ] [Improvement] - `file:line`
+#### 建议（应考虑）
+- [ ] [改进内容] - `file:line`
 
-#### Nitpicks (Optional)
-- [ ] [Minor suggestion] - `file:line`
+#### 小建议（可选）
+- [ ] [次要建议] - `file:line`
 
-### Positive Highlights
-- [What's done well]
+### 亮点
+- [做得好的地方]
 
-### Questions
-- [Clarifications needed]
+### 疑问
+- [需要澄清的内容]
 ```
 
-## Usage
+## 用法
 
 ```
 /review-pr 123
@@ -88,214 +88,213 @@ Perform a comprehensive code review of a pull request.
 
 ---
 
-## Advanced: Multi-Agent Review
+## 进阶：多智能体审查
 
-For production-grade reviews requiring specialized perspectives and anti-hallucination safeguards.
+适用于需要专项视角和防幻觉保障的生产级审查。
 
-### Pre-flight Check
+### 预检
 
-Before reviewing, check if this is a follow-up pass to avoid repeating suggestions:
+审查前检查是否为后续轮次，避免重复建议：
 
 ```bash
-# Detect if Claude already reviewed this PR
+# 检测 Claude 是否已审查过此 PR
 git log --oneline -10 | grep "Co-Authored-By: Claude"
 ```
 
-If detected, note: "This appears to be a follow-up pass. I'll focus on new issues and avoid repeating previous suggestions."
+如检测到，注明："这似乎是后续审查轮次。我将专注于新问题，避免重复之前的建议。"
 
-### Scope Drift Detection
+### 范围偏移检测
 
-Cross-reference the PR diff against the original plan to catch unintended changes.
+将 PR 差异与原始计划交叉核对，发现无意的变更。
 
 ```bash
-# Detect current branch
+# 检测当前分支
 BRANCH=$(git branch --show-current)
 
-# Search for a plan file associated with this branch
+# 搜索与该分支关联的计划文件
 ls ~/.claude/plans/ 2>/dev/null | grep -i "$BRANCH" | head -3
 
-# Files actually changed in this PR
+# 此 PR 实际变更的文件
 git diff --stat origin/main...HEAD | head -30
 ```
 
-If a plan file exists for this branch:
-1. Read the plan file — what was the stated scope?
-2. Compare stated scope vs actual `git diff --stat`
-3. Flag files changed that were NOT mentioned in the plan
+如果存在该分支的计划文件：
+1. 读取计划文件 — 声明的范围是什么？
+2. 将声明范围与实际 `git diff --stat` 对比
+3. 标记计划中未提及但实际变更的文件
 
-Output format:
+输出格式：
 ```
-SCOPE DRIFT CHECK
+范围偏移检查
 ─────────────────────────────────────────
-Plan scope:    [what the plan said would change]
-Actual diff:   [files actually changed]
-Drift:         [files changed outside plan scope, if any]
-Verdict:       IN SCOPE / DRIFT DETECTED
+计划范围：  [计划中声明将变更的内容]
+实际差异：  [实际变更的文件]
+偏移：      [计划范围外变更的文件（如有）]
+结论：      在范围内 / 检测到偏移
 ```
 
-If no plan file exists: note "No plan file found for this branch — skipping scope drift check."
+如无计划文件：注明"未找到该分支的计划文件 — 跳过范围偏移检查。"
 
-### Multi-Agent Specialization
+### 多智能体专项分工
 
-Launch 3 parallel specialized agents (see [Split Role Sub-Agents](../../guide/ultimate-guide.md#split-role-sub-agents)):
+启动 3 个并行专项智能体（参见[分角色子智能体](../../guide/ultimate-guide.md#split-role-sub-agents)）：
 
-**Agent 1: Consistency Auditor**
+**智能体 1：一致性审计员**
 ```
-Focus: DRY violations, duplicate logic, pattern inconsistencies
-Check for:
-- Duplicated code blocks (>5 lines similar)
-- Inconsistent naming conventions
-- Pattern violations (if project uses X pattern, enforce it)
-```
-
-**Agent 2: SOLID Principles Analyst**
-```
-Focus: Single Responsibility Principle violations, complexity
-Check for:
-- Functions >50 lines (likely doing too much)
-- Nested conditionals >3 levels deep
-- Cyclomatic complexity >10
-- Mixed concerns in single component
+专注：DRY 违反、重复逻辑、模式不一致
+检查：
+- 重复代码块（>5 行相似）
+- 不一致的命名规范
+- 模式违反（如项目使用 X 模式，则强制执行）
 ```
 
-**Agent 3: Defensive Code Auditor**
+**智能体 2：SOLID 原则分析师**
 ```
-Focus: Silent failures, masked bugs, hidden fallbacks, LLM output trust boundary
-Check for:
-- Empty catch blocks: try { } catch (e) { } // swallows error
-- Silent fallbacks: return data || DEFAULT // hides missing data
-- Unchecked null/undefined: user.name without validation
-- Ignored promise rejections: async fn without .catch()
-
-LLM Output Trust Boundary (especially relevant in AI-assisted codebases):
-- LLM-generated values (emails, URLs, names, IDs) written to DB or passed to
-  downstream functions without format validation — add lightweight guards
-  (email regex, URL parsing, .trim()) before persisting
-- Structured tool output (arrays, objects from AI tools) accepted without
-  type/shape checks before database writes or rendering
-- AI-generated SQL or code strings executed without sanitization
+专注：单一职责原则违反、复杂度
+检查：
+- 函数 >50 行（可能职责过多）
+- 嵌套条件语句 >3 层
+- 圈复杂度 >10
+- 单个组件中混合关注点
 ```
 
-### Anti-Hallucination Rules
-
-**Verify before asserting**:
-- Use `Grep` or `Glob` to verify patterns before recommending them
-- If suggesting "use existing UserService pattern", confirm UserService exists first
-- Never claim "project uses X" without checking actual codebase
-
-**Occurrence rule**:
-- Pattern with >10 occurrences = established (Suggestion level)
-- Pattern with <3 occurrences = not established (Can Skip or ask maintainer)
-- Read full file context, not just diff lines
-
-**Uncertainty markers**:
-- Use "❓ To verify:" when unsure about project conventions
-- Use "💡 Consider:" for optional improvements
-- Use "🔴 Must fix:" only for critical bugs/security
-
-### Reconciliation
-
-After agents report findings:
-
-1. **Deduplicate**: Remove overlapping suggestions across agents
-2. **Prioritize existing patterns**: If codebase uses pattern X, recommend X (not ideal pattern Y)
-3. **Mark skipped suggestions**: "Skipping [suggestion] because project uses [alternative pattern]"
-4. **Track reasoning**: Document why suggestion was kept or skipped
-
-### Severity Classification
-
+**智能体 3：防御性代码审计员**
 ```
-🔴 Must Fix (Blockers)
-- Security vulnerabilities
-- Data loss risks
-- Breaking changes without migration
-- Silent failures masking bugs
+专注：静默失败、被掩盖的 bug、隐藏回退、LLM 输出信任边界
+检查：
+- 空 catch 块：try { } catch (e) { } // 吞掉错误
+- 静默回退：return data || DEFAULT // 隐藏缺失数据
+- 未检查 null/undefined：user.name 没有验证
+- 被忽略的 Promise 拒绝：async 函数没有 .catch()
 
-🟡 Should Fix (Improvements)
-- SOLID violations causing maintenance issues
-- DRY violations (>3 duplicates)
-- Performance bottlenecks (N+1 queries)
-- Missing error handling for critical paths
-
-🟢 Can Skip (Nice-to-haves)
-- Style inconsistencies (if no linter)
-- Minor naming improvements
-- Overly nested code (if <3 levels)
-- Documentation gaps (if code self-documenting)
+LLM 输出信任边界（在 AI 辅助代码库中尤其重要）：
+- LLM 生成的值（邮件、URL、名称、ID）在写入数据库或传给下游函数前
+  未进行格式验证 — 持久化前添加轻量守卫（邮件正则、URL 解析、.trim()）
+- AI 工具的结构化输出（数组、对象）在写入数据库或渲染前未进行
+  类型/结构检查
+- AI 生成的 SQL 或代码字符串在未经消毒的情况下执行
 ```
 
-### Fix-First Heuristic
+### 防幻觉规则
 
-Determine whether to auto-fix each finding or surface it for user decision.
+**断言前先验证**：
+- 在推荐模式前使用 `Grep` 或 `Glob` 验证
+- 如建议"使用现有 UserService 模式"，先确认 UserService 确实存在
+- 不得在未检查实际代码库的情况下声称"项目使用 X"
+
+**出现次数规则**：
+- 模式出现 >10 次 = 已确立（建议级别）
+- 模式出现 <3 次 = 未确立（可跳过或询问维护者）
+- 读取完整文件上下文，而不只是差异行
+
+**不确定性标记**：
+- 对项目规范不确定时使用"❓ 待验证："
+- 可选改进使用"💡 建议考虑："
+- 仅对严重 bug/安全问题使用"🔴 必须修复："
+
+### 整合
+
+智能体汇报发现后：
+
+1. **去重**：删除各智能体之间重叠的建议
+2. **优先现有模式**：如代码库使用模式 X，推荐 X（而非理想化的模式 Y）
+3. **标记跳过的建议**："跳过 [建议]，因为项目使用 [替代模式]"
+4. **追踪推理**：记录建议被保留或跳过的原因
+
+### 严重程度分级
 
 ```
-AUTO-FIX (apply without asking):          ASK (needs human judgment):
-├─ Dead code / unused variables            ├─ Security changes (auth, XSS, injection)
-├─ N+1 queries (missing eager loading)     ├─ Race conditions
-├─ Stale comments contradicting code       ├─ Design decisions
-├─ Magic numbers → named constants         ├─ Large fixes (>20 lines changed)
-├─ Missing import / path mismatches        ├─ Enum completeness
-├─ Variables assigned but never read       ├─ Anything removing functionality
-└─ Obvious version/doc mismatches          └─ User-visible behavior changes
+🔴 必须修复（阻塞项）
+- 安全漏洞
+- 数据丢失风险
+- 无迁移路径的破坏性变更
+- 掩盖 bug 的静默失败
+
+🟡 应该修复（改进项）
+- 造成维护问题的 SOLID 违反
+- DRY 违反（>3 处重复）
+- 性能瓶颈（N+1 查询）
+- 关键路径缺少错误处理
+
+🟢 可跳过（锦上添花）
+- 风格不一致（如无 linter）
+- 次要命名改进
+- 过度嵌套代码（<3层）
+- 文档缺口（如代码已自文档化）
 ```
 
-**Rule**: If a senior engineer would apply the fix in 30 seconds without discussion, it's AUTO-FIX. If reasonable engineers could disagree, it's ASK.
+### 先修复启发式
 
-After agents report findings:
-1. Apply all AUTO-FIX items immediately with minimal targeted edits
-2. Batch all ASK items into a single user decision (not one question per item)
-
-### Auto-Fix Loop (Optional)
-
-For automated convergence:
+判断是自动修复每个发现，还是交由用户决策。
 
 ```
-Review → Identify issues → Fix → Re-review → Repeat until minimal changes
-
-Safeguards:
-- Max 3 iterations to prevent infinite loops
-- Run tsc/lint check before each iteration
-- Skip auto-fix for protected files (package.json, migrations, etc.)
+自动修复（无需询问直接应用）：        询问（需要人工判断）：
+├─ 死代码 / 未使用变量                ├─ 安全变更（认证、XSS、注入）
+├─ N+1 查询（缺少预加载）             ├─ 竞态条件
+├─ 与代码矛盾的过期注释               ├─ 设计决策
+├─ 魔法数字 → 命名常量                ├─ 大型修复（>20行变更）
+├─ 缺少 import / 路径不匹配           ├─ 枚举完整性
+├─ 赋值但从未读取的变量               ├─ 任何删除功能的操作
+└─ 明显的版本/文档不匹配              └─ 用户可见的行为变更
 ```
 
-**Example prompt**:
+**规则**：如果高级工程师能在 30 秒内不经讨论直接应用该修复，则为自动修复。如果合理的工程师可能存在分歧，则为询问。
+
+智能体汇报发现后：
+1. 立即应用所有自动修复项，使用最小化的精准编辑
+2. 将所有询问项整合为一次用户决策（而非逐项询问）
+
+### 自动修复循环（可选）
+
+用于自动化收敛：
+
 ```
-Review this PR with auto-fix enabled:
-1. Review using 3 agents above
-2. Fix all 🔴 Must Fix issues
-3. Re-review to verify fixes
-4. Repeat for 🟡 Should Fix (max 2 more iterations)
-5. Stop when only 🟢 Can Skip remain
+审查 → 识别问题 → 修复 → 重新审查 → 重复直至变更最小化
+
+保障措施：
+- 最多 3 次迭代，防止无限循环
+- 每次迭代前运行 tsc/lint 检查
+- 跳过对受保护文件的自动修复（package.json、迁移文件等）
 ```
 
-### Conditional Context Loading
+**示例提示词**：
+```
+启用自动修复审查此 PR：
+1. 使用上述 3 个智能体进行审查
+2. 修复所有 🔴 必须修复的问题
+3. 重新审查以验证修复效果
+4. 对 🟡 应该修复的问题重复（最多再 2 次迭代）
+5. 仅剩 🟢 可跳过项时停止
+```
 
-Load additional context based on diff content (stack-agnostic):
+### 条件式上下文加载
 
-| If diff contains... | Then check... |
-|---------------------|---------------|
-| Database queries | Indexes, N+1 patterns, query optimization |
-| API endpoints | Auth middleware, input validation, rate limiting |
-| Authentication logic | Password hashing, session management, CSRF tokens |
-| File uploads | Size limits, MIME validation, storage security |
-| Date/time operations | Timezone handling, DST edge cases |
-| External API calls | Timeout configs, retry logic, error handling |
-| Environment variables | Presence in .env.example, validation at startup |
+根据差异内容加载额外上下文（与技术栈无关）：
 
-### Integration with Existing Tools
+| 如果差异包含… | 则检查… |
+|---------------|---------|
+| 数据库查询 | 索引、N+1 模式、查询优化 |
+| API 端点 | 认证中间件、输入验证、限流 |
+| 认证逻辑 | 密码哈希、会话管理、CSRF 令牌 |
+| 文件上传 | 大小限制、MIME 验证、存储安全 |
+| 日期/时间操作 | 时区处理、夏令时边界情况 |
+| 外部 API 调用 | 超时配置、重试逻辑、错误处理 |
+| 环境变量 | 在 .env.example 中的存在、启动时验证 |
 
-**SE-CoVe Plugin**: Use for general fact-checking of review claims (complementary to anti-hallucination rules above)
+### 与现有工具集成
 
-**Worktrunk**: For codebase-wide pattern analysis before suggesting changes
+**SE-CoVe 插件**：用于审查声明的通用事实核查（对上述防幻觉规则的补充）
 
-**AST-grep**: For structural pattern matching (e.g., find all similar try/catch blocks)
+**Worktrunk**：在建议变更前进行全代码库模式分析
+
+**AST-grep**：用于结构化模式匹配（例如查找所有类似的 try/catch 块）
 
 ---
 
-## Sources
+## 来源
 
-- Base template: Claude Code Ultimate Guide
-- Multi-agent review: [Pat Cullen](https://gist.github.com/patyearone/c9a091b97e756f5ed361f7514d88ef0b) (Jan 2026)
-- Anti-hallucination patterns: [Méthode Aristote](https://github.com/claude-code-ultimate-guide) code review system
+- 基础模板：Claude Code Ultimate Guide
+- 多智能体审查：[Pat Cullen](https://gist.github.com/patyearone/c9a091b97e756f5ed361f7514d88ef0b)（2026年1月）
+- 防幻觉模式：[Méthode Aristote](https://github.com/claude-code-ultimate-guide) 代码审查系统
 
 $ARGUMENTS

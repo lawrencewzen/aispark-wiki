@@ -1,113 +1,113 @@
 > 📚 **AI Spark Wiki** · Claude Code 知识库
 
-# Sentry MCP Server Reference
+# Sentry MCP Server 参考文档
 
-Reference file for the Sentry MCP server. Read this before making any Sentry MCP calls. It contains the query syntax, known gotchas, and working examples that reduce call failures.
+Sentry MCP server 的参考文件。在进行任何 Sentry MCP 调用之前请先阅读本文档。其中包含查询语法、已知注意事项以及可减少调用失败率的可用示例。
 
-> This is a template reference file. Replace the Sentry-specific content with the equivalent for your MCP server.
+> 这是一个模板参考文件。请将 Sentry 相关内容替换为你自己 MCP server 的对应内容。
 
 ---
 
-## Available Tools
+## 可用工具
 
 ### `mcp__sentry-mcp__list_issues`
 
-**Purpose**: Fetch a list of issues from one or more projects.
+**用途**：从一个或多个项目中获取问题列表。
 
-**Key parameters**:
-- `organization_slug` (required): Your Sentry org slug, not the org name. Get it from the Sentry URL: `sentry.io/organizations/<slug>/`.
-- `project_slug` (optional): Scope to one project. Omit to fetch across all projects.
-- `query` (optional): Sentry search query. Supports `is:unresolved`, `level:error`, `has:user`. Default: `is:unresolved`.
-- `limit` (optional): Max issues returned. Default: 25. Max: 100.
+**关键参数**：
+- `organization_slug`（必填）：你的 Sentry 组织 slug，不是组织名称。从 Sentry URL 中获取：`sentry.io/organizations/<slug>/`。
+- `project_slug`（可选）：限定到单个项目。省略则跨所有项目获取。
+- `query`（可选）：Sentry 搜索查询。支持 `is:unresolved`、`level:error`、`has:user`。默认值：`is:unresolved`。
+- `limit`（可选）：返回的最大问题数。默认值：25。最大值：100。
 
-**Gotchas**:
-- Organization and project slugs are lowercase, hyphen-separated. Do not use the display name.
-- Without `query`, you get all statuses including `resolved`. Always add `is:unresolved` unless you specifically want resolved issues.
-- The `limit` cap is 100 per call. For large orgs, use `cursor` for pagination (see below).
+**注意事项**：
+- 组织和项目 slug 为小写、连字符分隔。不要使用显示名称。
+- 不带 `query` 时，会获取包括 `resolved` 在内的所有状态。除非你明确需要已解决的问题，否则始终加上 `is:unresolved`。
+- `limit` 上限为每次调用 100 条。对于大型组织，使用 `cursor` 进行分页（见下文）。
 
 ### `mcp__sentry-mcp__get_issue`
 
-**Purpose**: Fetch full details for one issue, including the latest event and stack trace.
+**用途**：获取单个问题的完整详情，包括最新事件和堆栈追踪。
 
-**Key parameters**:
-- `issue_id` (required): The numeric Sentry issue ID. Get it from `list_issues`.
-- `organization_slug` (required): Same as above.
+**关键参数**：
+- `issue_id`（必填）：Sentry 问题的数字 ID。从 `list_issues` 中获取。
+- `organization_slug`（必填）：同上。
 
-**Gotchas**:
-- Returns the most recent event only. If you need a specific event, use `get_event` with the event ID instead.
-- Stack frames are ordered outermost to innermost by default. The bottom frame is typically the crash point.
+**注意事项**：
+- 仅返回最近一次事件。如需获取特定事件，请改用 `get_event` 并传入事件 ID。
+- 堆栈帧默认从最外层到最内层排序。最底部的帧通常是崩溃点。
 
 ### `mcp__sentry-mcp__get_event`
 
-**Purpose**: Fetch full details for a specific event within an issue.
+**用途**：获取问题内特定事件的完整详情。
 
-**Key parameters**:
-- `event_id` (required): Full 32-character event ID (UUID format, no dashes).
-- `organization_slug` (required): Same as above.
-- `issue_id` (required): The parent issue ID.
+**关键参数**：
+- `event_id`（必填）：完整的 32 字符事件 ID（UUID 格式，不带连字符）。
+- `organization_slug`（必填）：同上。
+- `issue_id`（必填）：所属问题的 ID。
 
-**Gotchas**:
-- Event IDs are case-insensitive but the API is case-sensitive. Use lowercase.
-- Events older than 90 days may not be available in the default retention plan.
+**注意事项**：
+- 事件 ID 大小写不敏感，但 API 区分大小写。请使用小写。
+- 在默认保留方案下，超过 90 天的事件可能不可用。
 
 ### `mcp__sentry-mcp__search_events`
 
-**Purpose**: Search raw events across issues. Slower than `list_issues` but supports full-text queries.
+**用途**：跨问题搜索原始事件。比 `list_issues` 慢，但支持全文查询。
 
-**Key parameters**:
-- `query` (required): Full-text search. Supports field filters: `message:`, `level:`, `user.id:`, `url:`, `transaction:`.
-- `project_slug` (optional): Scope to one project. Required if org has many projects (performance).
-- `start` / `end` (optional): ISO 8601 timestamps. Default: last 24 hours.
-- `limit` (optional): Default: 10. Max: 100.
+**关键参数**：
+- `query`（必填）：全文搜索。支持字段过滤器：`message:`、`level:`、`user.id:`、`url:`、`transaction:`。
+- `project_slug`（可选）：限定到单个项目。对于项目众多的组织（性能原因），此参数必填。
+- `start` / `end`（可选）：ISO 8601 时间戳。默认：最近 24 小时。
+- `limit`（可选）：默认值：10。最大值：100。
 
-**Gotchas**:
-- Full-text search is case-insensitive but field filters are exact-match. `level:ERROR` fails; use `level:error`.
-- Time ranges must use ISO 8601: `2026-04-10T00:00:00Z`. Relative formats like `now-24h` are not supported here (use `list_issues` for relative ranges).
-- Without `project_slug`, large orgs time out on `search_events`. Always scope by project when searching events.
+**注意事项**：
+- 全文搜索大小写不敏感，但字段过滤器为精确匹配。`level:ERROR` 会失败，请使用 `level:error`。
+- 时间范围必须使用 ISO 8601 格式：`2026-04-10T00:00:00Z`。此处不支持 `now-24h` 等相对格式（相对范围请使用 `list_issues`）。
+- 不带 `project_slug` 时，大型组织的 `search_events` 会超时。搜索事件时请始终按项目限定范围。
 
 ---
 
-## Query Syntax
+## 查询语法
 
-### Sentry Search Query (for `query` parameter in `list_issues` and `search_events`)
+### Sentry 搜索查询（用于 `list_issues` 和 `search_events` 的 `query` 参数）
 
 ```
-is:unresolved                          # Unresolved issues only
-is:unresolved level:error              # Unresolved errors (not warnings)
-is:unresolved has:user                 # Issues affecting identified users
-is:unresolved times_seen:>100          # High-frequency issues
-project:api-service is:unresolved      # Scope to one project
-assigned:me is:unresolved              # Issues assigned to current user
-!has:assignee is:unresolved            # Unassigned issues
+is:unresolved                          # 仅未解决的问题
+is:unresolved level:error              # 未解决的错误（不含警告）
+is:unresolved has:user                 # 影响已识别用户的问题
+is:unresolved times_seen:>100          # 高频问题
+project:api-service is:unresolved      # 限定到单个项目
+assigned:me is:unresolved              # 分配给当前用户的问题
+!has:assignee is:unresolved            # 未分配的问题
 ```
 
-### Pagination
+### 分页
 
-For orgs with many issues, use cursor-based pagination:
-1. First call: `list_issues(..., limit=100)` - response includes `cursor` field
-2. Next page: `list_issues(..., limit=100, cursor="<cursor from previous response>")`
-3. Stop when response has no `cursor` field or issue count < limit
-
----
-
-## Known Patterns and Exclusions
-
-When analyzing issues, these patterns are typically noise and should be excluded from reports unless explicitly requested:
-
-| Pattern | Reason to Exclude |
-|---------|-------------------|
-| `404` errors on `/static/` or `/assets/` | Expected behavior: browser requests stale asset URLs after deploy |
-| `ChunkLoadError` in frontend bundles | Usually caused by the same deploy timing, not a code bug |
-| `ResizeObserver loop limit exceeded` | Browser-level warning, not actionable |
-| Health check endpoint errors | Monitoring infrastructure, not user-facing |
-
-If you exclude an issue, state it explicitly in the report's "Out of Scope" section.
+对于问题较多的组织，使用基于游标的分页：
+1. 第一次调用：`list_issues(..., limit=100)` — 响应中包含 `cursor` 字段
+2. 下一页：`list_issues(..., limit=100, cursor="<上次响应的 cursor>")`
+3. 当响应中没有 `cursor` 字段或问题数量小于 limit 时停止
 
 ---
 
-## Working Examples
+## 已知模式与排除项
 
-### Fetch top unresolved errors in production
+分析问题时，以下模式通常属于噪音，除非明确要求，否则应从报告中排除：
+
+| 模式 | 排除原因 |
+|------|---------|
+| `/static/` 或 `/assets/` 上的 `404` 错误 | 预期行为：部署后浏览器请求了旧的静态资源 URL |
+| 前端包中的 `ChunkLoadError` | 通常由相同的部署时序问题引起，而非代码 bug |
+| `ResizeObserver loop limit exceeded` | 浏览器级别警告，无法采取行动 |
+| 健康检查接口错误 | 监控基础设施，非用户可见问题 |
+
+如果你排除了某个问题，请在报告的"范围外"章节中明确说明。
+
+---
+
+## 可用示例
+
+### 获取生产环境中排名靠前的未解决错误
 
 ```
 list_issues(
@@ -117,7 +117,7 @@ list_issues(
 )
 ```
 
-### Fetch issues from a specific project in the last week
+### 获取特定项目过去一周的问题
 
 ```
 list_issues(
@@ -128,7 +128,7 @@ list_issues(
 )
 ```
 
-### Get full stack trace for a specific issue
+### 获取特定问题的完整堆栈追踪
 
 ```
 get_issue(
@@ -139,15 +139,15 @@ get_issue(
 
 ---
 
-## Adapting This File
+## 适配本文档
 
-When forking this template for a different MCP (Datadog, PagerDuty, Linear, etc.):
+将此模板 fork 用于其他 MCP（Datadog、PagerDuty、Linear 等）时：
 
-1. Replace "Sentry" with your MCP server name throughout
-2. Replace the tool names (`mcp__sentry-mcp__*`) with your MCP's actual tool names
-3. Document the 2-3 most common parameter mistakes for each tool
-4. Add query syntax specific to your MCP (SQL dialect, filter syntax, etc.)
-5. Add a "Known Patterns and Exclusions" section for noise in your data source
-6. Include 3-5 working examples that cover the 80% use case
+1. 将文件中所有"Sentry"替换为你的 MCP server 名称
+2. 将工具名称（`mcp__sentry-mcp__*`）替换为你的 MCP 的实际工具名称
+3. 为每个工具记录 2-3 个最常见的参数错误
+4. 添加你的 MCP 专用查询语法（SQL 方言、过滤器语法等）
+5. 添加"已知模式与排除项"章节，列出你数据源中的噪音模式
+6. 包含 3-5 个覆盖 80% 使用场景的可用示例
 
-The goal: after reading this file, Claude should make zero syntax errors and zero retry calls caused by wrong parameter format.
+目标：读完本文档后，Claude 应该能做到零语法错误、零因参数格式错误导致的重试调用。

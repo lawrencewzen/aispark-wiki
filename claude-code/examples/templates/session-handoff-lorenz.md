@@ -1,170 +1,170 @@
 > 📚 **AI Spark Wiki** · Claude Code 知识库
 
 ---
-title: "Session Handoff Template"
-description: "Structured context handoff template triggered at 85% context usage to preserve intent"
+title: "会话交接模板"
+description: "结构化上下文交接模板，在上下文使用达到 85% 时触发，以保留意图"
 tags: [template, memory, workflows]
 ---
 
-# Session Handoff Template
+# 会话交接模板
 
-**Inspired by**: [Robin Lorenz's Context Engineering approach](https://www.linkedin.com/posts/robin-lorenz-54055412a_claudecode-contextengineering-aiengineering-activity-7425136701515251713) (Feb 2026)
+**灵感来源**：[Robin Lorenz 的上下文工程方法](https://www.linkedin.com/posts/robin-lorenz-54055412a_claudecode-contextengineering-aiengineering-activity-7425136701515251713)（2026年2月）
 
-**Purpose**: Structured handoff to preserve intent when approaching context limits. Triggers at **85% context usage** to prevent auto-compact quality degradation.
-
----
-
-## Session Metadata
-
-**Date**: YYYY-MM-DD
-**Project**: [Project Name]
-**Context Trigger**: X% (recommended: 85%)
-**Session ID**: [Optional - for reference]
+**目的**：在上下文即将耗尽时进行结构化交接，保留意图。在**上下文使用达到 85%** 时触发，以防止自动压缩导致质量下降。
 
 ---
 
-## ✅ Completed Work
+## 会话元数据
 
-List all work finished in this session with commit references:
+**日期**：YYYY-MM-DD
+**项目**：[项目名称]
+**触发条件**：X%（建议：85%）
+**会话 ID**：[可选——用于参考]
 
-- **[Task 1]**: Description of what was accomplished
-  - Commit: `abc123`
-  - Files: `src/feature.ts`, `tests/feature.test.ts`
+---
 
-- **[Task 2]**: Another completed item
-  - Commit: `def456`
-  - Files: `config/settings.json`
+## 已完成工作
 
-**Git status check**:
+列出本次会话中已完成的所有工作，附提交引用：
+
+- **[任务 1]**：已完成内容的描述
+  - 提交：`abc123`
+  - 文件：`src/feature.ts`, `tests/feature.test.ts`
+
+- **[任务 2]**：另一个已完成的事项
+  - 提交：`def456`
+  - 文件：`config/settings.json`
+
+**Git 状态检查**：
 ```bash
-# Run before handoff to capture state
+# 交接前运行以记录当前状态
 git status
 git log -5 --oneline
 ```
 
 ---
 
-## 🔄 Pending Tasks
+## 待处理任务
 
-Tasks started but not completed, with percentage and blockers:
+已开始但未完成的任务，附进度百分比和阻塞原因：
 
-- **[Task 3]**: Brief description
-  - **Progress**: 80% complete
-  - **Blocker**: Waiting for API key / Need to clarify requirements
-  - **Next action**: [Specific next step]
-  - **Files touched**: `src/pending-feature.ts`
+- **[任务 3]**：简要描述
+  - **进度**：80% 完成
+  - **阻塞原因**：等待 API 密钥 / 需要澄清需求
+  - **下一步**：[具体的下一个步骤]
+  - **涉及文件**：`src/pending-feature.ts`
 
-- **[Task 4]**: Another pending item
-  - **Progress**: Research phase (20%)
-  - **Blocker**: Need architectural decision on X
-  - **Next action**: Review options A vs B
-
----
-
-## 🚧 Blockers & Issues
-
-Critical blockers that need resolution before proceeding:
-
-1. **[Blocker 1]**: Detailed description of what's blocking progress
-   - **Impact**: What this blocks
-   - **Workaround**: Temporary solution if any
-   - **Resolution path**: How to unblock
-
-2. **[Issue 1]**: Technical debt or bug discovered
-   - **Severity**: High/Medium/Low
-   - **Workaround**: Current mitigation
+- **[任务 4]**：另一个待处理事项
+  - **进度**：研究阶段（20%）
+  - **阻塞原因**：需要就 X 做出架构决策
+  - **下一步**：评估方案 A 与方案 B
 
 ---
 
-## ➡️ Next Steps
+## 阻塞与问题
 
-Prioritized action items for the next session:
+继续推进前需要解决的关键阻塞：
 
-1. **[High Priority]**: First action to take when resuming
-2. **[High Priority]**: Second critical action
-3. **[Medium]**: Follow-up task after priorities
-4. **[Low]**: Nice-to-have or exploratory task
+1. **[阻塞 1]**：阻塞进展的详细描述
+   - **影响**：阻塞了哪些内容
+   - **临时方案**：如有临时解决办法
+   - **解除路径**：如何解除阻塞
 
-**Immediate start**: When resuming, begin with [specific file/task].
-
----
-
-## 📌 Essential Context
-
-Critical information that MUST be preserved (decisions, patterns, constraints):
-
-### Architectural Decisions
-- **Decision 1**: We chose approach X over Y because [rationale]
-- **Pattern established**: All new features must follow [pattern]
-
-### Technical Constraints
-- **Constraint 1**: Can't use library X due to [reason]
-- **Constraint 2**: Must maintain compatibility with [system]
-
-### Domain Knowledge
-- **Business rule**: Important rule discovered during implementation
-- **Edge case**: [Unusual scenario] requires [special handling]
-
-### Dependencies
-- **External**: Waiting on [team/service] for [dependency]
-- **Internal**: Feature X depends on completion of Y
+2. **[问题 1]**：发现的技术债务或 bug
+   - **严重程度**：高/中/低
+   - **临时方案**：当前的缓解措施
 
 ---
 
-## 🔄 Resume Instructions
+## 后续步骤
 
-**For next session**:
+下次会话的优先行动事项：
+
+1. **[高优先级]**：恢复时首先采取的行动
+2. **[高优先级]**：第二个关键行动
+3. **[中优先级]**：优先事项完成后的跟进任务
+4. **[低优先级]**：可选或探索性任务
+
+**立即开始**：恢复时，从 [具体文件/任务] 开始。
+
+---
+
+## 关键上下文
+
+必须保留的关键信息（决策、模式、约束）：
+
+### 架构决策
+- **决策 1**：我们选择方案 X 而非 Y，原因是 [理由]
+- **已建立的模式**：所有新功能必须遵循 [模式]
+
+### 技术约束
+- **约束 1**：由于 [原因] 不能使用库 X
+- **约束 2**：必须保持与 [系统] 的兼容性
+
+### 领域知识
+- **业务规则**：实现过程中发现的重要规则
+- **边界情况**：[特殊场景] 需要 [特殊处理]
+
+### 依赖关系
+- **外部**：等待 [团队/服务] 提供 [依赖项]
+- **内部**：功能 X 依赖于功能 Y 的完成
+
+---
+
+## 恢复说明
+
+**下次会话**：
 
 ```bash
-# Load this handoff into new session
+# 将此交接文档加载到新会话
 cat claudedocs/handoffs/handoff-YYYY-MM-DD.md | claude -p
 
-# Or reference manually
+# 或手动引用
 claude
-# Then: "Continue from handoff document in claudedocs/handoffs/handoff-YYYY-MM-DD.md"
+# 然后："Continue from handoff document in claudedocs/handoffs/handoff-YYYY-MM-DD.md"
 ```
 
-**Context check**:
+**上下文检查**：
 ```bash
-# After resuming, verify context state
+# 恢复后，验证上下文状态
 /status
 ```
 
-**If context still high (>70%)**: Consider breaking into smaller focused sessions.
+**如果上下文仍然很高（>70%）**：考虑将其拆分为更小的专注会话。
 
 ---
 
-## 📊 Session Stats (Optional)
+## 会话统计（可选）
 
-- **Turns**: ~X (approaching degradation threshold at 15-25 turns)
-- **Context usage**: X% (triggered handoff at 85%)
-- **Duration**: X hours
-- **Commits**: X commits pushed
-
----
-
-## 💡 Why This Template?
-
-**Research-backed rationale**:
-
-- **Auto-compact degrades quality**: LLM performance drops 50-70% on complex tasks at high context ([Context Rot Research](https://research.trychroma.com/context-rot))
-- **Manual handoff preserves intent**: Structured documentation captures "what matters" vs "degraded version of everything"
-- **85% threshold prevents auto-compact**: Auto-compact triggers at ~75% (VS Code) or ~95% (CLI), so 85% provides safety margin
-- **Logical breakpoint > automatic compression**: Community consensus favors manual `/compact` at breakpoints
-
-**Key principle**: "A handoff gives you a clean version of what matters" — Robin Lorenz
+- **轮次**：约 X 次（在 15-25 轮时接近性能下降阈值）
+- **上下文使用**：X%（在 85% 时触发交接）
+- **时长**：X 小时
+- **提交数**：已推送 X 次提交
 
 ---
 
-## 📚 Related Resources
+## 为什么使用此模板？
 
-- [Session Handoffs (Ultimate Guide)](../../guide/ultimate-guide.md#session-handoffs)
-- [Auto-Compaction Research (Architecture)](../../guide/core/architecture.md#auto-compaction)
-- [Fresh Context Pattern (Ultimate Guide)](../../guide/ultimate-guide.md#fresh-context-pattern)
-- [Lorenz's Original Post](https://www.linkedin.com/posts/robin-lorenz-54055412a_claudecode-contextengineering-aiengineering-activity-7425136701515251713)
+**有研究支撑的理由**：
+
+- **自动压缩会降低质量**：在高上下文时，LLM 在复杂任务上的表现下降 50-70%（[上下文腐化研究](https://research.trychroma.com/context-rot)）
+- **手动交接保留意图**：结构化文档能捕获"重要内容"，而非"一切内容的降级版本"
+- **85% 阈值防止自动压缩**：自动压缩在约 75%（VS Code）或约 95%（CLI）时触发，因此 85% 提供了安全余量
+- **逻辑断点优于自动压缩**：社区共识支持在断点处手动执行 `/compact`
+
+**核心原则**："交接给你一个干净的、只包含重要内容的版本。" — Robin Lorenz
 
 ---
 
-**Template Version**: 1.0
-**Last Updated**: 2026-02-08
-**Maintenance**: Update as research evolves
+## 相关资源
+
+- [会话交接（终极指南）](../../guide/ultimate-guide.md#session-handoffs)
+- [自动压缩研究（架构）](../../guide/core/architecture.md#auto-compaction)
+- [新鲜上下文模式（终极指南）](../../guide/ultimate-guide.md#fresh-context-pattern)
+- [Lorenz 的原始帖子](https://www.linkedin.com/posts/robin-lorenz-54055412a_claudecode-contextengineering-aiengineering-activity-7425136701515251713)
+
+---
+
+**模板版本**：1.0
+**最后更新**：2026-02-08
+**维护**：随研究进展更新

@@ -1,13 +1,13 @@
 > 📚 **AI Spark Wiki** · Claude Code 知识库
 
-# Template: Peer Feedback Draft
+# 模板：同伴反馈初稿
 
-Usage: Send to 1-2 trusted peers BEFORE submitting the CFP or finalizing the script.
-Adapt with the actual talk information before sending.
+使用说明：在提交 CFP 或定稿讲稿**之前**，发送给 1-2 位可信的同伴征集意见。
+发送前请替换为演讲的实际信息。
 
 ---
 
-## Version 1: DM / short message (Slack, LinkedIn)
+## 版本 1：私信 / 短消息（Slack、LinkedIn）
 
 ```
 Hi {firstname},
@@ -28,7 +28,7 @@ Thanks
 
 ---
 
-## Version 2: Email (for less accessible peers)
+## 版本 2：邮件（适用于不常用即时通讯的同伴）
 
 ```
 Subject: Feedback on talk "{title}" — {event}
@@ -57,7 +57,7 @@ Thanks,
 
 ---
 
-## Version 3: Public validation (LinkedIn post or tweet)
+## 版本 3：公开验证（LinkedIn 帖子或推文）
 
 ```
 I'm preparing a talk for {event}.
@@ -73,19 +73,19 @@ Simple question: would this topic resonate with you if you were in the room?
 
 ---
 
-## Pre-send Checklist
+## 发送前检查清单
 
-- [ ] The title is concrete (no jargon or abstraction)
-- [ ] The promise is clear in 1 sentence
-- [ ] Key metrics are mentioned (if REX)
-- [ ] Target audience is specified
-- [ ] The ask is specific (not "give me general feedback")
-- [ ] Tone is direct, not apologetic ("it might perhaps be worth...")
+- [ ] 标题具体（无术语或抽象表达）
+- [ ] 承诺用 1 句话说清楚
+- [ ] 已提及关键数据（如为经验分享）
+- [ ] 已明确目标受众
+- [ ] 请求具体（而非"给我一些整体反馈"）
+- [ ] 语气直接，不带歉意（避免"也许有时候可能值得……"）
 
-## What to look for in the feedback
+## 从反馈中关注什么
 
-1. **First reaction**: want to attend or not?
-2. **Title**: clear? catchy? too technical?
-3. **Angle**: original or already seen 10 times?
-4. **Audience fit**: does it match the {audience} profile?
-5. **Gaps**: something important that's missing?
+1. **第一反应**：想去听还是不想？
+2. **标题**：清晰吗？有吸引力吗？太技术化吗？
+3. **切入角度**：有新意还是已被讲过 10 次了？
+4. **受众契合度**：是否符合 {audience} 的画像？
+5. **遗漏点**：有什么重要内容没提到？

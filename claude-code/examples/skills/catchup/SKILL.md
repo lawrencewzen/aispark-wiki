@@ -8,125 +8,125 @@ effort: low
 disable-model-invocation: true
 ---
 
-# Context Catchup
+# 上下文恢复（Context Catchup）
 
-Restore context after `/clear` - summarize recent work and project state.
+在执行 `/clear` 后恢复上下文——汇总近期工作内容与项目状态。
 
-## Purpose
+## 用途
 
-After clearing context with `/clear`, use this command to quickly rebuild understanding of:
-- What was recently modified
-- Current project state
-- Outstanding TODOs and issues
-- Where to resume work
+使用 `/clear` 清除上下文后，用此命令快速重建以下内容的理解：
+- 最近修改了哪些内容
+- 当前项目状态
+- 待处理的 TODO 和问题
+- 从哪里继续工作
 
-## Instructions
+## 操作说明
 
-### Step 1: Git History Analysis
+### 步骤 1：Git 历史分析
 
 ```bash
-# Recent commits (last 10)
+# 最近提交（最近 10 条）
 git log --oneline -10
 
-# Files modified in last 5 commits
+# 最近 5 次提交涉及的文件
 git diff --stat HEAD~5 2>/dev/null || git diff --stat $(git rev-list --max-parents=0 HEAD)
 
-# Current branch and status
+# 当前分支与状态
 git branch --show-current
 git status --short
 ```
 
-### Step 2: Recent Changes Summary
+### 步骤 2：近期变更汇总
 
 ```bash
-# What changed today
+# 今天的变更
 git log --oneline --since="midnight" --author="$(git config user.name)" 2>/dev/null
 
-# Uncommitted work
+# 未提交的工作
 git diff --name-only
 git diff --cached --name-only
 ```
 
-### Step 3: TODO/FIXME Scan
+### 步骤 3：TODO/FIXME 扫描
 
 ```bash
-# Find outstanding work markers in recently modified files
+# 在最近修改的文件中查找未完成标记
 git diff --name-only HEAD~5 2>/dev/null | head -20 | xargs grep -n "TODO\|FIXME\|XXX\|HACK" 2>/dev/null | head -30
 ```
 
-### Step 4: Project State Check
+### 步骤 4：项目状态检查
 
 ```bash
-# Check for common state indicators
+# 检查常见状态标志
 [ -f "package.json" ] && echo "📦 Node project: $(jq -r '.name // "unnamed"' package.json)"
 [ -f "Cargo.toml" ] && echo "🦀 Rust project: $(grep '^name' Cargo.toml | head -1)"
 [ -f "pyproject.toml" ] && echo "🐍 Python project"
 [ -f "go.mod" ] && echo "🐹 Go project: $(head -1 go.mod | cut -d' ' -f2)"
 
-# Active branch purpose (from branch name)
+# 当前分支用途（从分支名推断）
 BRANCH=$(git branch --show-current)
 echo "🌿 Branch: $BRANCH"
 ```
 
-## Output Format
+## 输出格式
 
-Provide a structured summary:
+输出结构化汇总：
 
 ---
 
-### 📍 Context Restored
+### 📍 上下文已恢复
 
-**Project**: [name from package.json/Cargo.toml/etc]
-**Branch**: [current branch]
-**Last Activity**: [time of last commit]
+**项目**：[来自 package.json/Cargo.toml 等的名称]
+**分支**：[当前分支]
+**最近活动**：[最后提交时间]
 
-### 🔄 Recent Work (Last 5 Commits)
+### 🔄 近期工作（最近 5 次提交）
 
-1. [commit message 1] - [files affected]
-2. [commit message 2] - [files affected]
+1. [提交信息 1] - [涉及文件]
+2. [提交信息 2] - [涉及文件]
 ...
 
-### 📝 Uncommitted Changes
+### 📝 未提交的变更
 
-- [list of modified files with brief description of changes]
+- [已修改文件列表及变更简述]
 
-### ⚠️ Outstanding TODOs
+### ⚠️ 待处理 TODO
 
-- [file:line] TODO: [description]
-- [file:line] FIXME: [description]
+- [文件:行号] TODO: [描述]
+- [文件:行号] FIXME: [描述]
 
-### 🎯 Suggested Next Steps
+### 🎯 建议的后续步骤
 
-Based on recent activity:
-1. [Most likely next action based on patterns]
-2. [Alternative focus area]
+基于近期活动：
+1. [根据规律判断的最可能下一步]
+2. [备选关注点]
 
 ---
 
-## Usage Examples
+## 使用示例
 
-**After a long break:**
+**长时间中断后恢复：**
 ```
 /catchup
 ```
-→ Full context restoration
+→ 完整上下文恢复
 
-**Quick status check:**
+**快速状态检查：**
 ```
 /catchup --brief
 ```
-→ Just commits and uncommitted changes
+→ 仅查看提交记录和未提交变更
 
-**Focus on specific area:**
+**聚焦特定领域：**
 ```
 /catchup auth
 ```
-→ Filter to auth-related changes
+→ 仅过滤与 auth 相关的变更
 
-## Pro Tips
+## 进阶技巧
 
-1. **Document before `/clear`**: Write a brief note in a commit message or CLAUDE.md before clearing context
-2. **Use with Memory Bank**: Combine with `.claude/memory/` files for persistent state
-3. **Branch naming**: Use descriptive branch names (e.g., `feat/user-auth`) to aid context restoration
+1. **清除前先记录**：在提交信息或 CLAUDE.md 中写一条简要备注，再执行 `/clear`
+2. **配合记忆库使用**：结合 `.claude/memory/` 文件实现持久化状态管理
+3. **善用分支命名**：使用描述性分支名（如 `feat/user-auth`）有助于上下文恢复
 
 $ARGUMENTS

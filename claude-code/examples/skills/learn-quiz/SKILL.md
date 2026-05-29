@@ -2,152 +2,152 @@
 
 ---
 name: learn-quiz
-description: Test understanding of recently written or accepted code
+description: 测试对最近编写或接受的代码的理解程度
 argument-hint: "[topic] [--hard]"
 effort: low
 ---
 
-# Quiz Me
+# 测验我
 
-Test understanding of recently written or accepted code.
+测试对最近编写或接受的代码的理解程度。
 
-## Usage
-
-```
-/learn:quiz                     # Quiz on last code worked with
-/learn:quiz error handling      # Focus on specific aspect
-/learn:quiz --hard              # More challenging questions
-```
-
-## Instructions
-
-1. Identify the last code I worked with (wrote, edited, or accepted from AI)
-2. Generate 3-5 questions that test understanding at different levels:
-   - **Recall**: What does this code do?
-   - **Understanding**: Why was this approach chosen?
-   - **Application**: What would happen if X changed?
-   - **Analysis**: What are the trade-offs of this approach?
-   - **Synthesis**: How would you extend this?
-3. Present questions one at a time
-4. Wait for my answer before revealing the correct response
-5. Provide explanations with each answer, not just "correct/incorrect"
-
-## Question Types
-
-### Level 1: Recall
-- "What does the function X return?"
-- "What parameters does Y accept?"
-- "What happens when Z is called?"
-
-### Level 2: Understanding
-- "Why do we use X instead of Y here?"
-- "What problem does this pattern solve?"
-- "Why is this line necessary?"
-
-### Level 3: Application
-- "What would happen if we removed line X?"
-- "How would you add feature Y to this code?"
-- "What would break if input Z was provided?"
-
-### Level 4: Analysis
-- "What are the performance implications of this approach?"
-- "What edge cases might cause issues?"
-- "How does this compare to alternative X?"
-
-### Level 5: Synthesis
-- "How would you refactor this for better testability?"
-- "What would need to change to support X?"
-- "Design an extension that adds Y"
-
-## Focus Areas
-
-When focus is specified (e.g., `/learn:quiz error handling`), prioritize questions about:
-
-| Focus | Question Themes |
-|-------|-----------------|
-| `error handling` | Try/catch, error types, recovery strategies |
-| `performance` | Big-O, optimization, bottlenecks |
-| `security` | Input validation, XSS, injection |
-| `testing` | Test cases, edge cases, mocking |
-| `architecture` | Patterns, separation of concerns, SOLID |
-| `types` | TypeScript types, inference, generics |
-
-## Difficulty Modes
-
-### Default
-- 3 questions
-- Mix of Level 1-3
-- Focus on understanding current code
-
-### `--hard`
-- 5 questions
-- Levels 3-5
-- Include hypothetical modifications
-- Ask about trade-offs and alternatives
-
-## Response Format
-
-For each question:
+## 用法
 
 ```
-## Question 1 of 3
+/learn:quiz                     # 针对最近操作的代码进行测验
+/learn:quiz error handling      # 聚焦特定方面
+/learn:quiz --hard              # 更具挑战性的问题
+```
 
-[Question text]
+## 指令
 
-What's your answer?
+1. 识别我最近操作的代码（编写、编辑或接受 AI 建议的代码）
+2. 生成 3-5 个在不同层次测试理解程度的问题：
+   - **记忆**：这段代码做什么？
+   - **理解**：为什么选择这种方法？
+   - **应用**：如果 X 改变了会发生什么？
+   - **分析**：这种方法的权衡是什么？
+   - **综合**：你如何扩展这个功能？
+3. 每次提出一个问题
+4. 等待我回答后再揭示正确答案
+5. 每个答案都要提供解释，不只说"正确/不正确"
+
+## 问题类型
+
+### 第 1 级：记忆
+- "函数 X 返回什么？"
+- "Y 接受哪些参数？"
+- "调用 Z 时会发生什么？"
+
+### 第 2 级：理解
+- "为什么这里用 X 而不是 Y？"
+- "这个模式解决了什么问题？"
+- "为什么这一行是必要的？"
+
+### 第 3 级：应用
+- "如果删除第 X 行会发生什么？"
+- "你如何在这段代码中添加功能 Y？"
+- "如果提供了输入 Z，什么会出错？"
+
+### 第 4 级：分析
+- "这种方法的性能影响是什么？"
+- "哪些边界情况可能导致问题？"
+- "与替代方案 X 相比如何？"
+
+### 第 5 级：综合
+- "你如何重构这段代码以提高可测试性？"
+- "要支持 X 需要做什么改变？"
+- "设计一个添加 Y 的扩展"
+
+## 聚焦领域
+
+当指定聚焦点时（如 `/learn:quiz error handling`），优先围绕以下主题提问：
+
+| 聚焦点 | 问题主题 |
+|--------|---------|
+| `error handling` | Try/catch、错误类型、恢复策略 |
+| `performance` | 大 O 复杂度、优化、性能瓶颈 |
+| `security` | 输入验证、XSS、注入攻击 |
+| `testing` | 测试用例、边界情况、模拟 |
+| `architecture` | 设计模式、关注点分离、SOLID 原则 |
+| `types` | TypeScript 类型、类型推断、泛型 |
+
+## 难度模式
+
+### 默认模式
+- 3 个问题
+- 第 1-3 级混合
+- 聚焦于理解当前代码
+
+### `--hard` 模式
+- 5 个问题
+- 第 3-5 级
+- 包含假设性修改场景
+- 询问权衡和替代方案
+
+## 回复格式
+
+每道题的格式：
+
+```
+## 第 1 题，共 3 题
+
+[问题内容]
+
+你的答案是什么？
 
 ---
-(After user responds)
+（用户回答后）
 
-### Feedback
+### 反馈
 
-[Whether correct and why]
+[是否正确及原因]
 
-**Key insight**: [The concept this tests]
+**核心洞见**：[此题考查的概念]
 
-**Related concept**: [Something to explore further]
+**相关概念**：[可进一步探索的内容]
 
-Ready for the next question?
+准备好下一题了吗？
 ```
 
-## After Quiz Complete
+## 测验结束后
 
-Summarize:
-- Score: X/Y correct
-- Strengths: [Topics understood well]
-- Review needed: [Topics to revisit]
-- Suggested practice: [Specific exercise]
+给出总结：
+- 得分：X/Y 正确
+- 优势：[掌握良好的主题]
+- 待复习：[需要重新学习的主题]
+- 练习建议：[具体练习题]
 
-## Example Session
+## 示例会话
 
 ```
 User: /learn:quiz
 
-Claude: Looking at your last code - the useEffect hook for data fetching.
+Claude: 查看你最近的代码——用于数据获取的 useEffect 钩子。
 
-## Question 1 of 3
+## 第 1 题，共 3 题
 
-In your useEffect, you have an empty dependency array [].
-What does this mean for when the effect runs?
+在你的 useEffect 中，你有一个空的依赖数组 []。
+这对 effect 的执行时机意味着什么？
 
-User: It runs only once when the component mounts
+User: 它只在组件挂载时运行一次
 
-Claude: ### Feedback
-Correct! An empty dependency array means the effect runs only on mount
-(and cleanup on unmount).
+Claude: ### 反馈
+正确！空的依赖数组意味着 effect 仅在挂载时运行
+（并在卸载时执行清理）。
 
-**Key insight**: The dependency array controls WHEN effects re-run.
+**核心洞见**：依赖数组控制 effect 何时重新运行。
 
-**Related concept**: What happens with no array vs. [someValue]?
+**相关概念**：不传数组 vs. 传 [someValue] 分别会发生什么？
 
-Ready for Question 2?
+准备好第 2 题了吗？
 ```
 
-## Tips for Users
+## 使用建议
 
-1. **Be honest** — Wrong answers are learning opportunities
-2. **Explain your reasoning** — Helps identify gaps even in correct answers
-3. **Ask follow-ups** — If feedback is unclear, dig deeper
-4. **Track weak areas** — Note topics that need more practice
+1. **诚实作答** — 答错也是学习机会
+2. **解释你的推理** — 有助于在答对的情况下也识别理解盲点
+3. **追问** — 如果反馈不清楚，深入挖掘
+4. **记录薄弱领域** — 记下需要更多练习的主题
 
 $ARGUMENTS

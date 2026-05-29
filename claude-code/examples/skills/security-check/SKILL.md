@@ -2,32 +2,32 @@
 
 ---
 name: security-check
-description: Quick configuration security check against known threats database
+description: 快速对照已知威胁数据库进行配置安全检查
 argument-hint: "[path]"
 effort: low
 disable-model-invocation: true
 ---
 
-# Security Check
+# 安全检查
 
-Quick configuration security check against known threats database. Verifies your Claude Code setup for known malicious skills, vulnerable MCPs, dangerous patterns, and exposed secrets.
+快速对照已知威胁数据库进行配置安全检查。验证你的 Claude Code 配置中是否存在已知恶意技能、有漏洞的 MCP、危险模式及暴露的密钥。
 
-**Time**: ~30 seconds | **Scope**: Claude Code configuration only
+**时间**：约30秒 | **范围**：仅限 Claude Code 配置
 
-## Instructions
+## 说明
 
-You are a security analyst. Check the user's Claude Code configuration against the threat intelligence database bundled at `examples/skills/update-threat-db/threat-db.yaml`. Produce a concise, actionable report.
+你是一名安全分析师。根据打包在 `examples/skills/update-threat-db/threat-db.yaml` 中的威胁情报数据库，检查用户的 Claude Code 配置。生成简洁、可操作的报告。
 
-### Phase 1: Load Threat Database
+### 第1阶段：加载威胁数据库
 
-Read `examples/skills/update-threat-db/threat-db.yaml` from this repository to load:
-- Known malicious authors and skills
-- CVE database for MCP servers
-- Suspicious patterns for hooks, agents, and config
+从本仓库读取 `examples/skills/update-threat-db/threat-db.yaml`，加载：
+- 已知恶意作者和技能
+- MCP 服务器的 CVE 数据库
+- 钩子、智能体和配置的可疑模式
 
-### Phase 2: MCP Server Audit
+### 第2阶段：MCP 服务器审计
 
-Read the user's MCP configuration:
+读取用户的 MCP 配置：
 
 ```bash
 # Global MCP config
@@ -37,13 +37,13 @@ cat ~/.claude.json 2>/dev/null | jq '.mcpServers // empty'
 cat .mcp.json 2>/dev/null
 ```
 
-**Check against threat-db.yaml:**
-- [ ] Any MCP server matching a CVE entry? → CRITICAL
-- [ ] Version pinning: are all MCP servers pinned to exact versions (not `@latest`)? → HIGH if unpinned
-- [ ] Any `--dangerous-*` flags in MCP args? → CRITICAL
-- [ ] Any MCP servers not on the Safe List (see `guide/security-hardening.md` §1.1)? → MEDIUM (flag for manual review)
+**对照 threat-db.yaml 检查：**
+- [ ] 是否有 MCP 服务器匹配 CVE 条目？→ CRITICAL
+- [ ] 版本锁定：所有 MCP 服务器是否锁定为精确版本（而非 `@latest`）？→ 未锁定则为 HIGH
+- [ ] MCP 参数中是否有 `--dangerous-*` 标志？→ CRITICAL
+- [ ] 是否有不在安全列表中的 MCP 服务器（见 `guide/security-hardening.md` §1.1）？→ MEDIUM（标记供人工审查）
 
-### Phase 3: Skills & Agents Audit
+### 第3阶段：技能与智能体审计
 
 ```bash
 # List installed skills
@@ -59,13 +59,13 @@ grep -r "^tools:" .claude/agents/ 2>/dev/null
 grep -r "^tools:" ~/.claude/agents/ 2>/dev/null
 ```
 
-**Check against threat-db.yaml:**
-- [ ] Any skill/agent name matching `malicious_skills` entries? → CRITICAL
-- [ ] Any skill/agent author matching `malicious_authors` entries? → CRITICAL
-- [ ] Any agent with `tools: Bash` only? → HIGH
-- [ ] Any agent with overly broad tool access + vague description? → MEDIUM
+**对照 threat-db.yaml 检查：**
+- [ ] 是否有技能/智能体名称匹配 `malicious_skills` 条目？→ CRITICAL
+- [ ] 是否有技能/智能体作者匹配 `malicious_authors` 条目？→ CRITICAL
+- [ ] 是否有仅配置 `tools: Bash` 的智能体？→ HIGH
+- [ ] 是否有工具访问权限过宽且描述模糊的智能体？→ MEDIUM
 
-### Phase 4: Hook Security
+### 第4阶段：钩子安全
 
 ```bash
 # List all hooks
@@ -81,13 +81,13 @@ grep -rn "ssh\|id_rsa\|id_ed25519\|\.env\|credentials\|secret\|password\|token\|
 grep -rn "ssh\|id_rsa\|id_ed25519\|\.env\|credentials\|secret\|password\|token\|api.key" ~/.claude/hooks/ 2>/dev/null
 ```
 
-**Check against threat-db.yaml `suspicious_patterns.hooks`:**
-- [ ] Network calls (`curl`, `wget`) → HIGH
-- [ ] Reverse shell indicators (`nc`, `/dev/tcp`) → CRITICAL
-- [ ] Credential access (`ssh`, `.env`, `password`) → CRITICAL
-- [ ] Base64 encoding → MEDIUM (review context)
+**对照 threat-db.yaml `suspicious_patterns.hooks` 检查：**
+- [ ] 网络调用（`curl`、`wget`）→ HIGH
+- [ ] 反向 shell 指示器（`nc`、`/dev/tcp`）→ CRITICAL
+- [ ] 凭证访问（`ssh`、`.env`、`password`）→ CRITICAL
+- [ ] Base64 编码 → MEDIUM（审查上下文）
 
-### Phase 5: Memory Poisoning Check
+### 第5阶段：记忆投毒检查
 
 ```bash
 # Check for suspicious instructions in memory/config files
@@ -96,10 +96,10 @@ grep -in "ignore\|forget\|override\|disregard\|you are now\|new role\|system pro
   ~/.claude/CLAUDE.md ~/.claude/MEMORY.md 2>/dev/null
 ```
 
-- [ ] Prompt injection patterns in CLAUDE.md / SOUL.md / MEMORY.md? → HIGH
-- [ ] Instructions to disable security, skip reviews, or grant broad permissions? → CRITICAL
+- [ ] CLAUDE.md / SOUL.md / MEMORY.md 中是否存在提示词注入模式？→ HIGH
+- [ ] 是否有禁用安全机制、跳过审查或授予宽泛权限的指令？→ CRITICAL
 
-### Phase 6: Permissions & Settings
+### 第6阶段：权限与设置
 
 ```bash
 # Check settings
@@ -107,11 +107,11 @@ cat .claude/settings.json 2>/dev/null
 cat ~/.claude/settings.json 2>/dev/null
 ```
 
-- [ ] `permissions.deny` exists and covers `.env*`, `*.pem`, `*.key`, secrets? → MEDIUM if missing
-- [ ] No wildcard `permissions.allow` for Bash or Write? → HIGH if present
-- [ ] No `dangerouslySkipPermissions` or similar flags? → CRITICAL if present
+- [ ] `permissions.deny` 是否存在且覆盖了 `.env*`、`*.pem`、`*.key`、密钥等？→ 缺失则为 MEDIUM
+- [ ] Bash 或 Write 的 `permissions.allow` 中是否有通配符？→ 存在则为 HIGH
+- [ ] 是否有 `dangerouslySkipPermissions` 或类似标志？→ 存在则为 CRITICAL
 
-### Phase 7: Exposed Secrets in Config
+### 第7阶段：配置中暴露的密钥
 
 ```bash
 # Check for secrets in .claude/ directory
@@ -122,10 +122,10 @@ grep -rn "sk-[a-zA-Z0-9]\{20,\}\|sk-ant-[a-zA-Z0-9]\{20,\}\|ghp_[a-zA-Z0-9]\{36\
 grep -rn "BEGIN.*PRIVATE KEY" .claude/ ~/.claude/ 2>/dev/null
 ```
 
-- [ ] API keys or tokens in config files? → CRITICAL
-- [ ] Private keys in config? → CRITICAL
+- [ ] 配置文件中是否有 API 密钥或令牌？→ CRITICAL
+- [ ] 配置中是否有私钥？→ CRITICAL
 
-## Output Format
+## 输出格式
 
 ```
 ## 🛡️ Security Check Report
@@ -165,7 +165,7 @@ grep -rn "BEGIN.*PRIVATE KEY" .claude/ ~/.claude/ 2>/dev/null
 - MCP scan: `npx mcp-scan` (Snyk)
 ```
 
-If ALL checks pass, output:
+若所有检查均通过，则输出：
 
 ```
 ## 🛡️ Security Check Report — ALL CLEAR ✅

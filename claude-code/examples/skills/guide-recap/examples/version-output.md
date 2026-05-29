@@ -1,22 +1,22 @@
 > 📚 **AI Spark Wiki** · Claude Code 知识库
 
-# Example: /guide-recap v3.20.5
+# 示例：/guide-recap v3.20.5
 
-Input: `/guide-recap v3.20.5`
+输入：`/guide-recap v3.20.5`
 
-## Scoring
+## 评分
 
-| Entry | Category | Score | Breakdown |
+| 条目 | 类别 | 分数 | 明细 |
 |-------|----------|-------|-----------|
 | 4 new ASCII diagrams (16 -> 20) | NEW_CONTENT | 14 | (3*3)+(1*2)+(0*1)+(1*1)+(2)+(0*2) = 14 |
 | README: Added Visual Reference to table | MAINTENANCE | 1 | (0*3)+(0*2)+(0*1)+(0*1)+(1)+(0*2) = 1 |
 
-Selected highlights: #1 only (1 entry above threshold).
-Hook line: "4 new ASCII diagrams (16 -> 20)"
+选中亮点：仅第 1 条（唯一超过阈值的条目）。
+钩子行："4 new ASCII diagrams (16 -> 20)"
 
-## Output
+## 输出
 
-### LinkedIn (FR)
+### LinkedIn（FR）
 
 ```text
 4 nouveaux diagrammes ASCII dans le guide Claude Code (16 -> 20 au total)
@@ -33,7 +33,7 @@ Guide complet disponible en open source : https://{DOMAIN}/
 #ClaudeCode #CodingWithAI #DeveloperTools
 ```
 
-### LinkedIn (EN)
+### LinkedIn（EN）
 
 ```text
 4 new ASCII diagrams in the Claude Code guide (16 -> 20 total)
@@ -50,7 +50,7 @@ Full guide available open source: https://{DOMAIN}/
 #ClaudeCode #CodingWithAI #DeveloperTools
 ```
 
-### Twitter/X (FR)
+### Twitter/X（FR）
 
 ```text
 4 nouveaux diagrammes ASCII dans le guide Claude Code
@@ -60,7 +60,7 @@ TDD, UVAL, securite 3 couches, timeline incidents - reference visuelle v3.20.5
 https://github.com/{OWNER}/{REPO}
 ```
 
-### Twitter/X (EN)
+### Twitter/X（EN）
 
 ```text
 4 new ASCII diagrams added to the Claude Code guide
@@ -70,7 +70,7 @@ TDD, UVAL, 3-layer security, incident timeline - visual reference v3.20.5
 https://github.com/{OWNER}/{REPO}
 ```
 
-### Newsletter (FR)
+### 邮件周报（FR）
 
 ```markdown
 # Guide v3.20.5 : Reference visuelle enrichie
@@ -97,7 +97,7 @@ Si vous apprenez mieux en visuel, les 20 diagrammes du guide couvrent maintenant
 [Guide complet](https://{DOMAIN}/) | [GitHub](https://github.com/{OWNER}/{REPO})
 ```
 
-### Newsletter (EN)
+### 邮件周报（EN）
 
 ```markdown
 # Guide v3.20.5: Enhanced Visual Reference
@@ -124,7 +124,7 @@ If you're a visual learner, the guide's 20 diagrams now cover the most common wo
 [Full guide](https://{DOMAIN}/) | [GitHub](https://github.com/{OWNER}/{REPO})
 ```
 
-### Slack (FR)
+### Slack（FR）
 
 ```text
 :newspaper: *Guide v3.20.5 - Reference visuelle*
@@ -135,7 +135,7 @@ If you're a visual learner, the guide's 20 diagrams now cover the most common wo
 :link: https://github.com/{OWNER}/{REPO}
 ```
 
-### Slack (EN)
+### Slack（EN）
 
 ```text
 :newspaper: *Guide v3.20.5 - Visual reference*

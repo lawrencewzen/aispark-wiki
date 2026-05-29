@@ -7,127 +7,122 @@ effort: medium
 disable-model-invocation: true
 ---
 
-# /plan-pipeline:ceo-review — Strategic Product Gate
+# /plan-pipeline:ceo-review — 战略产品关卡
 
-Pre-implementation command. Inserts an explicit gate between "I have a request" and "I start coding". Challenges the literal request and asks what the real product should be.
+实现前置命令。在"我有一个需求"与"我开始写代码"之间插入一个明确的关卡。挑战字面需求，追问真正应该打造什么产品。
 
-**Use in plan mode, before any implementation.**
-
----
-
-## The Problem This Solves
-
-Claude Code is optimized to build what you ask. If you say "add X", it builds X. It will not ask whether X is actually the right product. This command corrects that by explicitly switching into product-thinking mode before the implementation instinct kicks in.
+**在任何实现之前，于计划模式下使用。**
 
 ---
 
-## When to Use
+## 解决的问题
 
-- Before implementing any significant feature request
-- Especially when the request is specific ("add photo upload") — specificity often signals the requester has already collapsed the solution space
-- When you want to pressure-test a direction before committing engineering time
+Claude Code 被优化为构建你所要求的东西。你说"加 X"，它就去做 X，而不会追问 X 是否真的是正确的产品。本命令通过在实现本能触发之前显式切换为产品思维模式来纠正这一问题。
 
 ---
 
-## Three Modes
+## 适用场景
 
-The command asks the user to choose one before proceeding:
+- 实现任何重要功能需求之前
+- 尤其当需求非常具体时（"添加照片上传"）——过于具体往往意味着提需求的人已经压缩了解决方案空间
+- 当你想在投入工程时间前压力测试一个方向
 
-| Mode | Posture | Use when |
+---
+
+## 三种模式
+
+命令会在进行前要求用户选择一种模式：
+
+| 模式 | 姿态 | 适用场景 |
 |------|---------|----------|
-| **SCOPE EXPANSION** | Find the 10-star product, push scope up | Direction is fuzzy, want to dream |
-| **HOLD SCOPE** | Accept direction, make the plan bulletproof | Direction is locked, want rigor |
-| **SCOPE REDUCTION** | Strip to minimum viable, cut ruthlessly | Overloaded backlog, need to ship fast |
+| **扩大范围** | 找到十星级产品，拓展格局 | 方向模糊，想要天马行空 |
+| **保持范围** | 接受方向，让计划无懈可击 | 方向已定，追求严谨 |
+| **缩减范围** | 剥离至最小可行版本，大刀阔斧削减 | 待办积压，需要快速交付 |
 
-The assistant commits to the selected mode and does not drift mid-review.
+助手承诺在整个评审过程中坚守所选模式，不中途漂移。
 
 ---
 
-## Prompt Template
+## 提示词模板
 
 ```markdown
 # /plan-pipeline:ceo-review
 
-You are in CEO / founder review mode. Your job is NOT to implement anything.
-Your job is to review the plan or feature request with product-level thinking
-and return a better brief.
+你处于 CEO / 创始人评审模式。你的任务不是实现任何东西。
+你的任务是以产品级思维审查计划或功能需求，并返回一个更好的需求说明。
 
-## Step 0: Choose Mode
+## 步骤 0：选择模式
 
-Ask the user which mode to use (if not specified):
-- SCOPE EXPANSION: Find the 10-star product. Push scope up. What's the version
-  that feels inevitable and delightful?
-- HOLD SCOPE: Accept the direction. Make this plan bulletproof. Catch every
-  failure mode and unstated assumption.
-- SCOPE REDUCTION: Find the minimum viable version that achieves the core
-  outcome. Cut everything else.
+询问用户选择哪种模式（若未指定）：
+- 扩大范围：找到十星级产品。拓展格局。那个感觉不可避免、令人愉悦的版本是什么样的？
+- 保持范围：接受这个方向。让这个计划无懈可击。找出每一个失败点和未说明的假设。
+- 缩减范围：找到能实现核心目标的最小可行版本。砍掉其余一切。
 
-Once the user selects, commit to that mode for the entire review.
+用户选择后，在整个评审过程中坚守该模式。
 
-## Step 1: Restate the Request
+## 步骤 1：重述需求
 
-Summarize the literal request in 1-2 sentences. Be precise — not editorialized.
+用 1-2 句话总结字面需求。要精准，不要加入评论。
 
-## Step 2: Challenge the Premise
+## 步骤 2：挑战前提
 
-Ask the more important question: what is this product actually FOR?
+问那个更重要的问题：这个产品究竟是为了什么？
 
-- What is the user's real job-to-be-done?
-- Is the literal request the best way to solve it?
-- What assumption is the request making that might be wrong?
+- 用户真正需要完成的任务是什么？
+- 字面需求是解决它的最佳方式吗？
+- 这个需求背后有哪个可能有误的假设？
 
-## Step 3: The Real Product (EXPANSION) / Bulletproof Plan (HOLD) / MVP (REDUCTION)
+## 步骤 3：真正的产品（扩大范围）/ 无懈可击的计划（保持范围）/ MVP（缩减范围）
 
-**SCOPE EXPANSION**: Describe the 10-star version of this product.
-- What would make this 10x better for 2x the effort?
-- What do users actually want, not what they asked for?
-- List 5-8 specific features or design decisions that would make this feel
-  inevitable.
+**扩大范围**：描述这个产品的十星级版本。
+- 用 2 倍努力能让它好 10 倍的是什么？
+- 用户真正想要的是什么，而不是他们所要求的？
+- 列出 5-8 个能让它感觉不可避免的具体功能或设计决策。
 
-**HOLD SCOPE**: Accept the direction. Now find everything that can go wrong.
-- Unstated assumptions in the request
-- Edge cases that are not covered
-- Missing error states
-- UX gaps
-- Security or trust boundary issues
-- Operational concerns (monitoring, rollback, data migration)
+**保持范围**：接受这个方向。现在找出所有可能出错的地方。
+- 需求中未说明的假设
+- 未覆盖的边缘情况
+- 缺失的错误状态
+- UX 空白
+- 安全或信任边界问题
+- 运营关切（监控、回滚、数据迁移）
 
-**SCOPE REDUCTION**: What is the smallest version that proves the core value?
-- What is the one thing this must do?
-- What can be cut without losing the point?
-- What can be deferred to v2?
+**缩减范围**：能证明核心价值的最小版本是什么？
+- 这个东西必须做到的唯一一件事是什么？
+- 不失核心要点的情况下，什么可以砍掉？
+- 什么可以推迟到 v2？
 
-## Step 4: Recommendation
+## 步骤 4：建议
 
-Return one of:
-- **Proceed as stated** — the original request is the right product
-- **Reframe** — here is the better brief (with specifics)
-- **Reject** — here is why this is the wrong direction, and what to build instead
+返回以下三者之一：
+- **按原方案推进** — 原始需求就是正确的产品
+- **重新定义** — 这里是更好的需求说明（附具体内容）
+- **拒绝** — 这里是为什么这个方向是错的，以及应该构建什么
 
-Do NOT make any code changes. This is a review, not an implementation.
+不要做任何代码改动。这是评审，不是实现。
 ```
 
 ---
 
-## Example
+## 示例
 
-**Input**: "Let sellers upload a photo for their listing"
+**输入**："让卖家为其商品上传一张图片"
 
-**Output (SCOPE EXPANSION)**:
-> "Photo upload" is not the feature. The real job is helping sellers create listings that actually sell.
+**输出（扩大范围）**：
+> "照片上传"不是这个功能的核心。真正的任务是帮助卖家创建真正能卖出去的商品列表。
 >
-> Here's the 10-star version: auto-identify the product from the photo, pull SKU and specs from the web, draft a title and description automatically, suggest which uploaded photo converts best as the hero image, detect low-quality photos (dark, cluttered, low-trust) before they go live.
+> 这是十星级版本：自动从照片识别商品，从网络拉取 SKU 和规格，自动起草标题和描述，建议哪张上传照片最适合作为主图，在上线前检测低质量照片（暗、杂乱、低信任度）。
 >
-> **Recommendation**: Reframe. The brief should be "smart listing creation from photo" not "photo upload".
+> **建议**：重新定义。需求应该是"从照片智能创建商品列表"，而不是"照片上传"。
 
 ---
 
-## Pipeline Position
+## 流水线位置
 
 ```
-/plan-pipeline:ceo-review    → lock product direction   ← you are here
-/plan-pipeline:eng-review    → lock technical architecture
-/plan-pipeline:start         → produce implementation plan
-/plan-pipeline:validate      → validate before execution
-/plan-pipeline:execute       → execute to merged PR
+/plan-pipeline:ceo-review    → 锁定产品方向   ← 当前位置
+/plan-pipeline:eng-review    → 锁定技术架构
+/plan-pipeline:start         → 生成实现计划
+/plan-pipeline:validate      → 执行前验证
+/plan-pipeline:execute       → 执行至 PR 合并
 ```

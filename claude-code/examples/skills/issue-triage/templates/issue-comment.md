@@ -1,14 +1,14 @@
 > 📚 **AI Spark Wiki** · Claude Code 知识库
 
-# Issue Comment Templates
+# Issue 评论模板
 
-Use these templates to generate GitHub issue comments during `/issue-triage` Phase 3. Comments are posted in **English** (international audience).
+在 `/issue-triage` 第 3 阶段，使用以下模板生成 GitHub Issue 评论。评论使用**英文**发布（面向国际受众）。
 
 ---
 
-## Template 1 — Ack / Info Request
+## 模板 1 — 确认收到 / 信息补充请求
 
-Use when: issue is `Unclear` or `needs-info`, body is missing context, reproduction steps are absent.
+适用场景：Issue 状态为 `Unclear` 或 `needs-info`、正文缺少上下文、未提供复现步骤。
 
 ```markdown
 Thanks for opening this issue!
@@ -28,9 +28,9 @@ Once we have this information, we can prioritize and route the issue appropriate
 
 ---
 
-## Template 2 — Duplicate
+## 模板 2 — 重复 Issue
 
-Use when: Jaccard similarity >= 60% with an existing open or recently closed issue.
+适用场景：与现有开放或近期关闭的 Issue 的 Jaccard 相似度 >= 60%。
 
 ```markdown
 Thanks for reporting this! After reviewing the backlog, this appears to be a duplicate of #{original_number}.
@@ -45,9 +45,9 @@ I'm closing this issue to consolidate discussion there. If you believe this is a
 
 ---
 
-## Template 3 — Close Stale
+## 模板 3 — 关闭陈旧 Issue
 
-Use when: issue has had no activity for >90 days and no assignee, or no response to a previous info request for >30 days.
+适用场景：Issue 超过 90 天无活动且无负责人，或对先前信息请求超过 30 天无响应。
 
 ```markdown
 This issue has been inactive for {days} days without updates or response.
@@ -65,9 +65,9 @@ We're happy to pick this back up if it's still blocking you.
 
 ---
 
-## Template 4 — Close Out of Scope
+## 模板 4 — 关闭超出范围的 Issue
 
-Use when: issue describes functionality clearly outside the project's stated scope.
+适用场景：Issue 描述的功能明显超出项目既定范围。
 
 ```markdown
 Thanks for the suggestion! After review, this falls outside the current scope of this project.
@@ -86,24 +86,24 @@ Feel free to open a discussion if you'd like to explore this further.
 
 ---
 
-## Formatting Rules
+## 格式规范
 
-**Tone**: Professional, direct, respectful. The reporter invested time to file the issue.
+**语气**：专业、直接、尊重。提交者花时间提交了 Issue。
 
-**Rules**:
-- Never imply the reporter is wrong or wasted time
-- Be specific when referencing duplicates (title + number, not just number)
-- For close stale: always invite to reopen — do not make it feel permanent
-- For OOS: offer an alternative when possible, even if vague
-- No superlatives ("great issue", "awesome report") — factual only
+**规则**：
+- 不暗示提交者有错或浪费了时间
+- 引用重复 Issue 时要具体（标题 + 编号，不能只有编号）
+- 关闭陈旧 Issue 时：始终邀请重新打开——不要让人感觉是永久关闭
+- 关闭超范围 Issue 时：尽可能提供替代方案，哪怕比较模糊
+- 不使用溢美之词（"great issue"、"awesome report"）——只陈述事实
 
-**Customization points** (replace in all templates):
-- `{original_number}`: issue number of the canonical duplicate
-- `{one-sentence description}`: short summary of the original issue
-- `{days}`: days since last activity (from `updatedAt`)
-- Inline explanations marked with `{...}`: always fill before posting
+**自定义字段**（在所有模板中替换）：
+- `{original_number}`：原始重复 Issue 的编号
+- `{one-sentence description}`：原始 Issue 的简短摘要
+- `{days}`：自最后活动以来的天数（来自 `updatedAt`）
+- 用 `{...}` 标注的内联说明：发布前必须填写
 
-**Signature** (required on all comments):
+**签名**（所有评论必须附带）：
 ```
 *Triaged via Claude Code /issue-triage*
 ```

@@ -1,68 +1,68 @@
 > 📚 **AI Spark Wiki** · Claude Code 知识库
 
-# Security Suite Plugin
+# 安全套件插件
 
-**Complete security hardening for Claude Code workflows in 5 minutes.**
+**5 分钟内完成 Claude Code 工作流的全面安全加固。**
 
-This plugin bundles everything you need to secure your Claude Code setup: automated security scanning, pre-commit gates, threat tracking, compliance checks, and configuration audits.
+本插件集成了保护 Claude Code 配置所需的一切：自动化安全扫描、提交前拦截门禁、威胁追踪、合规检查及配置审计。
 
-## What's Included
+## 包含内容
 
-✓ **Security Auditor Agent** — Specialist for threat modeling and CVE analysis
-✓ **Quick Security Check** — 30-second configuration scan
-✓ **Full Security Audit** — 6-phase deep dive with score /100
-✓ **Pre-Commit Security Gates** — Block dangerous operations before execution
-✓ **Configuration Audits** — Verify agents, skills, commands quality
-✓ **Compliance Templates** — Automated checklists for governance
+✓ **安全审计智能体** — 威胁建模与 CVE 分析专家
+✓ **快速安全检查** — 30 秒配置扫描
+✓ **完整安全审计** — 6 阶段深度检测，满分 100
+✓ **提交前安全门禁** — 在执行前拦截危险操作
+✓ **配置审计** — 验证智能体、技能、命令的质量
+✓ **合规模板** — 自动化治理清单
 
-## Quick Install
+## 快速安装
 
 ```bash
-# From this directory:
+# 在此目录下执行：
 bash install.sh
 
-# Verify installation:
+# 验证安装：
 /security-check
 /security-audit
 /audit-agents-skills
 ```
 
-**Time:** 5 minutes. No external dependencies.
+**耗时：** 5 分钟。无外部依赖。
 
-## Components
+## 组件说明
 
-### 1. Security Auditor Agent
+### 1. 安全审计智能体
 
-Specialist agent focused exclusively on security analysis.
+专注于安全分析的专家型智能体。
 
 ```bash
-# Assign to a complex threat modeling task:
+# 分配复杂威胁建模任务：
 @security-auditor Analyze this multi-agent setup for supply chain risks
 ```
 
-**Capabilities:**
-- CVE tracking and impact assessment
-- Supply chain vulnerability detection
-- MCP server security vetting
-- Custom skill/hook risk analysis
-- Compliance requirement mapping
+**能力：**
+- CVE 追踪与影响评估
+- 供应链漏洞检测
+- MCP 服务器安全审查
+- 自定义技能/钩子风险分析
+- 合规要求映射
 
-### 2. Quick Security Check (`/security-check`)
+### 2. 快速安全检查（`/security-check`）
 
-30-second scan. Run before commits or deployments.
+30 秒扫描。在提交或部署前运行。
 
 ```bash
 /security-check
 ```
 
-**What it checks:**
-- ✓ CLAUDE.md isolation (no secrets exposed)
-- ✓ MCP server configurations (dangerous permissions?)
-- ✓ Hook execution scope (too permissive?)
-- ✓ Agent tool restrictions (properly sandboxed?)
-- ✓ Settings.json permissions (locked down?)
+**检查项：**
+- ✓ CLAUDE.md 隔离（无密钥泄露）
+- ✓ MCP 服务器配置（是否存在危险权限？）
+- ✓ 钩子执行范围（是否过于宽松？）
+- ✓ 智能体工具限制（是否已正确沙盒化？）
+- ✓ Settings.json 权限（是否已锁定？）
 
-**Output:**
+**输出示例：**
 ```
 Security Check: 87/100 ✓ PASS
 - Agents properly isolated ✓
@@ -71,23 +71,23 @@ Security Check: 87/100 ✓ PASS
 - CLAUDE.md secure ✓
 ```
 
-### 3. Full Security Audit (`/security-audit`)
+### 3. 完整安全审计（`/security-audit`）
 
-6-phase deep dive, 2-5 minutes. Comprehensive threat assessment.
+6 阶段深度检测，耗时 2-5 分钟，提供全面威胁评估。
 
 ```bash
 /security-audit
 ```
 
-**6 Phases:**
-1. **Configuration Audit** — Settings, permissions, secrets
-2. **Agent Security** — Tool restrictions, isolation, capabilities
-3. **Skill/Hook Analysis** — Code quality, dangerous patterns
-4. **MCP Vetting** — Server permissions, token handling
-5. **Supply Chain** — Dependency analysis, external integrations
-6. **Compliance Check** — Enterprise requirements, governance
+**6 个阶段：**
+1. **配置审计** — 设置、权限、密钥
+2. **智能体安全** — 工具限制、隔离、能力
+3. **技能/钩子分析** — 代码质量、危险模式
+4. **MCP 审查** — 服务器权限、令牌处理
+5. **供应链** — 依赖分析、外部集成
+6. **合规检查** — 企业要求、治理规范
 
-**Output:**
+**输出示例：**
 ```
 Security Audit Report
 ════════════════════════════════════════════
@@ -115,85 +115,85 @@ Recommendations:
   • Use: /self-assessment → identify security gaps → take training
 ```
 
-### 4. Configuration Audit (`/audit-agents-skills`)
+### 4. 配置审计（`/audit-agents-skills`）
 
-Verify quality of your custom agents, skills, commands.
+验证自定义智能体、技能、命令的质量。
 
 ```bash
 /audit-agents-skills
-/audit-agents-skills --fix          # Get fix suggestions
-/audit-agents-skills ~/other-dir    # Audit another project
+/audit-agents-skills --fix          # 获取修复建议
+/audit-agents-skills ~/other-dir    # 审计其他项目
 ```
 
-**Checks:**
-- ✓ Agents have proper tool restrictions
-- ✓ Skills use correct frontmatter structure
-- ✓ Commands have clear descriptions
-- ✓ No hardcoded secrets or API keys
-- ✓ All tool invocations are safe
+**检查项：**
+- ✓ 智能体具备适当的工具限制
+- ✓ 技能使用正确的 frontmatter 结构
+- ✓ 命令具有清晰的描述
+- ✓ 无硬编码密钥或 API 密钥
+- ✓ 所有工具调用安全
 
-### 5. Security Hooks
+### 5. 安全钩子
 
-**Pre-commit Hook:** `security-gate.sh`
-Blocks dangerous operations before they execute:
-- Prevents `eval()` in custom code
-- Stops secret exposure (API keys, tokens)
-- Validates hook syntax
-- Checks for command injection patterns
+**提交前钩子：** `security-gate.sh`
+在执行前拦截危险操作：
+- 阻止自定义代码中的 `eval()`
+- 阻止密钥泄露（API 密钥、令牌）
+- 验证钩子语法
+- 检查命令注入模式
 
-**Post-execution Hook:** `security-check.sh`
-Validates outputs for security issues:
-- Detects accidental secret exposure
-- Checks for path traversal attempts
-- Monitors resource usage (DoS detection)
-- Flags dangerous patterns
+**执行后钩子：** `security-check.sh`
+对输出进行安全问题验证：
+- 检测意外的密钥泄露
+- 检查路径遍历尝试
+- 监控资源使用（DoS 检测）
+- 标记危险模式
 
-## Usage Scenarios
+## 使用场景
 
-### Scenario 1: Securing a Team Setup
-
-```
-1. Run: /security-audit
-2. Review report and fix Critical issues
-3. Run: /audit-agents-skills --fix
-4. Share results with team
-5. Monthly re-audits to track improvement
-```
-
-### Scenario 2: Evaluating a Third-Party Skill
+### 场景 1：加固团队配置
 
 ```
-1. Download skill to examples/skills/
-2. Run: /audit-agents-skills
-3. Review tool restrictions and code patterns
-4. If safe, integrate; otherwise reject
+1. 运行：/security-audit
+2. 审查报告并修复严重问题
+3. 运行：/audit-agents-skills --fix
+4. 与团队共享结果
+5. 每月重新审计以跟踪改进进度
 ```
 
-### Scenario 3: Hardening for Production
+### 场景 2：评估第三方技能
 
 ```
-1. Run: /security-audit (current posture baseline)
-2. Address all Critical issues
-3. Read: guide/security/production-safety/
-4. Implement recommended patterns
-5. Re-audit until 90+ score achieved
+1. 将技能下载到 examples/skills/
+2. 运行：/audit-agents-skills
+3. 审查工具限制和代码模式
+4. 安全则集成，否则拒绝
 ```
 
-### Scenario 4: Compliance Verification
+### 场景 3：生产环境加固
 
 ```
-1. Run: /security-audit
-2. Check Compliance phase (item 6)
-3. Map gaps to regulatory requirements
-4. Create compliance.md documenting adherence
-5. Audit quarterly
+1. 运行：/security-audit（建立当前安全基线）
+2. 修复所有严重问题
+3. 阅读：guide/security/production-safety/
+4. 实施推荐模式
+5. 重新审计直至得分达到 90+
 ```
 
-## Configuration
+### 场景 4：合规验证
 
-### Hook Enablement
+```
+1. 运行：/security-audit
+2. 检查合规阶段（第 6 项）
+3. 将差距映射到监管要求
+4. 创建 compliance.md 记录合规状况
+5. 每季度审计一次
+```
 
-If hooks don't auto-enable, add to `.claude/settings.json`:
+## 配置
+
+### 启用钩子
+
+如果钩子未自动启用，请添加到 `.claude/settings.json`：
 
 ```json
 {
@@ -226,57 +226,57 @@ If hooks don't auto-enable, add to `.claude/settings.json`:
 }
 ```
 
-### Environment Variables
+### 环境变量
 
-Configure security parameters:
+配置安全参数：
 
 ```bash
-# Maximum tool timeouts (prevent DoS)
+# 最大工具超时时间（防止 DoS）
 export CLAUDE_SECURITY_TIMEOUT=30000
 
-# Enable strict mode (block all unreviewed code)
+# 启用严格模式（阻止所有未审查代码）
 export CLAUDE_SECURITY_STRICT=true
 
-# Security audit level (quick|standard|paranoid)
+# 安全审计级别（quick|standard|paranoid）
 export CLAUDE_SECURITY_LEVEL=standard
 ```
 
-## Learning Path
+## 学习路径
 
-**After installing:**
+**安装后：**
 
-1. **Understand threats** → Read `guide/security/security-hardening/`
-2. **Assess your setup** → Run `/security-check`
-3. **Get detailed report** → Run `/security-audit`
-4. **Fix issues** → Follow recommendations
-5. **Deep dive** → Use `/self-assessment` to identify security knowledge gaps
-6. **Verify** → Re-audit until you hit your target score (85+/100 recommended)
+1. **了解威胁** → 阅读 `guide/security/security-hardening/`
+2. **评估配置** → 运行 `/security-check`
+3. **获取详细报告** → 运行 `/security-audit`
+4. **修复问题** → 按照建议操作
+5. **深入学习** → 使用 `/self-assessment` 识别安全知识盲区
+6. **验证** → 重新审计直至达到目标分数（推荐 85+/100）
 
-## Uninstall
+## 卸载
 
 ```bash
 bash uninstall.sh
 ```
 
-This removes all Security Suite components but preserves your backups (`.bak` files).
+此操作会移除所有安全套件组件，但保留备份文件（`.bak` 文件）。
 
-## Getting Help
+## 获取帮助
 
-- **Questions?** → See `guide/security/` for threat patterns and mitigations
-- **Specific audit questions?** → Use the Security Auditor agent
-- **Need threat intelligence?** → Check `guide/core/known-issues/` for active CVEs
-- **Team adoption?** → Run audit across team, aggregate results, identify common gaps
+- **有疑问？** → 查看 `guide/security/` 了解威胁模式和缓解措施
+- **具体审计问题？** → 使用安全审计智能体
+- **需要威胁情报？** → 查看 `guide/core/known-issues/` 获取活跃 CVE
+- **团队推广？** → 在团队中运行审计，汇总结果，识别共同短板
 
-## Version
+## 版本信息
 
-- **Plugin Version:** 1.0.0
-- **Requires:** Claude Code 2.1.0+
-- **Compatible Models:** Opus 4.7, Sonnet 4.6, Haiku 4.5
+- **插件版本：** 1.0.0
+- **要求：** Claude Code 2.1.0+
+- **兼容模型：** Opus 4.7、Sonnet 4.6、Haiku 4.5
 
-## License
+## 许可证
 
-CC BY-SA 4.0 — Use freely, modify as needed, share improvements.
+CC BY-SA 4.0 — 自由使用，按需修改，共享改进成果。
 
 ---
 
-**Ready to harden your setup?** Run `/security-check` now.
+**准备好加固你的配置了吗？** 现在运行 `/security-check`。

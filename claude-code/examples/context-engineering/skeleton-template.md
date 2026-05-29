@@ -1,290 +1,288 @@
 > 📚 **AI Spark Wiki** · Claude Code 知识库
 
-# CLAUDE.md — [Project Name]
+# CLAUDE.md — [项目名称]
 
 <!--
-HOW TO USE THIS SKELETON
+如何使用本骨架模板
 
-Fill in each section based on your project. Delete placeholder comments when done.
-Goal: give Claude enough context to make correct decisions without asking, while staying under 500 lines.
+根据你的项目填写每个章节。完成后删除占位注释。
+目标：给 Claude 足够的上下文以做出正确决策而无需反复询问，同时保持在 500 行以内。
 
-Key principles:
-- Specific beats vague: "Use zod for external input validation" beats "validate inputs"
-- Anti-patterns are as valuable as rules: tell Claude what NOT to do
-- Update after each significant session (see rules/update-loop-retro.md)
-- Run `canary-check.sh` weekly to catch drift
+核心原则：
+- 具体胜于模糊："使用 zod 验证外部输入" 优于 "验证输入"
+- 反模式与规则同等重要：告诉 Claude 什么不该做
+- 每次重要会话后更新（参见 rules/update-loop-retro.md）
+- 每周运行 `canary-check.sh` 检测漂移
 -->
 
-## Project Overview
+## 项目概览
 
 <!--
-Write 2-3 sentences answering:
-- What does this project do?
-- Who uses it? (internal tool, public API, consumer app, etc.)
-- What's the primary language and deployment target?
+用 2-3 句话回答：
+- 这个项目做什么？
+- 谁在使用？（内部工具、公开 API、消费者应用等）
+- 主要语言和部署目标是什么？
 
-Example:
-"A REST API that processes financial transactions for retail merchants, consumed by a Next.js
-dashboard and a React Native mobile app. Built with Node.js + TypeScript, deployed to AWS ECS.
-PCI-DSS compliance applies to all payment-adjacent code."
+示例：
+"一个为零售商处理金融交易的 REST API，被 Next.js 仪表板和 React Native 移动应用消费。
+使用 Node.js + TypeScript 构建，部署到 AWS ECS。
+PCI-DSS 合规性适用于所有涉及支付的代码。"
 -->
 
-[PROJECT DESCRIPTION]
+[项目描述]
 
-## Architecture
+## 架构
 
 <!--
-Describe the shape of the system. Not a tutorial — just the decisions Claude needs to
-make correct assumptions. Diagrams are optional; prose is fine.
+描述系统的结构。不是教程——只需记录 Claude 做出正确假设所需的决策。
+图表可选，散文也可以。
 
-Cover:
-- Monolith or services? If services, how many and how do they communicate?
-- How is state managed (database, cache, event sourcing)?
-- Key data flow (request lifecycle, async patterns)
-- Folder structure if non-obvious
+涵盖：
+- 单体还是服务？如果是服务，有多少个？如何通信？
+- 状态如何管理（数据库、缓存、事件溯源）？
+- 关键数据流（请求生命周期、异步模式）
+- 非显而易见的文件夹结构
 -->
 
-### Stack
+### 技术栈
 
-| Layer | Technology | Version |
+| 层级 | 技术 | 版本 |
 |-------|-----------|---------|
-| Language | TypeScript | 5.x |
-| Runtime | Node.js | 20.x |
-| Framework | [e.g., Express, Fastify, NestJS] | x.x |
-| Database | [e.g., PostgreSQL] | x.x |
-| ORM / Query Builder | [e.g., Prisma, Drizzle, Knex] | x.x |
-| Cache | [e.g., Redis, none] | - |
-| Message Queue | [e.g., BullMQ, SQS, none] | - |
-| Frontend | [e.g., Next.js, none] | x.x |
-| Testing | [e.g., Vitest, Jest] | x.x |
-| CI/CD | [e.g., GitHub Actions] | - |
+| 语言 | TypeScript | 5.x |
+| 运行时 | Node.js | 20.x |
+| 框架 | [例如 Express、Fastify、NestJS] | x.x |
+| 数据库 | [例如 PostgreSQL] | x.x |
+| ORM / 查询构建器 | [例如 Prisma、Drizzle、Knex] | x.x |
+| 缓存 | [例如 Redis、无] | - |
+| 消息队列 | [例如 BullMQ、SQS、无] | - |
+| 前端 | [例如 Next.js、无] | x.x |
+| 测试 | [例如 Vitest、Jest] | x.x |
+| CI/CD | [例如 GitHub Actions] | - |
 
-### Folder Structure
+### 文件夹结构
 
 ```
 src/
-  [describe key directories and what belongs in each]
-  [example: api/ — route handlers only, no business logic]
-  [example: services/ — business logic, called by handlers]
-  [example: db/ — Prisma schema, migrations, query functions]
+  [描述关键目录及其用途]
+  [示例：api/ — 仅存放路由处理器，不含业务逻辑]
+  [示例：services/ — 业务逻辑，由处理器调用]
+  [示例：db/ — Prisma schema、迁移文件、查询函数]
 ```
 
-### Key Architectural Decisions
+### 关键架构决策
 
 <!--
-Record the "why" behind non-obvious choices. This prevents Claude from suggesting
-alternatives that were already considered and rejected.
+记录非显而易见选择背后的"原因"。这可以防止 Claude 建议那些已经考虑过并被否决的替代方案。
 
-Example:
-- Repository pattern is NOT used — we use Prisma directly in services (decision: team
-  familiarity, added abstraction not worth it at current scale)
-- Zod schemas are colocated with route handlers, not in a shared schemas/ directory
+示例：
+- 未使用 Repository 模式——在 services 中直接使用 Prisma（决策原因：团队熟悉度，
+  当前规模下额外的抽象层得不偿失）
+- Zod schema 与路由处理器放在一起，而非放在共享的 schemas/ 目录中
 -->
 
-- [DECISION 1]
-- [DECISION 2]
+- [决策 1]
+- [决策 2]
 
-## Code Standards
+## 代码规范
 
 <!--
-Be specific. "Write clean code" is useless. "Use named exports only — no default exports" is actionable.
-Organize by language/domain if you have multiple.
+要具体。"写干净的代码"毫无意义。"只使用命名导出——不使用默认导出"才是可执行的。
+如果有多种语言/领域，按语言/领域组织。
 -->
 
 ### TypeScript
 
-- Strict mode is enabled (`"strict": true` in tsconfig). Never use `any` — use `unknown` and narrow.
-- All public function signatures must have explicit return types.
-- Use `type` for unions and intersections, `interface` for object shapes that may be extended.
-- [ADD YOUR RULES]
+- 已启用严格模式（tsconfig 中 `"strict": true`）。禁止使用 `any`——使用 `unknown` 并做类型收窄。
+- 所有公开函数签名必须显式标注返回类型。
+- `type` 用于联合类型和交叉类型，`interface` 用于可扩展的对象结构。
+- [添加你的规则]
 
-### Naming
+### 命名规范
 
-- Files: `kebab-case.ts` (e.g., `user-service.ts`, `create-order.test.ts`)
-- Classes: `PascalCase`
-- Functions and variables: `camelCase`
-- Constants: `SCREAMING_SNAKE_CASE`
-- [ADD ANY EXCEPTIONS]
+- 文件：`kebab-case.ts`（例如 `user-service.ts`、`create-order.test.ts`）
+- 类：`PascalCase`
+- 函数和变量：`camelCase`
+- 常量：`SCREAMING_SNAKE_CASE`
+- [添加任何例外情况]
 
-### Error Handling
-
-<!--
-Undefined behavior here causes the most inconsistency. Be explicit.
-
-Example:
-- All async functions must be wrapped in try/catch at the handler boundary
-- Errors propagate up as typed error objects, never raw strings
-- Use the AppError class in src/errors.ts — never throw plain Error objects in service layer
--->
-
-- [ERROR HANDLING RULES]
-
-### Comments
+### 错误处理
 
 <!--
-Example:
-- Inline comments only on non-obvious logic (never explain what the code does, only why)
-- All exported functions must have a JSDoc block with @param and @returns
-- TODO comments are not allowed in production code — open an issue instead
+这里的不明确行为会导致最多的不一致性。请明确说明。
+
+示例：
+- 所有异步函数必须在处理器边界用 try/catch 包裹
+- 错误以类型化错误对象的形式向上传播，不使用原始字符串
+- 使用 src/errors.ts 中的 AppError 类——在 service 层永远不要抛出普通 Error 对象
 -->
 
-- [COMMENT RULES]
+- [错误处理规则]
 
-## Development Workflow
-
-### Git Conventions
-
-- Branch naming: `[type]/[short-description]` — e.g., `feat/add-refund-flow`, `fix/order-status-race`
-- Commit format: [Conventional Commits](https://www.conventionalcommits.org/)
-  - `feat:` new feature
-  - `fix:` bug fix
-  - `chore:` maintenance, dependency updates
-  - `docs:` documentation only
-  - `test:` tests only
-  - `refactor:` no behavior change
-- Commits should be atomic — one logical change per commit
-- [ADD ANY EXCEPTIONS OR ADDITIONAL TYPES]
-
-### PR Requirements
+### 注释
 
 <!--
-Example:
-- All PRs require at least one reviewer
-- CI must be green before merge
-- PR description must include "Why" not just "What"
-- Link to issue or ticket in PR body
+示例：
+- 行内注释只用于非显而易见的逻辑（永远不要解释代码做什么，只解释为什么）
+- 所有导出函数必须有包含 @param 和 @returns 的 JSDoc 块
+- 生产代码中不允许 TODO 注释——改为开 issue
 -->
 
-- [PR RULES]
+- [注释规则]
 
-### Local Setup
+## 开发工作流
+
+### Git 规范
+
+- 分支命名：`[类型]/[简短描述]` — 例如 `feat/add-refund-flow`、`fix/order-status-race`
+- 提交格式：[约定式提交](https://www.conventionalcommits.org/)
+  - `feat:` 新功能
+  - `fix:` 缺陷修复
+  - `chore:` 维护、依赖更新
+  - `docs:` 仅文档变更
+  - `test:` 仅测试变更
+  - `refactor:` 无行为变更的重构
+- 提交应保持原子性——每次提交只包含一个逻辑变更
+- [添加任何例外情况或额外类型]
+
+### PR 要求
+
+<!--
+示例：
+- 所有 PR 至少需要一位审查者
+- 合并前 CI 必须通过
+- PR 描述必须包含"为什么"而不只是"做了什么"
+- PR 正文中需链接到 issue 或工单
+-->
+
+- [PR 规则]
+
+### 本地环境搭建
 
 ```bash
-# Install dependencies
-[INSTALL COMMAND]
+# 安装依赖
+[安装命令]
 
-# Set up environment
+# 配置环境
 cp .env.example .env
-# Edit .env with your local values
+# 用本地值编辑 .env
 
-# Run database migrations
-[MIGRATION COMMAND]
+# 运行数据库迁移
+[迁移命令]
 
-# Start development server
-[DEV COMMAND]
+# 启动开发服务器
+[开发命令]
 ```
 
-## Testing
+## 测试
 
 <!--
-Vague testing rules produce no tests. Specific rules produce correct tests.
-Tell Claude: what framework, what to test, how to structure tests, what coverage means here.
+模糊的测试规则不会产生测试。具体的规则才能产生正确的测试。
+告诉 Claude：使用什么框架、测试什么、如何组织测试、覆盖率在这里意味着什么。
 -->
 
-### Framework and Location
+### 框架和位置
 
-- Framework: [e.g., Vitest]
-- Test files: colocated with source (`foo.ts` → `foo.test.ts`) OR in `__tests__/` [choose one]
-- Run tests: `[TEST COMMAND]`
-- Run with coverage: `[COVERAGE COMMAND]`
+- 框架：[例如 Vitest]
+- 测试文件：与源码同级（`foo.ts` → `foo.test.ts`）或放在 `__tests__/` 中 [选其一]
+- 运行测试：`[测试命令]`
+- 运行并生成覆盖率：`[覆盖率命令]`
 
-### What Requires Tests
+### 哪些需要测试
 
-- All service layer functions (unit tests with mocked dependencies)
-- All API routes (integration tests using supertest or equivalent)
-- All utility functions that contain branching logic
-- **Not required**: pure pass-through functions, simple getters/setters, Prisma model definitions
+- 所有 service 层函数（使用 mock 依赖的单元测试）
+- 所有 API 路由（使用 supertest 或同类工具的集成测试）
+- 所有包含分支逻辑的工具函数
+- **不需要**：纯透传函数、简单的 getter/setter、Prisma 模型定义
 
-### Test Structure
+### 测试结构
 
 ```typescript
-// Follow this pattern:
-describe('[unit under test]', () => {
-  describe('[method or scenario]', () => {
-    it('[expected behavior in plain English]', async () => {
-      // Arrange
-      // Act
-      // Assert
+// 遵循此模式：
+describe('[被测单元]', () => {
+  describe('[方法或场景]', () => {
+    it('[用自然语言描述预期行为]', async () => {
+      // 准备（Arrange）
+      // 执行（Act）
+      // 断言（Assert）
     })
   })
 })
 ```
 
-### Mocking
+### Mock
 
-- Mock at the boundary: mock external services, never internal modules
-- [ADD YOUR MOCKING CONVENTIONS — e.g., "Use vi.mock() at file level, not inside tests"]
+- 在边界处 mock：mock 外部服务，不 mock 内部模块
+- [添加你的 mock 规范——例如 "在文件级别使用 vi.mock()，不要在测试内部使用"]
 
-## Deployment
+## 部署
 
-### Environments
+### 环境
 
-| Environment | Branch | URL | Notes |
+| 环境 | 分支 | URL | 备注 |
 |------------|--------|-----|-------|
-| Local | any | localhost:[PORT] | |
-| Staging | `main` | [STAGING URL] | Auto-deploys |
-| Production | [TAG/BRANCH] | [PROD URL] | Manual trigger |
+| 本地 | 任意 | localhost:[端口] | |
+| 预发布 | `main` | [预发布 URL] | 自动部署 |
+| 生产 | [标签/分支] | [生产 URL] | 手动触发 |
 
-### Deploy
+### 部署
 
 ```bash
-# Staging (auto on merge to main — no manual step needed)
+# 预发布（合并到 main 后自动部署——无需手动操作）
 
-# Production
-[DEPLOY COMMAND OR PROCESS]
+# 生产
+[部署命令或流程]
 ```
 
-### Post-Deploy Checks
+### 部署后检查
 
 <!--
-Tell Claude what to verify after deploying so it can suggest this when relevant.
+告诉 Claude 部署后需要验证什么，以便在相关时机提出建议。
 
-Example:
-- Check /health endpoint returns 200
-- Verify Sentry has no new errors in first 5 minutes
-- Confirm database migrations ran (check migration table)
+示例：
+- 检查 /health 端点返回 200
+- 确认 Sentry 在前 5 分钟内没有新错误
+- 确认数据库迁移已执行（检查迁移表）
 -->
 
-- [POST-DEPLOY CHECKS]
+- [部署后检查项]
 
-## What Claude Should NOT Do
+## Claude 不应该做的事
 
 <!--
-This section is high-value. Anti-patterns prevent regressions and stop Claude from
-suggesting alternatives that were already rejected.
+本章节价值极高。反模式可以防止回归，并阻止 Claude 建议那些已被否决的替代方案。
 
-Be specific about the pattern AND why it's banned.
+针对每个模式，明确说明该模式本身以及为何禁止。
 -->
 
-### Technologies Not in Use
+### 不使用的技术
 
-- Do NOT suggest GraphQL — REST is the architectural decision for this project
-- Do NOT use [LIBRARY NAME] — replaced by [ALTERNATIVE] in [VERSION/DATE]
-- [ADD YOUR BANNED TECHNOLOGIES]
+- 不要建议 GraphQL——REST 是本项目的架构决策
+- 不要使用 [库名]——已在 [版本/日期] 被 [替代方案] 取代
+- [添加你的禁用技术]
 
-### Patterns to Avoid
+### 需要避免的模式
 
 <!--
-Example:
-- Never use class components in React — functional components only
-- Never mutate request/response objects directly — use immutable patterns
-- Never use console.log in production code — use the logger at src/lib/logger.ts
-- Never hardcode environment-specific values — use process.env with validation in src/config.ts
+示例：
+- React 中永远不要使用类组件——只使用函数组件
+- 永远不要直接修改 request/response 对象——使用不可变模式
+- 生产代码中永远不要使用 console.log——使用 src/lib/logger.ts 中的 logger
+- 永远不要硬编码环境相关的值——使用 process.env 并在 src/config.ts 中验证
 -->
 
-- [ANTI-PATTERN 1]
-- [ANTI-PATTERN 2]
-- [ANTI-PATTERN 3]
+- [反模式 1]
+- [反模式 2]
+- [反模式 3]
 
-### Known Problem Areas
+### 已知问题区域
 
 <!--
-Patterns that caused production bugs or significant rework. Claude should be extra careful here.
+导致过生产缺陷或大量返工的模式。Claude 在这里应格外谨慎。
 
-Example:
-- The order state machine in src/orders/state.ts is complex — always read it fully before modifying
-- Payment webhooks are idempotent — every handler must check for duplicate event IDs
+示例：
+- src/orders/state.ts 中的订单状态机很复杂——修改前务必完整阅读
+- 支付 webhook 是幂等的——每个处理器必须检查重复的事件 ID
 -->
 
-- [KNOWN PROBLEM AREA 1]
-- [KNOWN PROBLEM AREA 2]
+- [已知问题区域 1]
+- [已知问题区域 2]

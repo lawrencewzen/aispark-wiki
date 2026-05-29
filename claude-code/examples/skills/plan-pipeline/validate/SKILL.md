@@ -2,80 +2,80 @@
 
 ---
 name: plan-pipeline-validate
-description: "2-layer plan validation: instant structural checks + trigger-based specialist agents. Auto-fixes issues using ADRs and first principles. Every issue must be resolved before execution."
+description: "双层计划验证：即时结构检查 + 触发式专家智能体。使用 ADR 和第一性原理自动修复问题。所有问题必须在执行前解决。"
 effort: medium
 disable-model-invocation: true
 ---
 
-# /plan-pipeline:validate — 2-Layer Validation
+# /plan-pipeline:validate — 双层验证
 
-Independently validate the plan produced by `/plan-pipeline:start`. No code is written. Run `/clear` after this command before running `/plan-pipeline:execute`.
+独立验证 `/plan-pipeline:start` 生成的计划。不编写任何代码。运行此命令后，在执行 `/plan-pipeline:execute` 前先运行 `/clear`。
 
-Validation is separate from planning by design: validators that didn't write the plan are not anchored to its assumptions.
-
----
-
-## Prerequisite
-
-A committed plan file must exist at `docs/plans/plan-{name}.md`. If multiple plans exist, list them and ask the user which to validate.
+验证与规划刻意分离：没有参与编写计划的验证者不会受其假设的锚定效应影响。
 
 ---
 
-## Layer 1: Structural Validation
+## 前提条件
 
-Run immediately, no agents required. Check the plan document for:
-
-**Format & Completeness**
-- [ ] All required sections present (Summary, Decisions, Architecture, Tasks, Test Plan, Out of Scope)
-- [ ] Each task has: description, files affected, acceptance criteria, layer assignment
-
-**Dependency Chain**
-- [ ] No circular dependencies between tasks
-- [ ] Tasks in higher layers only depend on tasks in lower layers
-- [ ] All stated dependencies exist in the plan
-
-**File Existence**
-- [ ] Every file listed for modification actually exists in the codebase (use Glob)
-- [ ] New files are in appropriate directories per project conventions
-
-**ADR Consistency**
-- [ ] Plan decisions align with ADRs created during `/plan-pipeline:start`
-- [ ] No contradiction with existing ADRs in `docs/adr/`
-
-**CLAUDE.md Compliance**
-- [ ] Plan respects all hard rules in CLAUDE.md
-- [ ] No first principles violations (no workarounds, no backward-compat shims)
-
-**Test Coverage**
-- [ ] Every new function/component has a corresponding test task
-- [ ] TDD-marked tasks have failing test written before implementation task
-
-Record all Layer 1 issues with severity (BLOCKER / WARNING / INFO) before proceeding to Layer 2.
+必须存在已提交的计划文件，路径为 `docs/plans/plan-{name}.md`。若存在多个计划，列出后询问用户要验证哪个。
 
 ---
 
-## Layer 2: Specialist Review
+## 第一层：结构验证
 
-Select agents by applying trigger rules to the plan content. No user input needed — triggers are objective.
+立即执行，无需智能体。检查计划文档是否满足：
 
-**Validation agent pool:**
+**格式与完整性**
+- [ ] 所有必需章节均存在（摘要、决策、架构、任务、测试计划、范围外）
+- [ ] 每个任务包含：描述、受影响文件、验收标准、层级分配
 
-| Agent | Trigger | Model |
+**依赖链**
+- [ ] 任务之间无循环依赖
+- [ ] 高层任务仅依赖低层任务
+- [ ] 所有声明的依赖在计划中均存在
+
+**文件存在性**
+- [ ] 列出的每个待修改文件在代码库中确实存在（使用 Glob 检查）
+- [ ] 新文件按项目规范放置在合适目录中
+
+**ADR 一致性**
+- [ ] 计划决策与 `/plan-pipeline:start` 期间创建的 ADR 一致
+- [ ] 与 `docs/adr/` 中现有 ADR 无矛盾
+
+**CLAUDE.md 合规性**
+- [ ] 计划遵守 CLAUDE.md 中的所有硬性规则
+- [ ] 无第一性原理违规（无变通方案、无向后兼容垫片）
+
+**测试覆盖**
+- [ ] 每个新函数/组件均有对应的测试任务
+- [ ] 标记为 TDD 的任务，其失败测试编写在实现任务之前
+
+在进入第二层前，记录所有第一层问题并标注严重程度（BLOCKER / WARNING / INFO）。
+
+---
+
+## 第二层：专家评审
+
+通过将触发规则应用于计划内容来选择智能体。无需用户输入——触发条件是客观的。
+
+**验证智能体池：**
+
+| 智能体 | 触发条件 | 模型 |
 |-------|---------|-------|
-| `security-reviewer` | Auth, payments, PII, RBAC, new public APIs | Opus |
-| `db-migration-reviewer` | New tables, columns, indexes, or migration files | Opus |
-| `performance-reviewer` | New queries, resolvers, routes, or added dependencies | Sonnet |
-| `design-system-reviewer` | New UI components or visual styling changes | Sonnet |
-| `ux-reviewer` | New pages, forms, modals, or interaction patterns | Sonnet |
-| `cross-platform-reviewer` | Changes touching both web and mobile, or shared packages | Sonnet |
-| `native-app-reviewer` | Mobile screens, native UI package changes | Sonnet |
-| `integration-reviewer` | New external services, libraries, or OTEL config | Opus |
+| `security-reviewer` | 认证、支付、PII、RBAC、新公开 API | Opus |
+| `db-migration-reviewer` | 新表、列、索引或迁移文件 | Opus |
+| `performance-reviewer` | 新查询、解析器、路由或新增依赖 | Sonnet |
+| `design-system-reviewer` | 新 UI 组件或视觉样式变更 | Sonnet |
+| `ux-reviewer` | 新页面、表单、弹窗或交互模式 | Sonnet |
+| `cross-platform-reviewer` | 同时涉及 Web 和移动端或共享包的变更 | Sonnet |
+| `native-app-reviewer` | 移动端页面、原生 UI 包变更 | Sonnet |
+| `integration-reviewer` | 新外部服务、库或 OTEL 配置 | Opus |
 
-Spawn triggered agents in parallel (Task tool, run_in_background: true). Each agent receives: the plan file, relevant ADRs, and targeted questions based on its domain.
+并行启动触发的智能体（Task 工具，run_in_background: true）。每个智能体接收：计划文件、相关 ADR，以及基于其领域的针对性问题。
 
-Monitor via `Read` on `.claude/tasks/<id>/output.log` (TaskOutput is deprecated since v2.1.83). Report progress to user.
+通过 `Read` 监控 `.claude/tasks/<id>/output.log`（TaskOutput 自 v2.1.83 起已弃用）。向用户汇报进度。
 
-Each agent must return structured findings:
+每个智能体必须返回结构化发现：
 ```
 FINDING: [BLOCKER|WARNING|INFO]
 Location: [plan section or file reference]
@@ -86,31 +86,31 @@ Suggestion: [specific fix or alternative]
 
 ---
 
-## Auto-Fix Phase
+## 自动修复阶段
 
-Merge Layer 1 structural issues + Layer 2 specialist findings into a single issue list. Every issue must be resolved. No skipping.
+将第一层结构问题与第二层专家发现合并为单一问题列表。每个问题必须解决，不可跳过。
 
-**Triage each issue:**
+**对每个问题进行分类：**
 
-**Bucket A — Auto-resolve:**
-- Issue matches an existing ADR decision → cite ADR, mark resolved
-- Issue matches a confirmed pattern in PATTERNS.md → cite pattern, mark resolved
-- Issue resolvable from first principles in CLAUDE.md → apply rule, mark resolved
+**A 桶 —— 自动解决：**
+- 问题符合现有 ADR 决策 → 引用 ADR，标记为已解决
+- 问题符合 PATTERNS.md 中已确认的模式 → 引用模式，标记为已解决
+- 问题可通过 CLAUDE.md 中的第一性原理解决 → 应用规则，标记为已解决
 
-**Bucket B — Needs human input:**
-- Novel architectural question not covered by existing decisions
-- Conflicting ADRs with no clear precedent
-- Blocker with no obvious resolution
+**B 桶 —— 需要人工输入：**
+- 现有决策未覆盖的新架构问题
+- 无明确先例的 ADR 冲突
+- 无明显解决方案的阻塞问题
 
-For Bucket B items: present the issue, explain why it can't be auto-resolved, propose options, wait for decision. Record the decision in the plan's `## Decisions` section and create a new ADR if it's architecturally significant.
+对于 B 桶问题：呈现问题，说明无法自动解决的原因，提出选项，等待决策。将决策记录到计划的 `## 决策` 章节，若具有架构意义则创建新 ADR。
 
-**Apply all fixes in one batch** once all issues are triaged. Update the plan file. Commit the updated plan.
+**所有问题分类完成后批量应用修复。** 更新计划文件并提交。
 
 ---
 
-## Issue Persistence
+## 问题持久化
 
-Record every issue in `docs/plans/metrics/{name}.json` under `validation.issues`:
+将每个问题记录到 `docs/plans/metrics/{name}.json` 的 `validation.issues` 下：
 
 ```json
 {
@@ -128,27 +128,27 @@ Record every issue in `docs/plans/metrics/{name}.json` under `validation.issues`
 
 ---
 
-## Auto-Transition
+## 自动跳转
 
-If all issues are auto-resolved (Bucket A only): auto-start `/plan-pipeline:execute` without asking.
+若所有问题均自动解决（仅 A 桶）：无需询问，自动启动 `/plan-pipeline:execute`。
 
-If any human input was required (Bucket B): ask "All issues resolved. Ready to execute?" before proceeding.
+若有任何问题需要人工输入（B 桶）：询问"所有问题已解决。准备执行吗？"后再继续。
 
 ---
 
-## Usage
+## 使用方式
 
 ```
 /plan-pipeline:validate
 ```
 
-Picks up the most recent uncommitted plan automatically. Or specify:
+自动拾取最近未提交的计划。或指定计划：
 
 ```
 /plan-pipeline:validate plan-user-authentication
 ```
 
-## Output
+## 输出
 
 ```
 Layer 1: Structural validation...
@@ -178,16 +178,16 @@ All 3 issues resolved. Plan updated.
 → Auto-starting /plan-pipeline:execute
 ```
 
-## When to Use
+## 何时使用
 
-Always — before any `/plan-pipeline:execute` call. The cost of validation ($0.20-3.00) is negligible against the cost of discovering issues mid-execution.
+始终使用——在任何 `/plan-pipeline:execute` 调用之前。验证成本（$0.20-3.00）相比在执行途中发现问题的代价微不足道。
 
-## Pipeline Position
+## 流水线位置
 
 ```
-/plan-pipeline:ceo-review    → product direction locked
-/plan-pipeline:eng-review    → architecture locked
-/plan-pipeline:start         → produce implementation plan
-/plan-pipeline:validate      → validate before execution     ← you are here
-/plan-pipeline:execute       → execute to merged PR
+/plan-pipeline:ceo-review    → 产品方向锁定
+/plan-pipeline:eng-review    → 架构锁定
+/plan-pipeline:start         → 生成实现计划
+/plan-pipeline:validate      → 执行前验证     ← 当前位置
+/plan-pipeline:execute       → 执行至 PR 合并
 ```

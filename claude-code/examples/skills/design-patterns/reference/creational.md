@@ -1,33 +1,33 @@
 > 📚 **AI Spark Wiki** · Claude Code 知识库
 
 ---
-title: "Creational Design Patterns"
-description: "Reference for Singleton, Factory, Builder, Prototype and other object creation patterns"
+title: "创建型设计模式"
+description: "单例、工厂、建造者、原型等对象创建模式参考"
 tags: [reference, design-patterns, architecture]
 ---
 
-# Creational Design Patterns
+# 创建型设计模式
 
-Patterns that deal with object creation mechanisms, trying to create objects in a manner suitable to the situation.
+处理对象创建机制的模式，旨在以适合当前场景的方式创建对象。
 
-## Singleton
+## 单例
 
-### Definition
-Ensures a class has only one instance and provides a global point of access to it.
+### 定义
+确保一个类只有一个实例，并提供对该实例的全局访问点。
 
-### When to Use
-- [x] Exactly one instance of a class is needed (configuration, logging, database connection)
-- [x] Controlled access to a single object is required
-- [x] The instance should be extensible by subclassing
+### 适用场景
+- [x] 需要一个类恰好只有一个实例（配置、日志、数据库连接）
+- [x] 需要对单个对象进行受控访问
+- [x] 实例应支持通过子类进行扩展
 
-**Warning**: Often overused. Consider dependency injection or context-based alternatives first.
+**警告**：该模式常被过度使用。请优先考虑依赖注入或基于上下文的替代方案。
 
-### TypeScript Signature
+### TypeScript 签名
 ```typescript
 class Singleton {
   private static instance: Singleton;
   private constructor() {
-    // Private constructor prevents instantiation
+    // 私有构造函数防止外部实例化
   }
 
   public static getInstance(): Singleton {
@@ -38,19 +38,19 @@ class Singleton {
   }
 
   public someMethod(): void {
-    // Business logic
+    // 业务逻辑
   }
 }
 
-// Usage
+// 使用方式
 const instance = Singleton.getInstance();
 ```
 
-### Stack-Native Alternatives
+### 技术栈原生替代方案
 
 **React**:
 ```typescript
-// Instead of Singleton, use Context
+// 用 Context 代替单例
 const ConfigContext = createContext<Config>(defaultConfig);
 
 export const ConfigProvider = ({ children }: Props) => {
@@ -61,62 +61,62 @@ export const ConfigProvider = ({ children }: Props) => {
 
 **Angular**:
 ```typescript
-// Injectable service (singleton by default)
+// 可注入服务（默认为单例）
 @Injectable({ providedIn: 'root' })
 export class ConfigService {
-  // Automatically singleton via DI
+  // 通过 DI 自动实现单例
 }
 ```
 
 **NestJS**:
 ```typescript
-@Injectable() // Default scope is SINGLETON
+@Injectable() // 默认作用域为 SINGLETON
 export class AppService {}
 ```
 
-### Detection Markers
+### 识别标志
 - `private constructor`
-- `static getInstance()` method
-- `private static instance` field
-- Lazy initialization check: `if (!instance)`
+- `static getInstance()` 方法
+- `private static instance` 字段
+- 懒初始化检查：`if (!instance)`
 
-### Code Smells It Fixes
-- **Global state access**: Provides controlled access instead of scattered global variables
-- **Multiple instances of shared resource**: Ensures single database connection, config object, etc.
+### 解决的代码异味
+- **全局状态访问**：提供受控访问，替代分散的全局变量
+- **共享资源的多个实例**：确保单一数据库连接、配置对象等
 
-### Common Mistakes
-- **Hard to test**: Static methods and global state make unit testing difficult
-  - *Solution*: Use dependency injection instead, or provide `resetInstance()` for tests
-- **Thread-safety issues**: (Less relevant in JavaScript's single-threaded model, but important for Node.js workers)
-- **Hidden dependencies**: Classes using `getInstance()` have hidden coupling
-- **Violates Single Responsibility**: Often manages both instance creation and business logic
+### 常见错误
+- **难以测试**：静态方法和全局状态使单元测试困难
+  - *解决方案*：改用依赖注入，或为测试提供 `resetInstance()` 方法
+- **线程安全问题**：（在 JavaScript 单线程模型中不太相关，但对 Node.js workers 很重要）
+- **隐式依赖**：使用 `getInstance()` 的类存在隐式耦合
+- **违反单一职责**：通常同时管理实例创建和业务逻辑
 
-### Evaluation Criteria
-- **Testability**: 3/10 (hard to mock, global state)
-- **Thread-safety**: 7/10 (less critical in JS)
-- **Extensibility**: 5/10 (subclassing is complex)
+### 评估标准
+- **可测试性**：3/10（难以 mock，存在全局状态）
+- **线程安全**：7/10（在 JS 中不那么关键）
+- **可扩展性**：5/10（子类化较复杂）
 
 ---
 
-## Factory Method
+## 工厂方法
 
-### Definition
-Defines an interface for creating an object, but lets subclasses decide which class to instantiate.
+### 定义
+定义一个创建对象的接口，但让子类决定实例化哪个类。
 
-### When to Use
-- [x] Class cannot anticipate the type of objects it needs to create
-- [x] Class wants its subclasses to specify the objects it creates
-- [x] Centralize object creation logic to avoid duplication
-- [x] Need to decouple object creation from usage
+### 适用场景
+- [x] 类无法预知需要创建的对象类型
+- [x] 类希望由其子类来指定所创建的对象
+- [x] 将对象创建逻辑集中以避免重复
+- [x] 需要将对象创建与使用解耦
 
-### TypeScript Signature
+### TypeScript 签名
 ```typescript
-// Product interface
+// 产品接口
 interface Product {
   operation(): string;
 }
 
-// Concrete products
+// 具体产品
 class ConcreteProductA implements Product {
   operation(): string {
     return 'Product A';
@@ -129,19 +129,19 @@ class ConcreteProductB implements Product {
   }
 }
 
-// Creator (Factory)
+// 创建者（工厂）
 abstract class Creator {
-  // Factory method
+  // 工厂方法
   abstract createProduct(): Product;
 
-  // Business logic using the product
+  // 使用产品的业务逻辑
   someOperation(): string {
     const product = this.createProduct();
     return `Creator: ${product.operation()}`;
   }
 }
 
-// Concrete creators
+// 具体创建者
 class CreatorA extends Creator {
   createProduct(): Product {
     return new ConcreteProductA();
@@ -154,14 +154,14 @@ class CreatorB extends Creator {
   }
 }
 
-// Usage
+// 使用方式
 const creator: Creator = new CreatorA();
 console.log(creator.someOperation());
 ```
 
-### Modern TypeScript Alternative
+### 现代 TypeScript 替代方案
 ```typescript
-// Simpler approach without inheritance
+// 不使用继承的更简洁方式
 type ProductType = 'A' | 'B';
 
 function createProduct(type: ProductType): Product {
@@ -172,43 +172,43 @@ function createProduct(type: ProductType): Product {
 }
 ```
 
-### Detection Markers
-- Method named `create*()` returning interface/abstract class
-- `abstract createProduct()` in base class
-- Subclasses override factory method
-- `switch` or `if-else` on type/kind parameter
+### 识别标志
+- 方法名为 `create*()` 且返回接口或抽象类
+- 基类中有 `abstract createProduct()`
+- 子类重写工厂方法
+- 基于类型/种类参数的 `switch` 或 `if-else`
 
-### Code Smells It Fixes
-- **Tight coupling to concrete classes**: Client code depends on interface, not implementation
-- **Duplication of instantiation logic**: Centralized in factory method
-- **Switch statements scattered**: Consolidated in one place
+### 解决的代码异味
+- **与具体类的紧密耦合**：客户端代码依赖接口而非实现
+- **实例化逻辑重复**：集中于工厂方法中
+- **分散的 switch 语句**：统一集中到一处
 
-### Common Mistakes
-- **Simple Factory confusion**: Factory Method uses inheritance; Simple Factory uses composition
-- **Too many parameters**: Should create objects with default configuration
-- **Forgetting to make factory method abstract**: Defeats the purpose of subclass specialization
+### 常见错误
+- **与简单工厂混淆**：工厂方法使用继承；简单工厂使用组合
+- **参数过多**：应使用默认配置创建对象
+- **忘记将工厂方法设为抽象**：失去了子类专化的意义
 
-### Evaluation Criteria
-- **Testability**: 8/10 (easy to mock products)
-- **Flexibility**: 9/10 (new products don't modify existing code)
-- **Complexity**: 6/10 (adds inheritance hierarchy)
+### 评估标准
+- **可测试性**：8/10（产品易于 mock）
+- **灵活性**：9/10（新增产品无需修改现有代码）
+- **复杂度**：6/10（引入了继承层级）
 
 ---
 
-## Abstract Factory
+## 抽象工厂
 
-### Definition
-Provides an interface for creating families of related or dependent objects without specifying their concrete classes.
+### 定义
+提供一个创建一系列相关或相互依赖对象的接口，而无需指定其具体类。
 
-### When to Use
-- [x] System should be independent of how its products are created
-- [x] System should be configured with one of multiple families of products
-- [x] Family of related product objects must be used together
-- [x] You want to provide a library of products and reveal only interfaces
+### 适用场景
+- [x] 系统应独立于其产品的创建方式
+- [x] 系统需要配置多个产品族之一
+- [x] 一组相关产品对象必须一起使用
+- [x] 希望提供产品库且只暴露接口
 
-### TypeScript Signature
+### TypeScript 签名
 ```typescript
-// Abstract products
+// 抽象产品
 interface AbstractProductA {
   usefulFunctionA(): string;
 }
@@ -218,7 +218,7 @@ interface AbstractProductB {
   anotherFunctionB(collaborator: AbstractProductA): string;
 }
 
-// Concrete products - Family 1
+// 具体产品 - 第一族
 class ConcreteProductA1 implements AbstractProductA {
   usefulFunctionA(): string {
     return 'Product A1';
@@ -235,7 +235,7 @@ class ConcreteProductB1 implements AbstractProductB {
   }
 }
 
-// Concrete products - Family 2
+// 具体产品 - 第二族
 class ConcreteProductA2 implements AbstractProductA {
   usefulFunctionA(): string {
     return 'Product A2';
@@ -252,13 +252,13 @@ class ConcreteProductB2 implements AbstractProductB {
   }
 }
 
-// Abstract factory
+// 抽象工厂
 interface AbstractFactory {
   createProductA(): AbstractProductA;
   createProductB(): AbstractProductB;
 }
 
-// Concrete factories
+// 具体工厂
 class ConcreteFactory1 implements AbstractFactory {
   createProductA(): AbstractProductA {
     return new ConcreteProductA1();
@@ -279,7 +279,7 @@ class ConcreteFactory2 implements AbstractFactory {
   }
 }
 
-// Client code
+// 客户端代码
 function clientCode(factory: AbstractFactory) {
   const productA = factory.createProductA();
   const productB = factory.createProductB();
@@ -287,47 +287,47 @@ function clientCode(factory: AbstractFactory) {
   console.log(productB.anotherFunctionB(productA));
 }
 
-// Usage
+// 使用方式
 clientCode(new ConcreteFactory1());
 clientCode(new ConcreteFactory2());
 ```
 
-### Detection Markers
-- Multiple `create*()` methods in factory interface
-- Families of related products (e.g., Button + Checkbox for Windows/Mac)
-- Factory implementations return different product families
-- Interface with 2+ factory methods
+### 识别标志
+- 工厂接口中有多个 `create*()` 方法
+- 相关产品族（例如 Windows/Mac 的 Button + Checkbox）
+- 工厂实现返回不同的产品族
+- 接口中有 2 个以上工厂方法
 
-### Code Smells It Fixes
-- **Inconsistent product families**: Ensures compatible products are created together (Windows Button + Windows Checkbox, not mixed)
-- **Scattered creation logic**: Centralizes creation of related objects
+### 解决的代码异味
+- **不一致的产品族**：确保兼容的产品一起创建（Windows Button + Windows Checkbox，而非混用）
+- **创建逻辑分散**：将相关对象的创建集中管理
 
-### Common Mistakes
-- **Over-engineering**: Often too complex for simple scenarios; Factory Method may suffice
-- **Rigid product families**: Adding new product types requires changing all factories
-- **Confusion with Factory Method**: Abstract Factory creates families; Factory Method creates one product type
+### 常见错误
+- **过度设计**：对简单场景往往过于复杂；工厂方法可能已足够
+- **产品族不够灵活**：添加新产品类型需要修改所有工厂
+- **与工厂方法混淆**：抽象工厂创建产品族；工厂方法创建单一产品类型
 
-### Evaluation Criteria
-- **Testability**: 8/10 (factories are easily mocked)
-- **Consistency**: 10/10 (guarantees compatible products)
-- **Complexity**: 4/10 (high complexity, many classes)
+### 评估标准
+- **可测试性**：8/10（工厂易于 mock）
+- **一致性**：10/10（保证产品兼容性）
+- **复杂度**：4/10（复杂度高，类较多）
 
 ---
 
-## Builder
+## 建造者
 
-### Definition
-Separates the construction of a complex object from its representation, allowing step-by-step construction.
+### 定义
+将复杂对象的构建与其表示分离，允许逐步构建。
 
-### When to Use
-- [x] Object has many optional parameters (>4)
-- [x] Construction process should allow different representations
-- [x] Need to construct complex objects step-by-step
-- [x] Want to avoid "telescoping constructor" anti-pattern
+### 适用场景
+- [x] 对象有很多可选参数（超过 4 个）
+- [x] 构建过程应允许不同的表示形式
+- [x] 需要逐步构建复杂对象
+- [x] 希望避免"伸缩构造函数"反模式
 
-### TypeScript Signature
+### TypeScript 签名
 ```typescript
-// Product
+// 产品
 class House {
   public walls: string = '';
   public doors: number = 0;
@@ -341,7 +341,7 @@ class House {
   }
 }
 
-// Builder
+// 建造者
 class HouseBuilder {
   private house: House;
 
@@ -381,12 +381,12 @@ class HouseBuilder {
 
   public build(): House {
     const result = this.house;
-    this.house = new House(); // Reset for next build
+    this.house = new House(); // 重置以备下次构建
     return result;
   }
 }
 
-// Usage
+// 使用方式
 const house = new HouseBuilder()
   .setWalls('brick')
   .setDoors(2)
@@ -396,9 +396,9 @@ const house = new HouseBuilder()
   .build();
 ```
 
-### Modern TypeScript Alternative (Type-Safe Builder)
+### 现代 TypeScript 替代方案（类型安全建造者）
 ```typescript
-// Progressive type safety: each step unlocks the next
+// 渐进式类型安全：每一步解锁下一步
 type HouseBuilderState<
   TWalls extends boolean = false,
   TRoof extends boolean = false
@@ -409,57 +409,57 @@ type HouseBuilderState<
 };
 ```
 
-### Detection Markers
-- Method chaining (returns `this` or builder type)
-- `build()` method returning final product
-- `with*()` or `set*()` methods
-- Optional fields being set incrementally
+### 识别标志
+- 方法链（返回 `this` 或建造者类型）
+- `build()` 方法返回最终产品
+- `with*()` 或 `set*()` 方法
+- 可选字段逐步设置
 
-### Code Smells It Fixes
-- **Telescoping constructor**: Constructor with many parameters
+### 解决的代码异味
+- **伸缩构造函数**：参数过多的构造函数
   ```typescript
-  // Bad
+  // 不好
   new House(walls, doors, windows, roof, garage, pool, garden, basement, ...);
 
-  // Good with Builder
+  // 用建造者更好
   new HouseBuilder().setWalls('brick').setRoof('tile').build();
   ```
-- **Unclear parameter order**: Named methods make intent clear
-- **Optional parameters complexity**: Builder handles optional features elegantly
+- **参数顺序不清晰**：命名方法使意图明确
+- **可选参数复杂性**：建造者优雅处理可选特性
 
-### Common Mistakes
-- **Mutable builder**: Reusing builder can lead to unexpected state
-  - *Solution*: Reset internal state after `build()`
-- **Incomplete builder**: Not validating required fields in `build()`
-  - *Solution*: Use TypeScript types to enforce required steps
-- **Too simple for the pattern**: If <4 parameters, constructor or object literal may be simpler
+### 常见错误
+- **可变建造者**：复用建造者可能导致意外状态
+  - *解决方案*：在 `build()` 后重置内部状态
+- **不完整的建造者**：在 `build()` 中未验证必填字段
+  - *解决方案*：使用 TypeScript 类型强制必要步骤
+- **场景过简**：如果参数少于 4 个，构造函数或对象字面量可能更简单
 
-### Evaluation Criteria
-- **Testability**: 9/10 (easy to create test fixtures)
-- **Readability**: 10/10 (fluent interface is self-documenting)
-- **Complexity**: 7/10 (adds builder class)
+### 评估标准
+- **可测试性**：9/10（易于创建测试固件）
+- **可读性**：10/10（流式接口具有自描述性）
+- **复杂度**：7/10（引入了建造者类）
 
 ---
 
-## Prototype
+## 原型
 
-### Definition
-Creates new objects by copying an existing object (prototype) rather than creating from scratch.
+### 定义
+通过复制现有对象（原型）来创建新对象，而非从头创建。
 
-### When to Use
-- [x] Object creation is expensive (complex initialization, database queries)
-- [x] Need to avoid subclassing just to change initialization
-- [x] System should be independent of how products are created
-- [x] Classes to instantiate are specified at runtime
+### 适用场景
+- [x] 对象创建代价高昂（复杂初始化、数据库查询）
+- [x] 需要避免仅为改变初始化而创建子类
+- [x] 系统应独立于产品的创建方式
+- [x] 需要在运行时指定要实例化的类
 
-### TypeScript Signature
+### TypeScript 签名
 ```typescript
-// Prototype interface
+// 原型接口
 interface Prototype {
   clone(): Prototype;
 }
 
-// Concrete prototype
+// 具体原型
 class ConcretePrototype implements Prototype {
   public field: number;
   public complexObject: { data: string };
@@ -469,102 +469,102 @@ class ConcretePrototype implements Prototype {
     this.complexObject = complexObject;
   }
 
-  // Shallow clone
+  // 浅克隆
   public clone(): ConcretePrototype {
     return Object.create(this);
   }
 
-  // Deep clone
+  // 深克隆
   public deepClone(): ConcretePrototype {
     return new ConcretePrototype(
       this.field,
-      { data: this.complexObject.data } // Clone nested objects
+      { data: this.complexObject.data } // 克隆嵌套对象
     );
   }
 }
 
-// Usage
+// 使用方式
 const original = new ConcretePrototype(42, { data: 'important' });
 const shallowCopy = original.clone();
 const deepCopy = original.deepClone();
 
-// Shallow copy shares nested objects
+// 浅拷贝共享嵌套对象
 shallowCopy.complexObject.data = 'modified';
 console.log(original.complexObject.data); // 'modified' (!)
 
-// Deep copy is independent
+// 深拷贝是独立的
 deepCopy.field = 99;
-console.log(original.field); // 42 (unchanged)
+console.log(original.field); // 42 (不变)
 ```
 
-### Modern JavaScript Alternatives
+### 现代 JavaScript 替代方案
 ```typescript
-// Spread operator (shallow)
+// 展开运算符（浅拷贝）
 const copy1 = { ...original };
 
-// Object.assign (shallow)
+// Object.assign（浅拷贝）
 const copy2 = Object.assign({}, original);
 
-// structuredClone (deep, modern browsers/Node 17+)
+// structuredClone（深拷贝，现代浏览器/Node 17+）
 const copy3 = structuredClone(original);
 
-// JSON (deep, but limited: no functions, undefined, etc.)
+// JSON（深拷贝，但有限制：不支持函数、undefined 等）
 const copy4 = JSON.parse(JSON.stringify(original));
 ```
 
-### Detection Markers
-- `clone()` method
+### 识别标志
+- `clone()` 方法
 - `Object.create()`
 - `structuredClone()`
-- `JSON.parse(JSON.stringify())` pattern
-- Spread operator `{ ...obj }`
+- `JSON.parse(JSON.stringify())` 模式
+- 展开运算符 `{ ...obj }`
 
-### Code Smells It Fixes
-- **Expensive initialization**: Clone instead of re-initializing
-- **Complex object graphs**: Cloning preserves relationships
-- **Runtime type specification**: Clone prototype instead of hardcoding types
+### 解决的代码异味
+- **初始化代价高昂**：克隆代替重新初始化
+- **复杂对象图**：克隆保留对象关系
+- **运行时类型指定**：克隆原型而非硬编码类型
 
-### Common Mistakes
-- **Shallow vs Deep clone confusion**: Shallow clone shares nested objects
+### 常见错误
+- **浅克隆与深克隆混淆**：浅克隆共享嵌套对象
   ```typescript
-  // Dangerous if nested objects are modified
+  // 如果修改嵌套对象会有危险
   const shallow = { ...original };
   ```
-- **Circular references**: `JSON.stringify` fails on circular references
-  - *Solution*: Use `structuredClone()` or custom clone logic
-- **Cloning methods/functions**: Some approaches lose methods
+- **循环引用**：`JSON.stringify` 对循环引用会失败
+  - *解决方案*：使用 `structuredClone()` 或自定义克隆逻辑
+- **克隆方法/函数**：某些方式会丢失方法
   ```typescript
-  JSON.parse(JSON.stringify(obj)); // Loses all methods!
+  JSON.parse(JSON.stringify(obj)); // 丢失所有方法！
   ```
-- **Not cloning private state**: Ensure all necessary state is copied
+- **未克隆私有状态**：确保所有必要状态都被复制
 
-### Evaluation Criteria
-- **Performance**: 9/10 (faster than re-initialization)
-- **Simplicity**: 7/10 (shallow vs deep cloning is tricky)
-- **Reliability**: 6/10 (easy to get wrong with nested objects)
+### 评估标准
+- **性能**：9/10（比重新初始化更快）
+- **简洁性**：7/10（浅克隆与深克隆较难把握）
+- **可靠性**：6/10（嵌套对象容易出错）
 
 ---
 
-## Summary Table
+## 汇总表
 
-| Pattern | Complexity | Use Frequency | Main Benefit |
-|---------|------------|---------------|--------------|
-| Singleton | Low | High | Global access control |
-| Factory Method | Medium | High | Decouples creation from usage |
-| Abstract Factory | High | Medium | Consistent product families |
-| Builder | Medium | High | Fluent construction of complex objects |
-| Prototype | Low | Low | Efficient cloning |
+| 模式 | 复杂度 | 使用频率 | 主要优势 |
+|------|--------|----------|----------|
+| 单例 | 低 | 高 | 全局访问控制 |
+| 工厂方法 | 中 | 高 | 解耦创建与使用 |
+| 抽象工厂 | 高 | 中 | 一致的产品族 |
+| 建造者 | 中 | 高 | 流式构建复杂对象 |
+| 原型 | 低 | 低 | 高效克隆 |
 
-## Best Practices
+## 最佳实践
 
-1. **Prefer composition over inheritance**: Factory and Builder often better than Singleton
-2. **Use stack-native alternatives**: React Context > Singleton, DI > getInstance()
-3. **TypeScript leverage**: Use generics and type constraints for type-safe builders
-4. **Test-friendly design**: Avoid Singleton; use dependency injection
-5. **Simplicity first**: Don't use Abstract Factory when Factory Method suffices
+1. **优先使用组合而非继承**：工厂和建造者通常优于单例
+2. **使用技术栈原生替代方案**：React Context 优于单例，DI 优于 `getInstance()`
+3. **充分利用 TypeScript**：使用泛型和类型约束实现类型安全的建造者
+4. **测试友好设计**：避免单例；使用依赖注入
+5. **简单优先**：工厂方法已够用时，不要使用抽象工厂
 
-## References
+## 参考资料
 
-- *Design Patterns: Elements of Reusable Object-Oriented Software* (Gang of Four)
+- *Design Patterns: Elements of Reusable Object-Oriented Software*（四人帮）
 - *Effective TypeScript* by Dan Vanderkam
 - [Refactoring Guru: Creational Patterns](https://refactoring.guru/design-patterns/creational-patterns)

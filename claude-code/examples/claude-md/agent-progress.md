@@ -1,46 +1,45 @@
 > 📚 **AI Spark Wiki** · Claude Code 知识库
 
-# Session Progress
+# 会话进度
 
 <!--
-agent-progress.md — Session handoff template for harness engineering.
-Written at the end of every session, read at the start of the next.
-Keep it short and concrete. The "Notes for Next Session" section is
-the highest-ROI part: file paths and line numbers save 5-10 minutes
-of orientation at session start.
+agent-progress.md — 用于工作流工程的会话交接模板。
+在每次会话结束时写入，在下次会话开始时读取。
+保持简短具体。"下次会话备注"部分是
+投入产出比最高的部分：文件路径和行号可以节省
+会话开始时 5-10 分钟的定向时间。
 
-Related: examples/templates/feature-list.json, §9.25 Harness Engineering
+相关：examples/templates/feature-list.json，§9.25 工作流工程
 -->
 
-## Last Updated
-YYYY-MM-DD — Session N
+## 最后更新
+YYYY-MM-DD — 第 N 次会话
 
-## Active Feature
-feat-XXX: Feature Name
+## 当前功能
+feat-XXX: 功能名称
 
-## Done This Session
-- [x] Completed item
-- [x] Another completed item
+## 本次会话已完成
+- [x] 已完成的事项
+- [x] 另一个已完成的事项
 
-## In Progress
-- [ ] Current work item
-  - Status: brief description of how far along
-  - Blocker: none (or describe the blocker)
+## 进行中
+- [ ] 当前工作事项
+  - 状态：简要描述进展程度
+  - 阻塞：无（或描述阻塞原因）
 
-## Next Steps
-1. First action for next session
-2. Second action
-3. Third action
+## 下一步
+1. 下次会话的第一个行动
+2. 第二个行动
+3. 第三个行动
 
-## Evidence
-- lint: clean / N errors
-- typecheck: clean / N errors
-- unit tests: N/N pass
-- integration tests: N/N pass / not yet run
-- e2e: pass / not yet run
+## 证据
+- lint：无问题 / N 个错误
+- 类型检查：无问题 / N 个错误
+- 单元测试：N/N 通过
+- 集成测试：N/N 通过 / 尚未运行
+- e2e：通过 / 尚未运行
 
-## Notes for Next Session
-Specific file paths, function names, and line numbers that save
-reconstruction time. Example: "The wiring point is
-src/services/DocumentService.import() at line 67. It expects a
-ChunkResult[] type defined in src/types/documents.ts:18."
+## 下次会话备注
+具体的文件路径、函数名和行号，可节省重建上下文的时间。
+示例："接入点是 src/services/DocumentService.import()，位于第 67 行。
+它期望接收 src/types/documents.ts:18 中定义的 ChunkResult[] 类型。"

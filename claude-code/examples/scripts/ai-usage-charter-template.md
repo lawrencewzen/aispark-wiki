@@ -1,202 +1,202 @@
 > 📚 **AI Spark Wiki** · Claude Code 知识库
 
-# AI Coding Tools Usage Charter
+# AI 编程工具使用规范
 
-> **Template** — Copy to `docs/ai-usage-charter.md` in your organization's docs repo.
-> Adapt sections marked with `[BRACKETS]`.
+> **模板** — 复制到你所在组织文档仓库的 `docs/ai-usage-charter.md`。
+> 调整 `[方括号]` 标注的部分。
 >
-> Related: guide/security/enterprise-governance.md §2
+> 相关文档：guide/security/enterprise-governance.md §2
 
 ---
 
-**Organization**: [Your Organization]
-**Applies to**: Claude Code and all AI coding assistants
-**Effective date**: [DATE]
-**Owner**: [Engineering Lead / CTO / CISO]
-**Review cadence**: Quarterly
-**Version**: 1.0.0
+**组织名称**：[你的组织]
+**适用范围**：Claude Code 及所有 AI 编程助手
+**生效日期**：[日期]
+**负责人**：[工程负责人 / CTO / CISO]
+**审查周期**：每季度
+**版本**：1.0.0
 
 ---
 
-## 1. Purpose
+## 1. 目的
 
-This charter defines how [Organization] employees may use AI coding assistants, which tools are approved, what data can be used with them, and who is accountable for compliance. The goal is to enable productive AI-assisted development while managing security, privacy, and regulatory risk.
-
----
-
-## 2. Approved Tools
-
-| Tool | Plan / Tier | Scope | Administered by |
-|------|-------------|-------|----------------|
-| Claude Code | Team/Enterprise | All engineering work | Platform Team |
-| Claude Code | Personal Pro | Personal dev only (no company data above INTERNAL) | Individual |
-| [Other Tool] | [Plan] | [Scope] | [Team] |
-
-**Using non-approved AI coding tools on company systems is prohibited.** If you believe an additional tool would benefit your work, submit an approval request to [engineering-lead@company.com].
+本规范规定了 [组织] 员工使用 AI 编程助手的方式、已批准的工具列表、可使用的数据范围以及合规责任人。目标是在有效管控安全、隐私和合规风险的前提下，实现高效的 AI 辅助开发。
 
 ---
 
-## 3. Data Classification Rules
+## 2. 已批准工具
 
-All data at [Organization] is classified into four levels. Your use of AI tools must comply with this classification.
+| 工具 | 套餐/版本 | 使用范围 | 管理方 |
+|------|----------|---------|--------|
+| Claude Code | Team/Enterprise | 所有工程工作 | 平台团队 |
+| Claude Code | 个人 Pro | 仅限个人开发（不得使用 INTERNAL 以上级别的公司数据） | 个人 |
+| [其他工具] | [套餐] | [范围] | [团队] |
 
-| Classification | Examples | Claude Code permitted? | Notes |
-|----------------|----------|----------------------|-------|
-| **PUBLIC** | Open-source code, public documentation | Yes — no restrictions | |
-| **INTERNAL** | Internal tools, non-sensitive business code | Yes — standard config | Use company accounts |
-| **CONFIDENTIAL** | Customer data (non-PII), business secrets, proprietary algorithms | Yes — Enterprise plan only, with approved config | |
-| **RESTRICTED** | PCI card data, PHI, credentials, auth tokens, encryption keys | **Never** | No exceptions |
-
-### Hard Rules
-
-- RESTRICTED data **never** enters an AI context window — not in prompts, not in files Claude reads, not as examples.
-- Personal AI accounts (personal Pro subscriptions) may only be used with PUBLIC or INTERNAL data.
-- Company credentials and API keys are RESTRICTED. Never paste them into prompts.
-
-### Technical Enforcement
-
-Projects handling CONFIDENTIAL or RESTRICTED data must configure `permissions.deny` in `.claude/settings.json` to block AI access to sensitive files. See the [Standard or Regulated tier config](../../guide/security/enterprise-governance.md#4-guardrail-tiers) for ready-to-use configurations.
+**禁止在公司系统上使用未经批准的 AI 编程工具。** 如需申请新增工具，请向 [engineering-lead@company.com] 提交审批申请。
 
 ---
 
-## 4. Approved Use Cases
+## 3. 数据分级规则
 
-The following uses of AI coding assistants are approved without additional review:
+[组织] 的所有数据分为四个等级，使用 AI 工具时必须遵守对应分级要求。
 
-- Code completion and generation for approved data classifications
-- Code review and quality analysis
-- Test generation and mutation testing
-- Documentation drafting and updating
-- Debugging, root cause analysis, log analysis
-- Architecture analysis of internal systems
-- CLI scripting, automation, build tooling
-- Refactoring and code cleanup
+| 数据级别 | 示例 | 是否允许使用 Claude Code | 备注 |
+|---------|------|------------------------|------|
+| **公开（PUBLIC）** | 开源代码、公开文档 | 允许，无限制 | |
+| **内部（INTERNAL）** | 内部工具、非敏感业务代码 | 允许，使用标准配置 | 使用公司账号 |
+| **保密（CONFIDENTIAL）** | 非 PII 的客户数据、商业机密、专有算法 | 仅限 Enterprise 版本且使用已批准配置 | |
+| **限制（RESTRICTED）** | PCI 持卡人数据、PHI、凭证、认证令牌、加密密钥 | **严禁** | 无例外 |
 
----
+### 强制规则
 
-## 5. Prohibited Use Cases
+- RESTRICTED 数据**绝不**进入 AI 上下文窗口——无论是提示词、Claude 读取的文件，还是示例内容。
+- 个人 AI 账号（个人 Pro 订阅）只能用于 PUBLIC 或 INTERNAL 级别的数据。
+- 公司凭证和 API 密钥属于 RESTRICTED 级别，严禁粘贴到提示词中。
 
-The following are **not permitted** without explicit written approval:
+### 技术管控
 
-| Prohibited use | Reason | Exception process |
-|----------------|--------|------------------|
-| Processing raw PCI cardholder data | Regulatory (PCI DSS) | None — technically enforced |
-| Generating code handling unencrypted PHI without security review | Regulatory (HIPAA) | Security review required |
-| Autonomous deployment to production | Human oversight requirement | Approval from Eng Director |
-| Using personal AI accounts for CONFIDENTIAL data | Data residency/privacy | Upgrade to company account |
-| Sharing customer data as examples in prompts | Privacy, data handling | Use synthetic data |
-| Bypassing governance controls (hooks, deny rules) | Policy violation | None |
+处理 CONFIDENTIAL 或 RESTRICTED 数据的项目，必须在 `.claude/settings.json` 中配置 `permissions.deny`，阻止 AI 访问敏感文件。可参考[标准或受监管层级配置](../../guide/security/enterprise-governance.md#4-guardrail-tiers)获取现成配置。
 
 ---
 
-## 6. MCP Server Governance
+## 4. 已批准使用场景
 
-Model Context Protocol (MCP) servers extend Claude Code's capabilities and introduce additional risk surface. All MCP servers used on company projects must be:
+以下 AI 编程助手使用场景无需额外审批：
 
-1. Listed in the approved registry (`.claude/mcp-registry.yaml` in the platform config repo)
-2. Pinned to an exact version (never `@latest`)
-3. Re-reviewed every 6 months or on major version bumps
-
-**Approval process**: Submit a request with server name, source URL, intended use case, and data scope to [platform-team@company.com] or [#claude-code-requests Slack channel].
-
-Unapproved MCPs detected in project configs will be flagged at session start. Developers have 48 hours to remove or seek approval.
+- 符合数据分级要求的代码补全与生成
+- 代码审查与质量分析
+- 测试用例生成与变异测试
+- 文档起草与更新
+- 调试、根因分析、日志分析
+- 内部系统架构分析
+- CLI 脚本编写、自动化、构建工具
+- 重构与代码清理
 
 ---
 
-## 7. Code Review and Attribution
+## 5. 禁止使用场景
 
-### AI Attribution
+以下行为**未经明确书面批准不得进行**：
 
-All pull requests where AI assisted in writing code must include an AI disclosure section:
+| 禁止行为 | 原因 | 例外申请流程 |
+|---------|------|------------|
+| 处理原始 PCI 持卡人数据 | 合规要求（PCI DSS） | 无例外，技术层面强制执行 |
+| 未经安全审查生成处理未加密 PHI 的代码 | 合规要求（HIPAA） | 需通过安全审查 |
+| 自主部署到生产环境 | 人工监督要求 | 需工程总监批准 |
+| 使用个人 AI 账号处理 CONFIDENTIAL 数据 | 数据驻留/隐私 | 升级为公司账号 |
+| 在提示词中分享客户数据作为示例 | 隐私与数据处理规范 | 改用合成数据 |
+| 绕过治理管控（钩子、拒绝规则、注册表） | 违反政策 | 无例外 |
+
+---
+
+## 6. MCP 服务器治理
+
+Model Context Protocol（MCP）服务器扩展了 Claude Code 的能力，同时也引入了额外的风险面。公司项目中使用的所有 MCP 服务器必须满足：
+
+1. 已列入已批准注册表（平台配置仓库中的 `.claude/mcp-registry.yaml`）
+2. 锁定到精确版本（禁止使用 `@latest`）
+3. 每 6 个月或主版本升级时重新审查
+
+**审批流程**：向 [platform-team@company.com] 或 [Slack #claude-code-requests 频道] 提交申请，需包含：服务器名称、来源 URL、预期用途和数据范围。
+
+项目配置中检测到未批准的 MCP 时，将在会话启动时标记提示。开发者有 48 小时时间移除或申请审批。
+
+---
+
+## 7. 代码审查与署名
+
+### AI 署名声明
+
+所有有 AI 参与编写代码的 Pull Request 必须包含 AI 披露章节：
 
 ```markdown
-## AI Assistance
-- AI tool used: Claude Code
-- Scope: [e.g., "Generated tests for auth module", "Refactored payment handler"]
-- Human review: Reviewer checked logic, security implications, and edge cases
+## AI 辅助说明
+- 使用工具：Claude Code
+- 参与范围：[例如："生成了认证模块的测试"、"重构了支付处理器"]
+- 人工审查：审阅者已检查逻辑、安全影响和边界情况
 ```
 
-The standard `Co-Authored-By: Claude <noreply@anthropic.com>` commit trailer (added automatically by Claude Code) satisfies attribution for routine changes. Explicit PR disclosure is required for:
-- Any change to authentication or authorization
-- Any change to payment or financial logic
-- Any database schema change
-- Any new external API integration
+Claude Code 自动添加的标准 `Co-Authored-By: Claude <noreply@anthropic.com>` commit 尾注，可满足常规变更的署名要求。以下情况需在 PR 中明确披露：
+- 对认证或授权逻辑的任何变更
+- 对支付或财务逻辑的任何变更
+- 任何数据库 Schema 变更
+- 任何新的外部 API 集成
 
-### Code Review Expectations
+### 代码审查要求
 
-AI-generated code is not exempt from code review. Reviewers should apply the same — or stricter — scrutiny to AI-generated sections, particularly for:
-- Security-sensitive paths (auth, crypto, access control)
-- Data handling (PII, financial data)
-- Edge cases and error conditions that AI tools often miss
-
----
-
-## 8. Accountability
-
-### Developer Responsibilities
-
-By using Claude Code on company systems, you agree to:
-- Follow this charter
-- Report suspected data exposure to [security@company.com] within 24 hours
-- Participate in quarterly access reviews
-- Complete AI tools onboarding checklist when joining or switching teams
-- Not circumvent governance controls (hooks, deny rules, registry)
-
-### Team Lead Responsibilities
-
-- Ensure projects are configured with the appropriate guardrail tier
-- Review MCP registry quarterly
-- Include AI charter in team onboarding
-- Escalate charter violations per §9
-
-### Platform Team Responsibilities
-
-- Maintain shared governance config (settings.json templates, hooks)
-- Review MCP approval requests within 1 week
-- Update charter when tools, tiers, or risks change
-- Conduct semi-annual governance audit
+AI 生成的代码不豁免代码审查。审阅者应对 AI 生成部分施以同等甚至更严格的审查，尤其关注：
+- 安全敏感路径（认证、加密、访问控制）
+- 数据处理（PII、财务数据）
+- AI 工具常见遗漏的边界情况与错误处理
 
 ---
 
-## 9. Incident Response
+## 8. 责任划分
 
-### If you suspect data exposure
+### 开发者责任
 
-1. **Stop** the current AI session immediately
-2. **Document** what data may have been included in the context (which files, what prompts)
-3. **Report** to [security@company.com] with "AI Data Exposure" in subject, within 24 hours
-4. **Do not** attempt to investigate or remediate without security guidance
+使用 Claude Code 访问公司系统，即表示你同意：
+- 遵守本规范
+- 发现疑似数据泄露时，24 小时内向 [security@company.com] 报告
+- 参与季度访问权限审查
+- 入职或换组时完成 AI 工具新人培训清单
+- 不绕过治理管控（钩子、拒绝规则、注册表）
 
-### Charter violations
+### 团队负责人责任
 
-| Severity | Examples | Response |
-|----------|----------|---------|
-| **Minor** | Forgot AI attribution in PR, used unapproved MCP briefly | Coaching, remediation |
-| **Moderate** | Used personal account with CONFIDENTIAL data, bypassed a hook | Formal warning, re-training |
-| **Severe** | Processed RESTRICTED data with AI, persistent bypass of controls | HR/legal involvement |
+- 确保项目配置了适当的护栏层级
+- 每季度审查 MCP 注册表
+- 将 AI 使用规范纳入团队入职培训
+- 按第 §9 条处理规范违反事项
 
----
+### 平台团队责任
 
-## 10. Compliance Mapping
-
-This charter addresses the following compliance requirements:
-
-| Framework | Relevant Controls | This Charter Addresses |
-|-----------|------------------|----------------------|
-| **SOC 2** | CC6.1 (Logical access), CC7.1 (Monitoring), CC9.2 (Vendor risk) | Data classification, MCP registry, audit logging |
-| **ISO 27001** | A.8.3 (Access restriction), A.8.25 (Secure dev lifecycle), A.5.23 (Cloud services) | Approved tools, governance tiers, data handling |
-| **HIPAA** (if applicable) | Security Rule §164.312 (Access control, Audit controls) | RESTRICTED data prohibition, compliance-mode logging |
-| **PCI DSS** (if applicable) | Req 6.3 (Security vulnerabilities), Req 12 (Policy) | PCI data prohibition, code review requirements |
-| **GDPR/CCPA** | Data minimization, purpose limitation | CONFIDENTIAL/RESTRICTED classification, data scope rules |
+- 维护共享治理配置（settings.json 模板、钩子）
+- 在 1 周内完成 MCP 审批申请处理
+- 工具、层级或风险发生变化时更新规范
+- 每半年开展一次治理审计
 
 ---
 
-## 11. Revision History
+## 9. 事件响应
 
-| Version | Date | Author | Changes |
-|---------|------|--------|---------|
-| 1.0.0 | [DATE] | [Name] | Initial version |
+### 疑似数据泄露时
+
+1. **立即停止**当前 AI 会话
+2. **记录**可能进入上下文的数据（哪些文件、哪些提示词内容）
+3. **在 24 小时内**向 [security@company.com] 报告，邮件主题注明"AI 数据泄露"
+4. **不要**在未获得安全团队指导的情况下自行排查或修复
+
+### 规范违反处理
+
+| 严重程度 | 示例 | 处理方式 |
+|---------|------|---------|
+| **轻微** | PR 遗漏 AI 署名、短暂使用未批准 MCP | 辅导沟通，整改 |
+| **中等** | 使用个人账号处理 CONFIDENTIAL 数据、绕过钩子规则 | 正式警告，重新培训 |
+| **严重** | 用 AI 处理 RESTRICTED 数据、持续绕过管控 | 涉及 HR/法务 |
 
 ---
 
-*Questions or exceptions: [engineering-lead@company.com] | Slack: [#ai-tools-governance]*
+## 10. 合规映射
+
+本规范对应以下合规要求：
+
+| 框架 | 相关控制项 | 本规范对应内容 |
+|------|----------|--------------|
+| **SOC 2** | CC6.1（逻辑访问）、CC7.1（监控）、CC9.2（供应商风险） | 数据分级、MCP 注册表、审计日志 |
+| **ISO 27001** | A.8.3（访问限制）、A.8.25（安全开发生命周期）、A.5.23（云服务） | 已批准工具、治理层级、数据处理规范 |
+| **HIPAA**（如适用） | 安全规则 §164.312（访问控制、审计控制） | RESTRICTED 数据禁令、合规模式日志 |
+| **PCI DSS**（如适用） | 要求 6.3（安全漏洞）、要求 12（策略） | PCI 数据禁令、代码审查要求 |
+| **GDPR/CCPA** | 数据最小化、目的限制 | CONFIDENTIAL/RESTRICTED 分级、数据范围规则 |
+
+---
+
+## 11. 修订记录
+
+| 版本 | 日期 | 作者 | 变更内容 |
+|------|------|------|---------|
+| 1.0.0 | [日期] | [姓名] | 初始版本 |
+
+---
+
+*如有疑问或需申请例外：[engineering-lead@company.com] | Slack：[#ai-tools-governance]*

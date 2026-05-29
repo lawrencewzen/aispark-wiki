@@ -2,64 +2,64 @@
 
 ---
 name: git-ai-archaeology
-description: "Analyze AI config evolution in a git repo. Use when mapping AI adoption history, finding when configs were first introduced, charting commit velocity by month, or identifying maturity phases in a project's AI tooling."
+description: "分析 git 仓库中 AI 配置的演进历程。适用于梳理 AI 采用历史、追溯配置文件首次引入时间、按月统计提交频率，或识别项目 AI 工具链的成熟度阶段。"
 allowed-tools: Write Read Bash
 effort: medium
 ---
 
 # git-ai-archaeology
 
-Produces a complete analysis of AI config evolution in a git repository. Finds when each AI configuration file was created, how AI-config commit velocity evolved month by month, which PRs structured the evolution, and identifies maturity phases.
+对 git 仓库中 AI 配置的演进历程进行完整分析。找出每个 AI 配置文件的创建时间、AI 配置相关提交的逐月变化趋势、哪些 PR 推动了演进，并识别成熟度阶段。
 
-**Output**: a single file `{output_dir}/{slug}-git-archaeology.md`
+**输出**：单个文件 `{output_dir}/{slug}-git-archaeology.md`
 
-## Expected Input
+## 预期输入
 
 ```
 /git-ai-archaeology repo_path=/path/to/repo [output=./talks/slug] [slug=talk-name] [since=2025-01-01]
 ```
 
-- `repo_path`: absolute path to the target git repo (required)
-- `output`: output directory (default: `./talks`)
-- `slug`: output filename (default: repo folder name)
-- `since`: analysis start date (default: first repo commit)
+- `repo_path`：目标 git 仓库的绝对路径（必填）
+- `output`：输出目录（默认：`./talks`）
+- `slug`：输出文件名（默认：仓库文件夹名称）
+- `since`：分析起始日期（默认：仓库第一次提交时间）
 
-## Workflow
+## 工作流
 
-1. **Verify the repo**: ensure the path exists and is a git repo
-2. **Global metrics**: total commits, releases, contributors, time period
-3. **Section 1 — First commits**: find creation date for key AI-config paths
-4. **Section 2 — Monthly distribution**: commits filtered by AI-config keywords
-5. **Section 3 — Major PRs**: extract and categorize significant AI-config commits
-6. **Section 4 — CHANGELOG**: if CHANGELOG.md exists, extract releases with AI mentions
-7. **Section 5 — Phases**: synthesize evolution phases
-8. **Save** the output file
+1. **验证仓库**：确认路径存在且为 git 仓库
+2. **全局指标**：总提交数、发布次数、贡献者数量、时间跨度
+3. **第 1 节 — 首次提交**：找出关键 AI 配置路径的创建日期
+4. **第 2 节 — 按月分布**：按 AI 配置关键词过滤的提交统计
+5. **第 3 节 — 重要 PR**：提取并分类重要的 AI 配置提交
+6. **第 4 节 — CHANGELOG**：若存在 CHANGELOG.md，提取含 AI 提及的发布记录
+7. **第 5 节 — 阶段划分**：综合分析演进阶段
+8. **保存**输出文件
 
 ---
 
-## Step 1: Verification and Global Metrics
+## 第 1 步：验证与全局指标
 
 ```bash
-# Verify it's a git repo
+# 验证是否为 git 仓库
 git -C {repo_path} rev-parse --git-dir
 
-# Global metrics
-git -C {repo_path} log --oneline | wc -l                                    # total commits
-git -C {repo_path} tag --sort=version:refname | wc -l                       # total releases
-git -C {repo_path} shortlog -sn --no-merges | wc -l                         # contributors
-git -C {repo_path} log --pretty=format:"%ad" --date=short | tail -1         # first commit
-git -C {repo_path} log --pretty=format:"%ad" --date=short | head -1         # last commit
-git -C {repo_path} log --merges --oneline | wc -l                           # merged PRs
+# 全局指标
+git -C {repo_path} log --oneline | wc -l                                    # 总提交数
+git -C {repo_path} tag --sort=version:refname | wc -l                       # 总发布次数
+git -C {repo_path} shortlog -sn --no-merges | wc -l                         # 贡献者数量
+git -C {repo_path} log --pretty=format:"%ad" --date=short | tail -1         # 首次提交
+git -C {repo_path} log --pretty=format:"%ad" --date=short | head -1         # 最近提交
+git -C {repo_path} log --merges --oneline | wc -l                           # 已合并 PR 数
 ```
 
 ---
 
-## Step 2: Section 1 — First Commits per AI-Config Path
+## 第 2 步：第 1 节 — 各 AI 配置路径的首次提交
 
-For each path, find the origin commit with `--diff-filter=A`:
+对每个路径，使用 `--diff-filter=A` 找到原始提交：
 
 ```bash
-# Paths to analyze — adapt based on what exists in the repo
+# 待分析路径 — 根据仓库实际情况调整
 PATHS=(
   "CLAUDE.md"
   ".claude"
@@ -82,27 +82,27 @@ for path in "${PATHS[@]}"; do
 done
 ```
 
-Build the Section 1 table from results. Skip paths with no output (don't exist in this repo).
+根据结果构建第 1 节表格。跳过无输出的路径（即该仓库中不存在的路径）。
 
-Also build the ASCII timeline:
+同时构建 ASCII 时间线：
 ```
 {date} ─── {path} ─── {message}
 ```
-Sorted chronologically.
+按时间顺序排列。
 
 ---
 
-## Step 3: Section 2 — Monthly Distribution of AI-Config Commits
+## 第 3 步：第 2 节 — AI 配置提交的按月分布
 
-Filter commits by AI-config-related keywords:
+按 AI 配置相关关键词过滤提交：
 
 ```bash
-# All commits with AI-config keywords
+# 含 AI 配置关键词的所有提交
 git -C {repo_path} log --format="%H %s" | \
   grep -iE "(claude|feat.ai|docs.ai|tech.ai|mcp|skill|hook|agent|llm|prompt)" \
   > /tmp/ai_commits_filtered.txt
 
-# Count AI-config commits per month
+# 按月统计 AI 配置提交数
 git -C {repo_path} log --format="%ad %H" --date=format:"%Y-%m" | \
   while read month hash; do
     if grep -q "$hash" /tmp/ai_commits_filtered.txt; then
@@ -111,7 +111,7 @@ git -C {repo_path} log --format="%ad %H" --date=format:"%Y-%m" | \
   done | sort | uniq -c
 ```
 
-More direct alternative:
+更直接的替代方案：
 
 ```bash
 git -C {repo_path} log --format="%ad %s" --date=format:"%Y-%m" | \
@@ -119,32 +119,32 @@ git -C {repo_path} log --format="%ad %s" --date=format:"%Y-%m" | \
   awk '{print $1}' | sort | uniq -c
 ```
 
-Compute per month:
-- AI-config commit count
-- % of monthly total (cross-reference with all-category monthly total)
-- Context (if notable period)
+按月计算：
+- AI 配置提交数
+- 占当月总提交的百分比（与各类别月度总量交叉对比）
+- 背景说明（如属于显著时期）
 
-Build ASCII distribution chart (horizontal or vertical bars).
+构建 ASCII 分布图（横向或纵向柱状图）。
 
 ---
 
-## Step 4: Section 3 — Major PRs and Commits
+## 第 4 步：第 3 节 — 重要 PR 与提交
 
-### 3.1 — feat(ai): / docs(ai): / tech(ai): commits
+### 3.1 — feat(ai): / docs(ai): / tech(ai): 提交
 
 ```bash
 git -C {repo_path} log --format="%ad | %H | %s" --date=short | \
   grep -iE "\(ai\)|\(mcp\)|\[ai\]"
 ```
 
-### 3.2 — MCP Server integrations
+### 3.2 — MCP Server 集成
 
 ```bash
 git -C {repo_path} log --format="%ad | %H | %s" --date=short | \
   grep -iE "mcp|serena|grepai|perplexity|sonar|postgres.*mcp|cursor.*mcp"
 ```
 
-### 3.3 — Skills, commands, hooks, agents
+### 3.3 — 技能、命令、钩子、智能体
 
 ```bash
 git -C {repo_path} log --format="%ad | %H | %s" --date=short | \
@@ -152,7 +152,7 @@ git -C {repo_path} log --format="%ad | %H | %s" --date=short | \
   grep -v "^$"
 ```
 
-### 3.4 — Code review automation
+### 3.4 — 代码审查自动化
 
 ```bash
 git -C {repo_path} log --format="%ad | %H | %s" --date=short | \
@@ -161,62 +161,62 @@ git -C {repo_path} log --format="%ad | %H | %s" --date=short | \
 
 ---
 
-## Step 5: Section 4 — CHANGELOG Analysis (if available)
+## 第 5 步：第 4 节 — CHANGELOG 分析（如有）
 
 ```bash
-# Check if CHANGELOG.md exists
+# 检查 CHANGELOG.md 是否存在
 ls {repo_path}/CHANGELOG.md
 
-# Extract releases with AI mentions
+# 提取含 AI 提及的发布记录
 grep -n "## \[" {repo_path}/CHANGELOG.md | head -30
 ```
 
-Read the CHANGELOG and build a table:
+读取 CHANGELOG 并构建表格：
 
-| Release | Date | AI-Related Content |
-|---------|------|-------------------|
+| 版本 | 日期 | AI 相关内容 |
+|------|------|------------|
 
-Only list releases with AI-config content (CLAUDE.md, MCP, agents, skills, hooks, guardrails, prompts, etc.).
-
----
-
-## Step 6: Section 5 — Evolution Phases
-
-Analyze collected data and identify maturity phases. Typical pattern:
-
-| Phase | Characteristics | Commits | Label |
-|-------|-----------------|---------|-------|
-| **Phase 1** | Basic config, solo usage, no structure | Low | "Config as Afterthought" |
-| **Phase 2** | Documentation, knowledge base, first MCP | Growing | "Config as Documentation" |
-| **Phase 3** | Infrastructure: skills/hooks/rules/MCP stack | Spike | "Config as Infrastructure" |
-| **Phase 4** | Engineering: tests, CI, guardrails, modules | Dense | "Config as Engineering Practice" |
-
-Adapt phases to what the data actually reveals.
-
-Identify the **main inflection point**: the month where AI-config commit volume spiked.
-
-Compute the "recent vs historical" ratio (e.g., "81% of AI-config commits in the last 2 months").
+仅列出含 AI 配置内容的发布（CLAUDE.md、MCP、智能体、技能、钩子、护栏、提示词等）。
 
 ---
 
-## Output Format: {slug}-git-archaeology.md
+## 第 6 步：第 5 节 — 演进阶段
+
+分析收集到的数据并识别成熟度阶段。典型模式：
+
+| 阶段 | 特征 | 提交量 | 标签 |
+|------|------|--------|------|
+| **阶段 1** | 基础配置、个人使用、无结构 | 少 | "配置是事后补充" |
+| **阶段 2** | 文档化、知识库、首个 MCP | 增长 | "配置即文档" |
+| **阶段 3** | 基础设施：技能/钩子/规则/MCP 栈 | 激增 | "配置即基础设施" |
+| **阶段 4** | 工程化：测试、CI、护栏、模块化 | 密集 | "配置即工程实践" |
+
+根据数据实际情况调整阶段划分。
+
+识别**主要拐点**：AI 配置提交量激增的月份。
+
+计算"近期与历史"比率（例如："过去 2 个月占 AI 配置提交总量的 81%"）。
+
+---
+
+## 输出格式：{slug}-git-archaeology.md
 
 ```markdown
-# Git Archaeology — AI Config Evolution: {slug}
+# Git 考古 — AI 配置演进：{slug}
 
-**Source**: Git history of repo `{repo_path}` ({total_commits}+ commits, {total_releases}+ releases)
-**Method**: `git log --diff-filter=A` for first commits, filtered monthly distribution, major PRs
-**Last updated**: {date}
+**来源**：仓库 `{repo_path}` 的 git 历史（{total_commits}+ 次提交，{total_releases}+ 次发布）
+**方法**：`git log --diff-filter=A` 追溯首次提交、过滤月度分布、重要 PR
+**最后更新**：{date}
 
 ---
 
-## Section 1: First Commit per Key Path
+## 第 1 节：各关键路径的首次提交
 
-| Path | Creation Date | Commit Message | Hash |
-|------|--------------|----------------|------|
+| 路径 | 创建日期 | 提交信息 | Hash |
+|------|---------|---------|------|
 {rows}
 
-### Creation Timeline
+### 创建时间线
 
 \```
 {ascii_timeline}
@@ -224,112 +224,112 @@ Compute the "recent vs historical" ratio (e.g., "81% of AI-config commits in the
 
 ---
 
-## Section 2: Monthly Distribution of AI-Config Commits
+## 第 2 节：AI 配置提交的按月分布
 
-| Month | AI-Config Commits | % of Total | Context |
-|-------|-------------------|-----------|---------|
+| 月份 | AI 配置提交数 | 占总量百分比 | 背景 |
+|------|-------------|------------|------|
 {rows}
 
-### Visualization
+### 可视化
 
 \```
 {ascii_chart}
 \```
 
-**Inflection**: {insight on the commit spike}
+**拐点**：{关于提交激增的洞察}
 
 ---
 
-## Section 3: Major PRs and Commits Related to AI Tooling
+## 第 3 节：AI 工具链相关重要 PR 与提交
 
-### 3.1 PRs `feat(ai):` / `tech(ai):` / `docs(ai):`
+### 3.1 PR `feat(ai):` / `tech(ai):` / `docs(ai):`
 
-| Date | Hash | Message | Impact |
-|------|------|---------|--------|
+| 日期 | Hash | 信息 | 影响 |
+|------|------|------|------|
 {rows}
 
-### 3.2 MCP Server Integrations (chronological)
+### 3.2 MCP Server 集成（按时间顺序）
 
-| Date | MCP Server | Hash / PR | Role |
-|------|------------|-----------|------|
+| 日期 | MCP Server | Hash / PR | 作用 |
+|------|-----------|-----------|------|
 {rows}
 
-### 3.3 Skills, Commands, Hooks, Agents
+### 3.3 技能、命令、钩子、智能体
 
-| Date | Hash | Message | Category |
-|------|------|---------|----------|
+| 日期 | Hash | 信息 | 分类 |
+|------|------|------|------|
 {rows}
 
-### 3.4 Code Review Automation
+### 3.4 代码审查自动化
 
-| Date | Hash | Message |
-|------|------|---------|
+| 日期 | Hash | 信息 |
+|------|------|------|
 {rows}
 
 ---
 
-## Section 4: CHANGELOG AI Mentions by Release
+## 第 4 节：CHANGELOG 各发布版本中的 AI 提及
 
-{section if CHANGELOG available, otherwise "Not applicable"}
+{若有 CHANGELOG 则填充该节，否则填"不适用"}
 
 ---
 
-## Section 5: Evolution Phases
+## 第 5 节：演进阶段
 
-### Evidence-Based Timeline
+### 基于证据的时间线
 
-| Milestone | Exact Git Date | Git Evidence |
-|-----------|----------------|-------------|
+| 里程碑 | 精确 Git 日期 | Git 证据 |
+|--------|-------------|---------|
 {rows}
 
-### {N} Evolution Phases
+### {N} 个演进阶段
 
-#### Phase 1: {Label} ({period}) — {n} commits
-{description}
+#### 阶段 1：{标签}（{时期}）— {n} 次提交
+{描述}
 
-#### Phase 2: {Label} ({period}) — {n} commits
-{description}
+#### 阶段 2：{标签}（{时期}）— {n} 次提交
+{描述}
 
-#### Phase 3: {Label} ({period}) — {n} commits
-{description}
+#### 阶段 3：{标签}（{时期}）— {n} 次提交
+{描述}
 
-#### Phase 4: {Label} ({period}) — {n} commits
-{description}
+#### 阶段 4：{标签}（{时期}）— {n} 次提交
+{描述}
 
-### Key Insight
+### 关键洞察
 
-{Summary paragraph: main inflection point, recent/historical ratio, what the data reveals about the project's AI maturity.}
+{总结段落：主要拐点、近期与历史比率、数据揭示的项目 AI 成熟度。}
 
 ---
-*Generated by git-ai-archaeology — {date}*
-*Repo: {repo_path} | {total_commits} commits | {total_releases} releases*
+*由 git-ai-archaeology 生成 — {date}*
+*仓库：{repo_path} | {total_commits} 次提交 | {total_releases} 次发布*
 ```
 
 ---
 
-## Important Rules
+## 重要规则
 
-- **Read-only**: no git commands that modify repo state
-- **Verify before asserting**: a date not found in git = note "unverified"
-- **Adapt paths**: Section 1 paths must be filtered to what actually exists in this repo
-- **Extensible keywords**: if the repo uses different conventions (e.g., `feat[ai]` vs `feat(ai)`), adapt grep patterns
-- **Section 4 optional**: if no CHANGELOG.md or no AI mentions, note "Not applicable" and skip to Section 5
-- **Adaptive phases**: 4 phases is a common pattern, not a rule — 2 phases or 6 phases are equally valid
+- **只读**：不执行任何修改仓库状态的 git 命令
+- **先验证再断言**：git 中找不到的日期 = 注明"未验证"
+- **适配路径**：第 1 节的路径必须过滤为该仓库实际存在的路径
+- **可扩展关键词**：若仓库使用不同规范（如 `feat[ai]` 而非 `feat(ai)`），相应调整 grep 模式
+- **第 4 节可选**：若无 CHANGELOG.md 或无 AI 提及，注明"不适用"并跳转第 5 节
+- **自适应阶段**：4 个阶段是常见模式，不是规定 — 2 个或 6 个阶段同样有效
 
-## Anti-Patterns
+## 反模式
 
-- Inventing data not found in git
-- Rounding numbers without flagging it
-- Analyzing paths that don't exist in this repo
-- Confusing a rename commit with a creation
-- Omitting "flat" months (0 AI-config commits also tells a story)
+- 捏造 git 中未找到的数据
+- 数字取整但不注明
+- 分析该仓库中不存在的路径
+- 将重命名提交误判为创建提交
+- 省略"平淡"的月份（0 次 AI 配置提交同样说明问题）
 
-## Validation Checklist
+## 验证清单
 
-- [ ] Repo verified and readable
-- [ ] Section 1: only paths that exist in this repo
-- [ ] Section 2: distribution covers the full repo period
-- [ ] Section 3: commits sorted chronologically, hash included
-- [ ] Section 4: cleanly skipped if no CHANGELOG
-- [ ] Section 5: phases based on data, not the template
-- [ ] Output file saved
+- [ ] 仓库已验证且可读
+- [ ] 第 1 节：仅包含该仓库实际存在的路径
+- [ ] 第 2 节：分布覆盖仓库完整时间跨度
+- [ ] 第 3 节：提交按时间顺序排列，包含 hash
+- [ ] 第 4 节：无 CHANGELOG 时已干净跳过
+- [ ] 第 5 节：阶段基于数据而非模板
+- [ ] 输出文件已保存

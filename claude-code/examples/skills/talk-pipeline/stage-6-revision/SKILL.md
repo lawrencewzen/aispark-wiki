@@ -2,230 +2,230 @@
 
 ---
 name: talk-stage6-revision
-description: "Produces revision sheets with quick navigation by act, a master concept-to-URL table, Q&A cheat-sheet with 6-10 anticipated questions, glossary, and external resources list. Use when preparing for a talk with Q&A, creating shareable reference material for attendees, or building a safety-net glossary for live delivery."
+description: "生成带幕次快速导航的复习手册，包含概念到URL的主对照表、6-10个预期问题的Q&A速查表、词汇表和外部资源列表。适用于：为含Q&A的演讲做准备、为听众创建可分享的参考资料，或为现场演讲构建安全词汇表。"
 tags: [talk, pipeline, presentation, stage-6]
 allowed-tools: "Write, Read"
 effort: medium
 ---
 
-# Talk Stage 6: Revision
+# 演讲第六阶段：复习
 
-Produces revision sheets usable during and after the talk. Quick navigation by act, master concept table with URLs to share, Q&A cheat-sheet, and glossary.
+生成可在演讲期间和之后使用的复习手册。包含幕次快速导航、带分享URL的概念主对照表、Q&A速查表和词汇表。
 
-## When to Use This Skill
+## 何时使用本技能
 
-- After Stage 5 (Script) — needs pitch + slides
-- Before a talk where Q&A is expected
-- To create a shareable resource for attendees
+- 第五阶段（脚本）之后 — 需要演讲稿和幻灯片
+- 演讲前，预计会有Q&A环节
+- 为听众创建可分享的资源
 
-## What This Skill Does
+## 本技能的功能
 
-1. **Reads all inputs** — pitch + slides + concepts (+ timeline if available)
-2. **Extracts navigation** — table of contents with anchors per act
-3. **Rebuilds by act** — key concepts + metrics + anecdotes + probable Q&A
-4. **Builds master table** — all concepts + definitions + URLs
-5. **Builds Q&A cheat-sheet** — 6-10 questions + short answers + links
-6. **Builds glossary** — technical terms from the talk
-7. **Lists external resources**
-8. **Assembles and saves**
+1. **读取所有输入** — 演讲稿 + 幻灯片 + 概念（+ 时间轴，如有）
+2. **提取导航结构** — 带幕次锚点的目录
+3. **按幕次整理** — 核心概念 + 数据指标 + 故事案例 + 可能的Q&A
+4. **构建主对照表** — 所有概念 + 定义 + URL
+5. **构建Q&A速查表** — 6-10个问题 + 简短答案 + 链接
+6. **构建词汇表** — 演讲中的技术术语
+7. **列出外部资源**
+8. **组装并保存**
 
-## Input
+## 输入
 
-- `talks/{YYYY}-{slug}-pitch.md` (required)
-- `talks/{YYYY}-{slug}-slides.md` (required)
-- `talks/{YYYY}-{slug}-concepts.md` (required)
-- `talks/{YYYY}-{slug}-timeline.md` (optional — for metrics accuracy)
+- `talks/{YYYY}-{slug}-pitch.md`（必需）
+- `talks/{YYYY}-{slug}-slides.md`（必需）
+- `talks/{YYYY}-{slug}-concepts.md`（必需）
+- `talks/{YYYY}-{slug}-timeline.md`（可选 — 用于提高数据指标准确性）
 
-## Output
+## 输出
 
 `talks/{YYYY}-{slug}-revision-sheets.md`
 
-## Output Format
+## 输出格式
 
 ```markdown
-# Revision Sheets — {title}
+# 复习手册 — {title}
 
-**Date**: {date} · **Talk duration**: {n} min + {n} min Q&A
-**Purpose**: Someone asks a question → find the section → share the URL in 5 seconds
+**日期**：{date} · **演讲时长**：{n} 分钟 + {n} 分钟 Q&A
+**目标**：有人提问 → 找到对应章节 → 5 秒内分享 URL
 
 ---
 
-## Quick navigation
+## 快速导航
 
-| Section | Content |
+| 章节 | 内容 |
 |---------|---------|
-| [Act 1](#act-1) | {1-line summary} |
-| [Act 2](#act-2) | {1-line summary} |
-| [Act 3](#act-3) | {1-line summary} |
-| [Act 4](#act-4) | {1-line summary} |
-| [Act 5](#act-5) | {1-line summary} |
-| [Conclusion](#conclusion) | {1-line summary} |
-| [Master Table](#master-table) | All concepts + URLs |
-| [Q&A Cheat-sheet](#qa-cheat-sheet) | {n} anticipated questions + answers |
-| [Resources](#external-resources) | Links mentioned in the talk |
+| [第一幕](#act-1) | {一句话摘要} |
+| [第二幕](#act-2) | {一句话摘要} |
+| [第三幕](#act-3) | {一句话摘要} |
+| [第四幕](#act-4) | {一句话摘要} |
+| [第五幕](#act-5) | {一句话摘要} |
+| [结语](#conclusion) | {一句话摘要} |
+| [主对照表](#master-table) | 所有概念 + URL |
+| [Q&A 速查表](#qa-cheat-sheet) | {n} 个预期问题 + 答案 |
+| [资源](#external-resources) | 演讲中提到的链接 |
 
 ---
 
-## ACT 1: {Title} (Slides 1-{n})
+## 第一幕：{标题}（幻灯片 1-{n}）
 
-**~{n} min · {period or context}**
+**~{n} 分钟 · {时期或背景}**
 
-### Key concepts
+### 核心概念
 
-| Concept | Short definition | URL to share |
+| 概念 | 简短定义 | 可分享的 URL |
 |---------|-----------------|--------------|
-| **{Concept}** | {1-2 concrete sentences} | {URL or "no direct link"} |
+| **{概念}** | {1-2 句具体说明} | {URL 或"无直接链接"} |
 ...
 
-### Metrics to know
+### 需掌握的数据指标
 
 ```
-{Metrics as code block — one per line, format: value → context}
+{数据指标代码块 — 每行一个，格式：数值 → 背景说明}
 ```
 
-### Storytelling / Anecdotes
+### 叙事/案例故事
 
-- **{Anecdote name}**: "{Quote or summary}"
+- **{案例名称}**："{引用或摘要}"
 
-### Probable Q&A for Act {n}
+### 第 {n} 幕可能的 Q&A
 
-| Question | Short answer |
+| 问题 | 简短答案 |
 |----------|-------------|
-| "{probable question}" | {direct answer, 2-3 sentences max} |
+| "{可能的问题}" | {直接回答，最多 2-3 句} |
 
 ---
 
-[Repeat for each act]
+[对每一幕重复以上结构]
 
 ---
 
-## Conclusion (Slides {n}-{n})
+## 结语（幻灯片 {n}-{n}）
 
-**~{n} min**
+**~{n} 分钟**
 
-### Summary metrics (the big numbers)
+### 汇总数据（核心数字）
 
 ```
-{All summary metrics — one per line}
+{所有汇总指标 — 每行一个}
 ```
 
-### {N} actions for Monday (if applicable)
+### 周一的 {N} 个行动（如适用）
 
-1. **{Action 1}**: {description + why}
-2. **{Action 2}**: {description + why}
-3. **{Action 3}**: {description + why}
+1. **{行动 1}**：{描述 + 原因}
+2. **{行动 2}**：{描述 + 原因}
+3. **{行动 3}**：{描述 + 原因}
 
 ---
 
-## Master Table: Concept → Definition → URL to share
+## 主对照表：概念 → 定义 → 可分享的 URL
 
-**The core deliverable. Every technical concept from the talk.**
+**核心交付物。演讲中所有技术概念的完整汇总。**
 
-| Concept | Definition (1-2 sentences) | Slide | URL to share | Notes |
+| 概念 | 定义（1-2 句） | 幻灯片 | 可分享的 URL | 备注 |
 |---------|--------------------------|-------|--------------|-------|
-| **{Concept}** | {precise, concise definition} | {n} | {URL or "pure storytelling"} | {guide section if applicable} |
+| **{概念}** | {精准简洁的定义} | {n} | {URL 或"纯叙事"} | {指南章节，如适用} |
 ...
 
 ---
 
-## Q&A Cheat-sheet
+## Q&A 速查表
 
-**The {n} most probable questions + short answers + URL to send**
-
----
-
-### Q1 — "{Question}"
-
-**Short answer**:
-{Answer in 3-5 bullets}
-
-**To go further**:
-- {Link 1 with context}
-- {Link 2 with context}
+**{n} 个最可能被问到的问题 + 简短答案 + 可发送的 URL**
 
 ---
 
-[Q2 through Q{n} — same structure]
+### Q1 — "{问题}"
+
+**简短答案**：
+{3-5 个要点}
+
+**深入了解**：
+- {链接 1 及说明}
+- {链接 2 及说明}
 
 ---
 
-## External Resources Mentioned in the Talk
+[Q2 至 Q{n} — 相同结构]
 
-### Priority URLs to share
+---
 
-| Resource | URL | Context |
+## 演讲中提到的外部资源
+
+### 优先分享的 URL
+
+| 资源 | URL | 背景说明 |
 |----------|-----|---------|
-| **{Resource}** | `{url}` | {why it's important} |
+| **{资源}** | `{url}` | {为何重要} |
 ...
 
-### Studies and external sources (if applicable)
+### 研究与外部来源（如适用）
 
-| Source | URL | How used in the talk |
+| 来源 | URL | 在演讲中的使用方式 |
 |--------|-----|---------------------|
-| **{Source}** | `{url}` | {how it's cited} |
+| **{来源}** | `{url}` | {如何引用} |
 
 ---
 
-## Quick Glossary (memory aid if you blank)
+## 快速词汇表（临场忘词时的救场手册）
 
-| Term | Ultra-short definition |
+| 术语 | 极简定义 |
 |------|----------------------|
-| {term} | {10 words max} |
+| {术语} | {最多 10 个字} |
 ...
 
 ---
 
-*Generated {date}. Source: slides, concepts, pitch.*
+*生成于 {date}。来源：幻灯片、概念、演讲稿。*
 ```
 
-## Construction Rules
+## 构建规则
 
-### Master Table
-- Include ALL technical concepts mentioned in pitch and slides
-- URL = link to a public resource (GitHub, docs, guide) — no dead links
-- If no link: note "pure storytelling, no guide section" or "concept specific to the project"
-- Definition = what you'd say if someone in the room asked "what's that?"
+### 主对照表
+- 涵盖演讲稿和幻灯片中提到的所有技术概念
+- URL = 指向公开资源的链接（GitHub、文档、指南）— 不得使用失效链接
+- 如无链接：注明"纯叙事，无指南章节"或"项目专属概念"
+- 定义 = 当有人问"这是什么？"时你会说的话
 
-### Q&A Cheat-sheet
-- 6 questions minimum, 10 maximum
-- Select the most probable questions for the audience
-- Short answer = what you'd say orally in 20 seconds max
-- "To go further" = actionable links, not vague references
+### Q&A 速查表
+- 最少 6 个问题，最多 10 个
+- 选取最可能被该受众提问的问题
+- 简短答案 = 口头 20 秒内能说完的内容
+- "深入了解" = 可操作的链接，不是模糊的参考资料
 
-### Metrics
-- Code block format for metrics (faster to scan)
-- One metric per line: `{value}` — {context}
-- Always with units (%, ms, K, days...)
+### 数据指标
+- 指标使用代码块格式（便于快速扫读）
+- 每行一个指标：`{数值}` — {背景说明}
+- 始终带单位（%、ms、K、天……）
 
-### Anecdotes
-- Extract verbatim from pitch where possible (for memorization)
-- Quote format for phrases to say exactly
+### 案例故事
+- 尽可能从演讲稿中原文提取（便于记忆）
+- 需要逐字复述的短语使用引用格式
 
-## Anti-patterns
+## 反模式
 
-- Incomplete Master Table (missing concepts = unusable in Q&A)
-- Q&A answers that are too long (if it exceeds 5 bullets, cut)
-- Invented or approximate URLs (verify every link is real)
-- Copy-pasting pitch descriptions without adapting to cheat-sheet format
-- Forgetting the glossary (essential when you have a memory blank)
+- 主对照表不完整（缺少概念 = Q&A 时无法使用）
+- Q&A 答案过长（超过 5 个要点就删减）
+- 编造或模糊的 URL（每个链接都需验证真实有效）
+- 直接从演讲稿粘贴描述而不适配速查表格式
+- 忘记词汇表（临场忘词时至关重要）
 
-## Validation Checklist
+## 验收清单
 
-- [ ] Quick navigation with working anchor links
-- [ ] Each act has its section (concepts + metrics + Q&A)
-- [ ] Master Table covers all pitch concepts (cross-check)
-- [ ] Minimum 6 questions in Q&A cheat-sheet
-- [ ] External resources listed with verified URLs
-- [ ] Glossary present
-- [ ] File saved: `talks/{YYYY}-{slug}-revision-sheets.md`
+- [ ] 快速导航中的锚点链接可正常跳转
+- [ ] 每一幕均有对应章节（概念 + 指标 + Q&A）
+- [ ] 主对照表涵盖所有演讲稿概念（交叉核对）
+- [ ] Q&A 速查表至少有 6 个问题
+- [ ] 外部资源已列出并附验证过的 URL
+- [ ] 词汇表已添加
+- [ ] 文件已保存：`talks/{YYYY}-{slug}-revision-sheets.md`
 
-## Tips
+## 技巧
 
-- The revision sheets are the most re-used output — attendees ask for links, you pull up the master table in 5 seconds
-- Build the Q&A from the audience profile: what are the 3 most skeptical questions a senior dev in that room would ask?
-- The glossary is your safety net: you blank on a term mid-talk, glance at the glossary, recover in 2 seconds
+- 复习手册是被重复使用最多的输出 — 听众问链接时，5 秒内就能从主对照表找到
+- 根据受众画像构建 Q&A：那个会议室里最挑剔的资深开发者会问哪 3 个最尖锐的问题？
+- 词汇表是你的安全网：演讲中途忘了某个术语，瞥一眼词汇表，2 秒内找回状态
 
-## Related
+## 相关
 
-- [Stage 5: Script](../stage-5-script/SKILL.md) — prerequisite
-- [Orchestrator](../orchestrator/SKILL.md)
+- [第五阶段：脚本](../stage-5-script/SKILL.md) — 前置技能
+- [编排器](../orchestrator/SKILL.md)

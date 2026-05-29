@@ -2,152 +2,152 @@
 
 ---
 name: talk-stage1-extract
-description: "Extracts and structures source material (articles, transcripts, notes) into a talk summary with narrative arc, themes, metrics, and gaps. Auto-detects REX vs Concept type. Use when starting a new talk from any source material or auditing existing material before committing to a talk."
+description: "将原始素材（文章、转录稿、笔记）提取并结构化为包含叙事弧、主题、数据指标和缺口的演讲摘要。自动检测 REX 或概念型内容。在从任何原始素材开始准备新演讲时，或在确定演讲方向前审核现有素材时使用。"
 tags: [talk, pipeline, presentation, stage-1]
 allowed-tools: "Write, Read, AskUserQuestion"
 effort: medium
 ---
 
-# Talk Stage 1: Extract
+# 演讲流水线第 1 阶段：提取
 
-Transforms raw material (article, transcript, notes, or a mix) into a structured summary ready for the pipeline's downstream stages. Auto-detects source type.
+将原始素材（文章、转录稿、笔记或混合素材）转化为结构化摘要，供流水线下游阶段使用。自动检测素材类型。
 
-## When to Use This Skill
+## 适用场景
 
-- Starting a new talk from any source material
-- First step of the talk pipeline (always run before other stages)
-- Auditing existing source material before committing to a talk
+- 从任何原始素材开始准备新演讲
+- 演讲流水线的第一步（始终在其他阶段之前运行）
+- 在确定演讲方向前审核现有素材
 
-## What This Skill Does
+## 本 skill 做的事
 
-1. **Collects metadata** — asks for slug, event, date, duration, audience, mode if not provided
-2. **Reads the source** — loads the source file or inline content
-3. **Detects source type** — REX (real-world proof) vs Concept (ideas/thesis) based on content signals
-4. **Extracts the narrative arc** — chronological for REX, thematic for Concept
-5. **Extracts metrics** — every measurable number with its source
-6. **Identifies main themes** — 3-7 themes
-7. **Flags gaps** — what's missing for a complete talk
-8. **Writes `{slug}-summary.md`**
+1. **收集元数据** — 如未提供，询问 slug、活动、日期、时长、受众、模式
+2. **读取素材** — 加载素材文件或内联内容
+3. **检测素材类型** — 根据内容信号判断是 REX（真实世界证明）还是概念型（想法/论点）
+4. **提取叙事弧** — REX 类按时间顺序，概念类按主题顺序
+5. **提取数据指标** — 所有可量化的数字及其来源
+6. **识别主要主题** — 3-7 个主题
+7. **标记缺口** — 完整演讲所缺少的内容
+8. **写入 `{slug}-summary.md`**
 
-## Input
+## 输入
 
-Required:
-- Source file path or inline content (article `.mdx`, transcript `.md`, notes)
-- Metadata: `slug`, `event`, `date`, `duration`, `audience`, `type` (--rex or --concept)
+必填项：
+- 素材文件路径或内联内容（文章 `.mdx`、转录稿 `.md`、笔记）
+- 元数据：`slug`、`event`、`date`、`duration`、`audience`、`type`（--rex 或 --concept）
 
-If metadata is missing → `AskUserQuestion` before proceeding.
+如果元数据缺失 → 先用 `AskUserQuestion` 询问，再继续。
 
-## Output
+## 输出
 
 `talks/{YYYY}-{slug}-summary.md`
 
-## Source Type Detection
+## 素材类型检测
 
-| REX signals | Concept signals |
-|-------------|-----------------|
-| Specific dates | Theses, arguments |
-| Measured metrics | General observations |
-| Project/tool names | Trend observations |
-| Commits, releases, PRs | Analogies, metaphors |
-| "I shipped", "We built" | "I think", "In my opinion" |
+| REX 信号 | 概念型信号 |
+|---------|-----------|
+| 具体日期 | 论点、论述 |
+| 可量化的指标 | 泛化观察 |
+| 项目/工具名称 | 趋势观察 |
+| Commit、发布、PR | 类比、比喻 |
+| "我发布了"、"我们构建了" | "我认为"、"在我看来" |
 
-If hybrid → note both components in the summary.
+如果是混合类型 → 在摘要中同时注明两种成分。
 
-## Output Format
+## 输出格式
 
 ```markdown
-# Talk Summary — {Provisional Title}
+# 演讲摘要 — {暂定标题}
 
 **Slug** : {slug}
-**Event** : {event}
-**Date** : {date}
-**Duration** : {duration} min
-**Audience** : {audience description}
-**Type detected** : REX | Concept | Hybrid
-**Source** : {source file path}
+**活动** : {event}
+**日期** : {date}
+**时长** : {duration} 分钟
+**受众** : {受众描述}
+**检测到的类型** : REX | 概念型 | 混合型
+**素材来源** : {素材文件路径}
 
 ---
 
-## Narrative Arc
+## 叙事弧
 
-{Arc description: 3-5 sentences. Chronological if REX, thematic if Concept.}
+{弧线描述：3-5 句话。REX 类按时间顺序，概念类按主题顺序。}
 
-## Main Themes
+## 主要主题
 
-| # | Theme | Short description | Weight |
-|---|-------|------------------|--------|
-| 1 | {theme} | {description} | High/Medium/Low |
+| # | 主题 | 简短描述 | 权重 |
+|---|------|---------|------|
+| 1 | {主题} | {描述} | 高/中/低 |
 ...
 
-## Key Metrics Extracted
+## 提取的关键指标
 
-{All measurable numbers found in the source}
+{素材中所有可量化的数字}
 
-Format: `{value}` — {context} — Source: {section/page/git}
+格式：`{数值}` — {背景} — 来源：{章节/页码/git}
 
-Examples:
-- `1,200 commits` over 7 months — Source: "acceleration" section
-- `-97% traffic` after SSE migration — Source: CHANGELOG v1.1.0
+示例：
+- `1,200 次提交` 历时 7 个月 — 来源："加速"章节
+- `-97% 流量` SSE 迁移后 — 来源：CHANGELOG v1.1.0
 
-If none → "No verifiable metrics found (Concept mode)"
+如无 → "未发现可验证的指标（概念模式）"
 
-## Narrative Potential
+## 叙事潜力
 
-{3-5 sentences on the strengths and possible narrative angles.
-What makes this talk potentially strong. What might be missing.}
+{3-5 句话，描述素材的优势和可能的叙事角度。
+这个演讲的潜在亮点是什么。可能缺少什么。}
 
-## Gaps Identified
+## 已识别的缺口
 
-- [ ] {gap 1} — {how to fill it}
-- [ ] {gap 2} — {how to fill it}
+- [ ] {缺口 1} — {如何填补}
+- [ ] {缺口 2} — {如何填补}
 
-If no obvious gaps → "No major gaps identified."
+如无明显缺口 → "未发现重大缺口。"
 
-## Recommendations for next stages
+## 对后续阶段的建议
 
-- **Research**: {recommended / not applicable (Concept mode)} — {why}
-- **Concepts**: {priority themes to explore}
-- **Position**: {angles already visible from the source material}
+- **研究**：{建议 / 不适用（概念模式）} — {原因}
+- **概念**：{优先探索的主题}
+- **定位**：{素材中已呈现的角度}
 
 ---
 
-*Generated by talk-stage1-extract — {date}*
-*Source: {source path}*
+*由 talk-stage1-extract 生成 — {date}*
+*素材来源：{source path}*
 ```
 
-## Metric Extraction Rules
+## 指标提取规则
 
-- Do not round without indicating it
-- Always include the metric's source
-- If two sources contradict → flag both, do not pick one
-- No invented metrics to fill gaps
-- Use `{before} → {after}` format for evolutions
+- 四舍五入时必须注明
+- 始终注明指标的来源
+- 如果两个来源有矛盾 → 同时标注两者，不擅自选择其一
+- 不为填补缺口而虚构指标
+- 进化数据使用 `{之前} → {之后}` 格式
 
-## Anti-patterns
+## 反模式
 
-- Vague summary ("This text is about AI...")
-- Omitting metrics — even approximate ones with their source
-- Hiding gaps — naming them is better than pretending they don't exist
-- Changing the detected type without justification
-- Inventing a narrative arc not present in the source
+- 模糊摘要（"这篇文章讲的是 AI……"）
+- 遗漏指标——即使是带来源的近似值也要记录
+- 隐藏缺口——明确指出比假装它们不存在要好
+- 无正当理由更改检测到的类型
+- 虚构素材中不存在的叙事弧
 
-## Validation Checklist
+## 验证清单
 
-- [ ] Source type detected and justified
-- [ ] Narrative arc in 3-5 clear sentences
-- [ ] All measurable metrics extracted with their source
-- [ ] Main themes listed (3-7 max)
-- [ ] Gaps explicitly identified
-- [ ] File saved to `talks/{YYYY}-{slug}-summary.md`
+- [ ] 检测到素材类型并有理由支撑
+- [ ] 叙事弧以 3-5 句清晰句子呈现
+- [ ] 所有可量化指标均已提取并注明来源
+- [ ] 主要主题已列出（最多 3-7 个）
+- [ ] 缺口已明确标识
+- [ ] 文件已保存至 `talks/{YYYY}-{slug}-summary.md`
 
-## Tips
+## 使用建议
 
-- Run this before the orchestrator if you want to verify the source material is usable
-- The summary is the foundation — every downstream stage reads it
-- Hybrid sources (part REX, part Concept) are fine — name both components clearly
+- 如果你想验证素材是否可用，可在运行编排器之前单独运行本 skill
+- 摘要是基础——每个下游阶段都会读取它
+- 混合素材（部分 REX、部分概念型）完全可以——清楚地命名两种成分即可
 
-## Related
+## 相关
 
-- [Stage 2: Research](../stage-2-research/SKILL.md) — git archaeology (REX mode)
-- [Stage 3: Concepts](../stage-3-concepts/SKILL.md) — reads this summary
-- [Orchestrator](../orchestrator/SKILL.md) — runs all stages in sequence
+- [第 2 阶段：研究](../stage-2-research/SKILL.md) — git 考古（REX 模式）
+- [第 3 阶段：概念](../stage-3-concepts/SKILL.md) — 读取本摘要
+- [编排器](../orchestrator/SKILL.md) — 按顺序运行所有阶段

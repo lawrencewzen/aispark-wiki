@@ -1,24 +1,24 @@
 > 📚 **AI Spark Wiki** · Claude Code 知识库
 
-# Knowledge Feeding Protocol
+# 知识输入协议
 
-Context engineering is not a one-time setup — it accumulates value over time as Claude learns what works for your project. This file defines when and how to capture that learning back into your `CLAUDE.md`.
+上下文工程不是一次性配置——它会随着时间积累价值，Claude 会不断学习哪些方法对你的项目最有效。本文件定义了何时以及如何将这些学习成果回写到 `CLAUDE.md` 中。
 
-## When to Feed Knowledge
+## 何时进行知识输入
 
-Run this protocol at the end of any session that:
+在以下类型的会话结束时运行本协议：
 
-- Completed a feature or meaningful code change
-- Discovered a new pattern that worked well and should become standard
-- Hit a mistake that required correction (especially if the mistake was repeated)
-- Made an architectural decision that will affect future work
-- Established a preference for a library, tool, or approach
+- 完成了一个功能或有实质意义的代码变更
+- 发现了一个效果良好、应成为标准做法的新模式
+- 遇到了需要纠正的错误（尤其是重复出现的错误）
+- 做出了会影响未来工作的架构决策
+- 确立了对某个库、工具或方法的使用偏好
 
-Skip it for trivial sessions (typo fixes, doc edits, minor config changes).
+以下类型的轻量会话可跳过：拼写修正、文档编辑、小型配置调整。
 
-## The Knowledge Feed Prompt
+## 知识输入提示词
 
-Paste this into Claude at the end of qualifying sessions:
+在符合条件的会话结束时，将以下内容粘贴给 Claude：
 
 ```
 Before we close this session, run a knowledge feed:
@@ -32,9 +32,9 @@ Output only high-signal items (3-5 max). Use the knowledge feed format below.
 Skip anything obvious or already covered.
 ```
 
-## Knowledge Feed Output Format
+## 知识输入输出格式
 
-Claude should output discoveries in this structure:
+Claude 应按以下结构输出发现内容：
 
 ```markdown
 ## Knowledge Feed — [YYYY-MM-DD]
@@ -62,14 +62,14 @@ Claude should output discoveries in this structure:
 **Why remove**: [What changed that makes this obsolete]
 ```
 
-## Integration Workflow
+## 集成工作流
 
-After receiving the knowledge feed:
+收到知识输入内容后：
 
-1. **Review before adding** — not all patterns generalize. Ask: "Would a new team member need to know this, or is it context-specific to this session?"
-2. **Copy relevant rules** into the appropriate section of `CLAUDE.md`
-3. **Remove any rules** Claude flagged as stale
-4. **Commit the update** with a meaningful message:
+1. **添加前先审查**——并非所有模式都能推广。问自己："新团队成员需要知道这个吗？还是它只对这次会话的上下文有意义？"
+2. **将相关规则复制**到 `CLAUDE.md` 的对应章节
+3. **删除 Claude 标记为过时的规则**
+4. **提交更新**，附上有意义的提交信息：
 
 ```bash
 git add CLAUDE.md
@@ -81,15 +81,15 @@ git commit -m "context: [short description of what was learned]"
 # context: document payment webhook idempotency pattern
 ```
 
-## Quality Filter
+## 质量过滤
 
-Before adding any rule to `CLAUDE.md`, check:
+在将任何规则添加到 `CLAUDE.md` 之前，检查以下几点：
 
-- **Is it specific to this project?** Generic best practices don't belong here — Claude already knows them.
-- **Is it actionable?** "Be careful with async code" is useless. "Always check for race conditions in the order state machine" is useful.
-- **Is it already covered?** Search for similar rules before adding. Duplicates dilute adherence.
-- **Will it still be true in 6 months?** Avoid rules tied to temporary states ("we're migrating to X so don't use Y yet").
+- **是否特定于本项目？** 通用最佳实践不属于这里——Claude 本来就知道。
+- **是否可执行？** "注意异步代码"毫无意义。"始终检查订单状态机中的竞态条件"才是有用的。
+- **是否已有覆盖？** 添加前先搜索类似规则，重复规则会降低执行力。
+- **6 个月后还成立吗？** 避免与临时状态绑定的规则（"我们正在迁移到 X，所以暂时别用 Y"）。
 
-## Ownership
+## 责任归属
 
-Knowledge feeding works best when it's a team habit, not one person's job. Any team member who works with Claude can contribute a knowledge feed. The person who reviews the PR for `CLAUDE.md` changes is responsible for quality filtering.
+知识输入在作为团队习惯而非某人专属工作时效果最佳。任何与 Claude 协作的团队成员都可以贡献知识输入。负责审查 `CLAUDE.md` 变更 PR 的人负责质量过滤。

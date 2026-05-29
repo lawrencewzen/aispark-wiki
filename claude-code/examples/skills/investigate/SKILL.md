@@ -2,40 +2,40 @@
 
 ---
 name: investigate
-description: Systematic root-cause debugging — find the cause before writing any fix
+description: 系统性根因调试 — 在编写任何修复代码之前先找到根本原因
 argument-hint: <issue_description>
 effort: medium
 disable-model-invocation: true
 ---
 
-# Investigate — Root-Cause Debugging
+# Investigate — 根因调试
 
-Systematic debugging with mandatory root cause investigation before any code changes.
+系统性调试，在做任何代码修改之前，必须强制完成根因调查。
 
-**Iron Law: NO FIXES WITHOUT ROOT CAUSE INVESTIGATION FIRST.**
+**铁律：未查明根因，禁止修复任何问题。**
 
-Fixing symptoms creates whack-a-mole debugging. Every fix that doesn't address root cause makes the next bug harder to find.
+修复症状会导致"打地鼠"式调试。每一次未针对根因的修复，都会让下一个 bug 更难找到。
 
-## Instructions
+## 说明
 
-### Phase 1: Collect Symptoms
+### 第一阶段：收集症状
 
-Gather all available context before forming any hypothesis.
+在形成任何假设之前，先收集所有可用上下文。
 
-1. Read the error messages, stack traces, and reproduction steps in full
-2. Ask ONE targeted question if the user hasn't provided enough context:
-   - "What exact error message do you see?"
-   - "Can you reproduce this consistently?"
-   - "When did this start happening?"
-3. Identify the affected component and its boundaries
+1. 完整阅读错误信息、堆栈跟踪和复现步骤
+2. 如果用户提供的上下文不足，提一个针对性问题：
+   - "你看到的确切错误信息是什么？"
+   - "这个问题能稳定复现吗？"
+   - "这个问题是什么时候开始出现的？"
+3. 确定受影响的组件及其边界
 
-**Output**: A precise symptom statement — what fails, when, with what error.
+**输出**：精确的症状描述 — 什么出错了、何时出错、报什么错。
 
 ---
 
-### Phase 2: Read the Code
+### 第二阶段：阅读代码
 
-Trace the code path from symptom back to potential causes. Do not guess.
+从症状出发，沿代码路径追溯到可能的根因。不要猜测。
 
 ```bash
 # Find all references to the failing component
@@ -48,11 +48,11 @@ git log --oneline -15 -- <affected-file>
 git show <commit-hash> -- <affected-file>
 ```
 
-Use Grep to find all references, Read to understand the logic. Never skip reading the code.
+用 Grep 找到所有引用，用 Read 理解逻辑。不要跳过阅读代码这一步。
 
 ---
 
-### Phase 3: Check Recent Changes
+### 第三阶段：检查近期变更
 
 ```bash
 # What changed recently across the whole repo
@@ -65,16 +65,16 @@ git log --oneline -20 -- <affected-files>
 git diff HEAD~3..HEAD -- <affected-directory>
 ```
 
-**Key question**: Was this working before? If yes, the root cause is in the recent diff.
+**关键问题**：这个功能之前是正常的吗？如果是，根因就在近期的 diff 里。
 
-- Regression = root cause is in the changes, not the original code
-- Always-broken = architectural issue or incorrect assumption
+- 回归 = 根因在变更内容中，而非原始代码
+- 一直损坏 = 架构问题或错误假设
 
 ---
 
-### Phase 4: Reproduce
+### 第四阶段：复现
 
-Before fixing anything, confirm you can trigger the bug deterministically.
+在修复任何问题之前，先确认你能确定性地触发这个 bug。
 
 ```bash
 # Run the test suite targeting the affected area
@@ -87,40 +87,40 @@ tail -50 logs/error.log 2>/dev/null || \
 journalctl -u app-service --lines=50 2>/dev/null
 ```
 
-If you cannot reproduce: gather more evidence. Do not fix what you cannot verify is broken.
+如果无法复现：收集更多证据。不要去修复你无法验证确实损坏的问题。
 
 ---
 
-### Phase 5: Pattern Analysis
+### 第五阶段：模式分析
 
-Match the symptom against known bug patterns:
+将症状与已知 bug 模式进行对照：
 
-| Pattern | Signature | Where to look |
+| 模式 | 特征信号 | 排查位置 |
 |---------|-----------|---------------|
-| Race condition | Intermittent, timing-dependent failures | Concurrent access to shared state, async/await ordering |
-| Null propagation | TypeError, undefined is not a function | Missing guards on optional values, unchecked API responses |
-| State corruption | Inconsistent data, partial updates | Transactions, callbacks, mutation of shared objects |
-| Integration failure | Timeout, unexpected response shape | External API calls, service boundaries, schema changes |
-| Configuration drift | Works locally, fails in staging/prod | Env vars, feature flags, database state, missing secrets |
-| Stale cache | Shows old data, fixes on restart/clear | Redis, CDN, browser cache, memoization |
-| Import/module error | "Cannot find module", "is not a function" | Package versions, circular imports, build artifacts |
+| 竞态条件 | 间歇性、依赖时序的失败 | 并发访问共享状态、async/await 顺序 |
+| null 传播 | TypeError、undefined is not a function | 可选值缺少守卫、未检查的 API 响应 |
+| 状态损坏 | 数据不一致、部分更新 | 事务、回调、共享对象的直接修改 |
+| 集成失败 | 超时、响应结构不符合预期 | 外部 API 调用、服务边界、schema 变更 |
+| 配置漂移 | 本地正常、预发/生产失败 | 环境变量、功能开关、数据库状态、缺失密钥 |
+| 缓存过期 | 显示旧数据、重启/清除后恢复 | Redis、CDN、浏览器缓存、memoization |
+| 模块导入错误 | "Cannot find module"、"is not a function" | 包版本、循环导入、构建产物 |
 
-Also check:
-- `TODOS.md` or issue tracker for known issues in the same area
-- `git log` for prior fixes in the same files — recurring bugs in the same location are an architectural smell
+还需检查：
+- `TODOS.md` 或 issue 追踪系统，查找同一区域的已知问题
+- `git log`，查看相同文件的历史修复记录 — 同一位置反复出现的 bug 是架构异味
 
-**External search:** If the pattern doesn't match, search for:
-`{framework} {sanitized-error-type}` — strip hostnames, file paths, internal data. Search the error category, not the raw message.
+**外部搜索：** 如果模式不匹配，搜索：
+`{框架} {清理后的错误类型}` — 去掉主机名、文件路径、内部数据。搜索错误类别，而非原始错误信息。
 
-**Form a hypothesis**: "Root cause hypothesis: [specific, testable claim about what is wrong and why]"
+**形成假设**："根因假设：[关于出错原因的具体、可验证的论断]"
 
 ---
 
-### Phase 6: Hypothesis Testing
+### 第六阶段：假设验证
 
-Before writing any fix, verify your hypothesis.
+在编写任何修复代码之前，先验证你的假设。
 
-1. **Confirm the hypothesis**: Add a temporary log statement, assertion, or debug output at the suspected root cause. Run the reproduction. Does the evidence match?
+1. **确认假设**：在疑似根因位置添加临时日志语句、断言或调试输出。运行复现步骤。证据吻合吗？
 
 ```javascript
 // Example: temporary diagnostic
@@ -132,90 +132,90 @@ console.log('[DEBUG investigate]', { value, expected, type: typeof value });
 import sys; print(f'[DEBUG investigate] value={value!r} type={type(value)}', file=sys.stderr)
 ```
 
-2. **If hypothesis is wrong**: Gather more evidence. Return to Phase 2. Do not guess.
+2. **如果假设错误**：收集更多证据，返回第二阶段。不要猜测。
 
-3. **3-strike rule**: If 3 hypotheses fail, STOP. This may be an architectural issue.
+3. **三次失败规则**：如果 3 个假设均未得到验证，立即停止。这可能是架构问题。
 
-   Present this to the user:
+   向用户展示：
    ```
-   3 hypotheses tested, none confirmed. This likely requires deeper investigation.
+   已测试 3 个假设，均未得到确认。这可能需要更深入的调查。
 
-   Options:
-   A) I have a new hypothesis: [describe] — continue investigating
-   B) Add instrumentation and wait — capture the bug in the act next time
-   C) Escalate — this needs someone with deeper system knowledge
+   选项：
+   A) 我有新的假设：[描述] — 继续调查
+   B) 添加埋点并等待 — 下次捕捉 bug 现场
+   C) 上升处理 — 需要对系统有更深了解的人介入
    ```
 
-**Red flags — slow down immediately:**
-- "Quick fix for now" — there is no "for now"
-- Proposing a fix before tracing data flow — that's guessing
-- Each fix reveals a new problem elsewhere — wrong layer, not wrong code
+**红色警告 — 立即放慢脚步：**
+- "暂时先这样修" — 不存在"暂时"
+- 在追踪数据流之前就提出修复方案 — 那是在猜测
+- 每次修复都暴露出另一个新问题 — 层次选错了，不是代码写错了
 
 ---
 
-### Phase 7: Implementation
+### 第七阶段：实施
 
-Once root cause is confirmed:
+根因确认后：
 
-1. **Fix the root cause, not the symptom.** The smallest change that eliminates the actual problem.
+1. **修复根因，而非症状。** 能消除实际问题的最小改动。
 
-2. **Minimal diff**: Fewest files touched, fewest lines changed. Resist refactoring adjacent code.
+2. **最小 diff**：触及文件数最少，修改行数最少。抵制顺手重构周边代码的冲动。
 
-3. **Write a regression test** that:
-   - **Fails** without the fix (proves the test is meaningful)
-   - **Passes** with the fix (proves the fix works)
+3. **编写回归测试**，要求：
+   - 没有修复时**失败**（证明测试有意义）
+   - 有了修复后**通过**（证明修复有效）
 
-4. **Run the full test suite** and paste the output. No regressions allowed.
+4. **运行完整测试套件**并粘贴输出结果。不允许引入新的回归。
 
-5. **Blast radius check**: If the fix touches more than 5 files, stop and confirm:
+5. **影响范围检查**：如果修复涉及超过 5 个文件，停下来确认：
 
    ```
-   This fix touches N files. That's a large blast radius for a bug fix.
+   此修复涉及 N 个文件。对于一个 bug 修复来说，影响范围相当大。
 
-   A) Proceed — the root cause genuinely spans these files
-   B) Split — fix the critical path now, defer the broader cleanup
-   C) Rethink — there may be a more targeted approach
+   A) 继续 — 根因确实跨越这些文件
+   B) 拆分 — 现在修复关键路径，延后更广泛的清理
+   C) 重新思考 — 可能存在更精准的方案
    ```
 
 ---
 
-## Output Format
+## 输出格式
 
 ```
-DEBUG REPORT
+调试报告
 ════════════════════════════════════════════════════
-Symptom:          [what the user observed]
-Root cause:       [what was actually wrong — specific, not vague]
-Fix:              [what was changed, with file:line references]
-Evidence:         [test output or reproduction showing fix works]
-Regression test:  [file:line of the new test]
-Related:          [known issues, prior bugs in same area, architectural notes]
-Status:           DONE | DONE_WITH_CONCERNS | BLOCKED
+症状：          [用户观察到的现象]
+根因：          [实际出错的原因 — 具体，不模糊]
+修复：          [修改了什么，附文件:行号引用]
+证据：          [测试输出或复现结果，证明修复有效]
+回归测试：      [新测试的文件:行号]
+相关：          [已知问题、同区域历史 bug、架构说明]
+状态：          DONE | DONE_WITH_CONCERNS | BLOCKED
 ════════════════════════════════════════════════════
 ```
 
-**Status definitions:**
-- **DONE** — root cause found, fix applied, regression test written, all tests pass
-- **DONE_WITH_CONCERNS** — fixed but cannot fully verify (intermittent, requires staging)
-- **BLOCKED** — root cause unclear after full investigation
+**状态定义：**
+- **DONE** — 根因已找到，修复已应用，回归测试已编写，所有测试通过
+- **DONE_WITH_CONCERNS** — 已修复但无法完全验证（间歇性问题，需要预发环境）
+- **BLOCKED** — 完整调查后根因仍不明确
 
-**Escalation format (when BLOCKED):**
+**阻塞时的上升格式：**
 ```
-STATUS: BLOCKED
-REASON: [1-2 sentences explaining what was tried and why it failed]
-ATTEMPTED: [list of hypotheses tested]
-RECOMMENDATION: [what the user should do next — add logging, escalate, architectural review]
+状态：BLOCKED
+原因：[1-2 句话说明尝试了什么以及为何失败]
+已尝试：[已测试的假设列表]
+建议：[用户下一步应该做什么 — 添加日志、上升处理、架构评审]
 ```
 
-## Important Rules
+## 重要规则
 
-- **Never apply a fix you cannot verify.** If you can't reproduce and confirm, don't ship it.
-- **Never say "this should fix it."** Verify and prove it. Run the tests.
-- **Never fix >3 unrelated things in one investigation.** If you find other bugs, note them but stay focused.
-- **Remove all debug log statements** before committing the fix.
-- **3+ failed hypotheses → question the architecture**, not your hypothesis skills.
+- **永远不要应用你无法验证的修复。** 如果无法复现并确认，就不要上线。
+- **永远不要说"这应该能修好"。** 验证并证明它。运行测试。
+- **一次调查中不要修复超过 3 个不相关的问题。** 如果发现其他 bug，记录下来但保持专注。
+- **提交修复前删除所有调试日志语句。**
+- **3 个以上假设失败 → 质疑架构**，而不是质疑你的假设能力。
 
-## Usage
+## 用法
 
 ```
 /investigate TypeError: Cannot read properties of undefined (reading 'map')
@@ -223,10 +223,10 @@ RECOMMENDATION: [what the user should do next — add logging, escalate, archite
 /investigate
 ```
 
-## Related Commands
+## 相关命令
 
-- `/review-pr` — review the fix before merging
-- `/qa` — run browser QA on the affected feature after fixing
-- `/ship` — pre-deploy checklist after investigation is complete
+- `/review-pr` — 合并前审查修复
+- `/qa` — 修复后对受影响功能进行浏览器 QA
+- `/ship` — 调查完成后的预部署清单
 
 $ARGUMENTS

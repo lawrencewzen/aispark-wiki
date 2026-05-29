@@ -2,44 +2,44 @@
 
 ---
 name: audit-codebase
-description: Codebase health audit scoring 7 categories with progression plan
+description: 代码库健康度审计，对 7 个维度评分并提供改进路线图
 argument-hint: "[path] [--focus security|performance|quality]"
 effort: medium
 disable-model-invocation: true
 ---
 
-# Codebase Health Audit
+# 代码库健康度审计
 
-Score your codebase across 7 health categories, identify weak spots, and get a prioritized progression plan. Each category is scored 1-10 with specific, actionable findings.
+对代码库的 7 个健康维度进行评分，识别薄弱环节，并给出优先级改进路线图。每个维度以 1-10 分评分，附带具体可操作的发现项。
 
-**Time**: 3-8 minutes depending on codebase size | **Scope**: Full project
+**耗时**：3-8 分钟（取决于代码库规模）| **范围**：完整项目
 
-## Instructions
+## 说明
 
-You are a senior engineering consultant performing a codebase health assessment. Analyze the project across all 7 categories (or a subset if `$ARGUMENTS` specifies categories), score each one, and produce a progression plan.
+你是一名高级工程顾问，正在执行代码库健康评估。分析项目的全部 7 个维度（或 `$ARGUMENTS` 指定的子集），对每个维度评分，并生成改进路线图。
 
-If `$ARGUMENTS` contains category names (e.g., "secrets security tests"), only audit those categories. Otherwise, audit all 7.
+若 `$ARGUMENTS` 包含维度名称（如 "secrets security tests"），仅审计这些维度；否则审计全部 7 个。
 
 ---
 
-### Category 1: Secrets (Weight: 15%)
+### 维度 1：密钥（权重：15%）
 
-Scan for hardcoded credentials, API keys, and sensitive data in code.
+扫描代码中硬编码的凭据、API 密钥和敏感数据。
 
 ```bash
-# API keys and tokens in code
+# 代码中的 API 密钥和令牌
 grep -rn --include="*.{js,ts,py,go,java,rb,php,yaml,yml,json,toml,env,cfg,ini,conf}" \
   -E '(?i)(api[_-]?key|apikey|secret[_-]?key|password|passwd|token|bearer)\s*[=:]\s*["'\''"][^"'\'']{8,}' \
   --exclude-dir={node_modules,vendor,.git,dist,build,target,__pycache__,.venv} . 2>/dev/null | head -20
 
-# Known provider patterns
+# 已知提供商的密钥模式
 grep -rn -E 'sk-[a-zA-Z0-9]{20,}|ghp_[a-zA-Z0-9]{36}|AKIA[A-Z0-9]{16}|xox[bps]-[a-zA-Z0-9\-]{20,}' \
   --exclude-dir={node_modules,vendor,.git,dist,build,target} . 2>/dev/null | head -10
 
-# .env files committed
+# 已提交的 .env 文件
 find . -name ".env*" -not -name ".env.example" -not -path "*/node_modules/*" -not -path "*/.git/*" -type f 2>/dev/null
 
-# .gitignore coverage
+# .gitignore 覆盖情况
 [ -f ".gitignore" ] && {
   for pattern in ".env" "*.pem" "*.key" "*.p12"; do
     grep -q "$pattern" .gitignore 2>/dev/null && echo "OK: $pattern in .gitignore" || echo "MISSING: $pattern not in .gitignore"
@@ -47,51 +47,51 @@ find . -name ".env*" -not -name ".env.example" -not -path "*/node_modules/*" -no
 }
 ```
 
-**Scoring:**
-- 10: Zero secrets, .gitignore covers all sensitive patterns, .env.example exists
-- 7-9: No secrets in code, minor .gitignore gaps
-- 4-6: 1-3 potential secrets found (may be false positives), or .env committed
-- 1-3: Multiple secrets in code, private keys committed, no .gitignore protection
+**评分标准：**
+- 10 分：零密钥，.gitignore 覆盖所有敏感模式，存在 .env.example
+- 7-9 分：代码中无密钥，.gitignore 存在轻微缺口
+- 4-6 分：发现 1-3 处潜在密钥（可能是误报），或 .env 已提交
+- 1-3 分：代码中存在多处密钥，私钥已提交，无 .gitignore 保护
 
 ---
 
-### Category 2: Security (Weight: 15%)
+### 维度 2：安全性（权重：15%）
 
-Check for OWASP-style vulnerabilities and unsafe patterns.
+检查 OWASP 类漏洞和不安全模式。
 
 ```bash
-# SQL injection patterns
+# SQL 注入模式
 grep -rn --include="*.{js,ts,py,java,go,rb,php}" \
   -E '(query|execute|exec)\s*\(\s*[`"'\''"].*\+|\$\{|%s|\.format\(' \
   --exclude-dir={node_modules,vendor,.git,dist,build,target,test,__test__} . 2>/dev/null | head -15
 
-# eval/exec usage
+# eval/exec 使用情况
 grep -rn -E '\b(eval|exec|execSync|Function\(|setTimeout\([^,]*[+`]|setInterval\([^,]*[+`])' \
   --include="*.{js,ts,py}" --exclude-dir={node_modules,vendor,.git,dist} . 2>/dev/null | head -10
 
-# Unsafe deserialization
+# 不安全的反序列化
 grep -rn -E '(pickle\.loads|yaml\.load\(|JSON\.parse\(.*user|unserialize\()' \
   --exclude-dir={node_modules,vendor,.git,dist} . 2>/dev/null | head -10
 
-# Missing input validation on routes/endpoints
+# 路由/端点缺少输入验证
 grep -rn -E '(app\.(get|post|put|delete|patch)|router\.(get|post|put|delete))' \
   --include="*.{js,ts}" --exclude-dir={node_modules,.git,dist} . 2>/dev/null | wc -l
 ```
 
-**Scoring:**
-- 10: No injection patterns, no eval/exec, input validation on all endpoints, CSP headers
-- 7-9: Minor issues (1-2 eval usages in non-user-facing code)
-- 4-6: Some injection patterns, missing validation on several endpoints
-- 1-3: Active SQL injection risk, eval with user input, no input sanitization
+**评分标准：**
+- 10 分：无注入模式，无 eval/exec，所有端点有输入验证，配置了 CSP 头
+- 7-9 分：轻微问题（非用户暴露代码中有 1-2 处 eval 使用）
+- 4-6 分：存在注入模式，多个端点缺少验证
+- 1-3 分：存在活跃 SQL 注入风险，eval 处理用户输入，无输入消毒处理
 
 ---
 
-### Category 3: Dependencies (Weight: 15%)
+### 维度 3：依赖项（权重：15%）
 
-Audit package health, known CVEs, and freshness.
+审计包健康状况、已知 CVE 和版本新鲜度。
 
 ```bash
-# Node.js audit
+# Node.js 审计
 [ -f "package-lock.json" ] && npm audit --json 2>/dev/null | jq '.metadata.vulnerabilities' 2>/dev/null
 [ -f "package.json" ] && npx npm-check 2>/dev/null | tail -20
 
@@ -105,57 +105,57 @@ Audit package health, known CVEs, and freshness.
 # Go
 [ -f "go.mod" ] && govulncheck ./... 2>/dev/null | tail -20
 
-# Lockfile presence
+# 锁文件检查
 for lockfile in package-lock.json yarn.lock pnpm-lock.yaml Cargo.lock go.sum poetry.lock; do
   [ -f "$lockfile" ] && echo "OK: $lockfile exists"
 done
 [ ! -f "package-lock.json" ] && [ ! -f "yarn.lock" ] && [ ! -f "pnpm-lock.yaml" ] && [ -f "package.json" ] && echo "MISSING: No lockfile for Node.js project"
 ```
 
-**Scoring:**
-- 10: Zero CVEs, lockfile present, all dependencies <6 months old
-- 7-9: No critical/high CVEs, minor outdated packages
-- 4-6: 1-3 high CVEs, or >50% dependencies outdated by a year+
-- 1-3: Critical CVEs, no lockfile, abandoned dependencies
+**评分标准：**
+- 10 分：零 CVE，存在锁文件，所有依赖项不超过 6 个月
+- 7-9 分：无严重/高危 CVE，少量过时包
+- 4-6 分：1-3 个高危 CVE，或超过 50% 的依赖项已超过一年未更新
+- 1-3 分：存在严重 CVE，无锁文件，依赖项已废弃
 
 ---
 
-### Category 4: Structure (Weight: 10%)
+### 维度 4：结构（权重：10%）
 
-Evaluate file organization, naming conventions, and module boundaries.
+评估文件组织、命名规范和模块边界。
 
 ```bash
-# File count per top-level directory
+# 每个顶层目录的文件数
 for dir in */; do
   [ -d "$dir" ] && [ "$dir" != "node_modules/" ] && [ "$dir" != ".git/" ] && [ "$dir" != "vendor/" ] && \
     echo "$dir: $(find "$dir" -type f -not -path "*/node_modules/*" -not -path "*/.git/*" 2>/dev/null | wc -l) files"
 done
 
-# Deeply nested files (complexity indicator)
+# 深度嵌套文件（复杂度指标）
 find . -type f -not -path "*/node_modules/*" -not -path "*/.git/*" -not -path "*/vendor/*" -mindepth 6 2>/dev/null | head -10
 
-# Mixed naming conventions
+# 混用命名规范
 find . -type f -name "*_*" -not -path "*/node_modules/*" -not -path "*/.git/*" 2>/dev/null | head -5
 find . -type f -name "*-*" -not -path "*/node_modules/*" -not -path "*/.git/*" 2>/dev/null | head -5
 
-# Circular dependency indicators (for JS/TS projects)
+# 循环依赖指标（JS/TS 项目）
 [ -f "package.json" ] && npx madge --circular --extensions ts,js src/ 2>/dev/null | head -20
 ```
 
-**Scoring:**
-- 10: Clear module boundaries, consistent naming, no circular deps, flat hierarchy
-- 7-9: Good structure with minor inconsistencies
-- 4-6: Mixed conventions, some circular deps, unclear module boundaries
-- 1-3: No clear structure, deeply nested files, widespread circular deps
+**评分标准：**
+- 10 分：模块边界清晰，命名统一，无循环依赖，层级扁平
+- 7-9 分：结构良好，存在轻微不一致
+- 4-6 分：规范混用，存在循环依赖，模块边界不清晰
+- 1-3 分：无清晰结构，文件嵌套过深，循环依赖泛滥
 
 ---
 
-### Category 5: Tests (Weight: 15%)
+### 维度 5：测试（权重：15%）
 
-Assess test coverage, test quality, and testing practices.
+评估测试覆盖率、测试质量和测试实践。
 
 ```bash
-# Test file count vs source file count
+# 测试文件数 vs 源文件数
 TEST_COUNT=$(find . -type f \( -name "*.test.*" -o -name "*.spec.*" -o -name "test_*" -o -path "*/test/*" -o -path "*/__tests__/*" \) \
   -not -path "*/node_modules/*" -not -path "*/.git/*" 2>/dev/null | wc -l)
 SRC_COUNT=$(find . -type f \( -name "*.ts" -o -name "*.js" -o -name "*.py" -o -name "*.go" -o -name "*.java" \) \
@@ -163,183 +163,183 @@ SRC_COUNT=$(find . -type f \( -name "*.ts" -o -name "*.js" -o -name "*.py" -o -n
   -not -path "*/node_modules/*" -not -path "*/.git/*" -not -path "*/dist/*" 2>/dev/null | wc -l)
 echo "Test files: $TEST_COUNT | Source files: $SRC_COUNT | Ratio: $(echo "scale=2; $TEST_COUNT / ($SRC_COUNT + 1)" | bc)"
 
-# Coverage config presence
+# 覆盖率配置检查
 for cfg in jest.config.* vitest.config.* .nycrc .coveragerc pytest.ini setup.cfg; do
   [ -f "$cfg" ] && echo "OK: $cfg exists"
 done
 
-# Coverage report (if available)
+# 覆盖率报告（如有）
 [ -d "coverage" ] && [ -f "coverage/coverage-summary.json" ] && cat coverage/coverage-summary.json | jq '.total' 2>/dev/null
 
-# Snapshot test count (potential maintenance burden)
+# 快照测试数量（潜在维护负担）
 find . -name "*.snap" -not -path "*/node_modules/*" 2>/dev/null | wc -l
 ```
 
-**Scoring:**
-- 10: >0.8 test ratio, coverage >80%, CI runs tests, no stale snapshots
-- 7-9: >0.5 test ratio, coverage >60%, coverage config present
-- 4-6: Some tests exist but gaps are obvious, no coverage tracking
-- 1-3: <0.2 test ratio or no tests at all
+**评分标准：**
+- 10 分：测试比例 >0.8，覆盖率 >80%，CI 运行测试，无过时快照
+- 7-9 分：测试比例 >0.5，覆盖率 >60%，存在覆盖率配置
+- 4-6 分：存在部分测试但缺口明显，无覆盖率跟踪
+- 1-3 分：测试比例 <0.2 或完全无测试
 
 ---
 
-### Category 6: Imports (Weight: 10%)
+### 维度 6：导入（权重：10%）
 
-Check for unused imports, circular dependencies, and type coverage.
+检查未使用的导入、循环依赖和类型覆盖情况。
 
 ```bash
-# Unused imports (TypeScript/JavaScript)
+# 未使用的导入（TypeScript/JavaScript）
 [ -f "tsconfig.json" ] && npx tsc --noEmit 2>&1 | grep -c "declared but" 2>/dev/null
 [ -f "tsconfig.json" ] && npx tsc --noEmit 2>&1 | grep "declared but" | head -10
 
-# TypeScript strict mode
+# TypeScript 严格模式
 [ -f "tsconfig.json" ] && grep -E '"strict"|"noImplicitAny"|"strictNullChecks"' tsconfig.json 2>/dev/null
 
-# Python unused imports
+# Python 未使用导入
 [ -f "pyproject.toml" ] || [ -f "setup.py" ] && python -m pyflakes . 2>/dev/null | grep "imported but unused" | head -10
 
-# Wildcard imports (code smell)
+# 通配符导入（代码异味）
 grep -rn 'import \*' --include="*.{py,ts,js}" --exclude-dir={node_modules,vendor,.git} . 2>/dev/null | head -10
 ```
 
-**Scoring:**
-- 10: Zero unused imports, TypeScript strict mode, no wildcard imports
-- 7-9: <5 unused imports, strict mode enabled with minor gaps
-- 4-6: 5-20 unused imports, no strict mode, some wildcard imports
-- 1-3: >20 unused imports, widespread wildcard imports, no type checking
+**评分标准：**
+- 10 分：零未使用导入，启用 TypeScript 严格模式，无通配符导入
+- 7-9 分：少于 5 个未使用导入，已启用严格模式但存在轻微缺口
+- 4-6 分：5-20 个未使用导入，无严格模式，存在通配符导入
+- 1-3 分：超过 20 个未使用导入，通配符导入泛滥，无类型检查
 
 ---
 
-### Category 7: AI Patterns (Weight: 20%)
+### 维度 7：AI 模式（权重：20%）
 
-Evaluate Claude Code configuration maturity and AI-assisted development readiness.
+评估 Claude Code 配置成熟度和 AI 辅助开发就绪程度。
 
 ```bash
-# CLAUDE.md presence and quality
+# CLAUDE.md 是否存在及质量
 [ -f "CLAUDE.md" ] && echo "OK: CLAUDE.md exists ($(wc -l < CLAUDE.md) lines)" || echo "MISSING: No CLAUDE.md"
 [ -f ".claude/settings.json" ] && echo "OK: .claude/settings.json exists" || echo "MISSING: No .claude/settings.json"
 
-# Custom commands
+# 自定义命令
 COMMANDS=$(find .claude/commands -name "*.md" 2>/dev/null | wc -l)
 echo "Custom commands: $COMMANDS"
 
-# Hooks
+# 钩子
 HOOKS_CFG=$(grep -c "hooks" .claude/settings.json 2>/dev/null || echo "0")
 echo "Hook configurations: $HOOKS_CFG"
 
-# Rules files
+# 规则文件
 RULES=$(find .claude/rules -name "*.md" 2>/dev/null | wc -l)
 echo "Rule files: $RULES"
 
-# Agents
+# 智能体
 AGENTS=$(find .claude/agents -name "*.md" 2>/dev/null | wc -l)
 echo "Agent definitions: $AGENTS"
 
-# Skills
+# 技能
 SKILLS=$(find .claude/skills -name "*.md" 2>/dev/null | wc -l)
 echo "Skills: $SKILLS"
 
-# .gitignore for AI artifacts
+# AI 产物的 .gitignore 配置
 grep -q "claude" .gitignore 2>/dev/null && echo "OK: Claude patterns in .gitignore" || echo "INFO: No Claude patterns in .gitignore"
 ```
 
-**Scoring:**
-- 10: CLAUDE.md with conventions, hooks configured, custom commands, rules, agents
-- 7-9: CLAUDE.md exists with project context, some commands or rules
-- 4-6: Basic CLAUDE.md, no hooks or commands
-- 1-3: No CLAUDE.md or empty CLAUDE.md
+**评分标准：**
+- 10 分：CLAUDE.md 含规范说明，已配置钩子、自定义命令、规则、智能体
+- 7-9 分：CLAUDE.md 存在且含项目上下文，有部分命令或规则
+- 4-6 分：基础 CLAUDE.md，无钩子或命令
+- 1-3 分：无 CLAUDE.md 或 CLAUDE.md 为空
 
 ---
 
-## Scoring & Report
+## 评分与报告
 
-### Overall Score Calculation
+### 综合评分计算
 
 ```
-Overall = (Secrets * 0.15) + (Security * 0.15) + (Dependencies * 0.15) +
-          (Structure * 0.10) + (Tests * 0.15) + (Imports * 0.10) +
-          (AI Patterns * 0.20)
+综合分 = (密钥 * 0.15) + (安全性 * 0.15) + (依赖项 * 0.15) +
+         (结构 * 0.10) + (测试 * 0.15) + (导入 * 0.10) +
+         (AI 模式 * 0.20)
 ```
 
-Round to one decimal place.
+保留一位小数。
 
-### Output Format
+### 输出格式
 
 ```markdown
-## Codebase Health Audit
+## 代码库健康度审计
 
-**Project**: [directory name]
-**Date**: [timestamp]
-**Categories audited**: [all 7 or filtered subset]
+**项目**：[目录名称]
+**日期**：[时间戳]
+**已审计维度**：[全部 7 个或过滤后的子集]
 
-### Overall Score: [X.X] / 10
+### 综合评分：[X.X] / 10
 
-| Category | Score | Weight | Weighted | Key Finding |
-|----------|-------|--------|----------|-------------|
-| Secrets | X/10 | 15% | X.XX | [one-line summary] |
-| Security | X/10 | 15% | X.XX | [one-line summary] |
-| Dependencies | X/10 | 15% | X.XX | [one-line summary] |
-| Structure | X/10 | 10% | X.XX | [one-line summary] |
-| Tests | X/10 | 15% | X.XX | [one-line summary] |
-| Imports | X/10 | 10% | X.XX | [one-line summary] |
-| AI Patterns | X/10 | 20% | X.XX | [one-line summary] |
-| **Overall** | | **100%** | **X.XX** | |
+| 维度 | 评分 | 权重 | 加权分 | 关键发现 |
+|------|------|------|--------|---------|
+| 密钥 | X/10 | 15% | X.XX | [一句话摘要] |
+| 安全性 | X/10 | 15% | X.XX | [一句话摘要] |
+| 依赖项 | X/10 | 15% | X.XX | [一句话摘要] |
+| 结构 | X/10 | 10% | X.XX | [一句话摘要] |
+| 测试 | X/10 | 15% | X.XX | [一句话摘要] |
+| 导入 | X/10 | 10% | X.XX | [一句话摘要] |
+| AI 模式 | X/10 | 20% | X.XX | [一句话摘要] |
+| **综合** | | **100%** | **X.XX** | |
 
-### Detailed Findings
+### 详细发现
 
-#### 🔴 Critical (fix immediately)
-- [Finding with file:line reference and concrete fix]
+#### 🔴 严重（立即修复）
+- [发现项，附文件:行号引用及具体修复方案]
 
-#### 🟡 Warning (fix this week)
-- [Finding with context and suggested approach]
+#### 🟡 警告（本周修复）
+- [发现项，附背景说明和建议方案]
 
-#### 🟢 Info (nice to improve)
-- [Observation with optional suggestion]
+#### 🟢 信息（可选改进）
+- [观察项，附可选建议]
 
-### Progression Plan
+### 改进路线图
 
-[Based on overall score, show the appropriate tier]
+[根据综合评分显示对应层级]
 
-#### Tier 1: Foundation (current score <5, target: 5)
-Focus on eliminating critical risks before anything else.
+#### 层级 1：基础（当前评分 <5，目标：5）
+优先消除严重风险，其他事项暂缓。
 
-| Priority | Action | Category | Impact | Effort |
-|----------|--------|----------|--------|--------|
-| 1 | [specific action] | [category] | [score gain] | [time estimate] |
-| 2 | [specific action] | [category] | [score gain] | [time estimate] |
+| 优先级 | 行动项 | 维度 | 影响 | 工作量 |
+|--------|--------|------|------|--------|
+| 1 | [具体行动] | [维度] | [分数提升] | [时间估算] |
+| 2 | [具体行动] | [维度] | [分数提升] | [时间估算] |
 | ... | | | | |
 
-#### Tier 2: Solid (current score 5-7, target: 8)
-Build reliable practices on top of the foundation.
+#### 层级 2：稳固（当前评分 5-7，目标：8）
+在基础之上建立可靠的工程实践。
 
-| Priority | Action | Category | Impact | Effort |
-|----------|--------|----------|--------|--------|
-| 1 | [specific action] | [category] | [score gain] | [time estimate] |
+| 优先级 | 行动项 | 维度 | 影响 | 工作量 |
+|--------|--------|------|------|--------|
+| 1 | [具体行动] | [维度] | [分数提升] | [时间估算] |
 | ... | | | | |
 
-#### Tier 3: Excellent (current score 8+, target: 10)
-Polish and optimize for maximum team velocity.
+#### 层级 3：卓越（当前评分 8+，目标：10）
+精益求精，最大化团队开发效率。
 
-| Priority | Action | Category | Impact | Effort |
-|----------|--------|----------|--------|--------|
-| 1 | [specific action] | [category] | [score gain] | [time estimate] |
+| 优先级 | 行动项 | 维度 | 影响 | 工作量 |
+|--------|--------|------|------|--------|
+| 1 | [具体行动] | [维度] | [分数提升] | [时间估算] |
 | ... | | | | |
 
-### Quick Wins (< 30 minutes each)
-1. [Action that improves score with minimal effort]
+### 速效改进（每项 < 30 分钟）
+1. [以最小投入提升评分的行动项]
 2. [...]
 3. [...]
 ```
 
-### Severity Split
+### 严重程度分布
 
-Approximately 70% of findings should be automatable (scripts, linters, CI checks can detect them). Flag the remaining 30% as requiring human judgment, and explain why automation falls short for those cases.
+约 70% 的发现项应可自动化处理（脚本、linter、CI 检查均可检测）。将其余 30% 标记为需要人工判断，并说明自动化无法覆盖的原因。
 
 ---
 
-**Sources**:
-- Variant Systems codebase analyzer plugin (variantsystems.io, Feb 2026): 7-category analysis framework
-- OWASP Top 10 (2021): Security category patterns
-- Claude Code Security Hardening Guide: AI Patterns category baseline
+**参考来源**：
+- Variant Systems 代码库分析插件（variantsystems.io，2026 年 2 月）：7 维度分析框架
+- OWASP Top 10（2021 年版）：安全性维度模式
+- Claude Code 安全加固指南：AI 模式维度基线
 
 $ARGUMENTS

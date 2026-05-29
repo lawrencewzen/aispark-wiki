@@ -1,80 +1,80 @@
 > 📚 **AI Spark Wiki** · Claude Code 知识库
 
-# Context Engineering Templates
+# 上下文工程模板
 
-Context engineering is the practice of deliberately designing what information Claude receives at session start — treating your `CLAUDE.md` and supporting files as a production system, not a one-time setup. These templates give you everything to build, measure, and maintain that system.
+上下文工程是一种有意识地设计 Claude 在会话开始时所接收信息的实践——将你的 CLAUDE.md 及辅助文件视为生产系统，而非一次性配置。这些模板提供了构建、衡量和维护该系统所需的一切。
 
-## Files
+## 文件说明
 
-| File | Description |
-|------|-------------|
-| `profile-template.yaml` | Developer profile for per-person context assembly |
-| `skeleton-template.md` | Annotated `CLAUDE.md` skeleton with section-by-section guidance |
-| `assembler.ts` | TypeScript script to build `CLAUDE.md` from profile + modules |
-| `eval-questions.yaml` | 20 self-evaluation questions to audit your `CLAUDE.md` |
-| `canary-check.sh` | Behavioral regression test script (structural validation) |
-| `ci-drift-check.yml` | GitHub Actions workflow for weekly context drift detection |
-| `context-budget-calculator.sh` | Measures always-on token cost of your context configuration |
-| `rules/knowledge-feeding.md` | Rule template for proactive context updates after sessions |
-| `rules/update-loop-retro.md` | Session retrospective template to capture learnings |
+| 文件 | 描述 |
+|------|------|
+| `profile-template.yaml` | 用于按人员组装上下文的开发者配置文件 |
+| `skeleton-template.md` | 带逐章节说明的 CLAUDE.md 骨架模板（含注释） |
+| `assembler.ts` | 从 profile + modules 构建 CLAUDE.md 的 TypeScript 脚本 |
+| `eval-questions.yaml` | 20 个自评问题，用于审核你的 CLAUDE.md |
+| `canary-check.sh` | 行为回归测试脚本（结构验证） |
+| `ci-drift-check.yml` | 用于每周检测上下文漂移的 GitHub Actions 工作流 |
+| `context-budget-calculator.sh` | 测量你的上下文配置的常驻 token 成本 |
+| `rules/knowledge-feeding.md` | 会话后主动更新上下文的规则模板 |
+| `rules/update-loop-retro.md` | 用于记录会话学习成果的复盘模板 |
 
-## Quick Start
+## 快速开始
 
-**New project — get a working `CLAUDE.md` in 3 steps:**
+**新项目——3 步获得可用的 CLAUDE.md：**
 
 ```bash
-# 1. Copy the skeleton and fill in your project details
+# 1. 复制骨架并填入你的项目详情
 cp examples/context-engineering/skeleton-template.md CLAUDE.md
 
-# 2. Check your context budget (keep it under 10K tokens)
+# 2. 检查上下文预算（保持在 10K token 以内）
 bash examples/context-engineering/context-budget-calculator.sh .
 
-# 3. Run canary checks to validate structure
+# 3. 运行金丝雀检查以验证结构
 bash examples/context-engineering/canary-check.sh .
 ```
 
-**Existing project — audit and improve:**
+**已有项目——审核并改进：**
 
 ```bash
-# Run the structural check
+# 运行结构检查
 bash examples/context-engineering/canary-check.sh .
 
-# Then use eval-questions.yaml to score your CLAUDE.md manually
-# Target: 16+ / 20
+# 然后使用 eval-questions.yaml 手动为你的 CLAUDE.md 打分
+# 目标：16+ / 20
 ```
 
-**Team setup — per-developer profiles:**
+**团队配置——按开发者个人化：**
 
 ```bash
-# Install dependencies for the assembler
+# 安装 assembler 所需依赖
 npm install js-yaml @types/js-yaml ts-node typescript
 
-# Copy the profile template and customize
+# 复制配置文件模板并自定义
 cp examples/context-engineering/profile-template.yaml .claude/profiles/yourname.yaml
-# Edit .claude/profiles/yourname.yaml with your stack and preferences
+# 编辑 .claude/profiles/yourname.yaml，填入你的技术栈和偏好
 
-# Assemble your CLAUDE.md
+# 组装你的 CLAUDE.md
 ts-node examples/context-engineering/assembler.ts \
   --profile .claude/profiles/yourname.yaml \
   --modules .claude/modules \
   --output CLAUDE.md
 ```
 
-**Ongoing maintenance:**
+**持续维护：**
 
 ```bash
-# Weekly: run canary checks
+# 每周：运行金丝雀检查
 bash examples/context-engineering/canary-check.sh .
 
-# After sessions: use the retro template
-# See rules/update-loop-retro.md
+# 每次会话后：使用复盘模板
+# 参见 rules/update-loop-retro.md
 
-# Add the CI workflow for automated drift detection
+# 添加 CI 工作流以实现自动化漂移检测
 cp examples/context-engineering/ci-drift-check.yml .github/workflows/context-drift.yml
 ```
 
-## Guide Section
+## 指南章节
 
-Full methodology and principles: `guide/core/context-engineering.md`
+完整方法论与原则：`guide/core/context-engineering.md`
 
-The templates here are the operational layer — the guide explains the reasoning behind each design decision.
+这里的模板是操作层——指南解释了每个设计决策背后的理由。

@@ -2,27 +2,27 @@
 
 ---
 name: release-notes-generator
-description: "Generate release notes in 3 formats (CHANGELOG.md, PR body, Slack announcement) from git commits. Automatically categorizes changes and converts technical language to user-friendly messaging. Use for releases, changelogs, version notes, what's new summaries, or ship announcements."
+description: "从 git 提交生成 3 种格式的发版说明（CHANGELOG.md、PR 正文、Slack 公告）。自动分类变更并将技术语言转换为用户友好的表述。适用于发版、变更日志、版本说明、新功能摘要或上线公告。"
 allowed-tools: Bash
 effort: low
 ---
 
-# Release Notes Generator
+# 发版说明生成器
 
-Generate comprehensive release notes in 3 formats from git commits.
+从 git 提交生成 3 种格式的完整发版说明。
 
-## Workflow
+## 工作流
 
-1. **Analyze git history** since last release tag or specified version
-2. **Fetch PR details** (titles, descriptions, labels) via `gh api`
-3. **Categorize changes** into features, bug fixes, improvements, security, breaking changes
-4. **Generate 3 outputs**: CHANGELOG.md section (technical), PR release body (semi-technical), Slack message (user-friendly)
-5. **Transform language** from technical jargon to accessible messaging
-6. **Alert on migrations** if database migrations are detected
+1. **分析 git 历史**：从最新发布标签或指定版本开始
+2. **获取 PR 详情**：通过 `gh api` 获取标题、描述和标签
+3. **分类变更**：归类为新功能、Bug 修复、改进、安全和破坏性变更
+4. **生成 3 种输出**：CHANGELOG.md 章节（技术向）、PR 发布正文（半技术向）、Slack 消息（用户友好）
+5. **转换语言**：将技术术语转为通俗易懂的表述
+6. **迁移警告**：若检测到数据库迁移则发出提示
 
-## How to Use
+## 使用方法
 
-### Basic Usage
+### 基本用法
 
 ```
 Generate release notes since last release
@@ -32,29 +32,29 @@ Generate release notes since last release
 Create release notes for version 0.18.0
 ```
 
-### With Specific Range
+### 指定范围
 
 ```
 Generate release notes from v0.17.0 to HEAD
 ```
 
-### Preview Only
+### 仅预览
 
 ```
 Preview release notes without writing files
 ```
 
-## Output Formats
+## 输出格式
 
-### 1. CHANGELOG.md Section
+### 1. CHANGELOG.md 章节
 
-Technical format for developers:
+面向开发者的技术格式：
 
 ```markdown
 ## [0.18.0] - 2025-12-08
 
 ### Objective
-[1-2 sentence summary]
+[1-2 句摘要]
 
 ### New Features
 #### [Feature Name] (#PR)
@@ -62,14 +62,14 @@ Technical format for developers:
 - **Impact**: ...
 
 ### Bug Fixes
-- **[Module]**: Description (#issue, [error-tracker] ISSUE-XX)
+- **[Module]**: 描述 (#issue, [error-tracker] ISSUE-XX)
 
 ### Technical Improvements
 #### Performance / UI/UX / Architecture
-- [Description]
+- [描述]
 
 ### Database Migrations
-[If applicable]
+[如适用]
 
 ### Statistics
 - PRs: X
@@ -77,76 +77,76 @@ Technical format for developers:
 - Bugs: Z
 ```
 
-### 2. PR Release Body
+### 2. PR 发布正文
 
-Uses template from `.github/PULL_REQUEST_TEMPLATE/release.md`:
-- Objective summary
-- Features with specs links
-- Bug fixes with error tracker references
-- Improvements by category
-- Migration instructions
-- Deployment checklist
+使用 `.github/PULL_REQUEST_TEMPLATE/release.md` 中的模板：
+- 目标摘要
+- 含规格链接的功能列表
+- 含错误追踪引用的 Bug 修复
+- 按类别划分的改进项
+- 迁移说明
+- 部署检查清单
 
-### 3. Slack Announcement
+### 3. Slack 公告
 
-Product-focused format from `.github/COMMUNICATION_TEMPLATE/slack-release.md`:
-- **PR link** included for traceability
-- Non-technical language
-- Focus on user impact (end-users, admins, stakeholders)
-- Emojis for readability
-- Statistics summary
+使用 `.github/COMMUNICATION_TEMPLATE/slack-release.md` 中的产品导向格式：
+- 包含 **PR 链接**以便追溯
+- 非技术性语言
+- 聚焦于用户影响（终端用户、管理员、利益相关方）
+- 使用 emoji 提升可读性
+- 统计摘要
 
-## Workflow Integration
+## 工作流集成
 
-This skill integrates with the release workflow:
+本技能与发布工作流集成：
 
 ```
-1. Analyze commits: git log <last-tag>..HEAD
-2. Determine version number (MAJOR.MINOR.PATCH)
-3. Generate 3 outputs
-4. Create PR develop -> main with "Release" label
-5. Update CHANGELOG.md
-6. After merge: create git tag
-7. Generate Slack announcement
+1. 分析提交：git log <last-tag>..HEAD
+2. 确定版本号（MAJOR.MINOR.PATCH）
+3. 生成 3 种输出
+4. 创建 PR：develop -> main，带 "Release" 标签
+5. 更新 CHANGELOG.md
+6. 合并后：创建 git 标签
+7. 生成 Slack 公告
 ```
 
-## Tech-to-Product Transformation
+## 技术语言转产品语言
 
-The skill automatically transforms technical language:
+本技能自动转换技术语言：
 
-| Technical | Product |
+| 技术语言 | 产品语言 |
 |-----------|---------|
-| "N+1 query optimization with DataLoader" | "Faster list loading" |
-| "AI embeddings implementation with pgvector" | "New intelligent search" |
-| "Fix scope permissions in getPermissionScope()" | "Fixed access permissions bug" |
-| "Migration webpack -> Turbopack" | *Do not communicate* |
-| "React hooks refactoring" | *Do not communicate* |
-| "Fix N+1 in user loaders" | "Performance improvement" |
-| "Add retry logic for DB connection errors" | "Better connection stability" |
+| "N+1 query optimization with DataLoader" | "列表加载更快" |
+| "AI embeddings implementation with pgvector" | "全新智能搜索" |
+| "Fix scope permissions in getPermissionScope()" | "修复访问权限问题" |
+| "Migration webpack -> Turbopack" | *不对外传达* |
+| "React hooks refactoring" | *不对外传达* |
+| "Fix N+1 in user loaders" | "性能优化" |
+| "Add retry logic for DB connection errors" | "连接更稳定" |
 
-## Commit Categories
+## 提交分类
 
-Commits are categorized by conventional commit prefix:
+提交按规范提交前缀进行分类：
 
-| Prefix | Category | Include in Slack? |
+| 前缀 | 类别 | 是否包含在 Slack 中？ |
 |--------|----------|-------------------|
-| `feat:` | New Features | Yes |
-| `fix:` | Bug Fixes | Yes (if user-facing) |
-| `perf:` | Performance | Yes (simplified) |
-| `security:` | Security | Yes |
-| `refactor:` | Architecture | No |
-| `chore:` | Maintenance | No |
-| `docs:` | Documentation | No |
-| `test:` | Tests | No |
-| `style:` | Style | No |
+| `feat:` | 新功能 | 是 |
+| `fix:` | Bug 修复 | 是（如面向用户） |
+| `perf:` | 性能优化 | 是（简化描述） |
+| `security:` | 安全 | 是 |
+| `refactor:` | 架构 | 否 |
+| `chore:` | 维护 | 否 |
+| `docs:` | 文档 | 否 |
+| `test:` | 测试 | 否 |
+| `style:` | 样式 | 否 |
 
-## Console Output Format
+## 控制台输出格式
 
-When generating release notes, ALWAYS display a clear summary in the console with:
+生成发版说明时，**务必**在控制台显示清晰的摘要，包含：
 
-### Migration Alert (CRITICAL)
+### 迁移警告（重要）
 
-If migrations are detected, display prominently:
+如果检测到迁移，突出显示：
 
 ```
 ╔══════════════════════════════════════════════════════════════════╗
@@ -164,26 +164,26 @@ If migrations are detected, display prominently:
 ╚══════════════════════════════════════════════════════════════════╝
 ```
 
-If NO migrations:
+如果**没有**迁移：
 
 ```
 ✅ [OK] No database migrations required
 ```
 
-### Detection Method
+### 检测方法
 
-Check for new migration files since last release:
+检查自上次发布以来的新迁移文件：
 
 ```bash
-# Find new migrations since last tag
+# 查找自上次标签以来的新迁移
 git diff <last-tag>..HEAD --name-only -- migrations/
 ```
 
-## Example
+## 示例
 
-**User**: "Generate release notes since v0.17.0"
+**用户**："Generate release notes since v0.17.0"
 
-**Output**:
+**输出**：
 
 ```
 Analyzing commits from v0.17.0 to HEAD...
@@ -204,49 +204,49 @@ Found:
 ╚══════════════════════════════════════════════════════════════════╝
 
 --- CHANGELOG.md Section ---
-[Technical format output]
+[技术格式输出]
 
 --- PR Release Body ---
-[Semi-technical format output]
+[半技术格式输出]
 
 --- Slack Announcement ---
-[Product-focused format output]
+[产品导向格式输出]
 
 Write to files? (CHANGELOG.md, clipboard for PR/Slack)
 ```
 
-## Commands Used
+## 使用的命令
 
 ```bash
-# Get last release tag
+# 获取最新发布标签
 git tag --sort=-v:refname | head -n 1
 
-# List commits since tag
+# 列出标签之后的提交
 git log <tag>..HEAD --oneline --no-merges
 
-# Get PR details
+# 获取 PR 详情
 gh api repos/{owner}/{repo}/pulls/{number}
 
-# Get commit details
+# 获取提交详情
 git show --stat <sha>
 ```
 
-## Tips
+## 使用技巧
 
-- Run from repository root
-- Ensure `gh` CLI is authenticated
-- Review generated content before publishing
-- Adjust product language for your audience
-- Use `--preview` to see output without writing
+- 从仓库根目录运行
+- 确保 `gh` CLI 已认证
+- 发布前审核生成的内容
+- 根据受众调整产品语言
+- 使用 `--preview` 预览输出而不写入文件
 
-## Reference Files
+## 参考文件
 
-- `assets/changelog-template.md` - CHANGELOG section template
-- `assets/slack-template.md` - Slack announcement template
-- `references/tech-to-product-mappings.md` - Transformation rules
-- `references/commit-categories.md` - Categorization rules
+- `assets/changelog-template.md` — CHANGELOG 章节模板
+- `assets/slack-template.md` — Slack 公告模板
+- `references/tech-to-product-mappings.md` — 语言转换规则
+- `references/commit-categories.md` — 分类规则
 
-## Related Skills
+## 相关技能
 
-- `github-actions-templates` - For CI/CD workflows
-- `changelog-generator` - Original inspiration (ComposioHQ)
+- `github-actions-templates` — 用于 CI/CD 工作流
+- `changelog-generator` — 原始灵感来源（ComposioHQ）

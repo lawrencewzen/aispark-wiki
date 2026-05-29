@@ -2,38 +2,38 @@
 
 ---
 name: git-worktree-remove
-description: Safely remove a git worktree with branch cleanup and safety checks
+description: 安全移除 git worktree，包含分支清理和安全检查
 argument-hint: <worktree_name>
 effort: low
 disable-model-invocation: true
 ---
 
-# Git Worktree Remove
+# Git Worktree 移除
 
-Safely remove a single git worktree with branch cleanup, merge verification, and database branch teardown.
+安全移除单个 git worktree，包含分支清理、合并验证和数据库分支清理。
 
-**Core principle:** Safety checks first, then clean removal of worktree + branch + DB resources.
+**核心原则：** 先执行安全检查，再干净地移除 worktree + 分支 + 数据库资源。
 
-**Part of:** [Worktree Lifecycle Suite](./git-worktree.md) | [`/git-worktree`](./git-worktree.md) | [`/git-worktree-status`](./git-worktree-status.md) | [`/git-worktree-clean`](./git-worktree-clean.md)
+**所属套件：** [Worktree 生命周期套件](./git-worktree.md) | [`/git-worktree`](./git-worktree.md) | [`/git-worktree-status`](./git-worktree-status.md) | [`/git-worktree-clean`](./git-worktree-clean.md)
 
-## Process
+## 流程
 
-1. **Validate Target**: Identify worktree to remove
-2. **Safety Check**: Protect main/develop branches
-3. **Check Merge Status**: Warn if branch has unmerged changes
-4. **Check Uncommitted Changes**: Warn if worktree has dirty state
-5. **Remove Worktree**: `git worktree remove`
-6. **Delete Local Branch**: `git branch -d` (or `-D` with confirmation)
-7. **Delete Remote Branch**: `git push origin --delete` (with confirmation)
-8. **Database Cleanup Reminder**: Suggest DB branch deletion if applicable
-9. **Prune References**: `git worktree prune`
+1. **验证目标**：确认要移除的 worktree
+2. **安全检查**：保护 main/develop 分支
+3. **检查合并状态**：若分支有未合并变更则发出警告
+4. **检查未提交变更**：若 worktree 有脏状态则发出警告
+5. **移除 Worktree**：`git worktree remove`
+6. **删除本地分支**：`git branch -d`（或确认后使用 `-D`）
+7. **删除远程分支**：`git push origin --delete`（需确认）
+8. **数据库清理提示**：如适用，提示删除数据库分支
+9. **清理悬空引用**：`git worktree prune`
 
-## Safety Checks
+## 安全检查
 
-### Protected Branches
+### 受保护分支
 
 ```bash
-# Never remove worktrees for these branches (configurable)
+# 以下分支的 worktree 永远不会被移除（可配置）
 PROTECTED_BRANCHES="main master develop staging production"
 
 if echo "$PROTECTED_BRANCHES" | grep -qw "$BRANCH"; then
@@ -43,7 +43,7 @@ if echo "$PROTECTED_BRANCHES" | grep -qw "$BRANCH"; then
 fi
 ```
 
-### Uncommitted Changes
+### 未提交变更
 
 ```bash
 cd "$WORKTREE_PATH"
@@ -59,10 +59,10 @@ if [ -n "$(git status --porcelain)" ]; then
 fi
 ```
 
-### Merge Status
+### 合并状态
 
 ```bash
-# Check if branch is merged into main
+# 检查分支是否已合并到 main
 MAIN_BRANCH=$(git symbolic-ref refs/remotes/origin/HEAD | sed 's@^refs/remotes/origin/@@')
 
 if git merge-base --is-ancestor "$BRANCH" "$MAIN_BRANCH" 2>/dev/null; then
@@ -75,40 +75,40 @@ else
 fi
 ```
 
-## Removal Steps
+## 移除步骤
 
 ```bash
-# 1. Remove the worktree
+# 1. 移除 worktree
 git worktree remove "$WORKTREE_PATH"
-# If dirty state and user confirmed force:
+# 若有脏状态且用户确认强制移除：
 # git worktree remove --force "$WORKTREE_PATH"
 
-# 2. Delete local branch
+# 2. 删除本地分支
 if [ "$MERGED" = true ]; then
   git branch -d "$BRANCH"
 else
   echo "Delete unmerged branch '$BRANCH'? (requires confirmation)"
-  # On confirmation:
+  # 确认后：
   git branch -D "$BRANCH"
 fi
 
-# 3. Delete remote branch (with confirmation)
+# 3. 删除远程分支（需确认）
 if git ls-remote --heads origin "$BRANCH" | grep -q "$BRANCH"; then
   echo "Delete remote branch 'origin/$BRANCH'?"
-  # On confirmation:
+  # 确认后：
   git push origin --delete "$BRANCH"
 fi
 
-# 4. Prune stale references
+# 4. 清理悬空引用
 git worktree prune
 ```
 
-## Database Branch Cleanup
+## 数据库分支清理
 
-**After worktree removal, remind about associated database branches:**
+**移除 worktree 后，提示清理关联的数据库分支：**
 
 ```bash
-# Detect database provider (same logic as /git-worktree)
+# 检测数据库提供商（与 /git-worktree 逻辑相同）
 if [ -f ".env" ] && grep -q "neon" ".env"; then
   echo ""
   echo "DB Cleanup: neonctl branches delete $BRANCH_SLUG"
@@ -122,9 +122,9 @@ elif [ -f ".env" ] && grep -q "postgresql" ".env"; then
 fi
 ```
 
-## Report Format
+## 报告格式
 
-**Successful removal (merged branch):**
+**成功移除（已合并分支）：**
 
 ```
 Removed worktree: .worktrees/feat/auth
@@ -136,7 +136,7 @@ Removed worktree: .worktrees/feat/auth
 DB reminder: neonctl branches delete feat-auth
 ```
 
-**Removal with warnings (unmerged branch):**
+**带警告的移除（未合并分支）：**
 
 ```
 Removed worktree: .worktrees/feat/experimental
@@ -149,41 +149,41 @@ WARNING: Branch was not merged. Changes may be lost.
 Last commit: a1b2c3d "WIP: experimental auth flow"
 ```
 
-## Flags
+## 标志
 
-| Flag | Effect |
+| 标志 | 效果 |
 |------|--------|
-| `--force` | Skip uncommitted changes warning |
-| `--keep-branch` | Remove worktree but keep the branch |
-| `--keep-remote` | Don't delete remote branch |
+| `--force` | 跳过未提交变更警告 |
+| `--keep-branch` | 移除 worktree 但保留分支 |
+| `--keep-remote` | 不删除远程分支 |
 
-## Quick Reference
+## 快速参考
 
-| Situation | Action |
+| 情况 | 操作 |
 |-----------|--------|
-| Branch is merged | Safe delete (branch -d) |
-| Branch is unmerged | Warn + require confirmation (branch -D) |
-| Uncommitted changes | Warn + offer force/cancel |
-| Protected branch (main/develop) | Block removal |
-| Remote branch exists | Ask to delete remote |
-| DB branch detected | Remind with exact command |
-| Stale references | Auto-prune |
+| 分支已合并 | 安全删除（branch -d） |
+| 分支未合并 | 警告 + 需要确认（branch -D） |
+| 有未提交变更 | 警告 + 提供强制/取消选项 |
+| 受保护分支（main/develop） | 阻止移除 |
+| 存在远程分支 | 询问是否删除远程分支 |
+| 检测到数据库分支 | 提示精确命令 |
+| 悬空引用 | 自动清理 |
 
-## Common Mistakes
+## 常见错误
 
-**Removing worktree for main/develop**
-- Always blocked by safety check. Reconfigure protected branches if needed.
+**移除 main/develop 的 worktree**
+- 始终被安全检查阻止。如需要，可重新配置受保护分支。
 
-**Deleting unmerged branch without checking**
-- Always verify merge status. Unmerged branches require explicit `--force` or `-D`.
+**未检查即删除未合并分支**
+- 始终验证合并状态。未合并的分支需要显式使用 `--force` 或 `-D`。
 
-**Forgetting database branch cleanup**
-- Leaves orphaned DB branches consuming resources. Command reminds automatically.
+**忘记清理数据库分支**
+- 会留下占用资源的孤立数据库分支。命令会自动提示。
 
-**Using `rm -rf` instead of `git worktree remove`**
-- Leaves stale worktree references in `.git/worktrees/`. Always use git commands.
+**用 `rm -rf` 代替 `git worktree remove`**
+- 会在 `.git/worktrees/` 中留下悬空的 worktree 引用。始终使用 git 命令。
 
-## Usage
+## 使用方式
 
 ```
 /git-worktree-remove feat/auth
@@ -191,4 +191,4 @@ Last commit: a1b2c3d "WIP: experimental auth flow"
 /git-worktree-remove refactor/db --keep-branch
 ```
 
-Branch or worktree path: $ARGUMENTS
+分支或 worktree 路径：$ARGUMENTS

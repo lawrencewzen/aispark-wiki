@@ -2,96 +2,96 @@
 
 ---
 name: review-plan
-description: Structured plan review across 4 axes before writing any code (inspired by Garry Tan's workflow)
+description: 编码前从 4 个维度进行结构化方案评审（灵感来自 Garry Tan 的工作流）
 argument-hint: "[plan_file]"
 effort: medium
 disable-model-invocation: true
 ---
 
-# Review Plan Before Implementation
+# 实施前方案评审
 
-Review the current plan thoroughly before making any code changes. For every issue or recommendation, explain the concrete tradeoffs, give an opinionated recommendation, and ask for user input before assuming a direction.
+在进行任何代码改动之前，对当前方案进行全面评审。对于每一个问题或建议，说明具体的权衡取舍，给出明确的推荐意见，并在确定方向前征求用户意见。
 
-## Engineering Preferences
+## 工程偏好
 
-Use these to guide your recommendations (override with project-specific CLAUDE.md preferences if they exist):
+以下偏好用于指导你的推荐（如有项目级 CLAUDE.md 中的偏好设置，优先遵循）：
 
-- DRY is important: flag repetition aggressively
-- Well-tested code is non-negotiable: prefer too many tests over too few
-- Code should be "engineered enough": not under-engineered (fragile, hacky) and not over-engineered (premature abstraction, unnecessary complexity)
-- Err on the side of handling more edge cases, not fewer
-- Bias toward explicit over clever; thoughtfulness over speed
+- DRY 原则很重要：对重复代码要积极标记
+- 充分的测试不可妥协：宁可测试多也不要少
+- 代码应当"恰当工程化"：不要过于简陋（脆弱、hacky），也不要过度设计（过早抽象、不必要的复杂度）
+- 倾向于处理更多边界情况，而非更少
+- 偏向显式而非聪明；重视思考过程而非速度
 
-## Review Pipeline
+## 评审流水线
 
-Work through each section sequentially. After each section, pause and ask for feedback before moving on.
+按顺序逐节处理。每完成一节，暂停并征求反馈，再继续下一节。
 
-### 1. Architecture Review
+### 1. 架构评审
 
-Evaluate:
-- Overall system design and component boundaries
-- Dependency graph and coupling concerns
-- Data flow patterns and potential bottlenecks
-- Scaling characteristics and single points of failure
-- Security architecture (auth, data access, API boundaries)
+评估以下方面：
+- 整体系统设计与组件边界
+- 依赖图与耦合问题
+- 数据流模式与潜在瓶颈
+- 可扩展性特征与单点故障
+- 安全架构（认证、数据访问、API 边界）
 
-### 2. Code Quality Review
+### 2. 代码质量评审
 
-Evaluate:
-- Code organization and module structure
-- DRY violations (be aggressive here)
-- Error handling patterns and missing edge cases (call these out explicitly)
-- Technical debt hotspots
-- Areas that are over-engineered or under-engineered relative to engineering preferences
+评估以下方面：
+- 代码组织与模块结构
+- DRY 违规（此处要积极标记）
+- 错误处理模式与缺失的边界情况（明确指出）
+- 技术债务热点
+- 相对于工程偏好而言过度设计或设计不足的区域
 
-### 3. Test Review
+### 3. 测试评审
 
-Evaluate:
-- Test coverage gaps (unit, integration, e2e)
-- Test quality and assertion strength
-- Missing edge case coverage (be thorough)
-- Untested failure modes and error paths
+评估以下方面：
+- 测试覆盖缺口（单元、集成、E2E）
+- 测试质量与断言强度
+- 缺失的边界情况覆盖（要全面）
+- 未测试的失败模式与错误路径
 
-### 4. Performance Review
+### 4. 性能评审
 
-Evaluate:
-- N+1 queries and database access patterns
-- Memory-usage concerns
-- Caching opportunities
-- Slow or high-complexity code paths
+评估以下方面：
+- N+1 查询与数据库访问模式
+- 内存使用问题
+- 缓存机会
+- 慢速或高复杂度的代码路径
 
-## Issue Reporting Format
+## 问题报告格式
 
-For every specific issue found (bug, smell, design concern, or risk):
+对于发现的每个具体问题（bug、代码坏味道、设计隐患或风险）：
 
-1. Describe the problem concretely, with file and line references
-2. Present 2-3 options, including "do nothing" where that's reasonable
-3. For each option, specify: implementation effort, risk, impact on other code, and maintenance burden
-4. Give your recommended option and why, mapped to engineering preferences above
-5. Ask explicitly whether the user agrees or wants to choose a different direction before proceeding
+1. 具体描述问题，附带文件和行号引用
+2. 列出 2-3 个选项，在合理时包含"不做任何处理"
+3. 对每个选项说明：实施成本、风险、对其他代码的影响，以及维护负担
+4. 给出你的推荐选项及原因，并与上述工程偏好对应
+5. 明确询问用户是否同意，或是否希望选择不同方向，再继续推进
 
-## Workflow
+## 工作流
 
-- Do not assume priorities on timeline or scale
-- After each section, pause and ask for feedback before moving on
-- Use AskUserQuestion for structured option selection
+- 不要在时间线或规模上假设优先级
+- 每完成一节，暂停并征求反馈，再继续下一节
+- 使用 AskUserQuestion 进行结构化选项选择
 
-## Before Starting
+## 开始前
 
-Ask if the user wants one of two options:
+询问用户希望采用以下两种方式之一：
 
-1. **BIG CHANGE**: Work through this interactively, one section at a time (Architecture → Code Quality → Tests → Performance) with at most 4 top issues in each section
-2. **SMALL CHANGE**: Work through interactively ONE question per review section
+1. **大变更**：交互式逐节推进（架构 → 代码质量 → 测试 → 性能），每节最多提出 4 个主要问题
+2. **小变更**：每个评审节仅交互式提出一个问题
 
-## Tips
+## 使用技巧
 
-- Combine with `.claude/rules/` files for project-specific review criteria
-- Engineering preferences above can be overridden by your project's CLAUDE.md
-- For deeper analysis, use this command with Opus model
+- 配合 `.claude/rules/` 文件使用，可添加项目专属评审标准
+- 以上工程偏好可被项目的 CLAUDE.md 覆盖
+- 如需更深入分析，可配合 Opus 模型使用本命令
 
-## Sources
+## 参考来源
 
-- Inspired by [Garry Tan's Plan Mode prompt](https://garrytan.com/) (Feb 2026)
-- Adapted for Claude Code's native config system
+- 灵感来自 [Garry Tan 的 Plan Mode 提示词](https://garrytan.com/)（2026 年 2 月）
+- 已适配为 Claude Code 原生配置系统
 
 $ARGUMENTS

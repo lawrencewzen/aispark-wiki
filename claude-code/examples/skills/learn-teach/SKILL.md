@@ -2,140 +2,140 @@
 
 ---
 name: learn-teach
-description: Step-by-step explanation of a concept with progressive depth
+description: 由浅入深、逐步讲解某个概念
 argument-hint: <concept>
 effort: low
 ---
 
-# Teach Me
+# 教我学习
 
-Step-by-step explanation of a concept with progressive depth.
+由浅入深、逐步讲解某个概念。
 
-## Usage
+## 用法
 
 ```
-/learn:teach React hooks         # Learn about React hooks
-/learn:teach async/await         # Understand async patterns
-/learn:teach SOLID principles    # Learn design principles
-/learn:teach --deep SQL joins    # In-depth explanation
+/learn:teach React hooks         # 学习 React hooks
+/learn:teach async/await         # 理解异步模式
+/learn:teach SOLID principles    # 学习设计原则
+/learn:teach --deep SQL joins    # 深度讲解
 ```
 
-## Instructions
+## 操作说明
 
-1. Start with a **one-sentence definition** of the concept
-2. Explain **why it matters** (real-world problem it solves)
-3. Show a **minimal example** (simplest possible code)
-4. Break down **each part** of the example with comments
-5. Show a **practical example** (real-world use case)
-6. Highlight **common mistakes** beginners make
-7. Suggest **next concepts** to learn
+1. 用**一句话定义**该概念
+2. 解释**为什么重要**（它解决的现实问题）
+3. 展示**最简示例**（最精简的代码）
+4. 结合注释**逐行分解**示例的每个部分
+5. 展示**实用示例**（真实使用场景）
+6. 指出初学者的**常见错误**
+7. 建议**下一步要学的概念**
 
-## Response Format
+## 回复格式
 
 ```markdown
-## [Concept Name]
+## [概念名称]
 
-**In one sentence**: [Clear, simple definition]
+**一句话概括**：[清晰、简洁的定义]
 
-### Why It Matters
+### 为什么重要
 
-[1-2 sentences on the problem this solves]
+[1-2 句话说明该概念解决的问题]
 
-### Minimal Example
+### 最简示例
 
 \`\`\`[language]
-// Simplest possible demonstration
+// 最精简的演示
 [code]
 \`\`\`
 
-**Line by line**:
-- Line 1: [explanation]
-- Line 2: [explanation]
+**逐行解析**：
+- 第 1 行：[说明]
+- 第 2 行：[说明]
 ...
 
-### Practical Example
+### 实用示例
 
 \`\`\`[language]
-// Real-world scenario
+// 真实场景
 [code]
 \`\`\`
 
-### Common Mistakes
+### 常见错误
 
-1. **[Mistake]**: [Why it's wrong and what to do instead]
-2. **[Mistake]**: [Why it's wrong and what to do instead]
+1. **[错误]**：[为什么错，应该怎么做]
+2. **[错误]**：[为什么错，应该怎么做]
 
-### Key Takeaways
+### 核心要点
 
-- [Bullet point 1]
-- [Bullet point 2]
-- [Bullet point 3]
+- [要点 1]
+- [要点 2]
+- [要点 3]
 
-### Learn Next
+### 下一步学习
 
-- [Related concept 1] — [why it connects]
-- [Related concept 2] — [why it connects]
+- [相关概念 1] — [关联原因]
+- [相关概念 2] — [关联原因]
 
 ---
 
-**Practice challenge**: [Small exercise to reinforce the concept]
+**练习挑战**：[一个小练习，用于巩固该概念]
 ```
 
-## Depth Modes
+## 深度模式
 
-### Default
-- One-sentence definition
-- One minimal example
-- One practical example
-- 2-3 common mistakes
+### 默认模式
+- 一句话定义
+- 一个最简示例
+- 一个实用示例
+- 2-3 个常见错误
 
-### `--deep`
-- Extended explanation with history/context
-- Multiple examples of increasing complexity
-- Edge cases and gotchas
-- Performance considerations
-- Comparison with alternatives
-- Interview-relevant details
+### `--deep`（深度）
+- 包含历史/背景的扩展讲解
+- 多个复杂度递增的示例
+- 边界情况与注意事项
+- 性能考量
+- 与替代方案的对比
+- 面试相关细节
 
-### `--quick`
-- Definition only
-- Single example
-- No extras
+### `--quick`（快速）
+- 仅给定义
+- 单个示例
+- 无额外内容
 
-## Adaptation Rules
+## 适配规则
 
-### For Beginners
-- Use analogies from everyday life
-- Avoid jargon (or explain it immediately)
-- More comments in code
-- Smaller code examples
+### 针对初学者
+- 使用日常生活类比
+- 避免术语（或立即解释）
+- 代码中添加更多注释
+- 使用更小的代码示例
 
-### For Intermediates
-- Assume basic syntax knowledge
-- Focus on "why" over "what"
-- Include trade-offs
-- Show idiomatic patterns
+### 针对中级学习者
+- 假设已掌握基本语法
+- 侧重讲"为什么"而非"是什么"
+- 包含权衡取舍分析
+- 展示惯用写法
 
-### For Advanced Topics
-- Reference official documentation
-- Discuss internal implementation when relevant
-- Include performance implications
-- Mention related patterns
+### 针对高级主题
+- 引用官方文档
+- 必要时讨论内部实现
+- 包含性能影响分析
+- 提及相关模式
 
-## Example Session
+## 示例对话
 
 ```
-User: /learn:teach useEffect
+用户：/learn:teach useEffect
 
-Claude: ## useEffect
+Claude：## useEffect
 
-**In one sentence**: useEffect lets you run side effects (data fetching, subscriptions, DOM changes) after React renders a component.
+**一句话概括**：useEffect 让你在 React 渲染组件后执行副作用（数据请求、订阅、DOM 操作）。
 
-### Why It Matters
+### 为什么重要
 
-React components are pure functions that render UI. But real apps need to interact with the outside world—APIs, browser events, timers. useEffect is the bridge between React's declarative world and imperative side effects.
+React 组件是渲染 UI 的纯函数，但真实应用需要与外部世界交互——API、浏览器事件、定时器。useEffect 是 React 声明式世界与命令式副作用之间的桥梁。
 
-### Minimal Example
+### 最简示例
 
 \`\`\`jsx
 import { useEffect, useState } from 'react';
@@ -148,40 +148,40 @@ function Timer() {
       setSeconds(s => s + 1);
     }, 1000);
 
-    return () => clearInterval(id);  // Cleanup
-  }, []);  // Empty array = run once
+    return () => clearInterval(id);  // 清理
+  }, []);  // 空数组 = 只运行一次
 
   return <div>{seconds}s</div>;
 }
 \`\`\`
 
-**Line by line**:
-- `useEffect(() => {...}, [])`: Run this function after first render
-- `setInterval(...)`: Start a timer (side effect)
-- `return () => clearInterval(id)`: Cleanup when component unmounts
-- `[]`: Empty dependency array = only run on mount
+**逐行解析**：
+- `useEffect(() => {...}, [])`: 在首次渲染后执行此函数
+- `setInterval(...)`: 启动定时器（副作用）
+- `return () => clearInterval(id)`: 组件卸载时清理
+- `[]`: 空依赖数组 = 仅在挂载时运行
 
-### Common Mistakes
+### 常见错误
 
-1. **Missing dependency array**: Without `[]`, effect runs on EVERY render
-2. **Forgetting cleanup**: Intervals/subscriptions leak without return function
-3. **Stale closures**: Using old state values instead of functional updates
+1. **缺少依赖数组**：没有 `[]` 时，副作用在每次渲染都会执行
+2. **忘记清理**：没有 return 函数会导致定时器/订阅泄漏
+3. **闭包过期**：使用旧的 state 值而非函数式更新
 
 ---
 
-**Practice challenge**: Add a pause button that stops and resumes the timer.
+**练习挑战**：添加一个暂停按钮，用于停止和恢复定时器。
 ```
 
-## Topics Well-Suited for /learn:teach
+## 适合 /learn:teach 的主题
 
-| Category | Examples |
+| 分类 | 示例 |
 |----------|----------|
-| **React** | hooks, context, suspense, server components |
-| **JavaScript** | closures, promises, event loop, prototypes |
-| **TypeScript** | generics, mapped types, utility types |
-| **Patterns** | SOLID, DI, composition, factories |
-| **Backend** | REST, GraphQL, authentication, caching |
-| **Database** | indexes, joins, transactions, normalization |
-| **DevOps** | containers, CI/CD, infrastructure as code |
+| **React** | hooks、context、suspense、服务端组件 |
+| **JavaScript** | 闭包、Promise、事件循环、原型 |
+| **TypeScript** | 泛型、映射类型、工具类型 |
+| **设计模式** | SOLID、依赖注入、组合、工厂模式 |
+| **后端** | REST、GraphQL、认证、缓存 |
+| **数据库** | 索引、连接查询、事务、范式化 |
+| **DevOps** | 容器、CI/CD、基础设施即代码 |
 
 $ARGUMENTS

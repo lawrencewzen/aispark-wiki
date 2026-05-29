@@ -1,20 +1,20 @@
 > 📚 **AI Spark Wiki** · Claude Code 知识库
 
 ---
-title: "Voice Refine - Before/After Examples"
-description: "Real-world examples of verbose voice input transformed into structured prompts"
+title: "语音润色 - 对比示例"
+description: "将冗长语音输入转换为结构化提示词的真实案例"
 tags: [reference, tts, skill]
 ---
 
-# Voice Refine - Before/After Examples
+# 语音润色 - 对比示例
 
-Real-world transformations from verbose voice input to structured prompts.
+将冗长语音输入转换为结构化提示词的真实转换案例。
 
 ---
 
-## Example 1: React Table Component (French)
+## 示例 1：React 表格组件（法语）
 
-### Before (147 words)
+### 转换前（147 词）
 
 > Alors euh j'aimerais que tu m'aides à faire un truc, en fait j'ai une API
 > qui renvoie des données utilisateurs et je voudrais les afficher dans un
@@ -26,7 +26,7 @@ Real-world transformations from verbose voice input to structured prompts.
 > faudrait l'utiliser aussi, et puis j'imagine qu'il faut un état de
 > chargement aussi quand les données arrivent...
 
-### After (45 words)
+### 转换后（45 词）
 
 ```markdown
 ## Contexte
@@ -45,13 +45,13 @@ Tableau utilisateurs avec pagination et tri
 Composant React + TypeScript
 ```
 
-**Ratio**: 3.3x compression
+**压缩比**：3.3x
 
 ---
 
-## Example 2: Authentication Flow (English)
+## 示例 2：认证流程（英语）
 
-### Before (189 words)
+### 转换前（189 词）
 
 > So I've been thinking about the authentication flow and like basically
 > what we need is something that handles both regular login and also
@@ -66,7 +66,7 @@ Composant React + TypeScript
 > kick them out, and I guess we need some kind of middleware to check
 > the auth status on protected routes, does that make sense?
 
-### After (52 words)
+### 转换后（52 词）
 
 ```markdown
 ## Context
@@ -85,13 +85,13 @@ Implement clean auth flow with credentials + OAuth (Google, GitHub)
 Auth module with middleware and hooks
 ```
 
-**Ratio**: 3.6x compression
+**压缩比**：3.6x
 
 ---
 
-## Example 3: Bug Report (Mixed)
+## 示例 3：Bug 报告（混合语言）
 
-### Before (112 words)
+### 转换前（112 词）
 
 > Hey so there's this weird bug, basically when users try to upload
 > an image that's like really big, you know like over 5MB or something,
@@ -102,7 +102,7 @@ Auth module with middleware and hooks
 > error message if the file is too big, oh and maybe we should also
 > add a progress bar so users know something is happening...
 
-### After (38 words)
+### 转换后（38 词）
 
 ```markdown
 ## Bug
@@ -117,13 +117,13 @@ Image upload hangs/times out for files >5MB, unhelpful error message
 Likely: upload component, API route
 ```
 
-**Ratio**: 2.9x compression
+**压缩比**：2.9x
 
 ---
 
-## Example 4: Feature Request (Detailed)
+## 示例 4：功能需求（详细）
 
-### Before (203 words)
+### 转换前（203 词）
 
 > OK so product wants this new dashboard feature and basically the idea
 > is that we show some key metrics at the top, like total users and
@@ -140,7 +140,7 @@ Likely: upload component, API route
 > consistency, and this needs to be ready for the demo next week so
 > it's kind of urgent...
 
-### After (58 words)
+### 转换后（58 词）
 
 ```markdown
 ## Context
@@ -163,38 +163,38 @@ Metrics dashboard with KPIs + charts
 Dashboard page + components
 ```
 
-**Ratio**: 3.5x compression
+**压缩比**：3.5x
 
 ---
 
-## Compression Summary
+## 压缩效果汇总
 
-| Example | Before | After | Ratio | Info Retained |
-|---------|--------|-------|-------|---------------|
-| React Table | 147 | 45 | 3.3x | 100% |
-| Auth Flow | 189 | 52 | 3.6x | 100% |
-| Bug Report | 112 | 38 | 2.9x | 100% |
-| Feature Request | 203 | 58 | 3.5x | 100% |
-| **Average** | **163** | **48** | **3.3x** | **100%** |
+| 示例 | 转换前 | 转换后 | 压缩比 | 信息保留率 |
+|------|--------|--------|--------|----------|
+| React 表格 | 147 | 45 | 3.3x | 100% |
+| 认证流程 | 189 | 52 | 3.6x | 100% |
+| Bug 报告 | 112 | 38 | 2.9x | 100% |
+| 功能需求 | 203 | 58 | 3.5x | 100% |
+| **平均** | **163** | **48** | **3.3x** | **100%** |
 
 ---
 
-## Patterns Identified
+## 识别出的规律
 
-### Common Filler Phrases Removed
+### 常见冗余词组（已删除）
 
-- "basically", "like", "you know", "I mean"
-- "kind of", "sort of", "I think", "I guess"
-- "so yeah", "that kind of thing", "or something"
-- "by the way", "oh and", "also"
+- "basically"、"like"、"you know"、"I mean"
+- "kind of"、"sort of"、"I think"、"I guess"
+- "so yeah"、"that kind of thing"、"or something"
+- "by the way"、"oh and"、"also"
 
-### Structure Mapping
+### 结构映射关系
 
-| Voice Pattern | Structured Section |
-|---------------|-------------------|
-| "we're using X" | Context |
-| "I want to..." | Objective |
-| "it needs to..." | Constraints |
-| "probably should..." | Constraints (if technical) |
-| "deadline is..." | Constraints |
-| "output should be..." | Output |
+| 语音表达模式 | 对应结构化章节 |
+|-------------|--------------|
+| "we're using X" | 上下文（Context） |
+| "I want to..." | 目标（Objective） |
+| "it needs to..." | 约束（Constraints） |
+| "probably should..." | 约束（Constraints，技术相关） |
+| "deadline is..." | 约束（Constraints） |
+| "output should be..." | 输出（Output） |

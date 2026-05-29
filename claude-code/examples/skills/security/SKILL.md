@@ -2,28 +2,28 @@
 
 ---
 name: security
-description: Rapid security assessment focused on OWASP Top 10 vulnerabilities
+description: 针对 OWASP Top 10 漏洞的快速安全评估
 argument-hint: "[path] [--depth quick|full]"
 effort: medium
 disable-model-invocation: true
 ---
 
-# Security Quick Audit
+# 安全快速审计
 
-Rapid security assessment focused on OWASP Top 10 vulnerabilities.
+针对 OWASP Top 10 漏洞的快速安全评估。
 
-## Purpose
+## 目的
 
-Perform a quick security scan to identify common vulnerabilities:
-- Hardcoded secrets and credentials
-- SQL injection risks
-- XSS vulnerabilities
-- Insecure dependencies
-- Authentication/authorization issues
+执行快速安全扫描以识别常见漏洞：
+- 硬编码的密钥和凭证
+- SQL 注入风险
+- XSS 漏洞
+- 不安全的依赖
+- 认证/授权问题
 
-## Instructions
+## 操作说明
 
-### Step 1: Secrets Scan
+### 第1步：密钥扫描
 
 ```bash
 # Common secret patterns
@@ -38,7 +38,7 @@ find . -name ".env*" -not -path "*/node_modules/*" -type f 2>/dev/null
 [ -f ".gitignore" ] && grep -q "\.env" .gitignore && echo "✅ .env in .gitignore" || echo "⚠️ .env NOT in .gitignore"
 ```
 
-### Step 2: Injection Vulnerabilities
+### 第2步：注入漏洞
 
 ```bash
 # SQL injection patterns (raw queries with string concat)
@@ -52,7 +52,7 @@ grep -rn --include="*.{js,ts,py,go,rb,php}" \
   --exclude-dir={node_modules,vendor,.git} . 2>/dev/null | head -15
 ```
 
-### Step 3: XSS Patterns
+### 第3步：XSS 模式
 
 ```bash
 # Dangerous innerHTML/dangerouslySetInnerHTML usage
@@ -66,7 +66,7 @@ grep -rn --include="*.{js,ts,jsx,tsx}" \
   --exclude-dir={node_modules,.git,dist} . 2>/dev/null | head -10
 ```
 
-### Step 4: Dependency Check
+### 第4步：依赖检查
 
 ```bash
 # Check for known vulnerabilities in npm packages
@@ -76,7 +76,7 @@ grep -rn --include="*.{js,ts,jsx,tsx}" \
 [ -f "package.json" ] && npm outdated --json 2>/dev/null | jq 'to_entries | map(select(.value.current != .value.latest)) | length' 2>/dev/null
 ```
 
-### Step 5: Auth & Session Issues
+### 第5步：认证与会话问题
 
 ```bash
 # Hardcoded JWT secrets
@@ -90,81 +90,81 @@ grep -rn --include="*.{js,ts,py}" \
   --exclude-dir={node_modules,vendor,.git} . 2>/dev/null | head -10
 ```
 
-## Output Format
+## 输出格式
 
 ---
 
-### 🛡️ Security Audit Report
+### 🛡️ 安全审计报告
 
-**Scan Date**: [timestamp]
-**Scope**: [directory scanned]
+**扫描日期**：[时间戳]
+**扫描范围**：[扫描的目录]
 
-### 🔴 Critical Issues
+### 🔴 严重问题
 
-| Issue | Location | Description |
-|-------|----------|-------------|
-| [type] | [file:line] | [brief description] |
+| 问题 | 位置 | 描述 |
+|------|------|------|
+| [类型] | [文件:行号] | [简要描述] |
 
-### 🟠 High Severity
+### 🟠 高危
 
-| Issue | Location | Recommendation |
-|-------|----------|----------------|
-| [type] | [file:line] | [fix suggestion] |
+| 问题 | 位置 | 建议 |
+|------|------|------|
+| [类型] | [文件:行号] | [修复建议] |
 
-### 🟡 Medium Severity
+### 🟡 中危
 
-| Issue | Location | Note |
-|-------|----------|------|
-| [type] | [file:line] | [context] |
+| 问题 | 位置 | 备注 |
+|------|------|------|
+| [类型] | [文件:行号] | [上下文] |
 
-### 📊 Summary
+### 📊 摘要
 
-- **Critical**: X issues
-- **High**: X issues
-- **Medium**: X issues
-- **Dependencies**: X vulnerabilities
+- **严重**：X 个问题
+- **高危**：X 个问题
+- **中危**：X 个问题
+- **依赖**：X 个漏洞
 
-### 🔧 Quick Fixes
+### 🔧 快速修复
 
-1. [Highest priority fix with command/code]
-2. [Second priority]
-3. [Third priority]
+1. [最高优先级修复，附命令/代码]
+2. [第二优先级]
+3. [第三优先级]
 
 ---
 
-## Severity Levels
+## 严重性级别
 
-| Level | Examples | Action |
-|-------|----------|--------|
-| 🔴 Critical | Hardcoded prod secrets, SQL injection | Fix immediately |
-| 🟠 High | Missing auth, XSS vectors | Fix before deploy |
-| 🟡 Medium | Outdated deps, missing CSRF | Plan remediation |
-| 🟢 Low | Best practice violations | Track for improvement |
+| 级别 | 示例 | 行动 |
+|------|------|------|
+| 🔴 严重 | 硬编码生产密钥、SQL 注入 | 立即修复 |
+| 🟠 高危 | 缺少认证、XSS 向量 | 部署前修复 |
+| 🟡 中危 | 过时依赖、缺少 CSRF 防护 | 计划修复 |
+| 🟢 低危 | 最佳实践违规 | 跟踪改进 |
 
-## Usage
+## 用法
 
-**Full audit:**
+**完整审计：**
 ```
 /security
 ```
 
-**Focus on specific area:**
+**聚焦特定领域：**
 ```
 /security auth
 /security deps
 /security injection
 ```
 
-**Specific file/directory:**
+**特定文件/目录：**
 ```
 /security src/api/
 ```
 
-## Notes
+## 注意事项
 
-- This is a quick heuristic scan, not a comprehensive security audit
-- For production systems, complement with dedicated tools (Snyk, SonarQube, OWASP ZAP)
-- False positives are possible - verify findings manually
-- See `examples/hooks/security-hooks.sh` for automated pre-commit security checks
+- 这是快速启发式扫描，不是全面的安全审计
+- 生产系统请配合专用工具使用（Snyk、SonarQube、OWASP ZAP）
+- 可能存在误报——请手动验证发现的问题
+- 参见 `examples/hooks/security-hooks.sh` 了解自动化预提交安全检查
 
 $ARGUMENTS

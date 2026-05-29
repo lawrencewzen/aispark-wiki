@@ -2,313 +2,313 @@
 
 ---
 name: scaffold
-description: "Interactive coach that asks 4-5 questions to determine whether you need an agent, command, skill, hook, or rule — then generates a ready-to-use template. Usage: /scaffold (no arguments — starts the coaching session)"
+description: "交互式引导助手，通过4-5个问题判断你需要智能体、命令、技能、钩子还是规则，然后生成开箱即用的模板。用法：/scaffold（无需参数——开始引导会话）"
 effort: medium
 disable-model-invocation: true
 ---
 
-# Claude Code Scaffold Coach
+# Claude Code 脚手架引导助手
 
-Interactive wizard that identifies the right Claude Code component for your use case and generates a ready-to-use template.
+交互式向导，识别适合你用例的 Claude Code 组件并生成开箱即用的模板。
 
-**Usage**: `/scaffold` — no arguments needed. Start the conversation.
-
----
-
-## Phase 1 — Discovery
-
-Open with this prompt, then wait for the user's answer before asking anything else:
-
-> What do you want to automate or build? One sentence is enough to start.
-
-Once you have a rough idea, ask the following questions in order. Skip a question if a previous answer already answers it.
-
-### Q1 — Trigger
-
-> How is this triggered?
->
-> a) I run it myself with a command (e.g. `/something`)
-> b) It should fire automatically when Claude takes an action (writes a file, runs bash, finishes a session...)
-> c) It should apply all the time, every session, without me doing anything
-
-- If **b** → likely a **Hook** — jump to Q_hook
-- If **c** → likely a **Rule** — jump to Q_rule
-- If **a** → continue with Q2
-
-### Q2 — Domain expertise
-
-> Does this require deep, project-specific expertise?
-> For example: knowing your GraphQL schema, your migration conventions, your internal API patterns, your cost model...
-
-- If **yes, deep expertise** → likely an **Agent** — jump to Q_agent
-- If **no, more of a checklist or procedure** → continue with Q3
-
-### Q3 — Complexity
-
-> How much context and logic does this involve?
->
-> a) A lot — multiple rules, domain-specific examples, nuanced judgment
-> b) Straightforward — a few steps, a template, some bash
-
-- If **a** → likely a **Skill**
-- If **b** → likely a **Command**
-
-### Q4 — Reuse scope
-
-> Who needs this?
->
-> a) Just me
-> b) My whole team
-> c) It needs to be invokable by other agents automatically
-
-- **c** → strengthens **Agent** (needs a `description:` field that other agents can read)
-- **b** → strengthens **Command** or **Skill** (shared config)
-- **a** → can stay a simple personal **Command**
-
-### Q5 — Output type
-
-> What should happen at the end?
->
-> a) A report or analysis — Claude reads and explains, no files touched
-> b) Code or files generated
-> c) An action taken (commit, push, API call...)
-> d) Claude's behavior changes permanently (always does X, never does Y)
-
-- **a** → read-only Agent (no `Write` or `Bash` in tools)
-- **b/c** → Agent or Command/Skill with write access
-- **d** → Rule, or Hook if conditional on a specific event
+**用法**：`/scaffold` — 无需参数，直接开始对话。
 
 ---
 
-## Internal decision tree (do not display — use to reason)
+## 第一阶段 — 发现
 
-```
-Triggered automatically?
-  ├─ On Claude action (Write, Bash, SessionEnd...) → Hook
-  └─ Always active, no trigger → Rule
+用以下提示词开场，然后等待用户回答后再继续提问：
 
-Triggered manually?
-  ├─ Deep domain expertise required?
-  │   ├─ Yes + invokable by other agents → Agent
-  │   └─ Yes + manual use only → Agent or Skill
-  └─ Procedure / checklist, no special expertise?
-      ├─ Complex, lots of project-specific context → Skill
-      └─ Simple, a few steps → Command
+> 你想自动化或构建什么？一句话即可开始。
 
-Common hybrid cases:
-  - Agent + Command → specialist agent + a shortcut command to invoke it
-  - Rule + Hook → permanent behavior + blocking on a specific action
-  - Skill + Agent → skill that delegates analysis to an agent
-```
+收到大致思路后，按顺序提问以下问题。如果前面的回答已经覆盖某个问题，可跳过。
+
+### Q1 — 触发方式
+
+> 这是如何触发的？
+>
+> a) 我自己用命令运行（例如 `/something`）
+> b) 当 Claude 执行某个操作时自动触发（写文件、运行 bash、结束会话...）
+> c) 应始终生效，每次会话自动应用，无需我做任何操作
+
+- 如果选 **b** → 很可能是**钩子** — 跳到 Q_hook
+- 如果选 **c** → 很可能是**规则** — 跳到 Q_rule
+- 如果选 **a** → 继续 Q2
+
+### Q2 — 领域专业知识
+
+> 这是否需要深入的项目特定专业知识？
+> 例如：了解你的 GraphQL schema、迁移规范、内部 API 模式、成本模型...
+
+- 如果**是，需要深入专业知识** → 很可能是**智能体** — 跳到 Q_agent
+- 如果**否，更像检查清单或流程** → 继续 Q3
+
+### Q3 — 复杂程度
+
+> 这涉及多少上下文和逻辑？
+>
+> a) 很多 — 多条规则、领域特定示例、细致判断
+> b) 简单直接 — 几个步骤、一个模板、一些 bash
+
+- 如果选 **a** → 很可能是**技能**
+- 如果选 **b** → 很可能是**命令**
+
+### Q4 — 复用范围
+
+> 谁需要这个？
+>
+> a) 只有我
+> b) 我的整个团队
+> c) 需要能被其他智能体自动调用
+
+- **c** → 强化**智能体**（需要 `description:` 字段供其他智能体读取）
+- **b** → 强化**命令**或**技能**（共享配置）
+- **a** → 可以作为简单的个人**命令**
+
+### Q5 — 输出类型
+
+> 最终应该发生什么？
+>
+> a) 报告或分析 — Claude 读取并解释，不接触任何文件
+> b) 生成代码或文件
+> c) 执行操作（提交、推送、API 调用...）
+> d) Claude 的行为永久改变（始终做 X，永不做 Y）
+
+- **a** → 只读智能体（工具中不含 `Write` 或 `Bash`）
+- **b/c** → 拥有写权限的智能体或命令/技能
+- **d** → 规则，或针对特定事件的条件型钩子
 
 ---
 
-## Phase 2 — Recommendation
-
-After the questions, display this structure:
+## 内部决策树（不显示给用户——用于内部推理）
 
 ```
-## Diagnosis
+自动触发？
+  ├─ 在 Claude 执行操作时（Write、Bash、SessionEnd...）→ 钩子
+  └─ 始终激活，无需触发 → 规则
 
-You want to: [one-line summary of the use case]
+手动触发？
+  ├─ 需要深度领域专业知识？
+  │   ├─ 是 + 可被其他智能体调用 → 智能体
+  │   └─ 是 + 仅手动使用 → 智能体或技能
+  └─ 流程/检查清单，无需特殊专业知识？
+      ├─ 复杂，大量项目特定上下文 → 技能
+      └─ 简单，几个步骤 → 命令
 
-## Recommendation: [TYPE]
-
-**Why?**
-[2-3 sentences: trigger type, complexity level, reuse scope]
-
-**What it would NOT be, and why:**
-- Not an agent because [short reason]
-- Not a rule because [short reason]
-[adjust based on actual candidates]
-
-**Hybrid case?** [Yes / No]
-[If yes: explain the combination and which file to create first]
+常见混合情况：
+  - 智能体 + 命令 → 专业智能体 + 调用它的快捷命令
+  - 规则 + 钩子 → 永久行为 + 在特定操作上阻断
+  - 技能 + 智能体 → 将分析委托给智能体的技能
 ```
 
 ---
 
-## Phase 3 — Scaffold
+## 第二阶段 — 推荐
 
-Ask: "Generate the scaffold file?"
+提问结束后，显示以下结构：
 
-If yes, produce the template below based on the detected type.
+```
+## 诊断
+
+你想要：[用例的一句话总结]
+
+## 推荐：[类型]
+
+**原因？**
+[2-3句：触发类型、复杂程度、复用范围]
+
+**不选择其他类型的原因：**
+- 不是智能体，因为 [简短原因]
+- 不是规则，因为 [简短原因]
+[根据实际候选项调整]
+
+**混合情况？** [是 / 否]
+[如果是：解释组合方式以及优先创建哪个文件]
+```
 
 ---
 
-### Agent scaffold
+## 第三阶段 — 脚手架生成
+
+询问："生成脚手架文件？"
+
+如果是，根据检测到的类型生成以下模板。
+
+---
+
+### 智能体脚手架
 
 ```markdown
 ---
 name: [kebab-case-name]
-description: "[What this agent does in one sentence. When to invoke it. Example triggers for other agents.]"
+description: "[一句话说明此智能体的功能。何时调用。供其他智能体参考的示例触发词。]"
 model: sonnet
-tools: Read, Grep, Glob[, Write, Bash — add only if this agent must modify files or run commands]
+tools: Read, Grep, Glob[, Write, Bash — 仅在此智能体需要修改文件或运行命令时添加]
 ---
 
-# [Agent Name]
+# [智能体名称]
 
-[One paragraph: what this agent is for, what it is NOT for, and when to prefer another agent.]
+[一段话：此智能体的用途、不适用的场景，以及何时优先选用其他智能体。]
 
-## Context
+## 上下文
 
-[Stack, conventions, or domain knowledge this agent needs to be effective.]
+[此智能体需要了解的技术栈、规范或领域知识。]
 
-## When to invoke
+## 何时调用
 
-- [Concrete trigger 1]
-- [Concrete trigger 2]
-- [Concrete trigger 3]
+- [具体触发条件1]
+- [具体触发条件2]
+- [具体触发条件3]
 
-## Protocol
+## 协议
 
-### Step 1 — Read context
+### 步骤1 — 读取上下文
 
 ```bash
-# What to read before reasoning
+# 推理前需要读取的内容
 cat CLAUDE.md 2>/dev/null
 ```
 
-### Step 2 — Analyze
+### 步骤2 — 分析
 
-[What to look for. Patterns to detect. Red flags to surface.]
+[查找什么。检测哪些模式。需要浮出哪些红旗。]
 
-### Step 3 — Output
+### 步骤3 — 输出
 
-[Exact output format — use a markdown code block to show the structure.]
+[确切的输出格式——用 markdown 代码块展示结构。]
 
-## Red flags
+## 红旗信号
 
-| Pattern | Risk |
-|---------|------|
-| [pattern] | [impact] |
+| 模式 | 风险 |
+|------|------|
+| [模式] | [影响] |
 
-## What this agent does NOT do
+## 此智能体不做的事
 
-- [Scope boundary 1]
-- [Scope boundary 2 — point to another agent if relevant]
+- [范围边界1]
+- [范围边界2 — 如有相关，指向其他智能体]
 ```
 
-**File**: `.claude/agents/[name].md`
+**文件**：`.claude/agents/[name].md`
 
 ---
 
-### Command scaffold
+### 命令脚手架
 
 ```markdown
 ---
 name: [name]
-description: "[What this command does in one sentence]"
+description: "[一句话说明此命令的功能]"
 argument-hint: "[arg] [--flag]"
 ---
 
-# [Command Name]
+# [命令名称]
 
-[Brief description. What problem it solves. When to use it vs alternatives.]
+[简短描述。解决什么问题。与其他替代方案相比何时使用。]
 
-## Arguments
+## 参数
 
-- `[arg]` — [description] (default: [value])
-- `--flag` — [description]
+- `[arg]` — [描述]（默认值：[值]）
+- `--flag` — [描述]
 
-## Usage
+## 用法
 
 ```bash
-/[name]              # Basic usage
-/[name] --flag       # With flag
+/[name]              # 基本用法
+/[name] --flag       # 带标志
 ```
 
 ---
 
-## Phase 1 — [First phase name]
+## 第一阶段 — [第一阶段名称]
 
-[What Claude does in this phase.]
+[Claude 在此阶段执行的操作。]
 
 ```bash
-# Example commands if applicable
+# 适用时的示例命令
 ```
 
-## Phase 2 — [Second phase name]
+## 第二阶段 — [第二阶段名称]
 
-[What Claude does.]
+[Claude 执行的操作。]
 
-## Phase 3 — Output
+## 第三阶段 — 输出
 
-[Output format. Use a markdown block to show the structure.]
+[输出格式。用 markdown 块展示结构。]
 
 $ARGUMENTS
 ```
 
-**File**: `.claude/commands/[name].md`
+**文件**：`.claude/commands/[name].md`
 
 ---
 
-### Skill scaffold
+### 技能脚手架
 
 ```markdown
 ---
 name: [skill-name]
-description: "[What this skill does. Trigger phrases that activate it. Usage: /[name] [arg]]"
+description: "[此技能的功能。激活它的触发短语。用法：/[name] [arg]]"
 ---
 
-# [Skill Name]
+# [技能名称]
 
-[What this skill does and when it applies. Distinguish from similar skills.]
+[此技能的作用及适用场景。与类似技能的区别。]
 
-## Trigger phrases
+## 触发短语
 
-- "[phrase that activates this skill]"
-- "[alternative phrasing]"
+- "[激活此技能的短语]"
+- "[替代表述]"
 
-## When to use
+## 何时使用
 
-- [Scenario 1]
-- [Scenario 2]
+- [场景1]
+- [场景2]
 
-## Workflow
+## 工作流
 
-### 1. [First action] — [brief description]
+### 1. [第一步操作] — [简短描述]
 
-[Details]
+[详情]
 
-### 2. [Second action] — [brief description]
+### 2. [第二步操作] — [简短描述]
 
-[Details]
+[详情]
 
-### 3. Deliver output
+### 3. 交付输出
 
-[Output format]
+[输出格式]
 
-## Conventions to follow
+## 需遵守的规范
 
-[Project-specific rules, naming conventions, or patterns this skill must respect.]
+[此技能必须遵守的项目特定规则、命名约定或模式。]
 
-## Common pitfalls
+## 常见陷阱
 
-- [Mistake 1 and how to avoid it]
-- [Mistake 2 and how to avoid it]
+- [错误1及如何避免]
+- [错误2及如何避免]
 
 $ARGUMENTS
 ```
 
-**File**: `.claude/skills/[name].md`
+**文件**：`.claude/skills/[name].md`
 
 ---
 
-### Hook scaffold
+### 钩子脚手架
 
 ```bash
 #!/usr/bin/env bash
 # =============================================================================
-# [name].sh — [PreToolUse | PostToolUse | UserPromptSubmit | Stop] Hook
+# [name].sh — [PreToolUse | PostToolUse | UserPromptSubmit | Stop] 钩子
 # =============================================================================
-# [What this hook does in one line]
-# Fires on: [event] matching [tool or pattern]
+# [此钩子的一行功能说明]
+# 触发时机：[事件] 匹配 [工具或模式]
 #
-# Exit 0 = allow / continue
-# Exit 2 = block with message (PreToolUse only)
+# 退出 0 = 允许/继续
+# 退出 2 = 带消息阻断（仅限 PreToolUse）
 #
-# stdin: JSON payload from Claude Code
+# stdin：Claude Code 的 JSON 载荷
 # =============================================================================
 
 set -euo pipefail
@@ -316,22 +316,22 @@ set -euo pipefail
 INPUT=$(cat)
 TOOL_NAME=$(echo "$INPUT" | jq -r '.tool_name // empty')
 
-# --- Main logic ---
+# --- 主要逻辑 ---
 
-# [Your validation logic here]
-# Example: block writes to protected paths
+# [在此写入你的验证逻辑]
+# 示例：阻止写入受保护路径
 # FILE=$(echo "$INPUT" | jq -r '.tool_input.file_path // empty')
 # if [[ "$FILE" == *"/secrets/"* ]]; then
-#   echo "Blocked: writes to /secrets/ are not allowed" >&2
+#   echo "已阻断：不允许写入 /secrets/" >&2
 #   exit 2
 # fi
 
 exit 0
 ```
 
-**File**: `.claude/hooks/[name].sh`
+**文件**：`.claude/hooks/[name].sh`
 
-Also add to `.claude/settings.json`:
+同时添加到 `.claude/settings.json`：
 ```json
 {
   "hooks": {
@@ -347,59 +347,59 @@ Also add to `.claude/settings.json`:
 
 ---
 
-### Rule scaffold
+### 规则脚手架
 
 ```markdown
-# [Rule Title] (Auto-loaded)
+# [规则标题]（自动加载）
 
-## Directive
+## 指令
 
-[The rule in one imperative sentence.]
+[一句祈使句说明规则。]
 
-## When it applies
+## 适用场景
 
-[Triggers, file types, or situations where this rule activates.]
+[此规则激活的触发器、文件类型或情况。]
 
-## Required behavior
+## 必要行为
 
-[What Claude must do concretely — be specific.]
+[Claude 必须具体执行的操作——要明确具体。]
 
-## Anti-patterns
+## 反模式
 
-❌ Do NOT:
-- [Forbidden example]
+❌ 不要：
+- [禁止示例]
 
-✅ Do:
-- [Correct behavior]
+✅ 应该：
+- [正确行为]
 
 ---
 
-**Auto-loaded**: This file is loaded automatically at session start.
+**自动加载**：此文件在会话开始时自动加载。
 ```
 
-**File**: `.claude/rules/[name].md`
+**文件**：`.claude/rules/[name].md`
 
-Reference in `CLAUDE.md` if not in an auto-loaded directory.
-
----
-
-## Quick reference
-
-If the user is unsure, show this table:
-
-| Type | Trigger | Expertise needed | Complexity | Typical example |
-|------|---------|-----------------|------------|-----------------|
-| **Agent** | Manual or automatic | High, domain-specific | Multi-step analysis | `migration-reviewer`, `dbt-specialist` |
-| **Command** | Manual `/name` | Low to medium | Simple, a few steps | `/commit`, `/pr`, `/release` |
-| **Skill** | Manual `/name` | Medium to high | Rich workflow, lots of context | `tdd-workflow`, `api-review` |
-| **Hook** | Automatic on event | None — bash logic | Script | `security-gate.sh`, `format-on-save.sh` |
-| **Rule** | Permanent, every session | None — prose | Instructions | `no-direct-push.md`, `english-only.md` |
+如果不在自动加载目录中，需在 `CLAUDE.md` 中引用。
 
 ---
 
-## Sources
+## 快速参考
 
-- Component types overview: [Section 3](../../guide/ultimate-guide.md)
-- Agent examples: [agents/](../agents/)
-- Hook examples: [hooks/](../hooks/)
-- Skill examples: [skills/](../skills/)
+如果用户不确定，显示此表格：
+
+| 类型 | 触发方式 | 所需专业知识 | 复杂程度 | 典型示例 |
+|------|---------|------------|---------|---------|
+| **智能体** | 手动或自动 | 高，领域特定 | 多步骤分析 | `migration-reviewer`、`dbt-specialist` |
+| **命令** | 手动 `/name` | 低到中 | 简单，几个步骤 | `/commit`、`/pr`、`/release` |
+| **技能** | 手动 `/name` | 中到高 | 丰富工作流，大量上下文 | `tdd-workflow`、`api-review` |
+| **钩子** | 事件自动触发 | 无——bash 逻辑 | 脚本 | `security-gate.sh`、`format-on-save.sh` |
+| **规则** | 永久，每次会话 | 无——文本描述 | 指令 | `no-direct-push.md`、`english-only.md` |
+
+---
+
+## 参考资料
+
+- 组件类型概览：[第3节](../../guide/ultimate-guide.md)
+- 智能体示例：[agents/](../agents/)
+- 钩子示例：[hooks/](../hooks/)
+- 技能示例：[skills/](../skills/)

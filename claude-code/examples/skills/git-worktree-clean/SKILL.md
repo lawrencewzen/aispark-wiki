@@ -2,68 +2,68 @@
 
 ---
 name: git-worktree-clean
-description: Clean up stale git worktrees with merged branch detection and disk usage report
+description: 清理过期 Git 工作树，附带已合并分支检测和磁盘占用报告
 argument-hint: "[--dry-run]"
 effort: low
 disable-model-invocation: true
 ---
 
-# Git Worktree Clean
+# Git 工作树清理
 
-Batch cleanup of stale git worktrees. Safely removes merged branches, reports disk usage, and handles unmerged branches interactively.
+批量清理过期的 Git 工作树。安全移除已合并分支，报告磁盘使用情况，并对未合并分支进行交互式处理。
 
-**Core principle:** Auto-clean merged worktrees, interactive review for unmerged, always report what was reclaimed.
+**核心原则：** 自动清理已合并的工作树，对未合并的工作树进行交互式审查，并始终报告已回收的空间。
 
-**Part of:** [Worktree Lifecycle Suite](./git-worktree.md) | [`/git-worktree`](./git-worktree.md) | [`/git-worktree-status`](./git-worktree-status.md) | [`/git-worktree-remove`](./git-worktree-remove.md)
+**所属系列：** [工作树生命周期套件](./git-worktree.md) | [`/git-worktree`](./git-worktree.md) | [`/git-worktree-status`](./git-worktree-status.md) | [`/git-worktree-remove`](./git-worktree-remove.md)
 
-## Process
+## 处理流程
 
-1. **List All Worktrees**: `git worktree list`
-2. **Classify Each**: merged vs unmerged vs protected
-3. **Calculate Disk Usage**: Per-worktree size
-4. **Auto Mode**: Remove all merged worktrees (safe)
-5. **Interactive Mode**: Review unmerged worktrees one by one
-6. **Database Cleanup Reminder**: List DB branches to clean
-7. **Report**: Summary of actions taken and space reclaimed
+1. **列出所有工作树**：`git worktree list`
+2. **逐一分类**：已合并 / 未合并 / 受保护
+3. **计算磁盘占用**：每个工作树的大小
+4. **自动模式**：移除所有已合并的工作树（安全）
+5. **交互模式**：逐一审查未合并的工作树
+6. **数据库清理提醒**：列出待清理的数据库分支
+7. **报告**：已执行操作及回收空间的汇总
 
-## Flags
+## 参数标志
 
-| Flag | Effect |
+| 标志 | 效果 |
 |------|--------|
-| `--dry-run` | Preview what would be cleaned, no changes |
-| `--all` | Include unmerged worktrees (interactive confirmation each) |
-| `--force` | Remove all worktrees without confirmation (dangerous) |
+| `--dry-run` | 预览待清理内容，不做任何变更 |
+| `--all` | 包含未合并的工作树（每个需逐一确认） |
+| `--force` | 不需确认直接移除所有工作树（危险） |
 
-## Worktree Discovery
+## 工作树发现
 
 ```bash
-# Get main branch name
+# 获取主分支名称
 MAIN_BRANCH=$(git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's@^refs/remotes/origin/@@')
 MAIN_BRANCH=${MAIN_BRANCH:-main}
 
-# Protected branches (never auto-clean)
+# 受保护分支（永不自动清理）
 PROTECTED="main master develop staging production"
 
-# List all worktrees (skip main working tree)
+# 列出所有工作树（跳过主工作树）
 git worktree list --porcelain | while read line; do
-  # Parse worktree path and branch
-  # Skip the main worktree (first entry)
+  # 解析工作树路径和分支
+  # 跳过主工作树（第一条记录）
 done
 ```
 
-## Classification
+## 分类逻辑
 
 ```bash
 for WORKTREE in $WORKTREES; do
   BRANCH=$(git -C "$WORKTREE" rev-parse --abbrev-ref HEAD)
 
-  # Skip protected
+  # 跳过受保护分支
   if echo "$PROTECTED" | grep -qw "$BRANCH"; then
     echo "PROTECTED: $BRANCH (skipped)"
     continue
   fi
 
-  # Check merge status
+  # 检查合并状态
   if git merge-base --is-ancestor "$BRANCH" "$MAIN_BRANCH" 2>/dev/null; then
     echo "MERGED: $BRANCH → safe to remove"
     MERGED_LIST="$MERGED_LIST $WORKTREE"
@@ -74,22 +74,22 @@ for WORKTREE in $WORKTREES; do
 done
 ```
 
-## Disk Usage Calculation
+## 磁盘占用计算
 
 ```bash
 for WORKTREE in $ALL_WORKTREES; do
-  # Calculate size excluding symlinked node_modules
+  # 计算大小，排除软链接的 node_modules
   SIZE=$(du -sh --exclude='node_modules' "$WORKTREE" 2>/dev/null | cut -f1)
-  # Or on macOS:
+  # 或在 macOS 上：
   SIZE=$(du -sh -I 'node_modules' "$WORKTREE" 2>/dev/null | cut -f1)
   echo "  $WORKTREE: $SIZE"
 done
 ```
 
-## Dry Run Mode
+## 试运行模式
 
 ```bash
-# --dry-run: show what would happen without making changes
+# --dry-run：预览将发生的操作，不做任何变更
 
 echo "=== Dry Run ==="
 echo ""
@@ -108,9 +108,9 @@ echo ""
 echo "Run without --dry-run to execute."
 ```
 
-## Auto Mode (Default)
+## 自动模式（默认）
 
-**Only removes merged worktrees. Safe by default.**
+**仅移除已合并的工作树，默认安全。**
 
 ```bash
 echo "Cleaning merged worktrees..."
@@ -118,19 +118,19 @@ echo "Cleaning merged worktrees..."
 for WORKTREE in $MERGED_LIST; do
   BRANCH=$(git -C "$WORKTREE" rev-parse --abbrev-ref HEAD)
 
-  # Remove worktree
+  # 移除工作树
   git worktree remove "$WORKTREE"
 
-  # Delete local branch
+  # 删除本地分支
   git branch -d "$BRANCH" 2>/dev/null
 
-  # Delete remote branch
+  # 删除远程分支
   git push origin --delete "$BRANCH" 2>/dev/null
 
   echo "  Removed: $WORKTREE ($BRANCH)"
 done
 
-# Report unmerged (not touched)
+# 报告未合并的工作树（不处理）
 if [ -n "$UNMERGED_LIST" ]; then
   echo ""
   echo "Unmerged worktrees (kept):"
@@ -140,9 +140,9 @@ if [ -n "$UNMERGED_LIST" ]; then
 fi
 ```
 
-## Interactive Mode (--all)
+## 交互模式（--all）
 
-**Reviews unmerged worktrees one by one:**
+**逐一审查未合并的工作树：**
 
 ```bash
 for WORKTREE in $UNMERGED_LIST; do
@@ -158,13 +158,13 @@ for WORKTREE in $UNMERGED_LIST; do
   echo ""
   echo "  [r]emove  [k]eep  [s]kip remaining"
 
-  # Wait for user decision per worktree
+  # 等待用户对每个工作树做出决定
 done
 ```
 
-## Report Format
+## 报告格式
 
-**After cleanup:**
+**清理完成后：**
 
 ```
 === Worktree Cleanup Report ===
@@ -191,7 +191,7 @@ DB branches to clean:
   neonctl branches delete chore-deps-update
 ```
 
-**Dry run report:**
+**试运行报告：**
 
 ```
 === Dry Run - No Changes Made ===
@@ -210,31 +210,31 @@ Would keep (1 protected):
 Potential space savings: 4.2 MB
 ```
 
-## Quick Reference
+## 快速参考
 
-| Situation | Action |
+| 场景 | 操作 |
 |-----------|--------|
-| Default (no flags) | Remove merged worktrees only |
-| `--dry-run` | Preview without changes |
-| `--all` | Merged (auto) + unmerged (interactive) |
-| `--force` | Remove everything except protected |
-| Protected branch | Always kept |
-| Merged branch | Auto-removed |
-| Unmerged branch | Kept (default) or interactive (--all) |
-| DB branches detected | Reminder with exact commands |
+| 默认（无标志） | 仅移除已合并的工作树 |
+| `--dry-run` | 预览，不做变更 |
+| `--all` | 已合并（自动）+ 未合并（交互式） |
+| `--force` | 移除除受保护外的所有内容 |
+| 受保护分支 | 始终保留 |
+| 已合并分支 | 自动移除 |
+| 未合并分支 | 保留（默认）或交互式处理（--all） |
+| 检测到数据库分支 | 带精确命令的清理提醒 |
 
-## Common Mistakes
+## 常见误操作
 
-**Running `--force` without `--dry-run` first**
-- Always preview with `--dry-run` before force-cleaning
+**在 `--dry-run` 预览前直接使用 `--force`**
+- 强制清理前务必先用 `--dry-run` 预览
 
-**Forgetting DB branch cleanup**
-- Worktree cleanup doesn't auto-delete DB branches. Follow the reminder commands.
+**忘记清理数据库分支**
+- 工作树清理不会自动删除数据库分支，请按提醒命令操作。
 
-**Not running cleanup regularly**
-- Stale worktrees accumulate disk space. Run `/git-worktree-clean --dry-run` weekly.
+**不定期清理**
+- 过期工作树会持续占用磁盘空间，建议每周运行 `/git-worktree-clean --dry-run`。
 
-## Usage
+## 使用方式
 
 ```
 /git-worktree-clean
@@ -242,4 +242,4 @@ Potential space savings: 4.2 MB
 /git-worktree-clean --all
 ```
 
-Flags: $ARGUMENTS
+标志参数：$ARGUMENTS

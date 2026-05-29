@@ -1,7 +1,7 @@
 > 📚 **AI Spark Wiki** · Claude Code 知识库
 
-# Moved to Skills
+# 已迁移至 Skills
 
-This command was migrated to a skill in Claude Code 2.1.3. See: [`examples/skills/security-check/SKILL.md`](../skills/security-check/SKILL.md)
+此命令已在 Claude Code 2.1.3 中迁移为 skill 形式。参见： [`examples/skills/security-check/SKILL.md`](../skills/security-check/SKILL.md)
 
-Existing `.claude/commands/` files remain backward-compatible. For new projects, use the skill version.
+现有 `.claude/commands/` 文件保持向后兼容。新项目推荐使用 skill 版本。

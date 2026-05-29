@@ -1,44 +1,44 @@
 > 📚 **AI Spark Wiki** · Claude Code 知识库
 
-# CHANGELOG Section Template
+# CHANGELOG 章节模板
 
-Use this template for generating CHANGELOG.md entries.
+使用此模板生成 CHANGELOG.md 条目。
 
 ```markdown
 ## [X.Y.Z] - YYYY-MM-DD
 
 ### Objective
-[1-2 sentence summary of this release]
+[1-2 句话概述本次发布]
 
 ### New Features
 
-#### [Feature Name] (#PR_NUMBER)
-- **Description** : [Clear functional description]
-- **Spec link** : [Link to spec if available]
+#### [功能名称] (#PR_NUMBER)
+- **Description** : [清晰的功能描述]
+- **Spec link** : [规格文档链接（如有）]
 - **Impacted components** : `component-a`, `service-b`, etc.
-- **Impact** : [Who is affected: End-users / Admins / All]
+- **Impact** : [受影响人员：终端用户 / 管理员 / 所有人]
 
 ### Bug Fixes
 
-#### [Module/Component] (#PR_NUMBER)
-- **Issue** : [Bug description]
-- **Cause** : [Root cause identified]
-- **Fix** : [Fix description]
-- **[Error tracker]** : PROJECT-XX (if applicable)
+#### [模块/组件] (#PR_NUMBER)
+- **Issue** : [缺陷描述]
+- **Cause** : [已定位的根本原因]
+- **Fix** : [修复方案描述]
+- **[Error tracker]** : PROJECT-XX（如适用）
 
 ### Technical Improvements
 
 #### Performance
-- [Optimization description with measurable impact if possible]
+- [优化描述，尽量包含可量化的影响]
 
 #### UI/UX
-- [Interface improvement description]
+- [界面改进描述]
 
 #### Architecture
-- [Significant refactoring description]
+- [重大重构描述]
 
 ### Security
-- **[CVE-XXXX-XXXXX]** : [Description and impact]
+- **[CVE-XXXX-XXXXX]** : [描述及影响]
 
 ### Database Migrations
 
@@ -64,18 +64,18 @@ SELECT COUNT(*) FROM [table];
 
 **None** or:
 
-- **[Component/API]** : Breaking change description
-  - **Migration required** : How to migrate
-  - **Impact** : Who is affected
+- **[Component/API]** : 破坏性变更描述
+  - **Migration required** : 迁移方式
+  - **Impact** : 受影响人员
 
 ### Deprecations
 
 **None** or:
 
-- **[Feature X]** : Deprecated in this version
-  - **Reason** : Why
-  - **Alternative** : What to use instead
-  - **Planned removal** : Version X.Y.Z
+- **[Feature X]** : 本版本起废弃
+  - **Reason** : 原因
+  - **Alternative** : 替代方案
+  - **Planned removal** : 计划在 X.Y.Z 版本移除
 
 ### Tests
 - [X] unit tests for [feature]
@@ -84,8 +84,8 @@ SELECT COUNT(*) FROM [table];
 ### Statistics
 - **PRs** : #XX, #YY, #ZZ
 - **Files impacted** : XX+
-- **New tables** : [list if applicable]
-- **Migrations** : X migrations
+- **New tables** : [如有请列出]
+- **Migrations** : X 条迁移
 - **Breaking changes** : 0
 
 ### Links

@@ -2,79 +2,79 @@
 
 ---
 name: recipe-template
-description: "Template for commands that implement a structured recipe: validate preconditions, then execute numbered steps. Fork this and replace the placeholder content. The 'Context Validation Checkpoints' section is the key pattern — it forces Claude to verify preconditions before starting."
+description: "实现结构化操作菜谱的命令模板：验证前置条件，然后按编号步骤执行。Fork 本模板并替换占位内容。"上下文验证检查点"章节是核心模式——它强制 Claude 在开始前验证前置条件。"
 argument-hint: "[optional-arg]"
 effort: low
 disable-model-invocation: true
 ---
 
-# Recipe Command Template
+# 菜谱命令模板
 
-> This is a template. Replace all `[placeholder]` content with your specifics.
+> 这是一个模板。请将所有 `[placeholder]` 内容替换为你的具体内容。
 
-## When to Use
+## 适用场景
 
-- [Describe the exact situation where this command applies]
-- [Describe when NOT to use it — common misuse case]
+- [描述此命令适用的确切情况]
+- [描述不适用的情况——常见误用场景]
 
-## Context Validation Checkpoints
+## 上下文验证检查点
 
-Before executing any step, verify all of these are true. If any checkpoint fails, stop and explain why to the user.
+在执行任何步骤前，验证以下所有条件均为真。如果任意检查点不满足，立即停止并向用户解释原因。
 
-* [ ] [Precondition 1: e.g., "The target branch exists and is up to date with main"]
-* [ ] [Precondition 2: e.g., "No uncommitted changes in the affected files"]
-* [ ] [Precondition 3: e.g., "Required config file exists at path X"]
-* [ ] [Precondition 4: e.g., "Necessary permissions or credentials are available"]
+* [ ] [前置条件 1：例如，"目标分支存在且已与 main 同步"]
+* [ ] [前置条件 2：例如，"受影响文件中没有未提交的改动"]
+* [ ] [前置条件 3：例如，"所需配置文件存在于路径 X"]
+* [ ] [前置条件 4：例如，"必要的权限或凭据可用"]
 
-## Recipe Steps
+## 操作步骤
 
-### Step 1: [Action name]
+### 步骤 1：[操作名称]
 
-[Clear instructions for this step. Be specific about what to read, what to check, what to write.]
+[此步骤的清晰指令。明确说明读什么、检查什么、写什么。]
 
-Validation: [How Claude verifies this step completed correctly before moving to Step 2]
-
----
-
-### Step 2: [Action name]
-
-[Instructions]
-
-Validation: [How to verify]
+验证：[Claude 如何在进入步骤 2 前确认此步骤已正确完成]
 
 ---
 
-### Step 3: [Action name]
+### 步骤 2：[操作名称]
 
-[Instructions]
+[指令]
 
-Validation: [How to verify]
-
----
-
-### Step 4: Confirm Completion
-
-Summarize what was done:
-- [Item 1 completed]
-- [Item 2 completed]
-- Files modified: [list]
-- Next action for the user (if any): [instruction]
-
-## Error Handling
-
-| Situation | Response |
-|-----------|----------|
-| [Error condition 1] | [What to do: retry / stop / ask user] |
-| [Error condition 2] | [What to do] |
-| Precondition checkpoint fails | Stop. Explain which checkpoint failed and what the user needs to fix before re-running |
-
-## Arguments
-
-If `$ARGUMENTS[0]` was provided: [how to use it]
-If no argument was provided: [default behavior]
+验证：[如何验证]
 
 ---
 
-> The "Context Validation Checkpoints" section is the key pattern from this template.
-> It forces Claude to verify preconditions explicitly rather than discovering failures mid-execution.
-> Inspired by recurring patterns in [Packmind commands](https://github.com/packmind/packmind) (Apache 2.0).
+### 步骤 3：[操作名称]
+
+[指令]
+
+验证：[如何验证]
+
+---
+
+### 步骤 4：确认完成
+
+总结已完成的工作：
+- [已完成项 1]
+- [已完成项 2]
+- 修改的文件：[列表]
+- 用户的下一步操作（如有）：[说明]
+
+## 错误处理
+
+| 情况 | 处理方式 |
+|------|---------|
+| [错误情况 1] | [应对方式：重试 / 停止 / 询问用户] |
+| [错误情况 2] | [应对方式] |
+| 检查点未通过 | 停止。说明哪个检查点失败，以及用户需要修复什么才能重新运行 |
+
+## 参数
+
+如果提供了 `$ARGUMENTS[0]`：[如何使用]
+如果未提供参数：[默认行为]
+
+---
+
+> "上下文验证检查点"章节是本模板的核心模式。
+> 它强制 Claude 在执行前明确验证前置条件，而不是在执行途中才发现错误。
+> 灵感来源于 [Packmind commands](https://github.com/packmind/packmind) 中的重复模式（Apache 2.0 许可证）。

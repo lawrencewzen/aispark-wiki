@@ -2,223 +2,223 @@
 
 ---
 name: talk-stage5-script
-description: "Produces a complete 5-act pitch with speaker notes, a slide-by-slide specification, and a ready-to-paste Kimi prompt for AI slide generation. Requires validated angle and title from Stage 4. Use when you have a confirmed talk angle and need the full script, slide spec, and AI-generated presentation prompt."
+description: "生成完整的五幕演讲稿（含演讲者备注）、逐页幻灯片规格说明，以及可直接粘贴的 Kimi AI 幻灯片生成提示词。需要第四阶段验证的角度和标题。当你已确认演讲角度并需要完整脚本、幻灯片规格和 AI 生成演示提示词时使用。"
 tags: [talk, pipeline, presentation, stage-5, kimi]
 allowed-tools: "Write, Read"
 effort: high
 ---
 
-# Talk Stage 5: Script
+# 演讲第五阶段：脚本
 
-Produces the complete talk in 3 deliverables: the 5-act narrative with speaker notes, the slide specification, and the Kimi prompt ready to copy-paste.
+生成完整演讲的三项交付物：含演讲者备注的五幕叙事结构、幻灯片规格说明，以及可直接复制粘贴的 Kimi 提示词。
 
-**Prerequisite**: The user has validated angle + title at the Stage 4 CHECKPOINT. Do not run this stage without that confirmation.
+**前提条件**：用户已在第四阶段 CHECKPOINT 确认角度和标题。未经该确认请勿运行此阶段。
 
-## When to Use This Skill
+## 使用场景
 
-- After Stage 4 CHECKPOINT is confirmed
-- When you have a validated angle + title
-- To produce the complete script and slide spec
+- 第四阶段 CHECKPOINT 确认后
+- 已有经过验证的角度和标题时
+- 需要生成完整脚本和幻灯片规格时
 
-## What This Skill Does
+## 本技能的功能
 
-1. **Verifies inputs** — all upstream files + angle/title confirmation
-2. **Loads the Kimi template** — from `templates/kimi-prompt-template.md`
-3. **Builds the pitch** — 5-act structure with speaker notes and timing
-4. **Builds the slide spec** — slide by slide with visual, text, notes
-5. **Generates the Kimi prompt** — fills the template with talk content
-6. **Saves 3 files**
+1. **验证输入** — 所有上游文件及角度/标题确认
+2. **加载 Kimi 模板** — 来自 `templates/kimi-prompt-template.md`
+3. **构建演讲稿** — 含演讲者备注和时间安排的五幕结构
+4. **构建幻灯片规格** — 逐页包含视觉效果、文字和备注
+5. **生成 Kimi 提示词** — 用演讲内容填充模板
+6. **保存 3 个文件**
 
-## Input
+## 输入
 
 - `talks/{YYYY}-{slug}-summary.md`
 - `talks/{YYYY}-{slug}-concepts.md`
 - `talks/{YYYY}-{slug}-angles.md`
 - `talks/{YYYY}-{slug}-titre.md`
-- `talks/{YYYY}-{slug}-timeline.md` (optional — enriches speaker notes)
-- **Chosen angle + chosen title** (explicit user confirmation from Stage 4)
+- `talks/{YYYY}-{slug}-timeline.md`（可选 — 丰富演讲者备注）
+- **已选角度和已选标题**（来自第四阶段的明确用户确认）
 
-## Output
+## 输出
 
 - `talks/{YYYY}-{slug}-pitch.md`
 - `talks/{YYYY}-{slug}-slides.md`
 - `talks/{YYYY}-{slug}-kimi-prompt.md`
 
-## pitch.md Format
+## pitch.md 格式
 
 ```markdown
-# Pitch — {title}
+# 演讲稿 — {title}
 
-**Event**: {event} | **Duration**: {duration} min | **Slides**: ~{n} slides
-**Angle**: {selected angle}
+**活动**: {event} | **时长**: {duration} 分钟 | **幻灯片**: 约 {n} 张
+**角度**: {selected angle}
 
 ---
 
-## Global structure
+## 整体结构
 
-| Act | Title | Duration | Slides |
+| 幕 | 标题 | 时长 | 幻灯片数 |
 |-----|-------|----------|--------|
-| 1 | {act title} | {n} min | {n} slides |
+| 1 | {act title} | {n} 分钟 | {n} 张 |
 ...
-| Total | | {duration} min | {n} slides |
+| 合计 | | {duration} 分钟 | {n} 张 |
 
 ---
 
-## ACT 1: {TITLE} (Slides 1-{n}, ~{n} min)
+## 第一幕：{TITLE}（幻灯片 1-{n}，约 {n} 分钟）
 
-{Narrative description of the act in 2-3 sentences — what happens, the emotion targeted}
-
----
-
-**Slide {n} — {Slide title}**
-- Visual: {visual description — simple, precise}
-- Key text: {what appears on screen — max 10 words}
-- Speaker notes: "{exact text to say — conversational, natural}"
-- Duration: {n} min
-- Pause: yes/no | {if yes: why, intended effect}
+{本幕叙事描述，2-3 句 — 发生什么、目标情感}
 
 ---
 
-[Repeat for each slide in the act]
+**幻灯片 {n} — {幻灯片标题}**
+- 视觉效果：{视觉描述 — 简洁、精确}
+- 关键文字：{屏幕上显示的内容 — 最多 10 个词}
+- 演讲者备注："{要说的具体内容 — 对话式、自然}"
+- 时长：{n} 分钟
+- 暂停：是/否 | {如果是：原因及预期效果}
 
 ---
 
-[Acts 2, 3, 4, 5 — same structure]
+[每张幻灯片重复上述结构]
 
 ---
 
-## Key moments (must not be rushed)
+[第二、三、四、五幕 — 相同结构]
 
-| Moment | Slide | What happens | Technique |
+---
+
+## 关键时刻（不可仓促跳过）
+
+| 时刻 | 幻灯片 | 发生的事 | 技巧 |
 |--------|-------|-------------|-----------|
-| {moment} | {n} | {description} | Pause / Number / Anecdote |
+| {moment} | {n} | {description} | 暂停 / 数字 / 轶事 |
 
 ---
 
-## Timing check
+## 时间检查
 
-| Act | Planned | Buffer | Total |
+| 幕 | 计划时间 | 缓冲 | 合计 |
 |-----|---------|--------|-------|
-| ACT 1 | {n} min | 30s | {n} min |
+| 第一幕 | {n} 分钟 | 30秒 | {n} 分钟 |
 ...
-| **Total** | **{n} min** | **{n} min** | **{n} min** |
+| **合计** | **{n} 分钟** | **{n} 分钟** | **{n} 分钟** |
 
-Q&A planned: {n} min
+计划问答环节：{n} 分钟
 ```
 
-## slides.md Format
+## slides.md 格式
 
-Slide-by-slide spec, ready to hand to a designer or pass to Kimi.
+逐页幻灯片规格，可直接交给设计师或传给 Kimi。
 
 ```markdown
-# Slides Spec — {title}
+# 幻灯片规格 — {title}
 
-**Total**: {n} slides | **Event**: {event} | **Date**: {date}
-
----
-
-### SLIDE 1 — Title Slide
-
-- **Main title**: {title}
-- **Subtitle**: {subtitle or tagline}
-- **Speaker**: {name}
-- **Event**: {event} — {date}
-- **Visual**: {background description — texture, image, mood}
-- **Speaker notes**: "{text}"
-- **Duration**: {n} sec
+**共计**: {n} 张 | **活动**: {event} | **日期**: {date}
 
 ---
 
-### SLIDE {n} — {Slide title}
+### 幻灯片 1 — 标题页
 
-- **Title**: {title}
-- **Visual**: {precise visual description}
-  - Type: {bar chart / timeline / diagram / big number / comparison table / screenshot placeholder}
-  - Data: {specific values if chart}
-- **Key text**: {what appears — max 30 words total}
-- **Metrics displayed**: {numbers if metrics slide}
-- **Speaker notes**: "{exact text}"
-- **Duration**: {n} min
-- **Act**: {act number}
+- **主标题**: {title}
+- **副标题**: {subtitle or tagline}
+- **演讲者**: {name}
+- **活动**: {event} — {date}
+- **视觉效果**: {背景描述 — 质感、图像、氛围}
+- **演讲者备注**: "{text}"
+- **时长**: {n} 秒
 
 ---
 
-[Repeat for each slide]
+### 幻灯片 {n} — {幻灯片标题}
+
+- **标题**: {title}
+- **视觉效果**: {精确的视觉描述}
+  - 类型：{条形图 / 时间轴 / 图表 / 大数字 / 对比表 / 截图占位符}
+  - 数据：{如果是图表，填写具体数值}
+- **关键文字**: {显示的内容 — 总计最多 30 个词}
+- **展示指标**: {如果是指标页，填写数字}
+- **演讲者备注**: "{exact text}"
+- **时长**: {n} 分钟
+- **所属幕**: {act number}
 
 ---
 
-## Screenshots to capture
+[每张幻灯片重复]
 
-| Slide | Screenshot | Source | Status |
+---
+
+## 需要截取的截图
+
+| 幻灯片 | 截图 | 来源 | 状态 |
 |-------|-----------|--------|--------|
-| {n} | {description} | {tool/URL} | To capture / Available |
+| {n} | {description} | {工具/URL} | 待截取 / 已有 |
 ```
 
 ## kimi-prompt.md
 
-Fill the template at `templates/kimi-prompt-template.md` with the talk's content.
+用演讲内容填充 `templates/kimi-prompt-template.md` 中的模板。
 
-Required sections to complete:
-- Full title and subtitle
-- Speaker name + event + date + duration + language + slide count
-- Design requirements (adjust color palette if different from default)
-- Slide Content Structure (section by section, all 5 acts)
-- Screenshot placeholders (slides awaiting real captures)
-- Tone reference (adapt to the talk's style)
+需要完成的必填部分：
+- 完整标题和副标题
+- 演讲者姓名 + 活动 + 日期 + 时长 + 语言 + 幻灯片数量
+- 设计要求（如果与默认不同，调整色板）
+- 幻灯片内容结构（逐节，全部五幕）
+- 截图占位符（等待真实截图的幻灯片）
+- 风格参考（根据演讲风格调整）
 
-**Verify no `{PLACEHOLDER}` remains in the final file** before handing to the user.
+**在交付用户前，验证最终文件中不存在任何 `{PLACEHOLDER}`。**
 
-## Script Construction Rules
+## 脚本构建规则
 
-- **1 idea per slide** — never more, never less
-- **Speaker notes = what you say, not what you read** — minimal slides, conversational notes
-- **Numbers are heroes** — metrics appear large and alone on their slide
-- **Anecdotes > explanations** — "one Tuesday morning, 3 bugs..." > "git worktrees enable parallelism"
-- **Explicit transitions** — note the link between each act in the notes
-- **Realistic timing** — add 10% buffer total (slides always run long)
+- **每张幻灯片一个想法** — 不多不少
+- **演讲者备注 = 你要说的，不是你要读的** — 幻灯片极简，备注对话式
+- **数字是主角** — 指标单独大号显示在专属页面
+- **轶事 > 解释** — "某个周二早上，3 个 bug……" > "git worktrees 实现并行"
+- **明确过渡** — 在备注中注明每幕之间的连接
+- **时间要现实** — 总计添加 10% 缓冲（幻灯片往往会超时）
 
-## Anti-patterns
+## 反模式
 
-- Slides loaded with bullets (never more than 5 words per line)
-- Speaker notes in technical jargon (read them aloud to validate)
-- Vague Kimi prompt ("make it look nice") — each slide must be precise
-- Omitting screenshot placeholders from the Kimi prompt
-- Generating more slides than the duration allows (2-3 min/slide for REX)
+- 堆满要点的幻灯片（每行不超过 5 个词）
+- 演讲者备注使用技术术语（大声读出来验证）
+- 模糊的 Kimi 提示词（"让它好看点"）— 每张幻灯片必须精确
+- 在 Kimi 提示词中遗漏截图占位符
+- 生成的幻灯片数量超过时长允许的数量（REX 类演讲每张 2-3 分钟）
 
-## Validation Checklist
+## 验证清单
 
-- [ ] Pitch covers 5 acts with coherent timing (±10% of target duration)
-- [ ] Each slide has visual + text + speaker notes
-- [ ] Key moments identified (pauses, punchlines, transitions)
-- [ ] Slides spec ready to hand to a designer
-- [ ] Kimi prompt complete (all template sections filled)
-- [ ] Screenshots to capture listed with source
-- [ ] No `{PLACEHOLDER}` remaining in kimi-prompt.md
-- [ ] 3 files saved
+- [ ] 演讲稿涵盖五幕，时间安排连贯（目标时长 ±10%）
+- [ ] 每张幻灯片有视觉效果 + 文字 + 演讲者备注
+- [ ] 关键时刻已识别（暂停、金句、过渡）
+- [ ] 幻灯片规格可直接交给设计师
+- [ ] Kimi 提示词完整（所有模板部分已填写）
+- [ ] 需要截取的截图已列出并标注来源
+- [ ] kimi-prompt.md 中没有残余 `{PLACEHOLDER}`
+- [ ] 已保存 3 个文件
 
-## Using the Kimi Prompt
+## 使用 Kimi 提示词
 
-1. Open `{slug}-kimi-prompt.md`
-2. Verify no `{PLACEHOLDER}` remains (search the file)
-3. Go to [kimi.com](https://kimi.com) — free account, no API needed
-4. Start a new conversation
-5. Copy-paste the entire prompt
-6. Kimi generates the presentation
+1. 打开 `{slug}-kimi-prompt.md`
+2. 确认没有残余 `{PLACEHOLDER}`（搜索文件）
+3. 访问 [kimi.com](https://kimi.com) — 免费账户，无需 API
+4. 开始新对话
+5. 复制粘贴整个提示词
+6. Kimi 生成演示文稿
 
-For iterative refinement: add follow-up messages targeting specific slides. "Slide 7: make the number larger, remove the bullet list."
+迭代优化：针对特定幻灯片添加后续消息。"幻灯片 7：数字放大，删除要点列表。"
 
-## Tips
+## 使用技巧
 
-- Speaker notes are the heart of this stage — they're what distinguishes a good talk from a good slide deck
-- The Kimi template includes a dark design system with orange accent colors. Adapt `Color Palette` in the template if your brand has different colors
-- Generate more slides than needed in the first pass, then cut — easier than writing from scratch
+- 演讲者备注是本阶段的核心 — 它们是区分好演讲和好幻灯片的关键所在
+- Kimi 模板包含带橙色强调色的深色设计系统。如果你的品牌有不同颜色，在模板中调整 `Color Palette`
+- 第一遍生成比需要更多的幻灯片，然后删减 — 比从零开始写容易
 
-## Templates
+## 模板
 
-- Kimi prompt: [`templates/kimi-prompt-template.md`](templates/kimi-prompt-template.md)
+- Kimi 提示词：[`templates/kimi-prompt-template.md`](templates/kimi-prompt-template.md)
 
-## Related
+## 相关
 
-- [Stage 4: Position](../stage-4-position/SKILL.md) — prerequisite (CHECKPOINT required)
-- [Stage 6: Revision](../stage-6-revision/SKILL.md) — reads pitch + slides
-- [Orchestrator](../orchestrator/SKILL.md)
+- [第四阶段：定位](../stage-4-position/SKILL.md) — 前提条件（需要 CHECKPOINT）
+- [第六阶段：修订](../stage-6-revision/SKILL.md) — 读取演讲稿和幻灯片
+- [编排器](../orchestrator/SKILL.md)

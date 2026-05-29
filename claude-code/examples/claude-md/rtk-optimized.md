@@ -1,57 +1,57 @@
 > 📚 **AI Spark Wiki** · Claude Code 知识库
 
 ---
-title: "RTK Token Optimization Template"
-description: "CLAUDE.md configuration for minimizing token consumption with RTK CLI proxy"
+title: "RTK Token 优化模板"
+description: "使用 RTK CLI 代理最小化 token 消耗的 CLAUDE.md 配置"
 tags: [claude-md, template, performance]
 ---
 
-# RTK Token Optimization
+# RTK Token 优化
 
-**Context**: Using RTK (Rust Token Killer) to minimize token consumption from command outputs.
+**背景**：使用 RTK（Rust Token Killer）最小化命令输出产生的 token 消耗。
 
-## Commands to Optimize
+## 需要优化的命令
 
-Always use RTK wrapper for these high-verbosity commands:
+以下高输出量命令始终使用 RTK 包装器：
 
-### Git Operations (92.3% avg reduction)
-- `rtk git log` instead of `git log`
-- `rtk git status` instead of `git status`
-- `rtk git diff` instead of `git diff`
+### Git 操作（平均减少 92.3%）
+- `rtk git log` 替代 `git log`
+- `rtk git status` 替代 `git status`
+- `rtk git diff` 替代 `git diff`
 
-### File Operations (69.4% avg reduction)
-- `rtk find "*.md" .` instead of `find . -name "*.md"`
-- `rtk read <file>` instead of `cat <file>` (for large files >10K lines)
-- `rtk ls .` instead of `ls -la`
-- `rtk grep "pattern"` instead of `grep -r "pattern"`
+### 文件操作（平均减少 69.4%）
+- `rtk find "*.md" .` 替代 `find . -name "*.md"`
+- `rtk read <file>` 替代 `cat <file>`（适用于超过 10K 行的大文件）
+- `rtk ls .` 替代 `ls -la`
+- `rtk grep "pattern"` 替代 `grep -r "pattern"`
 
-### JS/TS Stack (70-90% reduction)
-- `rtk vitest run` instead of `pnpm test`
-- `rtk pnpm list` instead of `pnpm list`
-- `rtk pnpm outdated` instead of `pnpm outdated`
-- `rtk prisma migrate status` instead of `pnpm prisma migrate status`
+### JS/TS 技术栈（减少 70-90%）
+- `rtk vitest run` 替代 `pnpm test`
+- `rtk pnpm list` 替代 `pnpm list`
+- `rtk pnpm outdated` 替代 `pnpm outdated`
+- `rtk prisma migrate status` 替代 `pnpm prisma migrate status`
 
-### Rust Toolchain (80-90% reduction)
-- `rtk cargo test` instead of `cargo test`
-- `rtk cargo build` instead of `cargo build`
-- `rtk cargo clippy` instead of `cargo clippy`
+### Rust 工具链（减少 80-90%）
+- `rtk cargo test` 替代 `cargo test`
+- `rtk cargo build` 替代 `cargo build`
+- `rtk cargo clippy` 替代 `cargo clippy`
 
-### Python (90% reduction)
-- `rtk python pytest` instead of `pytest`
+### Python（减少 90%）
+- `rtk python pytest` 替代 `pytest`
 
-### Go (90% reduction)
-- `rtk go test` instead of `go test`
+### Go（减少 90%）
+- `rtk go test` 替代 `go test`
 
-### GitHub CLI (79-87% reduction)
-- `rtk gh pr view <num>` instead of `gh pr view <num>`
-- `rtk gh pr checks <num>` instead of `gh pr checks <num>`
+### GitHub CLI（减少 79-87%）
+- `rtk gh pr view <num>` 替代 `gh pr view <num>`
+- `rtk gh pr checks <num>` 替代 `gh pr checks <num>`
 
-## Token Savings Target
+## Token 节省目标
 
-**Baseline**: ~150K tokens per 30-min session
-**With RTK**: ~45K tokens (70% reduction)
+**基准**：每次 30 分钟会话约 15 万 token
+**使用 RTK 后**：约 4.5 万 token（减少 70%）
 
-## Installation
+## 安装
 
 ```bash
 # Homebrew (macOS/Linux)
@@ -64,19 +64,19 @@ cargo install rtk
 rtk init
 ```
 
-## Verification
+## 验证
 
-Check RTK availability:
+检查 RTK 是否可用：
 ```bash
 rtk --version  # Should show: rtk 0.16.0+
 ```
 
-## When NOT to use RTK
+## 不使用 RTK 的场景
 
-- Quick exploration (1-2 commands): overhead not worth it
-- Already using tools like Grep/Read (Claude native tools are optimized)
-- Small outputs (<100 chars): minimal gain
+- 快速探索（1-2 条命令）：额外开销得不偿失
+- 已使用 Grep/Read 等工具（Claude 原生工具已做优化）
+- 输出量极小（不足 100 个字符）：收益微乎其微
 
-## Automation
+## 自动化
 
-Use RTK automatically via hook (see `.claude/hooks/bash/rtk-wrapper.sh`) or `rtk init` for hook-first setup.
+通过钩子自动使用 RTK（参见 `.claude/hooks/bash/rtk-wrapper.sh`），或使用 `rtk init` 进行钩子优先安装。

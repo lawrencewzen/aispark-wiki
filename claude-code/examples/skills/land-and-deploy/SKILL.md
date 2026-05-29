@@ -2,179 +2,179 @@
 
 ---
 name: land-and-deploy
-description: Merge PR, wait for CI, verify deploy, run canary — the complete landing pipeline
+description: 合并 PR、等待 CI、验证部署、执行金丝雀检查——完整的落地流水线
 argument-hint: "[--skip-checks] [--env staging|production]"
 effort: high
 disable-model-invocation: true
 ---
 
-# Land and Deploy
+# 落地与部署
 
-Complete landing pipeline: merge the PR, wait for CI, verify the deployment, run a health check.
+完整的落地流水线：合并 PR、等待 CI、验证部署、执行健康检查。
 
-Picks up where `/ship` left off. `/ship` creates the PR. This command merges it and verifies production.
+从 `/ship` 结束的地方继续。`/ship` 负责创建 PR，本命令负责合并并验证生产环境。
 
-**Non-interactive by default.** The user said "land it" — so land it. Stop only for the critical readiness gate and hard blockers.
+**默认非交互式运行。** 用户说"落地它"——就落地它。只在关键就绪门控和硬性阻塞问题时停止。
 
-## Instructions
+## 执行步骤
 
-### Step 1: Pre-flight
+### 步骤 1：预检
 
 ```bash
-# Verify GitHub CLI is authenticated
+# 验证 GitHub CLI 已认证
 gh auth status
 
-# Detect PR from current branch (or use argument if provided)
+# 从当前分支检测 PR（或使用提供的参数）
 gh pr view --json number,state,title,url,mergeStateStatus,mergeable,baseRefName,headRefName
 ```
 
-**Stop conditions:**
-- GitHub CLI not authenticated → "Run `gh auth login` first"
-- No PR exists → "No PR found for this branch. Run `/ship` first."
-- PR already merged → "PR is already merged."
-- PR is closed → "PR is closed. Reopen it first."
+**停止条件：**
+- GitHub CLI 未认证 → "请先运行 `gh auth login`"
+- 不存在 PR → "该分支未找到 PR，请先运行 `/ship`。"
+- PR 已合并 → "PR 已经合并。"
+- PR 已关闭 → "PR 已关闭，请先重新打开。"
 
 ---
 
-### Step 2: CI Status Check
+### 步骤 2：CI 状态检查
 
 ```bash
-# Check current CI status
+# 检查当前 CI 状态
 gh pr checks --json name,state,status,conclusion
 
-# Check for merge conflicts
+# 检查合并冲突
 gh pr view --json mergeable -q .mergeable
 ```
 
-**Stop conditions:**
-- Required checks FAILING → show failing checks, stop
-- `mergeable` is `CONFLICTING` → "PR has merge conflicts. Resolve them and push before landing."
-- Required checks PENDING → proceed to Step 3 (wait for CI)
-- All checks passing → skip to Step 3.5 (readiness gate)
+**停止条件：**
+- 必需检查 FAILING（失败）→ 显示失败的检查，停止
+- `mergeable` 为 `CONFLICTING` → "PR 存在合并冲突，请解决后推送再落地。"
+- 必需检查 PENDING（待定）→ 继续步骤 3（等待 CI）
+- 所有检查通过 → 跳至步骤 3.5（就绪门控）
 
 ---
 
-### Step 3: Wait for CI (if pending)
+### 步骤 3：等待 CI（如有待定任务）
 
 ```bash
-# Watch CI checks with 15-minute timeout
+# 监视 CI 检查，超时时间 15 分钟
 gh pr checks --watch --fail-fast
 ```
 
-- CI passes → continue to Step 3.5
-- CI fails → stop, show failures
-- Timeout (15 min) → "CI has been running for 15 minutes. Investigate manually."
+- CI 通过 → 继续步骤 3.5
+- CI 失败 → 停止，显示失败信息
+- 超时（15 分钟）→ "CI 已运行 15 分钟，请手动排查。"
 
-Record CI wait duration for the deploy report.
+记录 CI 等待时长，用于部署报告。
 
 ---
 
-### Step 3.5: Pre-Merge Readiness Gate
+### 步骤 3.5：合并前就绪门控
 
-**This is the one critical confirmation before an irreversible merge.** Collect all evidence, then get explicit approval.
+**这是不可逆合并前唯一的关键确认环节。** 收集所有证据，然后获取明确批准。
 
-#### Review staleness check
+#### 审查新鲜度检查
 
 ```bash
-# How many commits since the last review in this branch?
+# 自上次审查以来该分支有多少次提交？
 git log --oneline $(git merge-base HEAD origin/main)..HEAD | wc -l
 
-# What changed after any review was done?
+# 审查完成后有什么变更？
 git log --oneline -10
 ```
 
-Staleness thresholds:
-- 0–3 commits since review → CURRENT (green)
-- 4+ commits, touching code → STALE (yellow — review may not reflect current code)
-- No review found → NOT RUN (yellow)
+新鲜度阈值：
+- 自审查后 0–3 次提交 → 当前（绿色）
+- 4+ 次提交且涉及代码改动 → 过期（黄色——审查可能未反映当前代码）
+- 未找到审查记录 → 未执行（黄色）
 
-#### Test results
+#### 测试结果
 
 ```bash
-# Run tests now — fast tests only
+# 立即运行测试——仅限快速测试
 npm test 2>/dev/null || pnpm test 2>/dev/null || \
   pytest --tb=short -q 2>/dev/null || \
   go test ./... 2>/dev/null
 
-# Check exit code
+# 检查退出码
 echo "Tests exit code: $?"
 ```
 
-Failing tests = BLOCKER. Cannot merge with failing tests.
+测试失败 = 阻塞。不能在测试失败时合并。
 
-#### Documentation check
+#### 文档检查
 
 ```bash
-# Were CHANGELOG and docs updated on this branch?
+# 该分支是否更新了 CHANGELOG 和文档？
 git diff --name-only $(git merge-base HEAD origin/main)...HEAD -- \
   README.md CHANGELOG.md ARCHITECTURE.md CONTRIBUTING.md CLAUDE.md VERSION
 ```
 
-If CHANGELOG.md and VERSION were NOT modified and the diff includes new features → WARNING.
+若 CHANGELOG.md 和 VERSION 未被修改，且 diff 包含新功能 → 警告。
 
-#### Readiness report
+#### 就绪报告
 
-Present a summary and ask for explicit confirmation:
+展示摘要并请求明确确认：
 
 ```
 ╔══════════════════════════════════════════════════════════╗
-║              PRE-MERGE READINESS REPORT                  ║
+║              合并前就绪报告                               ║
 ╠══════════════════════════════════════════════════════════╣
-║  PR: #NNN — [title]                                      ║
-║  Branch: feature-branch → main                           ║
+║  PR: #NNN — [标题]                                        ║
+║  分支：feature-branch → main                              ║
 ║                                                          ║
-║  REVIEWS                                                 ║
-║    Review:     CURRENT / STALE (N commits) / NOT RUN     ║
+║  审查                                                    ║
+║    审查状态：当前 / 过期（N 次提交）/ 未执行               ║
 ║                                                          ║
-║  TESTS                                                   ║
-║    Fast tests: PASS / FAIL (blocker)                     ║
+║  测试                                                    ║
+║    快速测试：通过 / 失败（阻塞）                           ║
 ║                                                          ║
-║  DOCUMENTATION                                           ║
-║    CHANGELOG:  Updated / NOT UPDATED (warning)           ║
-║    VERSION:    Bumped / NOT BUMPED (warning)             ║
+║  文档                                                    ║
+║    CHANGELOG：已更新 / 未更新（警告）                      ║
+║    VERSION：已升级 / 未升级（警告）                        ║
 ║                                                          ║
-║  WARNINGS: N  |  BLOCKERS: N                             ║
+║  警告：N 个  |  阻塞：N 个                                ║
 ╚══════════════════════════════════════════════════════════╝
 
-Options:
-  A) Merge — all checks green
-  B) Don't merge yet — address warnings first
-  C) Merge anyway — I understand the risks
+选项：
+  A) 合并——所有检查绿色
+  B) 暂不合并——先处理警告
+  C) 强行合并——我了解风险
 ```
 
-If the user chooses B, list exactly what needs to be done and stop.
+若用户选择 B，列出需要处理的具体事项并停止。
 
 ---
 
-### Step 4: Merge the PR
+### 步骤 4：合并 PR
 
 ```bash
-# Merge (auto-detect method from repo settings, delete branch after)
+# 合并（从仓库设置自动检测合并方式，合并后删除分支）
 gh pr merge --auto --delete-branch
 
-# Fallback if auto-merge is not enabled
+# 若未启用自动合并，使用备用方案
 # gh pr merge --squash --delete-branch
 ```
 
-Record the merge commit SHA and timestamp.
+记录合并提交的 SHA 和时间戳。
 
-If merge fails with permission error → "You don't have merge permissions. Ask a maintainer to merge."
+若因权限错误合并失败 → "你没有合并权限，请让维护者来合并。"
 
-If merge queue is active, poll until merged:
+若合并队列已激活，轮询直至合并完成：
 
 ```bash
-# Poll every 30 seconds, timeout after 30 minutes
+# 每 30 秒轮询一次，30 分钟后超时
 gh pr view --json state -q .state
 ```
 
 ---
 
-### Step 5: Platform Detection
+### 步骤 5：平台检测
 
-Detect how this project deploys so we know what to verify.
+检测本项目的部署方式，以便我们知道需要验证什么。
 
 ```bash
-# Detect platform from config files
+# 从配置文件检测平台
 [ -f fly.toml ]         && echo "PLATFORM: fly"
 [ -f render.yaml ]      && echo "PLATFORM: render"
 [ -f vercel.json ] || [ -d .vercel ] && echo "PLATFORM: vercel"
@@ -182,12 +182,12 @@ Detect how this project deploys so we know what to verify.
 [ -f Procfile ]         && echo "PLATFORM: heroku"
 [ -f railway.toml ]     && echo "PLATFORM: railway"
 
-# Detect GitHub Actions deploy workflows
+# 检测 GitHub Actions 部署工作流
 for f in .github/workflows/*.yml .github/workflows/*.yaml; do
   [ -f "$f" ] && grep -qiE "deploy|release|production|cd" "$f" 2>/dev/null && echo "DEPLOY_WORKFLOW: $f"
 done
 
-# Classify diff scope (frontend / backend / docs / config)
+# 分类 diff 范围（前端 / 后端 / 文档 / 配置）
 git diff --name-only $(git merge-base HEAD~1 origin/main)...HEAD | \
   awk '{
     if (/\.(css|scss|tsx|jsx|html|svg)$/ || /components|pages|public\//) f=1;
@@ -202,167 +202,167 @@ git diff --name-only $(git merge-base HEAD~1 origin/main)...HEAD | \
   }'
 ```
 
-**Decision tree:**
-- Docs-only diff → skip deploy verification, go to Step 8
-- No deploy workflow + no URL provided → ask user if this project has a web deploy
-- Otherwise → proceed to Step 6
+**决策树：**
+- 仅文档 diff → 跳过部署验证，直接进入步骤 8
+- 无部署工作流且未提供 URL → 询问用户该项目是否有 Web 部署
+- 否则 → 继续步骤 6
 
 ---
 
-### Step 6: Wait for Deploy
+### 步骤 6：等待部署
 
-**GitHub Actions deploy workflow:**
+**GitHub Actions 部署工作流：**
 
 ```bash
-# Find the run triggered by the merge commit
+# 找到由合并提交触发的运行
 gh run list --branch main --limit 10 --json databaseId,headSha,status,conclusion,workflowName
 
-# Poll until complete (30s interval, 20 min timeout)
+# 轮询直至完成（30 秒间隔，20 分钟超时）
 gh run view <run-id> --json status,conclusion
 ```
 
-**Platform-specific strategies:**
+**平台专属策略：**
 
-| Platform | Detection | Wait strategy |
-|----------|-----------|---------------|
-| Vercel / Netlify | Auto-deploy on push | Wait 60s for propagation, then check |
-| Fly.io | `fly.toml` present | `fly status --app <app>` — check `started` status |
-| Render | `render.yaml` present | Poll production URL until it responds with 200 |
-| Heroku | `Procfile` present | `heroku releases --app <app> -n 1` |
-| Railway | `railway.toml` present | Poll production URL |
-| GitHub Actions only | `.github/workflows/` with deploy step | Poll `gh run view` |
+| 平台 | 检测方式 | 等待策略 |
+|------|----------|----------|
+| Vercel / Netlify | 推送后自动部署 | 等待 60 秒传播，然后检查 |
+| Fly.io | 存在 `fly.toml` | `fly status --app <app>` — 检查 `started` 状态 |
+| Render | 存在 `render.yaml` | 轮询生产 URL 直至返回 200 |
+| Heroku | 存在 `Procfile` | `heroku releases --app <app> -n 1` |
+| Railway | 存在 `railway.toml` | 轮询生产 URL |
+| 仅 GitHub Actions | `.github/workflows/` 含部署步骤 | 轮询 `gh run view` |
 
-If deploy fails → offer to investigate logs or create a revert commit.
+若部署失败 → 提供排查日志或创建回滚提交的选项。
 
-Record deploy duration for the report.
+记录部署时长，用于报告。
 
 ---
 
-### Step 7: Production Health Check
+### 步骤 7：生产健康检查
 
-Use diff scope (from Step 5) to determine check depth:
+使用步骤 5 中的 diff 范围决定检查深度：
 
-| Diff Scope | Canary Depth |
-|------------|--------------|
-| Docs only | Already skipped in Step 5 |
-| Config only | HTTP 200 smoke check only |
-| Backend only | Status + response time check |
-| Frontend (any) | Full: status + response time + content check |
-| Mixed | Full check |
+| Diff 范围 | 金丝雀检查深度 |
+|-----------|--------------|
+| 仅文档 | 已在步骤 5 跳过 |
+| 仅配置 | 仅 HTTP 200 冒烟测试 |
+| 仅后端 | 状态 + 响应时间检查 |
+| 前端（任意） | 完整：状态 + 响应时间 + 内容检查 |
+| 混合 | 完整检查 |
 
-**Full health check sequence:**
+**完整健康检查序列：**
 
 ```bash
-# 1. Page loads (200 status)
+# 1. 页面加载（200 状态）
 curl -sf -o /dev/null -w "%{http_code}" "${PROD_URL}" 2>/dev/null
 
-# 2. Response time check
+# 2. 响应时间检查
 curl -sf -o /dev/null -w "%{time_total}" "${PROD_URL}" 2>/dev/null
 
-# 3. Health endpoint (if exists)
+# 3. 健康端点（如存在）
 curl -sf "${PROD_URL}/health" 2>/dev/null || \
 curl -sf "${PROD_URL}/api/health" 2>/dev/null
 
-# 4. Content check — page is not blank
+# 4. 内容检查——页面非空
 curl -sf "${PROD_URL}" 2>/dev/null | wc -c
 ```
 
-Pass criteria:
-- HTTP 200 status
-- Response time under 10 seconds
-- Page has content (>500 bytes)
-- Health endpoint returns 200 (if configured)
+通过标准：
+- HTTP 200 状态
+- 响应时间低于 10 秒
+- 页面有内容（>500 字节）
+- 健康端点返回 200（如已配置）
 
-If any check fails → offer to revert:
+若任何检查失败 → 提供回滚选项：
 
 ```
-Post-deploy health check detected issues:
-  [finding — specific]
+部署后健康检查发现问题：
+  [发现——具体描述]
 
-Options:
-  A) Investigate — this may be normal (cache warming, eventual consistency)
-  B) Rollback — revert the merge commit
-  C) Continue — I'll monitor manually
+选项：
+  A) 排查——这可能是正常现象（缓存预热、最终一致性）
+  B) 回滚——回滚合并提交
+  C) 继续——我将手动监控
 ```
 
 ---
 
-### Step 8: Revert (if needed)
+### 步骤 8：回滚（如需要）
 
 ```bash
-# Fetch the latest base branch
+# 拉取最新基础分支
 git fetch origin main
 
-# Create a revert commit
+# 创建回滚提交
 git checkout main
 git revert <merge-commit-sha> --no-edit
 git push origin main
 ```
 
-If conflicts → "Revert has conflicts. Run `git revert <sha>` manually to resolve."
-If branch protections → "Create a revert PR: `gh pr create --title 'revert: <title>'`"
+若有冲突 → "回滚存在冲突，请手动运行 `git revert <sha>` 解决。"
+若有分支保护 → "创建回滚 PR：`gh pr create --title 'revert: <标题>'`"
 
 ---
 
-### Step 9: Deploy Report
+### 步骤 9：部署报告
 
 ```
-LAND & DEPLOY REPORT
+落地与部署报告
 ═════════════════════════════════════════
-PR:           #NNN — [title]
-Branch:       feature-branch → main
-Merged:       [timestamp] (squash / merge)
-Merge SHA:    [short SHA]
+PR：          #NNN — [标题]
+分支：        feature-branch → main
+合并时间：    [时间戳]（squash / merge）
+合并 SHA：    [短 SHA]
 
-Timing:
-  CI wait:    [Xm Ys / skipped]
-  Deploy:     [Xm Ys / no workflow detected]
-  Health:     [Xs / skipped]
-  Total:      [end-to-end duration]
+耗时：
+  CI 等待：   [X 分 Y 秒 / 已跳过]
+  部署：      [X 分 Y 秒 / 未检测到工作流]
+  健康检查：  [X 秒 / 已跳过]
+  总计：      [端到端时长]
 
-CI:           PASSED / FAILED / SKIPPED
-Deploy:       PASSED / FAILED / NO WORKFLOW
-Production:   HEALTHY / DEGRADED / SKIPPED / REVERTED
-  Status:     [HTTP status code]
-  Response:   [Xms]
+CI：          通过 / 失败 / 已跳过
+部署：        通过 / 失败 / 无工作流
+生产环境：    健康 / 降级 / 已跳过 / 已回滚
+  状态：      [HTTP 状态码]
+  响应：      [X 毫秒]
 
-VERDICT: DEPLOYED AND VERIFIED / DEPLOYED (UNVERIFIED) / REVERTED
+结论：已部署并验证 / 已部署（未验证）/ 已回滚
 ═════════════════════════════════════════
 ```
 
 ---
 
-### Step 10: Follow-up Suggestions
+### 步骤 10：后续建议
 
-After the deploy report, suggest relevant next steps:
+部署报告完成后，建议相关后续步骤：
 
-- If production URL was verified: "Run `/canary <url>` for extended 10-minute monitoring."
-- If new features were shipped: "Run `/document-release` to update project docs."
+- 若生产 URL 已验证："运行 `/canary <url>` 进行 10 分钟的扩展监控。"
+- 若有新功能已上线："运行 `/document-release` 更新项目文档。"
 
 ---
 
-## Important Rules
+## 重要规则
 
-- **Never force push.** Use `gh pr merge` — it's safe.
-- **Never skip CI.** Failing checks = stop.
-- **Single-pass production check.** For extended monitoring, use `/canary`.
-- **Revert is always an option.** At every failure point, offer revert as an escape hatch.
-- **Delete the feature branch** after merge (via `--delete-branch`).
-- **The goal**: user types `/land-and-deploy`, next thing they see is the deploy report.
+- **永远不要强制推送。** 使用 `gh pr merge`——这是安全的。
+- **永远不要跳过 CI。** 检查失败 = 停止。
+- **单次生产检查。** 如需扩展监控，使用 `/canary`。
+- **回滚始终是一个选项。** 在每个失败节点，提供回滚作为退出方案。
+- **合并后删除功能分支**（通过 `--delete-branch`）。
+- **目标**：用户输入 `/land-and-deploy`，接下来看到的就是部署报告。
 
-## Usage
+## 用法
 
 ```
-/land-and-deploy                                    # Auto-detect PR, no canary URL
-/land-and-deploy https://app.example.com            # Auto-detect PR + verify this URL
-/land-and-deploy 123                                # Specific PR number
-/land-and-deploy 123 https://app.example.com        # PR number + verification URL
+/land-and-deploy                                    # 自动检测 PR，不使用金丝雀 URL
+/land-and-deploy https://app.example.com            # 自动检测 PR + 验证该 URL
+/land-and-deploy 123                                # 指定 PR 编号
+/land-and-deploy 123 https://app.example.com        # PR 编号 + 验证 URL
 ```
 
-## Related Commands
+## 相关命令
 
-- `/ship` — run this first to create the PR
-- `/canary` — extended post-deploy monitoring loop
-- `/review-pr` — review the PR before landing
+- `/ship` — 先运行此命令创建 PR
+- `/canary` — 部署后扩展监控循环
+- `/review-pr` — 落地前审查 PR
 
 $ARGUMENTS

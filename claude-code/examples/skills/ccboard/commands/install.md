@@ -2,111 +2,111 @@
 
 ---
 name: ccboard-install
-description: Install or update ccboard
+description: 安装或更新 ccboard
 category: setup
 ---
 
-# Install ccboard Command
+# 安装 ccboard 命令
 
-Install or update the ccboard binary via cargo.
+通过 cargo 安装或更新 ccboard 二进制文件。
 
-## What is ccboard?
+## ccboard 是什么？
 
-ccboard is a comprehensive TUI/Web dashboard for monitoring and managing Claude Code:
+ccboard 是一个功能完整的 TUI/Web 仪表板，用于监控和管理 Claude Code：
 
-- **8 Interactive Tabs**: Dashboard, Sessions, Config, Hooks, Agents, Costs, History, MCP
-- **Real-time Monitoring**: File watcher for live updates
-- **MCP Management**: Server status and configuration
-- **Cost Analytics**: Token usage and pricing tracking
-- **Session Explorer**: Browse and search conversation history
-- **Dual Interface**: Terminal (TUI) and Web UI
+- **8 个交互式标签页**：Dashboard、Sessions、Config、Hooks、Agents、Costs、History、MCP
+- **实时监控**：文件监听器实时推送更新
+- **MCP 管理**：服务器状态与配置管理
+- **费用分析**：Token 用量与费用追踪
+- **会话浏览器**：浏览和搜索对话历史
+- **双界面**：终端（TUI）和 Web UI
 
-## Requirements
+## 环境要求
 
-- **Rust**: Version 1.70 or higher
-- **Cargo**: Rust package manager (comes with Rust)
+- **Rust**：1.70 或更高版本
+- **Cargo**：Rust 包管理器（随 Rust 一起安装）
 
-If Rust is not installed:
+如果尚未安装 Rust：
 ```bash
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 ```
 
-## Usage
+## 用法
 
 ```bash
-# Install ccboard
+# 安装 ccboard
 /ccboard-install
 
-# Or manually
+# 或手动安装
 cargo install ccboard
 ```
 
-## Installation Process
+## 安装流程
 
-1. Checks if cargo is installed
-2. Detects existing ccboard installation
-3. Prompts for update confirmation if already installed
-4. Installs via `cargo install ccboard --force`
-5. Verifies installation and shows version
+1. 检查 cargo 是否已安装
+2. 检测是否已有 ccboard 安装
+3. 若已安装，提示是否确认更新
+4. 通过 `cargo install ccboard --force` 执行安装
+5. 验证安装并显示版本号
 
-## After Installation
+## 安装后使用
 
-Once installed, use these commands:
+安装完成后，可使用以下命令：
 
-- `/dashboard` - Launch TUI dashboard
-- `/mcp-status` - Open MCP servers tab
-- `/costs` - Open costs analysis
-- `/sessions` - Browse sessions history
-- `/ccboard-web` - Launch web interface
+- `/dashboard` - 启动 TUI 仪表板
+- `/mcp-status` - 打开 MCP 服务器标签页
+- `/costs` - 打开费用分析
+- `/sessions` - 浏览会话历史
+- `/ccboard-web` - 启动 Web 界面
 
-Or run directly:
+也可以直接运行：
 ```bash
-ccboard              # Launch TUI
-ccboard web          # Launch web UI
-ccboard --help       # Show all options
+ccboard              # 启动 TUI
+ccboard web          # 启动 Web UI
+ccboard --help       # 显示所有选项
 ```
 
-## Troubleshooting
+## 故障排查
 
-### Cargo not found
+### 找不到 cargo
 ```bash
-# Install Rust and cargo
+# 安装 Rust 和 cargo
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 
-# Reload shell
+# 重新加载 shell 环境
 source $HOME/.cargo/env
 ```
 
-### Installation fails
+### 安装失败
 ```bash
-# Update Rust toolchain
+# 更新 Rust 工具链
 rustup update
 
-# Try manual installation from source
+# 从源码手动安装
 git clone https://github.com/{OWNER}/ccboard
 cd ccboard
 cargo install --path crates/ccboard
 ```
 
-### Permission denied
+### 权限被拒绝
 ```bash
-# Ensure ~/.cargo/bin is in PATH
+# 确保 ~/.cargo/bin 已加入 PATH
 echo 'export PATH="$HOME/.cargo/bin:$PATH"' >> ~/.bashrc
 source ~/.bashrc
 ```
 
-## Implementation
+## 实现
 
 ```bash
 #!/bin/bash
 
-# Run installation script
+# 执行安装脚本
 exec "$(dirname "$0")/../scripts/install-ccboard.sh"
 ```
 
-## Uninstallation
+## 卸载
 
-To remove ccboard:
+要移除 ccboard：
 ```bash
 cargo uninstall ccboard
 ```

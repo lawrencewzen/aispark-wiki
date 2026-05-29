@@ -1,31 +1,31 @@
 > 📚 **AI Spark Wiki** · Claude Code 知识库
 
 ---
-description: "Performance review criteria for plan and code reviews"
+description: "方案和代码审查中的性能评审标准"
 ---
 
-# Performance Review Criteria
+# 性能评审标准
 
-When reviewing performance, evaluate these dimensions:
+进行性能评审时，从以下维度进行评估：
 
-## Database Access
-- Are there N+1 query patterns (loop with individual queries)?
-- Are queries using appropriate indexes?
-- Is data fetched at the right granularity (not over-fetching)?
-- Are bulk operations used where possible?
+## 数据库访问
+- 是否存在 N+1 查询模式（循环中逐条查询）？
+- 查询是否使用了合适的索引？
+- 数据获取粒度是否合理（避免过度查询）？
+- 是否在可能的情况下使用批量操作？
 
-## Memory
-- Are large datasets streamed rather than loaded entirely in memory?
-- Are there potential memory leaks (event listeners, unclosed connections)?
-- Is object allocation minimized in hot paths?
+## 内存
+- 大数据集是否以流式处理而非全量加载到内存？
+- 是否存在潜在的内存泄漏（事件监听器、未关闭的连接）？
+- 热路径中是否尽量减少对象分配？
 
-## Caching
-- What data is expensive to compute and stable enough to cache?
-- Are cache invalidation strategies defined?
-- Is caching applied at the right layer (application, database, CDN)?
+## 缓存
+- 哪些数据计算成本高且足够稳定，适合缓存？
+- 是否定义了缓存失效策略？
+- 缓存是否应用于正确的层级（应用层、数据库层、CDN 层）？
 
-## Complexity
-- Are there O(n^2) or worse algorithms that could be optimized?
-- Are hot paths identified and optimized?
-- Is unnecessary work being done (redundant computations, unused data transforms)?
-- Are expensive operations deferred or lazy-loaded where possible?
+## 复杂度
+- 是否存在 O(n²) 或更差的算法，有优化空间？
+- 热路径是否已识别并优化？
+- 是否存在不必要的操作（冗余计算、无用的数据转换）？
+- 耗时操作是否在可能的情况下延迟或懒加载？

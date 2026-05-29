@@ -1,357 +1,357 @@
 > 📚 **AI Spark Wiki** · Claude Code 知识库
 
 ---
-title: "Semantic Anchors Catalog"
-description: "Curated vocabulary of precise technical terms that improve Claude Code output quality"
+title: "语义锚点目录"
+description: "精选的精准技术术语词汇表，用于提升 Claude Code 的输出质量"
 tags: [reference, semantic-anchors, architecture]
 ---
 
-# Semantic Anchors Catalog
+# 语义锚点目录
 
-> **Concept**: Alexandre Soyer
-> **Source**: [github.com/LLM-Coding/Semantic-Anchors](https://github.com/LLM-Coding/Semantic-Anchors) (Apache-2.0)
-> **Adapted for**: Claude Code workflows
+> **概念来源**：Alexandre Soyer
+> **原始仓库**：[github.com/LLM-Coding/Semantic-Anchors](https://github.com/LLM-Coding/Semantic-Anchors)（Apache-2.0 协议）
+> **适配用途**：Claude Code 工作流
 
-## What Are Semantic Anchors?
+## 什么是语义锚点？
 
-LLMs are statistical pattern matchers. When you use **precise technical vocabulary**, you help Claude access the right patterns from its training data. Generic terms produce generic code; specific terms produce specific, well-structured code.
+大语言模型本质上是统计模式匹配器。当你使用**精准的技术术语**时，可以帮助 Claude 从训练数据中激活正确的模式。模糊的词汇产生通用代码；精准的词汇产生结构良好的专业代码。
 
-**Analogy**: Technical terms are GPS coordinates into Claude's knowledge base.
-
----
-
-## Testing & Quality Assurance
-
-### Test Methodologies
-
-| Vague | Semantic Anchor | What It Activates |
-|-------|-----------------|-------------------|
-| "write tests" | "TDD London School (mockist)" | Outside-in, mock collaborators, focus on behavior |
-| "write tests" | "TDD Chicago School (classicist)" | Bottom-up, real collaborators, state verification |
-| "test edge cases" | "Property-Based Testing (QuickCheck)" | Generative testing, shrinking, invariant discovery |
-| "thorough testing" | "Mutation Testing (Stryker/PIT)" | Kill mutants, measure test effectiveness |
-| "behavior tests" | "BDD Gherkin syntax (Given/When/Then)" | Cucumber-style, living documentation |
-
-### Test Quality
-
-| Vague | Semantic Anchor | Effect |
-|-------|-----------------|--------|
-| "good test names" | "Roy Osherove naming: MethodName_Scenario_ExpectedBehavior" | Consistent, descriptive names |
-| "isolated tests" | "Test Pyramid (Fowler): 70% unit, 20% integration, 10% E2E" | Proper test distribution |
-| "fast tests" | "Sociable unit tests with test doubles at boundaries" | Speed with realistic behavior |
-| "readable tests" | "Arrange-Act-Assert (AAA) pattern" | Clear test structure |
-| "maintainable tests" | "Object Mother / Test Data Builder pattern" | Reusable test fixtures |
+**类比**：技术术语就像 GPS 坐标，能精准定位 Claude 知识库中的相关内容。
 
 ---
 
-## Architecture & Design
+## 测试与质量保证
 
-### Architectural Patterns
+### 测试方法论
 
-| Vague | Semantic Anchor | When to Use |
-|-------|-----------------|-------------|
-| "clean architecture" | "Hexagonal Architecture (Ports & Adapters)" | Domain isolation, testability |
-| "layered architecture" | "Onion Architecture (Palermo)" | Dependency toward center |
-| "microservices" | "Domain-Driven Design bounded contexts" | Service boundaries |
-| "event-driven" | "CQRS with Event Sourcing" | Read/write separation, audit trail |
-| "scalable" | "Event-Driven Architecture with message broker" | Async processing, decoupling |
+| 模糊表达 | 语义锚点 | 激活效果 |
+|----------|----------|----------|
+| "写测试" | "TDD 伦敦学派（mockist 风格）" | 由外到内、模拟协作对象、聚焦行为 |
+| "写测试" | "TDD 芝加哥学派（classicist 风格）" | 由下到上、真实协作对象、状态验证 |
+| "测试边界情况" | "基于属性的测试（QuickCheck）" | 生成式测试、收缩策略、不变量发现 |
+| "全面测试" | "变异测试（Stryker/PIT）" | 杀死变异体、衡量测试有效性 |
+| "行为测试" | "BDD Gherkin 语法（Given/When/Then）" | Cucumber 风格、活文档 |
 
-### Domain-Driven Design (Evans)
+### 测试质量
 
-| Vague | Semantic Anchor | Purpose |
-|-------|-----------------|---------|
-| "business logic" | "DDD Aggregate pattern" | Transactional consistency |
-| "data access" | "DDD Repository pattern" | Persistence abstraction |
-| "object mapping" | "DDD Value Objects" | Immutable, equality by value |
-| "complex objects" | "DDD Entity pattern" | Identity-based equality |
-| "business rules" | "DDD Domain Services" | Stateless operations |
-| "integration" | "DDD Anti-Corruption Layer (ACL)" | External system isolation |
-
-### SOLID Principles
-
-| Vague | Semantic Anchor | Specific Guidance |
-|-------|-----------------|-------------------|
-| "single purpose" | "SRP: one reason to change (Robert C. Martin)" | Cohesion focus |
-| "extensible" | "OCP: open for extension, closed for modification" | Plugin architecture |
-| "substitutable" | "LSP: subtypes must be substitutable" | Contract preservation |
-| "minimal interfaces" | "ISP: clients shouldn't depend on unused methods" | Interface segregation |
-| "decoupled" | "DIP: depend on abstractions, not concretions" | Inversion of control |
+| 模糊表达 | 语义锚点 | 效果 |
+|----------|----------|------|
+| "好的测试名称" | "Roy Osherove 命名法：MethodName_Scenario_ExpectedBehavior" | 一致、描述性命名 |
+| "隔离测试" | "测试金字塔（Fowler）：70% 单元测试、20% 集成测试、10% E2E" | 合理的测试分布 |
+| "快速测试" | "边界处使用测试替身的社交型单元测试" | 速度与真实性兼顾 |
+| "可读测试" | "Arrange-Act-Assert（AAA）模式" | 清晰的测试结构 |
+| "可维护测试" | "Object Mother / 测试数据构建器模式" | 可复用的测试夹具 |
 
 ---
 
-## Code Quality & Refactoring
+## 架构与设计
 
-### Refactoring Catalog (Fowler)
+### 架构模式
 
-| Vague | Semantic Anchor | Trigger |
-|-------|-----------------|---------|
-| "extract logic" | "Extract Method refactoring" | Long methods |
-| "remove conditionals" | "Replace Conditional with Polymorphism" | Complex if/switch |
-| "simplify creation" | "Replace Constructor with Factory Method" | Complex instantiation |
-| "remove duplication" | "Extract Class / Extract Superclass" | Similar classes |
-| "improve naming" | "Rename Method/Variable (intention-revealing names)" | Unclear names |
+| 模糊表达 | 语义锚点 | 适用场景 |
+|----------|----------|----------|
+| "整洁架构" | "六边形架构（端口与适配器）" | 领域隔离、可测试性 |
+| "分层架构" | "洋葱架构（Palermo）" | 依赖关系指向核心 |
+| "微服务" | "领域驱动设计限界上下文" | 服务边界划分 |
+| "事件驱动" | "CQRS 与事件溯源" | 读写分离、审计追踪 |
+| "可伸缩" | "基于消息代理的事件驱动架构" | 异步处理、解耦 |
 
-### Code Smells (Fowler/Beck)
+### 领域驱动设计（Evans）
 
-| Smell | Semantic Anchor | Solution |
-|-------|-----------------|----------|
-| "long method" | "Extract Method until comments become unnecessary" | Methods < 10 lines |
-| "large class" | "Extract Class following SRP" | Single responsibility |
-| "feature envy" | "Move Method to class that owns data" | Better cohesion |
-| "primitive obsession" | "Replace Primitive with Value Object" | Type safety |
-| "shotgun surgery" | "Move Field/Method to consolidate changes" | Centralize logic |
+| 模糊表达 | 语义锚点 | 用途 |
+|----------|----------|------|
+| "业务逻辑" | "DDD 聚合模式" | 事务一致性 |
+| "数据访问" | "DDD 仓储模式" | 持久化抽象 |
+| "对象映射" | "DDD 值对象" | 不可变、按值比较相等性 |
+| "复杂对象" | "DDD 实体模式" | 基于标识的相等性 |
+| "业务规则" | "DDD 领域服务" | 无状态操作 |
+| "集成" | "DDD 防腐层（ACL）" | 外部系统隔离 |
 
-### Clean Code (Martin)
+### SOLID 原则
 
-| Vague | Semantic Anchor | Application |
-|-------|-----------------|-------------|
-| "readable" | "Screaming Architecture: package structure reveals intent" | Folder naming |
-| "clear names" | "Intention-revealing names (Clean Code Ch. 2)" | Self-documenting |
-| "no comments" | "Code should be self-explanatory (comments lie)" | Refactor instead |
-| "small functions" | "Functions should do one thing (max 20 lines)" | Single responsibility |
-| "no side effects" | "Command-Query Separation (CQS)" | Predictable behavior |
-
----
-
-## Error Handling
-
-### Functional Patterns
-
-| Vague | Semantic Anchor | Benefits |
-|-------|-----------------|----------|
-| "error handling" | "Railway Oriented Programming with Either<L,R>" | Composable errors |
-| "null safety" | "Option/Maybe monad (never return null)" | Explicit absence |
-| "error accumulation" | "Validation applicative functor" | Collect all errors |
-| "async errors" | "Task/Future monad with error channel" | Async error flow |
-
-### Exception Strategies
-
-| Vague | Semantic Anchor | Use Case |
-|-------|-----------------|----------|
-| "handle errors" | "Checked exceptions at boundaries only" | External integration |
-| "error recovery" | "Circuit Breaker pattern (Nygard)" | Fault tolerance |
-| "graceful degradation" | "Bulkhead pattern" | Isolation |
-| "retry logic" | "Exponential backoff with jitter" | Resilience |
+| 模糊表达 | 语义锚点 | 具体指导 |
+|----------|----------|----------|
+| "单一职责" | "SRP：只有一个变更原因（Robert C. Martin）" | 聚焦内聚性 |
+| "可扩展" | "OCP：对扩展开放、对修改关闭" | 插件化架构 |
+| "可替换" | "LSP：子类型必须可替换父类型" | 契约保持 |
+| "最小接口" | "ISP：客户端不应依赖未使用的方法" | 接口隔离 |
+| "解耦" | "DIP：依赖抽象而非具体实现" | 控制反转 |
 
 ---
 
-## API Design
+## 代码质量与重构
 
-### REST Maturity
+### 重构目录（Fowler）
 
-| Vague | Semantic Anchor | Level |
-|-------|-----------------|-------|
-| "REST API" | "REST Level 0: HTTP as tunnel" | Basic |
-| "proper REST" | "REST Level 2: HTTP verbs + status codes" | Standard |
-| "HATEOAS" | "REST Level 3: Hypermedia controls" | Full REST |
-| "API versioning" | "URL path versioning (/v1/) or header versioning" | Evolution |
+| 模糊表达 | 语义锚点 | 触发条件 |
+|----------|----------|----------|
+| "提取逻辑" | "提取方法重构" | 方法过长 |
+| "消除条件判断" | "以多态替换条件判断" | 复杂 if/switch |
+| "简化创建过程" | "以工厂方法替换构造函数" | 复杂的实例化逻辑 |
+| "消除重复" | "提取类 / 提取超类" | 相似类 |
+| "改善命名" | "重命名方法/变量（意图揭示名称）" | 名称不清晰 |
 
-### API Quality
+### 代码坏味道（Fowler/Beck）
 
-| Vague | Semantic Anchor | Application |
-|-------|-----------------|-------------|
-| "consistent API" | "JSON:API specification" | Response format |
-| "documented API" | "OpenAPI 3.0 (Swagger)" | Spec-first design |
-| "secure API" | "OAuth 2.0 + PKCE flow" | Authentication |
-| "rate limiting" | "Token bucket algorithm" | Traffic control |
+| 坏味道 | 语义锚点 | 解决方案 |
+|--------|----------|----------|
+| "过长方法" | "持续提取方法直到注释变得不必要" | 方法保持 10 行以内 |
+| "过大类" | "按 SRP 提取类" | 单一职责 |
+| "依恋情结" | "将方法移至拥有数据的类" | 更好的内聚性 |
+| "基本类型偏执" | "以值对象替换基本类型" | 类型安全 |
+| "霰弹式修改" | "移动字段/方法以集中变更" | 集中逻辑 |
 
----
+### 整洁代码（Martin）
 
-## Documentation
-
-### Architecture Documentation
-
-| Vague | Semantic Anchor | Output |
-|-------|-----------------|--------|
-| "document architecture" | "C4 Model (Context, Container, Component, Code)" | Diagrams |
-| "architecture docs" | "arc42 template structure" | Comprehensive docs |
-| "design decisions" | "ADR (Architecture Decision Records) - Nygard format" | Decision log |
-| "system overview" | "4+1 View Model (Kruchten)" | Multiple perspectives |
-
-### Code Documentation
-
-| Vague | Semantic Anchor | Format |
-|-------|-----------------|--------|
-| "API docs" | "JSDoc / TSDoc with @example tags" | Generated docs |
-| "README" | "README-driven development (Tom Preston-Werner)" | Project intro |
-| "changelog" | "Keep a Changelog format (semver)" | Release notes |
-| "contributing" | "CONTRIBUTING.md with PR template" | Contributor guide |
+| 模糊表达 | 语义锚点 | 应用方式 |
+|----------|----------|----------|
+| "可读" | "尖叫式架构：包结构揭示意图" | 文件夹命名 |
+| "清晰命名" | "意图揭示名称（Clean Code 第 2 章）" | 自文档化 |
+| "不写注释" | "代码应自解释（注释会撒谎）" | 重构代替注释 |
+| "小函数" | "函数只做一件事（最多 20 行）" | 单一职责 |
+| "无副作用" | "命令查询分离（CQS）" | 可预测行为 |
 
 ---
 
-## Requirements & Specifications
+## 错误处理
 
-### Requirements Syntax
+### 函数式模式
 
-| Vague | Semantic Anchor | Format |
-|-------|-----------------|--------|
-| "requirements" | "EARS syntax (Easy Approach to Requirements)" | Structured requirements |
-| "user stories" | "Connextra format: As a [role] I want [goal] so that [benefit]" | User perspective |
-| "acceptance criteria" | "BDD Gherkin: Given/When/Then" | Testable criteria |
-| "use cases" | "Cockburn's use case template (brief/casual/fully dressed)" | Interaction flows |
+| 模糊表达 | 语义锚点 | 优势 |
+|----------|----------|------|
+| "错误处理" | "使用 Either<L,R> 的铁路导向编程" | 可组合的错误 |
+| "空值安全" | "Option/Maybe 单子（永不返回 null）" | 显式表达缺失 |
+| "错误累积" | "Validation 应用函子" | 收集所有错误 |
+| "异步错误" | "带错误通道的 Task/Future 单子" | 异步错误流 |
 
-### Discovery & Mapping
+### 异常策略
 
-| Vague | Semantic Anchor | Technique |
-|-------|-----------------|-----------|
-| "understand users" | "User Story Mapping (Jeff Patton)" | Journey visualization |
-| "prioritize features" | "MoSCoW method (Must/Should/Could/Won't)" | Priority triage |
-| "user needs" | "Jobs-to-be-Done framework (Christensen)" | Outcome focus |
-| "event modeling" | "Event Storming (Brandolini)" | Domain discovery |
-
----
-
-## Security
-
-### OWASP & Common Vulnerabilities
-
-| Vague | Semantic Anchor | Protection |
-|-------|-----------------|------------|
-| "secure code" | "OWASP Top 10 mitigations" | Comprehensive checklist |
-| "input validation" | "Allowlist validation + parameterized queries" | Injection prevention |
-| "authentication" | "OWASP ASVS Level 2 requirements" | Auth standards |
-| "secrets management" | "HashiCorp Vault or cloud KMS" | Secret storage |
-
-### Security Patterns
-
-| Vague | Semantic Anchor | Implementation |
-|-------|-----------------|----------------|
-| "secure by default" | "Principle of least privilege" | Minimal permissions |
-| "defense in depth" | "Multiple security layers (network, app, data)" | Layered security |
-| "secure communication" | "TLS 1.3 with certificate pinning" | Transport security |
-| "audit logging" | "Immutable audit trail with tamper detection" | Compliance |
+| 模糊表达 | 语义锚点 | 适用场景 |
+|----------|----------|----------|
+| "处理错误" | "仅在边界处使用受检异常" | 外部集成 |
+| "错误恢复" | "熔断器模式（Nygard）" | 容错 |
+| "优雅降级" | "舱壁模式" | 隔离 |
+| "重试逻辑" | "带抖动的指数退避" | 韧性 |
 
 ---
 
-## Performance
+## API 设计
 
-### Optimization Patterns
+### REST 成熟度
 
-| Vague | Semantic Anchor | Application |
-|-------|-----------------|-------------|
-| "caching" | "Cache-aside pattern with TTL" | Read performance |
-| "batch processing" | "Bulk operations with chunking" | Write performance |
-| "lazy loading" | "Virtual proxy pattern" | Resource optimization |
-| "memoization" | "Function memoization with LRU eviction" | Computation caching |
+| 模糊表达 | 语义锚点 | 级别 |
+|----------|----------|------|
+| "REST API" | "REST Level 0：HTTP 作为传输隧道" | 基础 |
+| "标准 REST" | "REST Level 2：HTTP 动词 + 状态码" | 标准 |
+| "HATEOAS" | "REST Level 3：超媒体控制" | 完整 REST |
+| "API 版本控制" | "URL 路径版本控制（/v1/）或请求头版本控制" | 演进策略 |
 
-### Scalability
+### API 质量
 
-| Vague | Semantic Anchor | Technique |
-|-------|-----------------|-----------|
-| "horizontal scaling" | "Stateless services + external state store" | Scale-out |
-| "database scaling" | "Read replicas + write-through caching" | DB performance |
-| "async processing" | "Message queue with competing consumers" | Throughput |
-| "load balancing" | "Round-robin with health checks" | Distribution |
-
----
-
-## Prompting Patterns
-
-### Anti-Anchoring Techniques
-
-LLMs can fixate on their first suggestion, narrowing your solution space. These patterns combat anchoring bias:
-
-| Pattern | Prompt Template | Effect |
-|---------|-----------------|--------|
-| Fresh start | "Ignore any prior ideas. Generate 4 novel approaches to [X]" | Forces diversity |
-| Reflection loop | "Generate 3 options, then critique each, then recommend" | Self-correction |
-| Quantified comparison | "Rank by [metric1], [metric2], [metric3] with scores 1-10" | Objective trade-offs |
-| Devil's advocate | "What are the strongest arguments against your recommendation?" | Surface hidden costs |
-| Constraint flip | "Now solve with [opposite constraint]" | Expand solution space |
-
-### Exploration Prompts
-
-Use these when you need multiple approaches before committing:
-
-| Goal | Semantic Anchor Prompt |
-|------|------------------------|
-| Architecture choice | "Compare [A], [B], [C] using C4 model criteria: context fit, container complexity, component count" |
-| Performance trade-off | "Analyze time complexity (Big O), space complexity, and cache-friendliness for each approach" |
-| Team fit | "Evaluate learning curve, debugging difficulty, and ecosystem maturity (1-10 scale)" |
-| Risk assessment | "For each option: what's the worst-case failure mode and recovery cost?" |
-
-### Iteration Prompts
-
-For progressive refinement of scripts and automation:
-
-| Stage | Prompt Pattern |
-|-------|----------------|
-| Initial | "Create a [language] script that [goal]. Include basic error handling." |
-| Constrain | "Add: [specific constraint]. Remove: [unwanted behavior]." |
-| Harden | "Add input validation, logging, and handle edge case: [specific case]." |
-| Optimize | "Optimize for [metric]. Target: [specific threshold]." |
-| Document | "Add usage examples and inline comments for non-obvious logic." |
+| 模糊表达 | 语义锚点 | 应用方式 |
+|----------|----------|----------|
+| "一致的 API" | "JSON:API 规范" | 响应格式 |
+| "有文档的 API" | "OpenAPI 3.0（Swagger）" | 规范优先设计 |
+| "安全的 API" | "OAuth 2.0 + PKCE 流程" | 身份验证 |
+| "限流" | "令牌桶算法" | 流量控制 |
 
 ---
 
-## CLAUDE.md Template with Semantic Anchors
+## 文档
+
+### 架构文档
+
+| 模糊表达 | 语义锚点 | 产出 |
+|----------|----------|------|
+| "记录架构" | "C4 模型（上下文、容器、组件、代码）" | 图表 |
+| "架构文档" | "arc42 模板结构" | 综合文档 |
+| "设计决策" | "ADR（架构决策记录）- Nygard 格式" | 决策日志 |
+| "系统概览" | "4+1 视图模型（Kruchten）" | 多维度视角 |
+
+### 代码文档
+
+| 模糊表达 | 语义锚点 | 格式 |
+|----------|----------|------|
+| "API 文档" | "JSDoc / TSDoc 含 @example 标签" | 生成式文档 |
+| "README" | "README 驱动开发（Tom Preston-Werner）" | 项目介绍 |
+| "变更日志" | "Keep a Changelog 格式（semver）" | 发布说明 |
+| "贡献指南" | "含 PR 模板的 CONTRIBUTING.md" | 贡献者指南 |
+
+---
+
+## 需求与规格说明
+
+### 需求语法
+
+| 模糊表达 | 语义锚点 | 格式 |
+|----------|----------|------|
+| "需求" | "EARS 语法（需求简易写法）" | 结构化需求 |
+| "用户故事" | "Connextra 格式：作为 [角色] 我希望 [目标] 以便 [收益]" | 用户视角 |
+| "验收标准" | "BDD Gherkin：Given/When/Then" | 可测试标准 |
+| "用例" | "Cockburn 用例模板（简要/非正式/完整版）" | 交互流程 |
+
+### 发现与映射
+
+| 模糊表达 | 语义锚点 | 技术 |
+|----------|----------|------|
+| "了解用户" | "用户故事地图（Jeff Patton）" | 旅程可视化 |
+| "功能优先级" | "MoSCoW 方法（必须/应该/可以/不会）" | 优先级分类 |
+| "用户需求" | "待完成工作框架（Christensen）" | 聚焦结果 |
+| "事件建模" | "事件风暴（Brandolini）" | 领域发现 |
+
+---
+
+## 安全
+
+### OWASP 与常见漏洞
+
+| 模糊表达 | 语义锚点 | 防护措施 |
+|----------|----------|----------|
+| "安全代码" | "OWASP Top 10 缓解措施" | 综合检查清单 |
+| "输入验证" | "白名单验证 + 参数化查询" | 注入防护 |
+| "身份验证" | "OWASP ASVS Level 2 要求" | 认证标准 |
+| "密钥管理" | "HashiCorp Vault 或云端 KMS" | 密钥存储 |
+
+### 安全模式
+
+| 模糊表达 | 语义锚点 | 实施方式 |
+|----------|----------|----------|
+| "默认安全" | "最小权限原则" | 最小化权限 |
+| "纵深防御" | "多层安全防护（网络、应用、数据）" | 分层安全 |
+| "安全通信" | "TLS 1.3 + 证书锁定" | 传输安全 |
+| "审计日志" | "不可篡改的审计追踪 + 篡改检测" | 合规要求 |
+
+---
+
+## 性能
+
+### 优化模式
+
+| 模糊表达 | 语义锚点 | 应用方式 |
+|----------|----------|----------|
+| "缓存" | "带 TTL 的旁路缓存模式" | 读性能 |
+| "批量处理" | "分块批量操作" | 写性能 |
+| "懒加载" | "虚拟代理模式" | 资源优化 |
+| "记忆化" | "带 LRU 淘汰的函数记忆化" | 计算缓存 |
+
+### 可伸缩性
+
+| 模糊表达 | 语义锚点 | 技术 |
+|----------|----------|------|
+| "水平扩展" | "无状态服务 + 外部状态存储" | 横向扩展 |
+| "数据库扩展" | "读副本 + 穿透写缓存" | 数据库性能 |
+| "异步处理" | "消息队列 + 竞争消费者" | 吞吐量 |
+| "负载均衡" | "轮询 + 健康检查" | 流量分发 |
+
+---
+
+## 提示词模式
+
+### 反锚定技术
+
+大语言模型可能会执着于第一个建议，从而收窄解决方案空间。以下模式用于对抗锚定偏差：
+
+| 模式 | 提示词模板 | 效果 |
+|------|------------|------|
+| 全新开始 | "忽略任何先前的想法。为 [X] 生成 4 种全新方案" | 强制多样性 |
+| 反思循环 | "生成 3 个方案，然后对每个方案进行批评，最后给出推荐" | 自我修正 |
+| 量化比较 | "按 [指标1]、[指标2]、[指标3] 排序，各项打分 1-10" | 客观权衡 |
+| 魔鬼代言人 | "反对你推荐方案最有力的论据是什么？" | 揭示隐性成本 |
+| 约束翻转 | "现在用 [相反约束] 来解决这个问题" | 扩展解决方案空间 |
+
+### 探索性提示词
+
+在做出最终决策前，使用这些提示词探索多种方案：
+
+| 目标 | 语义锚点提示词 |
+|------|----------------|
+| 架构选型 | "使用 C4 模型标准比较 [A]、[B]、[C]：上下文适配性、容器复杂度、组件数量" |
+| 性能权衡 | "分析每种方案的时间复杂度（Big O）、空间复杂度和缓存友好性" |
+| 团队适配 | "评估学习曲线、调试难度和生态成熟度（1-10 分制）" |
+| 风险评估 | "对每个方案：最坏情况的故障模式是什么？恢复成本如何？" |
+
+### 迭代提示词
+
+用于脚本和自动化的渐进式精化：
+
+| 阶段 | 提示词模板 |
+|------|------------|
+| 初始 | "创建一个 [语言] 脚本来 [目标]，包含基本的错误处理。" |
+| 约束 | "添加：[具体约束]。去除：[不需要的行为]。" |
+| 加固 | "添加输入验证、日志记录，并处理边界情况：[具体情况]。" |
+| 优化 | "针对 [指标] 进行优化，目标：[具体阈值]。" |
+| 文档 | "为非显而易见的逻辑添加使用示例和行内注释。" |
+
+---
+
+## 带语义锚点的 CLAUDE.md 模板
 
 ```markdown
-# Project Architecture
+# 项目架构
 
-## Principles (Semantic Anchors)
+## 原则（语义锚点）
 
-### Architecture
-- **Pattern**: Hexagonal Architecture (Ports & Adapters)
-- **Domain modeling**: Domain-Driven Design tactical patterns (Aggregates, Value Objects, Domain Events)
-- **Documentation**: ADR (Architecture Decision Records) for significant decisions
+### 架构
+- **模式**：六边形架构（端口与适配器）
+- **领域建模**：领域驱动设计战术模式（聚合、值对象、领域事件）
+- **文档**：重大决策使用 ADR（架构决策记录）
 
-### Code Quality
-- **Design**: SOLID principles, especially SRP and DIP
-- **Refactoring**: Apply Fowler's catalog - Extract Method, Replace Conditional with Polymorphism
-- **Naming**: Intention-revealing names, Screaming Architecture for packages
+### 代码质量
+- **设计**：SOLID 原则，尤其是 SRP 和 DIP
+- **重构**：应用 Fowler 目录——提取方法、以多态替换条件判断
+- **命名**：意图揭示名称，包结构采用尖叫式架构
 
-### Testing
-- **Methodology**: TDD London School - outside-in, mock collaborators
-- **Structure**: Arrange-Act-Assert (AAA) pattern
-- **Coverage**: Test Pyramid - 70% unit, 20% integration, 10% E2E
+### 测试
+- **方法论**：TDD 伦敦学派——由外到内、模拟协作对象
+- **结构**：Arrange-Act-Assert（AAA）模式
+- **覆盖率**：测试金字塔——70% 单元测试、20% 集成测试、10% E2E
 
-### Error Handling
-- **Pattern**: Railway Oriented Programming with Result<T, E>
-- **Never**: Return null, throw for control flow
-- **Always**: Use Option/Maybe for optional values
+### 错误处理
+- **模式**：使用 Result<T, E> 的铁路导向编程
+- **禁止**：返回 null、使用异常控制流
+- **必须**：对可选值使用 Option/Maybe
 
-### API Design
-- **Style**: REST Level 2 with proper HTTP verbs and status codes
-- **Documentation**: OpenAPI 3.0 spec-first
-- **Security**: OAuth 2.0 + PKCE for authentication
+### API 设计
+- **风格**：REST Level 2，使用正确的 HTTP 动词和状态码
+- **文档**：OpenAPI 3.0 规范优先
+- **安全**：使用 OAuth 2.0 + PKCE 进行身份验证
 
-### Requirements
-- **Format**: EARS syntax for formal requirements
-- **User stories**: Connextra format with acceptance criteria
-- **Discovery**: Event Storming for domain exploration
+### 需求
+- **格式**：使用 EARS 语法编写正式需求
+- **用户故事**：Connextra 格式含验收标准
+- **发现**：使用事件风暴探索领域
 ```
 
 ---
 
-## Quick Reference
+## 快速参考
 
-### Before/After Examples
+### 前后对比示例
 
-| Before (Vague) | After (Anchored) |
-|----------------|------------------|
-| "Make it clean" | "Apply SRP: each class has one reason to change" |
-| "Add error handling" | "Use Railway Oriented Programming with Either monad" |
-| "Write good tests" | "Follow TDD London School with mock collaborators" |
-| "Document the API" | "Generate OpenAPI 3.0 spec from annotations" |
-| "Make it secure" | "Mitigate OWASP Top 10, specifically A03:Injection" |
-| "Refactor this" | "Apply Extract Method until comments are unnecessary" |
-| "Scale this service" | "Implement CQRS with Event Sourcing for read/write separation" |
-
----
-
-## Usage Tips
-
-1. **Combine anchors**: "Apply Hexagonal Architecture with DDD tactical patterns and Railway Oriented error handling"
-
-2. **Specify versions/authors**: "Following Kent Beck's TDD (2003)" is more specific than "TDD"
-
-3. **Reference books**: "Clean Code Chapter 2 naming conventions" activates specific knowledge
-
-4. **Name patterns explicitly**: "Strategy pattern" > "pluggable behavior"
-
-5. **Use with XML tags**: Combine anchors with `<constraints>` and `<quality_criteria>` tags for maximum effect
+| 改前（模糊） | 改后（锚定） |
+|--------------|--------------|
+| "让代码更整洁" | "应用 SRP：每个类只有一个变更原因" |
+| "添加错误处理" | "使用 Either 单子的铁路导向编程" |
+| "写好测试" | "遵循 TDD 伦敦学派，使用模拟协作对象" |
+| "给 API 写文档" | "从注解生成 OpenAPI 3.0 规范" |
+| "让它更安全" | "缓解 OWASP Top 10，特别是 A03:注入" |
+| "重构这里" | "应用提取方法直到注释变得不必要" |
+| "扩展这个服务" | "实现 CQRS + 事件溯源以分离读写" |
 
 ---
 
-> **Remember**: The goal is precision, not jargon. Use anchors that Claude has seen extensively in its training data. When in doubt, reference the authoritative source (book, paper, framework).
+## 使用技巧
+
+1. **组合锚点**："应用六边形架构，结合 DDD 战术模式和铁路导向错误处理"
+
+2. **指定版本/作者**："遵循 Kent Beck 的 TDD（2003 年）"比"TDD"更具体
+
+3. **引用书籍**："Clean Code 第 2 章命名规范"能激活更具体的知识
+
+4. **明确指出模式**："策略模式"优于"可插拔行为"
+
+5. **配合 XML 标签使用**：将锚点与 `<constraints>` 和 `<quality_criteria>` 标签结合，效果最大化
+
+---
+
+> **记住**：目标是精准，而非堆砌术语。使用 Claude 在训练数据中见过大量示例的锚点。如有疑问，引用权威来源（书籍、论文、框架）。

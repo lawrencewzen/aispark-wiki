@@ -1,24 +1,24 @@
 > 📚 **AI Spark Wiki** · Claude Code 知识库
 
 ---
-title: "Session Auto-Rename"
-description: "CLAUDE.md snippet to make Claude automatically name sessions with descriptive titles"
+title: "会话自动重命名"
+description: "CLAUDE.md 片段：让 Claude 在 2-3 轮交互后自动将会话命名为描述性标题"
 tags: [session, resume, productivity, workflow]
 ---
 
-# Session Auto-Rename — CLAUDE.md Snippet
+# 会话自动重命名 — CLAUDE.md 片段
 
-Add this block to your global `~/.claude/CLAUDE.md` to make Claude automatically rename sessions with descriptive titles after 2-3 exchanges. Helps enormously when running parallel sessions (WebStorm, split terminals, multiple projects).
+将以下代码块添加到全局 `~/.claude/CLAUDE.md`，让 Claude 在 2-3 轮交互后自动为会话命名为描述性标题。在并行运行多个会话时（WebStorm、分屏终端、多项目）极为有用。
 
-## The Problem
+## 问题所在
 
-When running multiple Claude Code sessions in parallel, they all appear as "claude" or a truncated first prompt in session pickers. Finding the right session to `/resume` becomes guesswork.
+同时运行多个 Claude Code 会话时，它们在会话选择器中都显示为"claude"或截断的首条提示词。找到正确的会话来 `/resume` 完全靠猜。
 
-## The Solution
+## 解决方案
 
-A behavioral instruction in CLAUDE.md — no scripts, no hooks, no plugins. Claude understands the session subject early and calls `/rename` proactively.
+在 CLAUDE.md 中加入一条行为指令——无需脚本、无需钩子、无需插件。Claude 会在早期理解会话主题，并主动调用 `/rename`。
 
-## Snippet
+## 片段
 
 ```markdown
 # Session Naming (auto-rename)
@@ -49,41 +49,41 @@ A behavioral instruction in CLAUDE.md — no scripts, no hooks, no plugins. Clau
 - Only propose confirmation for end-of-session re-rename if title changed
 ```
 
-## Usage
+## 使用方式
 
-**Global** (all projects): Add to `~/.claude/CLAUDE.md`
+**全局**（所有项目）：添加到 `~/.claude/CLAUDE.md`
 
-**Project-level**: Add to `.claude/CLAUDE.md` or `CLAUDE.md` in the project root
+**项目级别**：添加到 `.claude/CLAUDE.md` 或项目根目录下的 `CLAUDE.md`
 
-## How it works
+## 工作原理
 
-This is a pure behavioral instruction — no tooling required. Claude:
-1. Infers the session's main subject from the first 2-3 exchanges
-2. Calls `/rename "fix auth middleware"` automatically (no confirmation prompt)
-3. If the work pivots significantly, proposes a re-rename at end of session
+这是一条纯行为指令——无需任何工具。Claude 会：
+1. 从前 2-3 轮交互中推断会话主题
+2. 自动调用 `/rename "fix auth middleware"`（无需确认提示）
+3. 如果工作重心发生显著偏移，在会话结束时提议重新命名
 
-Named sessions appear in the `/resume` picker with their descriptive titles, making it easy to find and continue the right session.
+命名后的会话会在 `/resume` 选择器中以描述性标题显示，便于快速找到并继续正确的会话。
 
-## Limitations
+## 局限性
 
-- **Tab renaming**: Terminal tab names (WebStorm, iTerm2) are NOT renamed. JetBrains filters ANSI escape sequences used for tab title changes. The Claude session itself gets renamed, not the terminal tab.
-- **Timing**: Claude renames after understanding the subject, not immediately on first message.
+- **标签页重命名**：终端标签页名称（WebStorm、iTerm2）**不会**被重命名。JetBrains 会过滤用于更改标签页标题的 ANSI 转义序列。Claude 会话本身会被重命名，但不影响终端标签页。
+- **时机**：Claude 在理解主题后才会重命名，而非在收到第一条消息时立即执行。
 
-## Verification
+## 验证
 
 ```bash
-# After a session with this configured:
+# 配置完成后开启一个会话：
 claude --resume
-# → Session list shows descriptive names like "fix auth middleware"
-# instead of timestamps or truncated prompts
+# → 会话列表显示描述性名称，如 "fix auth middleware"
+# 而非时间戳或截断的提示词
 ```
 
-## Trade-offs
+## 方案对比
 
-| Approach | Pros | Cons |
-|----------|------|------|
-| This (behavioral instruction) | Zero tooling, works everywhere | Claude must infer timing |
-| Manual `/rename` | Full control | Requires user action |
-| Hook (Stop event) | Automatic | No access to conversation context |
+| 方案 | 优点 | 缺点 |
+|------|------|------|
+| 本方案（行为指令） | 零工具依赖，到处适用 | Claude 须自行判断时机 |
+| 手动 `/rename` | 完全可控 | 需要用户操作 |
+| 钩子（Stop 事件） | 全自动 | 无法访问对话上下文 |
 
-The behavioral instruction wins on simplicity and portability.
+行为指令在简洁性和可移植性上优势明显。

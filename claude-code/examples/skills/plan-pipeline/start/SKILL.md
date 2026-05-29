@@ -2,187 +2,187 @@
 
 ---
 name: plan-pipeline-start
-description: "5-phase planning: PRD analysis, design review, technical decisions, dynamic research team, metrics. Produces a complete implementation plan + ADRs before any code is written."
+description: "5 阶段规划流水线：PRD 分析、设计评审、技术决策、动态调研团队、指标记录。在编写任何代码之前，生成完整的实施计划和架构决策记录（ADR）。"
 effort: high
 disable-model-invocation: true
 ---
 
-# /plan-pipeline:start — 5-Phase Planning
+# /plan-pipeline:start — 5 阶段规划
 
-Analyze the request and produce a complete implementation plan through structured phases. No code is written. Every significant decision is recorded. Run `/clear` after this command before running `/plan-pipeline:validate`.
-
----
-
-## Phase 1: PRD & Design Analysis
-
-### Step 1.1 — PRD Analysis
-
-*Skip if no PRD exists (refactor, infra change, bug fix).*
-
-Read all PRD files and `docs/INFORMATION_ARCHITECTURE.md` if present. Scan the codebase to understand current implementation status.
-
-Surface findings in 3 buckets:
-
-**Missing requirements** — acceptance criteria that are absent or incomplete
-**Ambiguous requirements** — items with multiple valid interpretations
-**Compliance concerns** — security, data privacy, API contract implications
-
-For each finding: present options with concrete pros/cons. Discuss with user. Record every decision in the plan file under a `## Decisions` section before moving on. Do not proceed past unresolved ambiguities.
-
-### Step 1.2 — Design Analysis
-
-*Skip if no UI changes are in scope.*
-
-Read: `DESIGN_SYSTEM.md`, existing UX ADRs, CLAUDE.md UX rules.
-
-Produce specs for:
-- **Screen inventory**: new/modified screens, route placement, component reuse audit
-- **State catalog**: empty, loading, populated, error, and partial states for every interactive element
-- **Interaction specs**: user flows (happy path + alternates), focus/keyboard behavior
-- **Animation specs**: map each interaction to existing keyframes or specify new ones, include `prefers-reduced-motion` fallbacks
-- **Responsive behavior**: breakpoints, web/mobile divergence decisions
-- **Accessibility**: WAI-ARIA pattern selection, live regions, error visibility
-
-Create Design ADRs for significant UX decisions (choice of interaction pattern, new animation convention, platform divergence). Record minor layout choices directly in the plan file.
+分析请求并通过结构化阶段生成完整的实施计划。不编写任何代码，所有重要决策均有记录。执行本命令后，运行 `/plan-pipeline:validate` 之前请先执行 `/clear`。
 
 ---
 
-## Phase 2: Technical Analysis
+## 第 1 阶段：PRD 与设计分析
 
-Spawn 1-2 Explore agents for targeted codebase research. Run them in the background via Task tool.
+### 步骤 1.1 — PRD 分析
 
-While agents run, check:
-- Existing ADRs in `docs/adr/` — if 3+ ADRs confirm a decision → auto-resolve without asking
-- PATTERNS.md — apply confirmed patterns directly
+*如无 PRD（重构、基础设施变更、Bug 修复），跳过此步。*
 
-When agents return: present architecture decisions with 2-3 options each, concrete pros/cons, and a recommendation. Ask for user input on each unresolved decision.
+读取所有 PRD 文件，以及 `docs/INFORMATION_ARCHITECTURE.md`（如存在）。扫描代码库，了解当前实施状态。
 
-For each significant decision:
-1. Create `docs/adr/ADR-XXXX.md` using standard Nygard format (Context / Decision / Status / Consequences)
-2. Update `docs/adr/PATTERNS.md` with the new observation
+将发现归入以下 3 个类别：
+
+**缺失需求** — 缺失或不完整的验收标准
+**模糊需求** — 存在多种合理解读的条目
+**合规问题** — 安全性、数据隐私、API 合约影响
+
+对于每项发现：提供带有具体利弊权衡的选项，与用户讨论，在继续之前将每项决策记录到计划文件的 `## 决策` 章节中。未解决的模糊问题不得推进。
+
+### 步骤 1.2 — 设计分析
+
+*如无 UI 变更，跳过此步。*
+
+读取：`DESIGN_SYSTEM.md`、现有 UX 架构决策记录、CLAUDE.md 中的 UX 规则。
+
+生成以下规格说明：
+- **页面清单**：新增/修改的页面、路由位置、组件复用审计
+- **状态目录**：每个交互元素的空、加载中、已填充、错误和部分加载状态
+- **交互规格**：用户流程（主路径 + 备选路径）、焦点/键盘行为
+- **动画规格**：将每个交互映射到现有关键帧或指定新关键帧，包含 `prefers-reduced-motion` 回退方案
+- **响应式行为**：断点、Web/移动端差异决策
+- **无障碍性**：WAI-ARIA 模式选择、实时区域、错误可见性
+
+为重要 UX 决策创建设计 ADR（交互模式选择、新动画规范、平台差异）。次要布局决策直接记录到计划文件中。
 
 ---
 
-## Phase 3: Scope Assessment
+## 第 2 阶段：技术分析
 
-Apply trigger rules to determine which research agents are needed. Present the proposed team with justification for each inclusion.
+为代码库定向调研生成 1-2 个探索智能体，通过任务工具在后台运行。
 
-**Research agent pool:**
+智能体运行期间，检查：
+- `docs/adr/` 中现有的 ADR —— 若 3 个以上 ADR 均确认同一决策 → 无需询问，自动解决
+- PATTERNS.md —— 已确认的模式直接应用
 
-| Agent | Trigger | Model |
+智能体返回后：针对每项架构决策提供 2-3 个选项、具体利弊分析和建议。就每项未解决的决策征求用户意见。
+
+对于每项重要决策：
+1. 使用标准 Nygard 格式（上下文 / 决策 / 状态 / 后果）创建 `docs/adr/ADR-XXXX.md`
+2. 将新观察结果更新到 `docs/adr/PATTERNS.md`
+
+---
+
+## 第 3 阶段：范围评估
+
+应用触发规则确定需要哪些调研智能体。提出建议团队并说明每个智能体纳入的理由。
+
+**调研智能体池：**
+
+| 智能体 | 触发条件 | 模型 |
 |-------|---------|-------|
-| `code-explorer` | Always | Sonnet |
-| `arch-researcher` | Changes touch 2+ architectural layers | Sonnet |
-| `database-analyst` | Any DB schema change | Sonnet |
-| `security-analyst` | Auth, payments, PII, RBAC, rate limiting | Opus |
-| `test-analyzer` | Non-trivial feature (not just a bug fix) | Sonnet |
-| `cross-platform-specialist` | Web + mobile parity required | Sonnet |
-| `native-app-specialist` | Tasks touch mobile/native UI package | Sonnet |
-| `design-system-researcher` | UI changes in scope | Sonnet |
-| `dependency-researcher` | New packages being added | Sonnet |
-| `devops-specialist` | Docker, env vars, CI/CD changes | Sonnet |
-| `integration-researcher` | New services, libraries, OTEL config | Opus |
-| `planning-coordinator` | Always, when 2+ agents selected | Opus |
+| `code-explorer` | 始终 | Sonnet |
+| `arch-researcher` | 变更涉及 2 个以上架构层 | Sonnet |
+| `database-analyst` | 任何数据库 schema 变更 | Sonnet |
+| `security-analyst` | 认证、支付、PII、RBAC、限流 | Opus |
+| `test-analyzer` | 非简单功能（非仅 Bug 修复） | Sonnet |
+| `cross-platform-specialist` | 需要 Web + 移动端一致性 | Sonnet |
+| `native-app-specialist` | 任务涉及移动/原生 UI 包 | Sonnet |
+| `design-system-researcher` | UI 变更在范围内 | Sonnet |
+| `dependency-researcher` | 新增依赖包 | Sonnet |
+| `devops-specialist` | Docker、环境变量、CI/CD 变更 | Sonnet |
+| `integration-researcher` | 新服务、库、OTEL 配置 | Opus |
+| `planning-coordinator` | 始终（当选择 2 个以上智能体时） | Opus |
 
-**Tier labels** (descriptive, not prescriptive):
-- Tier 0 (0 agents): Solo — inline research, no spawning
-- Tier 1 (1-3 agents): Focused
-- Tier 2 (4-6 agents): Standard
-- Tier 3 (7-9 agents): Comprehensive
-- Tier 4 (10+ agents): Full Spectrum
+**级别标签**（描述性，非规定性）：
+- Tier 0（0 个智能体）：单独 —— 内联调研，不派生智能体
+- Tier 1（1-3 个智能体）：专注型
+- Tier 2（4-6 个智能体）：标准型
+- Tier 3（7-9 个智能体）：综合型
+- Tier 4（10 个以上智能体）：全谱型
 
-Tell the user: "I recommend a **[Tier N - Label]** team: [agent list with one-line justification each]. Want to add or remove any agents?"
+告知用户："我建议组建 **[Tier N - 标签]** 团队：[智能体列表，每个附一行理由]。需要添加或移除任何智能体吗？"
 
-Wait for approval before Phase 4.
+等待批准后再进入第 4 阶段。
 
 ---
 
-## Phase 4: Research & Plan Creation
+## 第 4 阶段：调研与计划生成
 
-**Tier 0**: Conduct inline research. Write plan directly without spawning agents.
+**Tier 0**：内联调研。无需派生智能体，直接编写计划。
 
-**Tier 1+**: Spawn approved agents in parallel using Task tool (run_in_background: true). For each agent, provide:
-- Its specific research scope
-- The relevant files/areas to investigate
-- The questions it needs to answer
+**Tier 1+**：使用任务工具并行派生已批准的智能体（run_in_background: true）。对每个智能体提供：
+- 其具体调研范围
+- 需要调查的相关文件/区域
+- 需要回答的问题
 
-Monitor agents by reading their output files directly (TaskOutput is deprecated since v2.1.83 — use `Read` on `.claude/tasks/<id>/output.log` instead). Report progress: "3/6 agents complete..."
+通过直接读取其输出文件来监控智能体（TaskOutput 自 v2.1.83 起已弃用 —— 请改用 `Read` 读取 `.claude/tasks/<id>/output.log`）。汇报进度："已完成 3/6 个智能体……"
 
-When all agents return: if `planning-coordinator` was spawned, send it all agent reports and have it synthesize the final plan. Otherwise, synthesize directly.
+所有智能体返回后：若已派生 `planning-coordinator`，将所有智能体报告发送给它并让其综合最终计划；否则直接综合。
 
-**Plan file structure** (`docs/plans/plan-{name}.md`):
+**计划文件结构**（`docs/plans/plan-{name}.md`）：
 
 ```markdown
-# Plan: {feature-name}
-Created: {date} | Branch: {branch-name} | Tier: {N}
+# 计划：{feature-name}
+创建时间：{date} | 分支：{branch-name} | 级别：{N}
 
-## Summary
-One paragraph: what this implements and why.
+## 摘要
+一段话：实现内容及原因。
 
-## Decisions
-Decisions recorded during Phase 1 (PRD analysis).
+## 决策
+第 1 阶段（PRD 分析）中记录的决策。
 
-## Architecture
-ADRs created, patterns applied, architectural choices made.
+## 架构
+已创建的 ADR、已应用的模式、已做出的架构选择。
 
-## Tasks
-Ordered task list with layers (1 = foundation, 2 = depends on 1, etc.)
+## 任务
+按层级排列的有序任务列表（1 = 基础层，2 = 依赖层 1，以此类推）
 
-### Layer 1
-- [ ] Task A — description, files affected, acceptance criteria
-- [ ] Task B — description, files affected, acceptance criteria
+### 第 1 层
+- [ ] 任务 A — 描述、涉及文件、验收标准
+- [ ] 任务 B — 描述、涉及文件、验收标准
 
-### Layer 2
-- [ ] Task C — depends on A — description, files affected, acceptance criteria
+### 第 2 层
+- [ ] 任务 C — 依赖 A — 描述、涉及文件、验收标准
 
-## Test Plan
-How each task will be verified. TDD tasks marked explicitly.
+## 测试计划
+每项任务的验证方式。明确标注 TDD 任务。
 
-## Integration Verification
-Smoke test commands to run post-execution (if backend/services in scope).
+## 集成验证
+执行后运行的冒烟测试命令（如后端/服务在范围内）。
 
-## Out of Scope
-What this plan explicitly does not address.
+## 范围之外
+本计划明确不涉及的内容。
 ```
 
-Commit: plan file + ADR files + agent report manifests.
+提交：计划文件 + ADR 文件 + 智能体报告清单。
 
 ---
 
-## Phase 5: Finalize Metrics
+## 第 5 阶段：最终指标
 
-Record timestamps, phase durations, agent counts, and cost estimates in `docs/plans/metrics/{name}.json`. Commit.
-
----
-
-## Auto-Transition
-
-If Phase 1 produced no unresolved ambiguities and Phase 2 produced no unresolved decisions: auto-start `/plan-pipeline:validate` without asking.
-
-If any human discussion occurred: ask "Ready to validate this plan?" before proceeding.
+将时间戳、各阶段耗时、智能体数量和成本估算记录到 `docs/plans/metrics/{name}.json`。提交。
 
 ---
 
-## Usage
+## 自动跳转
+
+若第 1 阶段未产生未解决的模糊问题，且第 2 阶段未产生未解决的决策：自动启动 `/plan-pipeline:validate`，无需询问。
+
+若发生过人工讨论：在继续之前询问"准备好验证此计划了吗？"
+
+---
+
+## 用法
 
 ```
 /plan-pipeline:start
 ```
 
-Provide the feature description or point to a PRD file when prompted. The command handles the rest interactively.
+在提示时提供功能描述或指向 PRD 文件。命令会以交互方式处理后续步骤。
 
-## When to Use
+## 适用场景
 
-Use for any non-trivial feature: anything touching more than 2 files, involving architecture decisions, or where a planning mistake would be expensive to undo.
+适用于任何非简单功能：涉及 2 个以上文件、包含架构决策、或规划失误代价高昂的情况。
 
-For simple changes (typos, trivial refactors): use `/plan` mode instead.
+对于简单变更（错别字、简单重构）：改用 `/plan` 模式。
 
-## Pipeline Position
+## 流水线位置
 
 ```
-/plan-pipeline:ceo-review    → product direction locked
-/plan-pipeline:eng-review    → architecture locked
-/plan-pipeline:start         → produce implementation plan   ← you are here
-/plan-pipeline:validate      → validate before execution
-/plan-pipeline:execute       → execute to merged PR
+/plan-pipeline:ceo-review    → 产品方向锁定
+/plan-pipeline:eng-review    → 架构方案锁定
+/plan-pipeline:start         → 生成实施计划   ← 当前位置
+/plan-pipeline:validate      → 执行前验证
+/plan-pipeline:execute       → 执行至合并 PR
 ```

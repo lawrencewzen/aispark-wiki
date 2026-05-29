@@ -2,52 +2,52 @@
 
 ---
 name: autoresearch
-description: Autonomous improvement loop — scan codebase metrics, scaffold experiment files, run agent-driven iterations until metric improves
+description: 自主改进循环——扫描代码库指标，生成实验文件骨架，运行智能体驱动的迭代直到指标改善
 argument-hint: "[--scaffold <loop-name>] [--run <loop-name>] [--status]"
 effort: high
 disable-model-invocation: true
 ---
 
-# Autoresearch — Autonomous Improvement Loop
+# Autoresearch — 自主改进循环
 
-Scan codebase quality metrics, propose improvement loops, and run autonomous agent iterations. Inspired by [karpathy/autoresearch](https://github.com/karpathy/autoresearch) — adapted from ML research to code quality.
+扫描代码库质量指标，提议改进循环，并运行自主智能体迭代。灵感来源于 [karpathy/autoresearch](https://github.com/karpathy/autoresearch)——从机器学习研究迁移到代码质量领域。
 
-**Concept**: The agent proposes a code change, runs the measurement, keeps the change if the metric improved, reverts via `git reset` if not, and repeats until manually stopped.
+**核心概念**：智能体提议一项代码变更，运行度量，若指标改善则保留变更，否则通过 `git reset` 回滚，如此循环直到手动停止。
 
-**Time**: Scan ~30s | Per iteration: depends on scope | Loop: runs indefinitely until you stop it
+**时间估计**：扫描约 30 秒 | 每次迭代：取决于范围 | 循环：无限运行直到你停止
 
 ---
 
-## Mode 1: Scan (default)
+## 模式 1：扫描（默认）
 
-Measure current state, detect existing loops, propose next actions.
+测量当前状态，检测已有循环，提议下一步操作。
 
-### Instructions
+### 指令
 
-Run the following metrics and display a prioritized proposal table.
+运行以下指标并展示优先级排序的提案表格。
 
-**Step 1: Measure codebase metrics**
+**第 1 步：测量代码库指标**
 
-Adapt grep patterns to your project's conventions. These are TypeScript defaults — adjust for your stack.
+根据你的项目规范调整 grep 模式。以下为 TypeScript 默认值——请按你的技术栈调整。
 
 ```bash
-# M1: Function declarations (prefer arrow functions)
+# M1：函数声明（推荐箭头函数）
 M1=$(grep -r "export function " src/ --include="*.ts" --include="*.tsx" -l 2>/dev/null | wc -l | tr -d ' ')
 
-# M2: Interface declarations (prefer type aliases)
+# M2：接口声明（推荐类型别名）
 M2=$(grep -r "export interface " src/ --include="*.ts" --include="*.tsx" -l 2>/dev/null | wc -l | tr -d ' ')
 
-# M3: ESLint disables
+# M3：ESLint 禁用注释
 M3=$(grep -r "eslint-disable" src/ --include="*.ts" --include="*.tsx" -l 2>/dev/null | wc -l | tr -d ' ')
 
-# M4: Type casts to any
+# M4：类型转换为 any
 M4=$(grep -r " as any" src/ --include="*.ts" --include="*.tsx" -l 2>/dev/null | wc -l | tr -d ' ')
 
-# M5: TODO comments
+# M5：TODO 注释
 M5=$(grep -r "// TODO" src/ --include="*.ts" --include="*.tsx" -l 2>/dev/null | wc -l | tr -d ' ')
 ```
 
-**Step 2: Detect existing loops**
+**第 2 步：检测已有循环**
 
 ```bash
 for dir in scripts/autoresearch/loop-*/; do
@@ -64,133 +64,133 @@ for dir in scripts/autoresearch/loop-*/; do
 done
 ```
 
-**Step 3: Display**
+**第 3 步：展示结果**
 
 ```
-Autoresearch Scan — {date}
+Autoresearch 扫描 — {日期}
 
-Codebase metrics:
+代码库指标：
 
-| # | Loop              | Metric            | Current | Target | Priority | Risk |
-|---|-------------------|-------------------|---------|--------|----------|------|
-| A | loop-remove-as-any| `as any` casts    | {M4}    | 0      | P1       | LOW  |
-| B | loop-eslint-disable| eslint-disable   | {M3}    | 0      | P2       | MED  |
-| C | loop-export-fn    | export function   | {M1}    | 0      | P1       | LOW  |
-| D | loop-interface-type| export interface | {M2}    | 0      | P1       | LOW  |
-| E | loop-todo-comments| TODO comments     | {M5}    | 0      | P3       | LOW  |
+| # | 循环              | 指标              | 当前值  | 目标值 | 优先级 | 风险 |
+|---|-------------------|-------------------|---------|--------|--------|------|
+| A | loop-remove-as-any| `as any` 类型转换 | {M4}    | 0      | P1     | 低   |
+| B | loop-eslint-disable| eslint-disable   | {M3}    | 0      | P2     | 中   |
+| C | loop-export-fn    | export function   | {M1}    | 0      | P1     | 低   |
+| D | loop-interface-type| export interface | {M2}    | 0      | P1     | 低   |
+| E | loop-todo-comments| TODO 注释         | {M5}    | 0      | P3     | 低   |
 
-Existing loops: {detected loops or "none yet"}
+已有循环：{检测到的循环，或"暂无"}
 
-Recommended next step (P1, LOW risk):
+推荐下一步（P1，低风险）：
   /autoresearch --scaffold loop-remove-as-any
-  Then write program.md, create a worktree, and run the loop.
+  然后编写 program.md，创建 worktree，并运行循环。
 ```
 
 ---
 
-## Mode 2: `--scaffold <loop-name>`
+## 模式 2：`--scaffold <loop-name>`
 
-Generate the 3 mechanical files for a loop. **Does not generate `program.md`** — write that yourself to encode project-specific constraints.
+为一个循环生成 3 个机械文件。**不生成 `program.md`**——需自行编写，以编码项目特定约束。
 
-### Instructions
+### 指令
 
-Create the following files under `scripts/autoresearch/{loop-name}/`:
+在 `scripts/autoresearch/{loop-name}/` 下创建以下文件：
 
-**`measure.sh`** — the evaluation harness (single metric, returns an integer):
+**`measure.sh`** — 评估测量脚本（单一指标，返回整数）：
 
 ```bash
 #!/usr/bin/env bash
 # measure.sh — {loop-name}
-# Returns an integer. Direction: lower = better (unless loop targets coverage/score).
+# 返回一个整数。方向：越低越好（除非循环目标是覆盖率/得分）。
 set -euo pipefail
 grep -r "PATTERN" src/ --include="*.ts" --include="*.tsx" 2>/dev/null | wc -l | tr -d ' '
 ```
 
-**`direction.txt`** — improvement direction:
+**`direction.txt`** — 改进方向：
 
 ```
 lower
 ```
 
-(Use `higher` for metrics like test coverage or quality score.)
+（若指标为测试覆盖率或质量评分，使用 `higher`。）
 
-**`files.txt`** — scope the agent should operate on:
+**`files.txt`** — 智能体应操作的范围：
 
 ```
 src/
 ```
 
-After creating the files, display:
+创建文件后，展示：
 
 ```
-Loop scaffolded: scripts/autoresearch/{loop-name}/
+循环已生成骨架：scripts/autoresearch/{loop-name}/
 
-  measure.sh  : {pattern} in {scope} → {N} occurrences today
-  direction   : lower (fewer = better)
+  measure.sh  : {pattern} 在 {scope} 中 → 当前 {N} 处
+  direction   : lower（越少越好）
   files.txt   : src/
 
-Current metric: {N} (target: 0)
+当前指标：{N}（目标：0）
 
-Next steps:
-  1. Write program.md — agent behavior, constraints, what it can/cannot touch
-     Reference: scripts/autoresearch/loop-remove-as-any/program.md
-  2. Create a worktree: /worktree feature/autoresearch-{loop-name}
-  3. cd into the worktree
+后续步骤：
+  1. 编写 program.md——智能体行为、约束、可操作/不可操作的内容
+     参考：scripts/autoresearch/loop-remove-as-any/program.md
+  2. 创建 worktree：/worktree feature/autoresearch-{loop-name}
+  3. cd 进入该 worktree
   4. bash scripts/autoresearch/runner.sh {loop-name} 0 15
 ```
 
 ---
 
-## Mode 3: `--run <loop-name>`
+## 模式 3：`--run <loop-name>`
 
-Execute the autonomous loop. The agent runs indefinitely — stop it manually when satisfied.
+执行自主循环。智能体无限运行——满意后手动停止。
 
-### Instructions
+### 指令
 
-**Verify prerequisites:**
+**验证前置条件：**
 
 ```bash
-[ -f "scripts/autoresearch/{loop-name}/measure.sh" ] || { echo "ERROR: measure.sh missing. Run --scaffold first."; exit 1; }
-[ -f "scripts/autoresearch/{loop-name}/program.md" ] || { echo "ERROR: program.md missing. Write it first — this encodes your constraints."; exit 1; }
+[ -f "scripts/autoresearch/{loop-name}/measure.sh" ] || { echo "ERROR: measure.sh 缺失。请先运行 --scaffold。"; exit 1; }
+[ -f "scripts/autoresearch/{loop-name}/program.md" ] || { echo "ERROR: program.md 缺失。请先编写——这里编码了你的约束条件。"; exit 1; }
 ```
 
-**Run the loop:**
+**运行循环：**
 
-Read `scripts/autoresearch/{loop-name}/program.md` fully before starting. Then enter the following cycle — repeat until stopped:
-
-```
-LOOP ITERATION #{N}
-
-1. Current metric: bash scripts/autoresearch/{loop-name}/measure.sh
-2. Read program.md constraints
-3. Propose ONE targeted change to files in files.txt
-4. Apply the change
-5. Re-measure: bash scripts/autoresearch/{loop-name}/measure.sh
-6. Evaluate:
-   - direction=lower AND new < previous → KEEP (git add -p && git commit -m "autoresearch: {description}")
-   - otherwise → REVERT (git checkout -- .)
-7. Log to results.tsv: {timestamp}\t{metric}\t{status}\t{description}
-8. Continue to iteration #{N+1}
-```
-
-**Stopping criteria** (from program.md):
-- Metric reaches target (e.g., 0)
-- No more mechanical changes possible
-- User manually stops the process
-
-**Display each iteration:**
+开始前完整阅读 `scripts/autoresearch/{loop-name}/program.md`。然后进入以下循环——重复直到停止：
 
 ```
-[iter #{N}] metric: {before} → {after} | {KEPT/REVERTED} | {change description}
+循环迭代 #{N}
+
+1. 当前指标：bash scripts/autoresearch/{loop-name}/measure.sh
+2. 读取 program.md 约束
+3. 针对 files.txt 中的文件提议一项定向变更
+4. 应用变更
+5. 重新测量：bash scripts/autoresearch/{loop-name}/measure.sh
+6. 评估：
+   - direction=lower 且新值 < 旧值 → 保留（git add -p && git commit -m "autoresearch: {描述}"）
+   - 否则 → 回滚（git checkout -- .）
+7. 记录到 results.tsv：{时间戳}\t{指标}\t{状态}\t{描述}
+8. 继续迭代 #{N+1}
+```
+
+**停止条件**（来自 program.md）：
+- 指标达到目标（例如 0）
+- 没有更多可机械完成的变更
+- 用户手动停止
+
+**每次迭代展示：**
+
+```
+[迭代 #{N}] 指标：{前} → {后} | {已保留/已回滚} | {变更描述}
 ```
 
 ---
 
-## Mode 4: `--status`
+## 模式 4：`--status`
 
-Show status of all loops in the project.
+展示项目中所有循环的状态。
 
-### Instructions
+### 指令
 
 ```bash
 for dir in scripts/autoresearch/loop-*/; do
@@ -203,87 +203,87 @@ for dir in scripts/autoresearch/loop-*/; do
 done
 ```
 
-Display:
+展示：
 
 ```
-Autoresearch Status
+Autoresearch 状态
 
-| Loop                | Current | Iterations | Kept | Status    |
-|---------------------|---------|------------|------|-----------|
-| loop-remove-as-any  | {N}     | {N}        | {N}  | ACTIVE    |
-| loop-export-fn      | {N}     | 0          | 0    | SCAFFOLDED|
+| 循环                | 当前值  | 迭代次数   | 已保留 | 状态      |
+|---------------------|---------|------------|--------|-----------|
+| loop-remove-as-any  | {N}     | {N}        | {N}    | 运行中    |
+| loop-export-fn      | {N}     | 0          | 0      | 已生成骨架|
 ```
 
 ---
 
-## Writing `program.md` — The Most Important File
+## 编写 `program.md` — 最重要的文件
 
-`program.md` is the agent's behavior contract. Write it yourself — never auto-generate it. It must encode what the agent can/cannot touch for your specific codebase.
+`program.md` 是智能体的行为契约。需自行编写——永远不要自动生成。它必须编码智能体在你的特定代码库中可以/不可以操作的内容。
 
-**Minimal structure:**
+**最小结构：**
 
 ```markdown
 # Program: {loop-name}
 
-## Objective
-Reduce `{metric}` in `src/` to 0. One mechanical change per iteration.
+## 目标
+将 `src/` 中的 `{指标}` 减少到 0。每次迭代只做一项机械变更。
 
-## Measurement
+## 测量
 bash scripts/autoresearch/{loop-name}/measure.sh
-Lower = better. Target: 0.
+越低越好。目标：0。
 
-## What you CAN do
-- Replace `export function X(` with `export const X = (`
-- Keep the function signature identical
+## 可以做的事
+- 将 `export function X(` 替换为 `export const X = (`
+- 保持函数签名完全不变
 
-## What you CANNOT do
-- Modify test files
-- Change function signatures
-- Touch files outside src/
-- Make multiple changes per iteration
+## 不可以做的事
+- 修改测试文件
+- 更改函数签名
+- 操作 src/ 以外的文件
+- 每次迭代做多项变更
 
-## Stop when
-- Metric = 0
-- No more mechanical replacements exist
+## 停止条件
+- 指标 = 0
+- 没有更多可机械替换的内容
 ```
 
 ---
 
-## The Pattern (Background)
+## 模式背景
 
-This command implements the **autoresearch loop** pattern from [karpathy/autoresearch](https://github.com/karpathy/autoresearch):
+本命令实现了来自 [karpathy/autoresearch](https://github.com/karpathy/autoresearch) 的 **autoresearch 循环**模式：
 
-| ML Research (karpathy) | Code Quality (this command) |
-|------------------------|----------------------------|
-| Modify `train.py` | Modify `src/` files |
-| Measure `val_bpb` | Measure grep count |
-| 5-minute GPU budget | One atomic change per iteration |
-| Keep if val_bpb improves | Keep if count decreases |
-| `git reset` if not | `git checkout -- .` if not |
-| `program.md` = agent skill | `program.md` = agent skill |
+| 机器学习研究（karpathy）| 代码质量（本命令）|
+|------------------------|-------------------|
+| 修改 `train.py` | 修改 `src/` 文件 |
+| 测量 `val_bpb` | 测量 grep 计数 |
+| 5 分钟 GPU 预算 | 每次迭代一项原子变更 |
+| val_bpb 改善则保留 | 计数下降则保留 |
+| 否则 `git reset` | 否则 `git checkout -- .` |
+| `program.md` = 智能体技能 | `program.md` = 智能体技能 |
 
-Key insight: a fixed, objective metric + git as rollback mechanism = safe autonomous iteration. The agent never needs human approval per-change because every bad change is automatically reverted.
+核心洞见：固定的客观指标 + git 作为回滚机制 = 安全的自主迭代。智能体无需每次变更都获得人工审批，因为所有不良变更都会被自动回滚。
 
 ---
 
-## Usage
+## 使用方法
 
-**Scan and propose loops:**
+**扫描并提议循环：**
 ```
 /autoresearch
 ```
 
-**Scaffold files for a specific loop:**
+**为特定循环生成骨架文件：**
 ```
 /autoresearch --scaffold loop-remove-as-any
 ```
 
-**Run the autonomous loop (after writing program.md):**
+**运行自主循环（编写 program.md 后）：**
 ```
 /autoresearch --run loop-remove-as-any
 ```
 
-**Check status of all loops:**
+**查看所有循环状态：**
 ```
 /autoresearch --status
 ```

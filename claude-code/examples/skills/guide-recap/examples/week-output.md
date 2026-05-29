@@ -1,40 +1,40 @@
 > 📚 **AI Spark Wiki** · Claude Code 知识库
 
-# Example: /guide-recap week 2026-01-27
+# 示例：/guide-recap week 2026-01-27
 
-Input: `/guide-recap week 2026-01-27`
+输入：`/guide-recap week 2026-01-27`
 
-Date range: 2026-01-27 (Monday) to 2026-02-02 (Sunday)
+日期范围：2026-01-27（周一）至 2026-02-02（周日）
 
-## Versions in Range
+## 范围内的版本
 
-| Version | Date | Entries |
+| 版本 | 日期 | 条目数 |
 |---------|------|---------|
-| 3.20.5 | 2026-01-31 | 2 entries |
-| 3.20.4 | 2026-01-31 | 3 entries |
-| 3.20.3 | 2026-01-31 | 5 entries |
-| 3.20.2 | 2026-01-31 | 4 entries |
-| 3.20.1 | 2026-01-30 | 2 entries |
-| 3.20.0 | 2026-01-30 | 5 entries |
+| 3.20.5 | 2026-01-31 | 2 条 |
+| 3.20.4 | 2026-01-31 | 3 条 |
+| 3.20.3 | 2026-01-31 | 5 条 |
+| 3.20.2 | 2026-01-31 | 4 条 |
+| 3.20.1 | 2026-01-30 | 2 条 |
+| 3.20.0 | 2026-01-30 | 5 条 |
 
-**6 releases this week.**
+**本周共发布 6 个版本。**
 
-## Scoring (Top Entries)
+## 评分（最高分条目）
 
-| Entry | Version | Category | Score |
+| 条目 | 版本 | 类别 | 分数 |
 |-------|---------|----------|-------|
-| 9 Gaps from claudelog.com (9 new patterns) | 3.20.3 | NEW_CONTENT | 15 |
-| 30 New Quiz Questions (227 -> 257) | 3.20.4 | NEW_CONTENT | 14 |
-| 4 new ASCII diagrams (16 -> 20) | 3.20.5 | NEW_CONTENT | 14 |
-| Multi-Agent PR Review (Pat Cullen) | 3.20.0 | NEW_CONTENT | 13 |
-| Docker sandbox isolation | 3.20.2 | NEW_CONTENT | 11 |
-| Contribution Metrics (Anthropic blog) | 3.20.2 | RESEARCH | 8 |
+| 来自 claudelog.com 的 9 个空白点（9 个新模式） | 3.20.3 | NEW_CONTENT | 15 |
+| 30 个新测验题（227 → 257） | 3.20.4 | NEW_CONTENT | 14 |
+| 4 个新 ASCII 图解（16 → 20） | 3.20.5 | NEW_CONTENT | 14 |
+| 多智能体 PR 审查（Pat Cullen） | 3.20.0 | NEW_CONTENT | 13 |
+| Docker 沙盒隔离 | 3.20.2 | NEW_CONTENT | 11 |
+| 贡献指标（Anthropic 博客） | 3.20.2 | RESEARCH | 8 |
 
-Selected: top 4 (scores 15, 14, 14, 13).
+已选：前 4 条（分数 15、14、14、13）。
 
-## Output
+## 输出
 
-### LinkedIn (FR)
+### LinkedIn（法语）
 
 ```text
 6 releases cette semaine dans le Claude Code Ultimate Guide
@@ -51,7 +51,7 @@ Guide complet en open source : https://{DOMAIN}/
 #ClaudeCode #CodingWithAI #DeveloperTools
 ```
 
-### LinkedIn (EN)
+### LinkedIn（英语）
 
 ```text
 6 releases this week in the Claude Code Ultimate Guide
@@ -68,7 +68,7 @@ Full guide available open source: https://{DOMAIN}/
 #ClaudeCode #CodingWithAI #DeveloperTools
 ```
 
-### Twitter/X (FR)
+### Twitter/X（法语）
 
 ```text
 Tweet 1/3:
@@ -93,7 +93,7 @@ Metriques Anthropic : +67% PRs/jour
 https://github.com/{OWNER}/{REPO}
 ```
 
-### Twitter/X (EN)
+### Twitter/X（英语）
 
 ```text
 Tweet 1/3:
@@ -118,7 +118,7 @@ Anthropic metrics: +67% PRs/day
 https://github.com/{OWNER}/{REPO}
 ```
 
-### Newsletter (FR)
+### 新闻简报（法语）
 
 ```markdown
 # Semaine du 27 janvier : 6 releases, 9 patterns avances
@@ -147,7 +147,7 @@ Cette semaine marque un tournant vers les patterns avances et la qualite de code
 [Guide complet](https://{DOMAIN}/) | [GitHub](https://github.com/{OWNER}/{REPO})
 ```
 
-### Newsletter (EN)
+### 新闻简报（英语）
 
 ```markdown
 # Week of January 27: 6 Releases, 9 Advanced Patterns
@@ -176,7 +176,7 @@ This week marks a shift toward advanced patterns and code quality. If you use Cl
 [Full guide](https://{DOMAIN}/) | [GitHub](https://github.com/{OWNER}/{REPO})
 ```
 
-### Slack (FR)
+### Slack（法语）
 
 ```text
 :newspaper: *Recap semaine : 6 releases (27 jan - 31 jan)*
@@ -190,7 +190,7 @@ This week marks a shift toward advanced patterns and code quality. If you use Cl
 :link: https://github.com/{OWNER}/{REPO}
 ```
 
-### Slack (EN)
+### Slack（英语）
 
 ```text
 :newspaper: *Week recap: 6 releases (Jan 27 - Jan 31)*

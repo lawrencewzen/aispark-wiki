@@ -2,58 +2,58 @@
 
 ---
 name: plan-pipeline
-description: "Orchestrates the complete planning pipeline: product direction (ceo-review) → architecture (eng-review) → implementation plan (start) → validation (validate) → execution (execute). Run stages individually or let the orchestrator coordinate the full flow."
+description: "编排完整规划流水线：产品方向（ceo-review）→ 架构设计（eng-review）→ 实现计划（start）→ 验证（validate）→ 执行（execute）。可单独运行各阶段，也可让编排者协调完整流程。"
 allowed-tools: "Read, Write, Bash, Task"
 effort: high
 ---
 
-# Plan Pipeline Orchestrator
+# 规划流水线编排者
 
-Orchestrates the complete plan-to-execution pipeline. Can run the full pipeline or a single isolated stage.
+编排从规划到执行的完整流水线。可以运行完整流水线，也可以单独运行某个孤立阶段。
 
-## Stages
+## 阶段说明
 
-| Stage | Skill | Purpose |
-|-------|-------|---------|
-| 1 | `/plan-pipeline:ceo-review` | Challenge the brief, lock product direction |
-| 2 | `/plan-pipeline:eng-review` | Lock architecture, diagrams, and test matrix |
-| 3 | `/plan-pipeline:start` | 5-phase planning: PRD, research, ADRs, task list |
-| 4 | `/plan-pipeline:validate` | 2-layer validation before any code is written |
-| 5 | `/plan-pipeline:execute` | Worktree isolation, parallel agents, quality gate, PR |
+| 阶段 | Skill | 用途 |
+|------|-------|------|
+| 1 | `/plan-pipeline:ceo-review` | 挑战需求简报，锁定产品方向 |
+| 2 | `/plan-pipeline:eng-review` | 锁定架构、图表和测试矩阵 |
+| 3 | `/plan-pipeline:start` | 5 阶段规划：PRD、调研、ADR、任务清单 |
+| 4 | `/plan-pipeline:validate` | 编写代码前的双层验证 |
+| 5 | `/plan-pipeline:execute` | Worktree 隔离、并行智能体、质量门控、PR |
 
-## Usage
+## 使用方式
 
 ```
-/plan-pipeline                     # full pipeline, asks for context
-/plan-pipeline --from=start        # skip gates, start from planning phase
-/plan-pipeline --from=validate     # validate an existing plan
-/plan-pipeline --from=execute      # execute a validated plan
+/plan-pipeline                     # 完整流水线，会询问上下文
+/plan-pipeline --from=start        # 跳过门控，从规划阶段开始
+/plan-pipeline --from=validate     # 验证已有计划
+/plan-pipeline --from=execute      # 执行已验证的计划
 ```
 
-## When to Use Each Stage
+## 各阶段适用时机
 
-**ceo-review** — use before any significant feature when the direction is not locked. Especially valuable when the request is specific (specificity signals collapsed solution space).
+**ceo-review** — 在方向未确定前用于任何重要功能。当需求非常具体时尤其有价值（具体性意味着解决方案空间已收窄）。
 
-**eng-review** — use after direction is locked. Required for features with async components, external dependencies, or multi-step flows.
+**eng-review** — 方向锁定后使用。对于含异步组件、外部依赖或多步骤流程的功能为必要步骤。
 
-**start** — use for any non-trivial feature touching more than 2 files or involving architecture decisions.
+**start** — 用于任何涉及超过 2 个文件或架构决策的非平凡功能。
 
-**validate** — always before execute. The cost of validation is negligible against the cost of discovering issues mid-execution.
+**validate** — 执行前必须运行。验证的成本相比在执行中途发现问题的代价微不足道。
 
-**execute** — after validate confirms all issues are resolved.
+**execute** — 在 validate 确认所有问题已解决后运行。
 
-## Workflow
+## 工作流
 
-1. **Collect context** — what are we building, and what stage do we start from?
-2. **ceo-review** — product direction gate (can be skipped with `--from=eng-review` or later)
-3. **eng-review** — architecture gate (can be skipped with `--from=start` or later)
-4. **CHECKPOINT** — ask user to confirm direction and architecture before planning
-5. **start** — run 5-phase planning, produce `docs/plans/plan-{name}.md`
-6. **CHECKPOINT** — present plan for review before validation
-7. **validate** — 2-layer validation (structural + specialist agents)
-8. **execute** — worktree isolation → parallel agents → quality gate → PR
+1. **收集上下文** — 我们要构建什么，从哪个阶段开始？
+2. **ceo-review** — 产品方向门控（可通过 `--from=eng-review` 或更后的阶段跳过）
+3. **eng-review** — 架构门控（可通过 `--from=start` 或更后的阶段跳过）
+4. **检查点** — 在规划前请用户确认方向和架构
+5. **start** — 运行 5 阶段规划，产出 `docs/plans/plan-{name}.md`
+6. **检查点** — 在验证前展示计划供审阅
+7. **validate** — 双层验证（结构验证 + 专项智能体）
+8. **execute** — Worktree 隔离 → 并行智能体 → 质量门控 → PR
 
-## Dependency Graph
+## 依赖关系图
 
 ```
    ceo-review
@@ -67,6 +67,6 @@ Orchestrates the complete plan-to-execution pipeline. Can run the full pipeline 
     execute
 ```
 
-## Notes
+## 说明
 
-Each stage writes its output to disk before the next stage begins. If the pipeline is interrupted, resume with `--from=<stage>` using the correct stage name. All decisions are recorded in `docs/plans/plan-{name}.md` and the corresponding ADRs in `docs/adr/`.
+每个阶段将其输出写入磁盘后，下一阶段才开始。如果流水线中断，使用正确的阶段名通过 `--from=<stage>` 恢复。所有决策记录在 `docs/plans/plan-{name}.md` 及对应的 `docs/adr/` 目录中。

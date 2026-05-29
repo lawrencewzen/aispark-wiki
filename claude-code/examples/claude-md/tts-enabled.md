@@ -1,117 +1,117 @@
 > 📚 **AI Spark Wiki** · Claude Code 知识库
 
 ---
-title: "TTS-Enabled Project Template"
-description: "CLAUDE.md configuration for projects using Agent Vibes text-to-speech"
+title: "启用 TTS 的项目模板"
+description: "使用 Agent Vibes 文字转语音的项目 CLAUDE.md 配置"
 tags: [claude-md, template, tts]
 ---
 
-# Project with TTS Enabled
+# 启用 TTS 的项目
 
-This is a template `CLAUDE.md` file for projects using Agent Vibes TTS.
+这是使用 Agent Vibes TTS 的项目所需的 `CLAUDE.md` 模板文件。
 
-## TTS Configuration
+## TTS 配置
 
-**Provider**: Piper TTS
-**Voice**: fr_FR-tom-medium (French male)
-**Verbosity**: Low (recommended)
-**Effects**: Light reverb
-**Background Music**: Disabled
+**提供商**：Piper TTS
+**语音**：fr_FR-tom-medium（法语男声）
+**详细程度**：低（推荐）
+**音效**：轻微混响
+**背景音乐**：已禁用
 
-## Project-Specific TTS Settings
+## 项目专属 TTS 设置
 
-### Mute During Focus Work
+### 专注工作时静音
 
-When working on tasks requiring deep concentration, mute TTS:
+在需要深度专注的任务期间，将 TTS 静音：
 
 ```bash
-# Mute for this session
+# 本次会话静音
 /agent-vibes:mute
 
-# Unmute when done
+# 完成后取消静音
 /agent-vibes:unmute
 ```
 
-### Selective TTS (Errors Only)
+### 选择性 TTS（仅错误）
 
-For this project, TTS speaks only error messages:
+本项目的 TTS 仅朗读错误信息：
 
-- ✅ Errors, failures, exceptions
-- ❌ Regular responses, confirmations
-- ❌ Informational messages
+- ✅ 错误、失败、异常
+- ❌ 普通响应、确认提示
+- ❌ 普通信息提示
 
-**Reason**: This is a critical production system where audio alerts for errors are valuable, but constant narration is distracting.
+**原因**：这是一个关键生产系统，错误的音频提醒很有价值，但持续旁白会干扰工作。
 
-## Voice Preferences
+## 语音偏好
 
-| Task Type | Recommended Voice | Reason |
+| 任务类型 | 推荐语音 | 原因 |
 |-----------|-------------------|--------|
-| Code reviews | fr_FR-tom-medium | Professional, clear |
-| Documentation | fr_FR-siwis-medium | Warm, educational tone |
-| Debugging | fr_FR-tom-medium (low verbosity) | Critical alerts only |
+| 代码审查 | fr_FR-tom-medium | 专业、清晰 |
+| 文档编写 | fr_FR-siwis-medium | 温和、有教学感 |
+| 调试 | fr_FR-tom-medium（低详细度） | 仅关键告警 |
 
-## Commands Reference
+## 命令速查
 
-Quick reference for team members:
+团队成员快速参考：
 
 ```bash
-# Check current voice
+# 查看当前语音
 /agent-vibes:whoami
 
-# Switch voice
+# 切换语音
 /agent-vibes:switch fr_FR-tom-medium
 
-# Mute/unmute
+# 静音/取消静音
 /agent-vibes:mute
 /agent-vibes:unmute
 
-# Adjust verbosity
+# 调整详细程度
 /agent-vibes:verbosity low
 
-# Disable effects (faster)
+# 关闭音效（速度更快）
 /agent-vibes:effects off
 ```
 
-## Team Guidelines
+## 团队使用指南
 
-### When to Mute
+### 何时静音
 
-- Pair programming sessions (speaker explains, TTS distracts)
-- Video meetings (avoid audio conflicts)
-- Deep focus work (flow state priority)
-- Public spaces (avoid disturbing others)
+- 结对编程时（讲解者说话，TTS 会干扰）
+- 视频会议时（避免音频冲突）
+- 深度专注工作时（优先保持心流）
+- 公共场所时（避免打扰他人）
 
-### When to Enable
+### 何时开启
 
-- Solo code reviews (listen while reviewing diffs)
-- Long-running tasks (audio completion notifications)
-- Background monitoring (alerts for errors)
-- Learning mode (dual-language practice)
+- 独自做代码审查时（边看 diff 边听）
+- 长时间任务时（音频完成通知）
+- 后台监控时（错误告警）
+- 学习模式时（双语练习）
 
-## Installation for Team Members
+## 新成员安装指南
 
-New team members should follow:
+新团队成员请参照以下步骤：
 
-1. **Installation Guide**: [Agent Vibes Installation](../integrations/agent-vibes/installation.md)
-2. **Voice Selection**: Use `fr_FR-tom-medium` for consistency
-3. **Configuration**: Copy settings from this file
+1. **安装指南**：[Agent Vibes 安装说明](../integrations/agent-vibes/installation.md)
+2. **语音选择**：统一使用 `fr_FR-tom-medium`
+3. **配置**：从本文件复制设置
 
-## Troubleshooting
+## 故障排查
 
-Common issues:
+常见问题：
 
-- **No audio**: Check `cat .claude/tts-provider.txt` → should be `piper`
-- **Wrong voice**: Run `/agent-vibes:switch fr_FR-tom-medium`
-- **Too verbose**: Run `/agent-vibes:verbosity low`
+- **无声音**：检查 `cat .claude/tts-provider.txt`——应显示 `piper`
+- **语音错误**：运行 `/agent-vibes:switch fr_FR-tom-medium`
+- **过于啰嗦**：运行 `/agent-vibes:verbosity low`
 
-**Full troubleshooting**: [Agent Vibes Troubleshooting](../integrations/agent-vibes/troubleshooting.md)
+**完整故障排查**：[Agent Vibes 故障排查](../integrations/agent-vibes/troubleshooting.md)
 
-## Notes
+## 说明
 
-- TTS is **optional** - not required for project contribution
-- Mute status is **project-specific** (`.claude/agentvibes-muted`)
-- Voice models are **shared globally** (`~/.claude/piper-voices/`)
+- TTS 是**可选的**——不是参与项目贡献的必要条件
+- 静音状态是**项目级别**的（`.claude/agentvibes-muted`）
+- 语音模型是**全局共享**的（`~/.claude/piper-voices/`）
 
 ---
 
-*For more information about Agent Vibes TTS, see [Integration Guide](../integrations/agent-vibes/README.md)*
+*更多关于 Agent Vibes TTS 的信息，请参阅 [集成指南](../integrations/agent-vibes/README.md)*

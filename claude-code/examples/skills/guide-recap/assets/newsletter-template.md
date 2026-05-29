@@ -1,10 +1,10 @@
 > 📚 **AI Spark Wiki** · Claude Code 知识库
 
-# Newsletter Template
+# 简报模板
 
-Target: ~500 words. Structured sections with depth.
+目标：约 500 字。分节展开，有深度。
 
-## FR Template
+## 法语模板（FR Template）
 
 ```markdown
 # {title_fr}
@@ -28,7 +28,7 @@ Target: ~500 words. Structured sections with depth.
 [Guide complet]({landing_url}) | [GitHub]({github_url})
 ```
 
-## EN Template
+## 英语模板（EN Template）
 
 ```markdown
 # {title_en}
@@ -52,11 +52,11 @@ Target: ~500 words. Structured sections with depth.
 [Full guide]({landing_url}) | [GitHub]({github_url})
 ```
 
-## Field Rules
+## 字段规则
 
-### title (max 80 chars)
+### title（最多 80 字符）
 
-Version or week framing, descriptive.
+以版本号或周次为框架，描述性表达。
 
 ```
 FR: "Guide v3.20.5 : Reference visuelle enrichie"
@@ -66,9 +66,9 @@ FR: "Semaine du 27 janvier : 4 releases, 9 patterns avances"
 EN: "Week of January 27: 4 releases, 9 advanced patterns"
 ```
 
-### intro_paragraph (2-3 sentences, max 150 words)
+### intro_paragraph（2-3 句，最多 150 字）
 
-What happened and why it matters. No hype.
+说明发生了什么以及为何重要。不要堆砌噱头。
 
 ```
 FR: "La version 3.20.5 du Claude Code Ultimate Guide ajoute 4 nouveaux
@@ -80,9 +80,9 @@ diagrams to the visual reference. The guide now contains 20 diagrams
 covering TDD, security, and learning workflows."
 ```
 
-### highlights_section (bullet list, 3-5 items)
+### highlights_section（项目列表，3-5 条）
 
-Top scored entries, transformed. Each bullet: 1-2 sentences max.
+从评分最高的条目中提炼转化。每条最多 1-2 句。
 
 ```
 FR:
@@ -98,14 +98,13 @@ EN:
 - **Secret Exposure Timeline**: Emergency actions by time window (15min/1h/24h)
 ```
 
-### detail_section (1-2 paragraphs, max 200 words)
+### detail_section（1-2 段，最多 200 字）
 
-Expand on the most interesting highlight. Provide context, explain what the user gains.
-Credit sources if applicable.
+展开最有价值的亮点内容。提供背景，说明用户能获得什么。如有来源，注明出处。
 
-### takeaway (1-2 sentences)
+### takeaway（1-2 句）
 
-Single actionable insight or summary.
+单条可执行的洞察或总结。
 
 ```
 FR: "Si vous apprenez mieux en visuel, les 20 diagrammes du guide couvrent
@@ -115,12 +114,12 @@ EN: "If you're a visual learner, the guide's 20 diagrams now cover the most
 common workflows, from TDD to incident management."
 ```
 
-## Constraints
+## 约束条件
 
-- Total: 400-600 words
-- Emoji budget: 2-3 (section headers only)
-- No hype words
-- FR: vouvoiement
-- EN: American English
-- Both links (landing + GitHub) in footer
-- Credit all named sources
+- 总字数：400-600 字
+- Emoji 配额：2-3 个（仅用于章节标题）
+- 禁止使用噱头词汇
+- 法语：使用敬语（vouvoiement）
+- 英语：美式英语
+- 页脚同时包含两个链接（落地页 + GitHub）
+- 所有具名来源均需注明

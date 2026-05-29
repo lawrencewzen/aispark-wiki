@@ -1,19 +1,19 @@
 > 📚 **AI Spark Wiki** · Claude Code 知识库
 
-# Scripts
+# 脚本
 
-This directory contains executable scripts for deterministic, repeatable tasks.
+本目录包含用于确定性、可重复任务的可执行脚本。
 
-## Guidelines
+## 使用指南
 
-- Scripts should be self-contained and well-documented
-- Include usage examples in script headers
-- Handle errors gracefully with clear messages
-- Use appropriate exit codes (0 for success, 1 for failure)
+- 脚本应具备自包含性并有完整文档
+- 在脚本头部包含使用示例
+- 以清晰的错误信息优雅处理异常
+- 使用恰当的退出码（0 表示成功，1 表示失败）
 
-## Files
+## 文件说明
 
-Add your scripts here. Examples:
-- `generate.py` - Main generation script
-- `validate.py` - Validation utilities
-- `transform.py` - Data transformation helpers
+在此添加脚本文件。示例：
+- `generate.py` - 主生成脚本
+- `validate.py` - 验证工具
+- `transform.py` - 数据转换辅助函数

@@ -1,93 +1,93 @@
 > 📚 **AI Spark Wiki** · Claude Code 知识库
 
-# Tech-to-Product Transformation Rules
+# 技术语言 → 产品语言转换规则
 
-This document defines how to transform technical commit messages into user-friendly product language.
+本文档定义了如何将技术性提交消息转换为用户友好的产品语言。
 
-## Transformation Categories
+## 转换类别
 
-### 1. COMMUNICATE (Transform to product language)
+### 1. 需要对外沟通（转换为产品语言）
 
-| Technical Pattern | Product Message |
-|-------------------|-----------------|
-| `N+1 queries`, `DataLoader`, `batching` | "Faster list loading" |
-| `embeddings`, `vector search`, `pgvector` | "Improved intelligent search" |
-| `permissions`, `scope`, `access control` | "Fixed an access bug" |
-| `retry logic`, `resilience`, `connection errors` | "Better connection stability" |
-| `SSE`, `real-time`, `WebSocket` | "Real-time updates" |
-| `cache`, `memoization` | "Improved performance" |
-| `responsive`, `mobile` | "Better mobile experience" |
-| `accessibility`, `a11y`, `WCAG` | "Improved accessibility" |
-| `monitoring`, `alerting`, `error tracking` | "Better error tracking" |
-| `validation`, `sanitization` | "Enhanced security" |
+| 技术模式 | 产品消息 |
+|---------|---------|
+| `N+1 queries`、`DataLoader`、`batching` | "列表加载速度更快" |
+| `embeddings`、`vector search`、`pgvector` | "智能搜索能力提升" |
+| `permissions`、`scope`、`access control` | "修复了一个访问权限问题" |
+| `retry logic`、`resilience`、`connection errors` | "连接更加稳定" |
+| `SSE`、`real-time`、`WebSocket` | "实时更新" |
+| `cache`、`memoization` | "性能改善" |
+| `responsive`、`mobile` | "移动端体验优化" |
+| `accessibility`、`a11y`、`WCAG` | "无障碍访问改善" |
+| `monitoring`、`alerting`、`error tracking` | "错误追踪能力增强" |
+| `validation`、`sanitization` | "安全性增强" |
 
-### 2. DO NOT COMMUNICATE (Internal/Technical only)
+### 2. 无需对外沟通（仅限内部/技术层面）
 
-These patterns should NOT appear in Slack announcements:
+以下模式**不应**出现在 Slack 公告中：
 
-| Technical Pattern | Reason |
-|-------------------|--------|
-| `refactor`, `refactoring` | Internal code quality |
-| `webpack`, `turbopack`, `bundler` | Build tooling |
-| `eslint`, `prettier`, `linting` | Code style |
-| `kebab-case`, `naming convention` | Internal standards |
-| `TypeScript`, `type safety` | Developer experience |
-| `test`, `spec`, `coverage` | Testing infrastructure |
-| `chore`, `maintenance` | Routine maintenance |
-| `docs`, `documentation` | Internal docs |
-| `deps`, `dependencies`, `bump` | Dependency updates |
-| `CI`, `CD`, `workflow` | DevOps infrastructure |
+| 技术模式 | 原因 |
+|---------|------|
+| `refactor`、`refactoring` | 内部代码质量 |
+| `webpack`、`turbopack`、`bundler` | 构建工具 |
+| `eslint`、`prettier`、`linting` | 代码风格 |
+| `kebab-case`、`naming convention` | 内部规范 |
+| `TypeScript`、`type safety` | 开发者体验 |
+| `test`、`spec`、`coverage` | 测试基础设施 |
+| `chore`、`maintenance` | 日常维护 |
+| `docs`、`documentation` | 内部文档 |
+| `deps`、`dependencies`、`bump` | 依赖更新 |
+| `CI`、`CD`、`workflow` | DevOps 基础设施 |
 
-### 3. SECURITY (Always communicate, simplified)
+### 3. 安全相关（始终对外沟通，但要简化表述）
 
-| Technical | Product |
-|-----------|---------|
-| `CVE-XXXX-XXXXX` | "Fixed a security vulnerability" |
-| `XSS`, `injection` | "Enhanced data protection" |
-| `authentication`, `auth bypass` | "Improved login security" |
-| `CORS`, `CSRF` | "Protection against web attacks" |
+| 技术表述 | 产品表述 |
+|---------|---------|
+| `CVE-XXXX-XXXXX` | "修复了一个安全漏洞" |
+| `XSS`、`injection` | "数据保护增强" |
+| `authentication`、`auth bypass` | "登录安全性改善" |
+| `CORS`、`CSRF` | "针对网络攻击的防护加强" |
 
-## Context-Aware Transformations
+## 场景化转换
 
-### API-related
-- "Fix endpoint rate limiting" -> "Improved API stability"
-- "Add request validation" -> "Better input handling"
-- "Optimize query performance" -> "Faster data loading"
+### API 相关
+- "Fix endpoint rate limiting" -> "API 稳定性改善"
+- "Add request validation" -> "输入处理更完善"
+- "Optimize query performance" -> "数据加载速度更快"
 
-### Dashboard-related
-- "Fix dashboard widget rendering" -> "Fixed display issues on dashboard"
-- "Add export functionality" -> "New data export feature"
-- "Improve chart performance" -> "Faster dashboard loading"
+### 仪表盘相关
+- "Fix dashboard widget rendering" -> "仪表盘显示问题修复"
+- "Add export functionality" -> "新增数据导出功能"
+- "Improve chart performance" -> "仪表盘加载速度更快"
 
-### Notification-related
-- "Fix email delivery queue" -> "Improved notification reliability"
-- "Add webhook retry logic" -> "More reliable integrations"
-- "Optimize notification batching" -> "Faster notification delivery"
+### 通知相关
+- "Fix email delivery queue" -> "通知可靠性提升"
+- "Add webhook retry logic" -> "集成对接更稳定"
+- "Optimize notification batching" -> "通知推送更及时"
 
-### Search-related
-- "Fix search indexing race condition" -> "Improved search reliability"
-- "Add fuzzy matching" -> "Better search results"
-- "Optimize search query execution" -> "Faster search"
+### 搜索相关
+- "Fix search indexing race condition" -> "搜索稳定性改善"
+- "Add fuzzy matching" -> "搜索结果更精准"
+- "Optimize search query execution" -> "搜索速度更快"
 
-## Role-Based Impact
+## 影响范围（按角色）
 
-Always specify who is affected:
+始终注明受影响的角色：
 
-| Impact | Roles |
-|--------|-------|
-| Dashboard changes | End-users, Admins |
-| API changes | End-users, Power users |
-| Admin panel | Admins only |
-| Billing/Payment | Admins, Stakeholders |
-| Reports/Analytics | Admins, Power users |
-| Notifications | All users |
-| Search | All users |
+| 影响范围 | 角色 |
+|---------|------|
+| 仪表盘变更 | 终端用户、管理员 |
+| API 变更 | 终端用户、高级用户 |
+| 管理员面板 | 仅限管理员 |
+| 计费/支付 | 管理员、利益相关方 |
+| 报表/分析 | 管理员、高级用户 |
+| 通知 | 所有用户 |
+| 搜索 | 所有用户 |
 
-## Severity Indicators
+## 严重级别标识
 
-Use these prefixes when appropriate:
+适当时使用以下前缀：
 
-- **Critical** : Production-blocking issues
-- **Important** : User-facing bugs
-- **Minor** : Quality of life improvements
-- *Do not mention* : Internal fixes
+- **Critical（紧急）**：生产阻断性问题
+- **Important（重要）**：面向用户的缺陷
+- **Minor（次要）**：体验质量改善
+- *不提及*：内部修复

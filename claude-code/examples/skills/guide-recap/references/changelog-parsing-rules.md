@@ -1,12 +1,12 @@
 > 📚 **AI Spark Wiki** · Claude Code 知识库
 
-# CHANGELOG Parsing Rules
+# CHANGELOG 解析规则
 
-How to extract and categorize entries from `CHANGELOG.md` for social content generation.
+如何从 `CHANGELOG.md` 中提取并分类条目，用于生成社交内容。
 
-## CHANGELOG Format
+## CHANGELOG 格式
 
-The project follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
+本项目遵循 [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) 规范。
 
 ```
 ## [Unreleased]
@@ -25,85 +25,85 @@ The project follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - **Title**: Description
 
 ---
-(horizontal rule separates grouped entries within same version)
+（水平分隔线用于分隔同一版本内的分组条目）
 ```
 
-## Extraction Methods
+## 提取方式
 
-### By Version (`/guide-recap v3.20.5`)
+### 按版本提取（`/guide-recap v3.20.5`）
 
-1. Read CHANGELOG.md
-2. Find line matching `## [3.20.5]`
-3. Extract everything until next `## [` line
-4. Parse all `### Added/Changed/Fixed` sections
+1. 读取 CHANGELOG.md
+2. 找到匹配 `## [3.20.5]` 的行
+3. 提取直到下一个 `## [` 行之前的全部内容
+4. 解析所有 `### Added/Changed/Fixed` 小节
 
-### Latest (`/guide-recap latest`)
+### 最新版本（`/guide-recap latest`）
 
-1. Read CHANGELOG.md
-2. Skip `## [Unreleased]`
-3. Extract first `## [X.Y.Z]` block (= latest released version)
+1. 读取 CHANGELOG.md
+2. 跳过 `## [Unreleased]`
+3. 提取第一个 `## [X.Y.Z]` 块（即最新发布版本）
 
-### By Week (`/guide-recap week` or `/guide-recap week 2026-01-27`)
+### 按周提取（`/guide-recap week` 或 `/guide-recap week 2026-01-27`）
 
-1. Determine date range:
-   - `week` with no date: Monday of current week -> today
-   - `week YYYY-MM-DD`: That Monday -> following Sunday
-2. Read CHANGELOG.md
-3. Collect all `## [X.Y.Z] - YYYY-MM-DD` entries where date falls in range
-4. Aggregate all entries across versions
+1. 确定日期范围：
+   - 不带日期的 `week`：本周一 -> 今天
+   - `week YYYY-MM-DD`：该周一 -> 下周日
+2. 读取 CHANGELOG.md
+3. 收集日期落在范围内的所有 `## [X.Y.Z] - YYYY-MM-DD` 条目
+4. 合并所有版本的条目
 
-## Entry Structure
+## 条目结构
 
-Each top-level bullet under `### Added/Changed/Fixed` is one **entry**. Parse:
+`### Added/Changed/Fixed` 下的每个顶级列表项是一个**条目**。解析字段如下：
 
-| Field | Source | Example |
+| 字段 | 来源 | 示例 |
 |-------|--------|---------|
-| `title` | Bold text after `- **` | `Visual Reference` |
-| `description` | Text after `:` or `--` on same line | `4 new high-value ASCII diagrams (16 -> 20 total)` |
-| `sub_items` | Indented bullets below | List of detail lines |
-| `section` | Parent `###` header | `Added`, `Changed`, `Fixed` |
-| `files` | Filenames/paths in description | `guide/ultimate-guide.md`, `machine-readable/reference.yaml` |
-| `source` | URLs or named references | `Pat Cullen's Final Review Gist` |
-| `metrics` | Numbers in description | `227 -> 257`, `+522 lines`, `4 new` |
-| `score` | Evaluation score if present | `Score: 4/5` |
+| `title` | `- **` 后的加粗文本 | `Visual Reference` |
+| `description` | 同行 `:` 或 `--` 后的文本 | `4 new high-value ASCII diagrams (16 -> 20 total)` |
+| `sub_items` | 下方缩进列表 | 详细内容列表 |
+| `section` | 父级 `###` 标题 | `Added`、`Changed`、`Fixed` |
+| `files` | 描述中的文件名/路径 | `guide/ultimate-guide.md`、`machine-readable/reference.yaml` |
+| `source` | URL 或具名引用 | `Pat Cullen's Final Review Gist` |
+| `metrics` | 描述中的数字 | `227 -> 257`、`+522 lines`、`4 new` |
+| `score` | 评估分数（如有） | `Score: 4/5` |
 
-## Category Classification
+## 类别分类
 
-Each entry gets exactly one category with a weight:
+每个条目对应唯一类别，并附带权重：
 
-| Category | Weight | Pattern |
+| 类别 | 权重 | 模式 |
 |----------|--------|---------|
-| `NEW_CONTENT` | 3 | New guide sections, new files, new diagrams, new quiz questions |
-| `GROWTH_METRIC` | 2 | Line count increases, template counts, quiz count changes |
-| `RESEARCH` | 1 | Resource evaluations, external source integrations |
-| `FIX` | 1 | Bug fixes, corrections, accuracy improvements |
-| `MAINTENANCE` | 0 | README updates, badge updates, count syncs, landing syncs |
+| `NEW_CONTENT` | 3 | 新增指南章节、新文件、新图表、新测验题 |
+| `GROWTH_METRIC` | 2 | 行数增长、模板数量、测验题数量变化 |
+| `RESEARCH` | 1 | 资源评估、引入外部来源 |
+| `FIX` | 1 | 错误修复、纠正、准确性提升 |
+| `MAINTENANCE` | 0 | README 更新、徽章更新、数量同步、落地页同步 |
 
-### Classification Rules
+### 分类规则
 
-1. If entry creates a new `.md` file or new section -> `NEW_CONTENT`
-2. If entry contains `-> ` with numbers (growth) -> `GROWTH_METRIC`
-3. If entry references external source with evaluation score -> `RESEARCH`
-4. If entry is under `### Fixed` -> `FIX`
-5. If entry only updates counts, badges, or sync -> `MAINTENANCE`
-6. If entry has sub-items with substantial content -> upgrade one level
-7. When ambiguous, prefer higher-weight category
+1. 若条目创建了新 `.md` 文件或新章节 -> `NEW_CONTENT`
+2. 若条目包含带数字的 `-> `（增长） -> `GROWTH_METRIC`
+3. 若条目引用了带评估分数的外部来源 -> `RESEARCH`
+4. 若条目位于 `### Fixed` 下 -> `FIX`
+5. 若条目仅更新数量、徽章或同步操作 -> `MAINTENANCE`
+6. 若条目的子项包含实质性内容 -> 提升一个级别
+7. 模糊时优先选择权重更高的类别
 
-### Examples
+### 示例
 
 ```
-"4 new ASCII diagrams (16 -> 20)"           -> NEW_CONTENT (new diagrams)
-"30 New Quiz Questions (227 -> 257)"        -> NEW_CONTENT (new questions)
-"Quiz badge updated (227 -> 257)"           -> MAINTENANCE (badge sync)
-"Guide line count: 15,771 -> 16,293"        -> GROWTH_METRIC (growth)
-"Score: 4/5 - Docker Sandboxes"             -> RESEARCH (evaluation)
-"Fixed 14 -> 15 categories in landing"      -> FIX (correction)
-"README.md: Added Visual Reference to table" -> MAINTENANCE (nav update)
+"4 new ASCII diagrams (16 -> 20)"           -> NEW_CONTENT（新图表）
+"30 New Quiz Questions (227 -> 257)"        -> NEW_CONTENT（新题目）
+"Quiz badge updated (227 -> 257)"           -> MAINTENANCE（徽章同步）
+"Guide line count: 15,771 -> 16,293"        -> GROWTH_METRIC（增长）
+"Score: 4/5 - Docker Sandboxes"             -> RESEARCH（评估）
+"Fixed 14 -> 15 categories in landing"      -> FIX（纠正）
+"README.md: Added Visual Reference to table" -> MAINTENANCE（导航更新）
 ```
 
-## Scoring Algorithm
+## 评分算法
 
-For each entry, compute:
+对每个条目计算：
 
 ```
 score = (category_weight * 3)
@@ -114,31 +114,31 @@ score = (category_weight * 3)
       + (breaking * 2)
 ```
 
-| Factor | Value | Detection |
+| 因子 | 值 | 检测方式 |
 |--------|-------|-----------|
-| `category_weight` | 0-3 | From category table above |
-| `has_number` | 0 or 1 | Entry contains numeric change (`N -> M`, `+N lines`, `N new`) |
-| `named_source` | 0 or 1 | Entry credits a person or external source |
-| `new_file` | 0 or 1 | Entry mentions creating a new file (`NEW`, new `.md`) |
-| `impact_files` | 0-3 | Count of distinct files mentioned (capped at 3) |
-| `breaking` | 0 or 1 | Entry is under `### Breaking` or mentions breaking change |
+| `category_weight` | 0-3 | 来自上方类别表 |
+| `has_number` | 0 或 1 | 条目包含数字变化（`N -> M`、`+N lines`、`N new`） |
+| `named_source` | 0 或 1 | 条目注明了具体人员或外部来源 |
+| `new_file` | 0 或 1 | 条目提到创建了新文件（`NEW`、新 `.md`） |
+| `impact_files` | 0-3 | 涉及的不同文件数量（上限 3） |
+| `breaking` | 0 或 1 | 条目位于 `### Breaking` 下或提到破坏性变更 |
 
-### Score Interpretation
+### 分数解读
 
-| Score | Action |
+| 分数 | 动作 |
 |-------|--------|
-| 10+ | Lead highlight (hook line) |
-| 6-9 | Secondary highlight (bullet point) |
-| 3-5 | Include if space allows |
-| 0-2 | Skip (maintenance noise) |
+| 10+ | 主要亮点（钩子行） |
+| 6-9 | 次要亮点（列表项） |
+| 3-5 | 有空间时纳入 |
+| 0-2 | 跳过（维护性噪音） |
 
-Select top 3-4 entries by score. If all scores < 3, flag as "no social content recommended."
+选取分数最高的 3-4 个条目。若所有分数均低于 3，标记为"不建议生成社交内容"。
 
-## Week Aggregation Rules
+## 周报聚合规则
 
-When generating for a week with multiple versions:
+生成包含多个版本的周报时：
 
-1. Score all entries across all versions in the date range
-2. De-duplicate: if same topic appears in multiple versions, keep highest-scored one
-3. Prefix week output with version count: `X releases this week`
-4. Use date range in header, not individual version numbers
+1. 对日期范围内所有版本的条目统一评分
+2. 去重：同一主题出现在多个版本时，保留分数最高的条目
+3. 在周报开头注明版本数量：`本周 X 个发布`
+4. 标题使用日期范围，而非单个版本号

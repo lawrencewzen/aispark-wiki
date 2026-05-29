@@ -2,66 +2,66 @@
 
 ---
 name: plan-pipeline-execute
-description: "Execute a validated plan: worktree isolation, TDD scaffolding, level-based parallel agents, quality gate with smoke test, PR creation and merge. Handles everything through to merged PR."
+description: "执行已验证的计划：工作树隔离、TDD 脚手架、基于层级的并行智能体、质量关卡与冒烟测试、PR 创建与合并。处理从执行到 PR 合并的全流程。"
 effort: high
 disable-model-invocation: true
 ---
 
-# /plan-pipeline:execute — Execution to Merged PR
+# /plan-pipeline:execute — 执行至 PR 合并
 
-Execute the validated plan in an isolated worktree. Spawn per-task agents, verify quality, create and merge the PR. Handles everything through to cleanup.
+在隔离的工作树中执行已验证的计划。派生每个任务的智能体，验证质量，创建并合并 PR。处理从执行到清理的全流程。
 
-Run `/clear` before this command.
-
----
-
-## Prerequisite
-
-A validated plan must exist at `docs/plans/plan-{name}.md` with all issues resolved (output of `/plan-pipeline:validate`).
+执行此命令前先运行 `/clear`。
 
 ---
 
-## Step 1: Worktree Setup
+## 前提条件
 
-Create an isolated git worktree:
+`docs/plans/plan-{name}.md` 处必须存在已验证的计划，且所有问题已解决（即 `/plan-pipeline:validate` 的输出）。
+
+---
+
+## 第 1 步：工作树设置
+
+创建隔离的 git 工作树：
 
 ```bash
 git worktree add .worktrees/{plan-name} -b feature/{plan-name}
 ```
 
-All execution happens inside the worktree. Main branch remains clean throughout.
+所有执行均在工作树内进行。主分支在整个过程中保持干净。
 
 ---
 
-## Step 2: TDD Scaffolding
+## 第 2 步：TDD 脚手架
 
-*Only for tasks marked as TDD in the plan.*
+*仅适用于计划中标记为 TDD 的任务。*
 
-For each TDD task, before any implementation:
-1. Write the failing test(s) that define the acceptance criteria
-2. Run tests to confirm they fail (red)
-3. Commit the failing tests
-4. Mark the test file in the task for the implementation agent to find
+对每个 TDD 任务，在任何实现之前：
+1. 编写定义验收标准的失败测试
+2. 运行测试确认其失败（红灯）
+3. 提交失败的测试
+4. 在任务中标记测试文件，供实现智能体查找
 
-Do not write implementation code in this step.
+此步骤不编写实现代码。
 
 ---
 
-## Step 3: Level-Based Parallel Execution
+## 第 3 步：基于层级的并行执行
 
-Parse the task list from the plan. Group tasks by layer (Layer 1 = foundation, Layer 2 = depends on Layer 1, etc.).
+从计划中解析任务列表，按层分组（第 1 层 = 基础层，第 2 层 = 依赖第 1 层，以此类推）。
 
-**For each layer:**
-1. Identify all tasks in the layer
-2. Spawn one agent per task in parallel (Task tool, run_in_background: true)
-3. Each agent receives: its task description, files to modify, acceptance criteria, and relevant ADRs
-4. Monitor all agents by reading `.claude/tasks/<id>/output.log` via `Read` (TaskOutput is deprecated since v2.1.83)
-5. Each agent commits on task completion: `git commit -m "feat: {task-description}"`
-6. Wait for all tasks in the layer to complete before starting the next layer
+**对每一层：**
+1. 识别该层中的所有任务
+2. 并行为每个任务派生一个智能体（Task 工具，`run_in_background: true`）
+3. 每个智能体接收：任务描述、要修改的文件、验收标准以及相关 ADR
+4. 通过 `Read` 读取 `.claude/tasks/<id>/output.log` 监控所有智能体（TaskOutput 自 v2.1.83 起已废弃）
+5. 每个智能体完成任务时提交：`git commit -m "feat: {task-description}"`
+6. 等待该层所有任务完成后再启动下一层
 
-**Drift detection**: after each layer, diff the actual changes against the plan spec. If implementation deviates significantly from the plan (new files not in plan, plan files not touched), flag and ask how to proceed. Do not silently continue on drift.
+**漂移检测**：每层完成后，将实际变更与计划规格进行 diff 比对。如果实现与计划显著偏离（出现计划外的新文件、计划中的文件未被修改），则标记并询问如何处理。不得在发现漂移后静默继续。
 
-**Agent instructions for each task:**
+**每个任务的智能体指令：**
 ```
 You are implementing one task from a validated plan.
 Task: {description}
@@ -79,43 +79,43 @@ Commit your changes when complete with message: "feat: {task-description}"
 
 ---
 
-## Step 4: Quality Gate
+## 第 4 步：质量关卡
 
-Run in parallel:
+并行运行：
 - Linter
-- Type checker (if applicable)
-- Full test suite
+- 类型检查器（如适用）
+- 完整测试套件
 
-If all pass: proceed to smoke test.
+全部通过：继续冒烟测试。
 
-If any fail: spawn a `quality-fixer` debug agent with the failure output. It gets up to **3 auto-fix attempts**. After each attempt, re-run the quality gate. If still failing after 3 attempts: stop, report the failure with the full error output, and wait for human intervention.
+任意失败：派生一个 `quality-fixer` 调试智能体并传入失败输出。最多允许 **3 次自动修复尝试**。每次尝试后重新运行质量关卡。若 3 次尝试后仍失败：停止执行，报告失败信息及完整错误输出，等待人工介入。
 
-**Integration smoke test** *(skip for pure frontend or docs-only plans)*:
+**集成冒烟测试** *(纯前端或仅文档的计划可跳过)*：
 
-Run the smoke commands defined in the plan's `## Integration Verification` section. Additionally:
-- If GraphQL: run an introspection probe to verify schema is accessible
-- If Docker services: scan container logs for ERROR-level entries
-- If new API routes: verify each returns expected status codes
+运行计划 `## Integration Verification` 部分中定义的冒烟命令。此外：
+- 若使用 GraphQL：运行内省探测以验证 schema 可访问
+- 若使用 Docker 服务：扫描容器日志中的 ERROR 级别条目
+- 若有新 API 路由：验证每条路由返回预期状态码
 
-Smoke test failures are debugged by a `quality-fixer-smoke` agent with the same 3-attempt limit.
-
----
-
-## Step 5: Pre-PR Documentation
-
-*In the worktree, before creating the PR.*
-
-**PRD Reconciliation**: compare the implemented behavior against the original PRD. Note any deviations or additions discovered during implementation. Update the PRD with actuals. These updates ship in the same PR as the feature.
-
-**Plan Archival**: move `docs/plans/plan-{name}.md` to `docs/plans/completed/plan-{name}.md`. Update the status header.
-
-Commit documentation updates: `docs: reconcile PRD and archive plan for {feature-name}`.
+冒烟测试失败由 `quality-fixer-smoke` 智能体调试，同样限 3 次尝试。
 
 ---
 
-## Step 6: Push and PR
+## 第 5 步：PR 前文档
 
-Push the worktree branch and create the PR:
+*在工作树中，创建 PR 之前。*
+
+**PRD 核对**：将实现行为与原始 PRD 对比。记录实现过程中发现的任何偏差或新增内容。用实际情况更新 PRD。这些更新与功能在同一 PR 中交付。
+
+**计划归档**：将 `docs/plans/plan-{name}.md` 移动至 `docs/plans/completed/plan-{name}.md`，并更新状态头部。
+
+提交文档更新：`docs: reconcile PRD and archive plan for {feature-name}`。
+
+---
+
+## 第 6 步：推送与 PR
+
+推送工作树分支并创建 PR：
 
 ```bash
 git push origin feature/{plan-name}
@@ -124,7 +124,7 @@ gh pr create \
   --body "$(cat .pr-body.md)"
 ```
 
-PR body template:
+PR 正文模板：
 ```markdown
 ## Summary
 {plan summary paragraph}
@@ -142,29 +142,29 @@ PR body template:
 {output from integration verification}
 ```
 
-Merge using squash:
+使用 squash 合并：
 ```bash
 gh pr merge --squash --delete-branch
 ```
 
 ---
 
-## Step 7: Post-Merge Metrics
+## 第 7 步：合并后指标
 
-Switch back to develop/main. Update `docs/plans/metrics/{name}.json` with execution data:
-- Task count and per-layer breakdown
-- TDD task count
-- Diff stats (files changed, lines added/removed)
-- Quality gate results (pass/fail, fix attempts)
-- Smoke test results
-- Drift score (0-1, how closely implementation matched plan)
-- PR data (number, merge commit, timestamp)
+切回 develop/main。用执行数据更新 `docs/plans/metrics/{name}.json`：
+- 任务数量及每层分解
+- TDD 任务数量
+- Diff 统计（变更文件数、新增/删除行数）
+- 质量关卡结果（通过/失败、修复尝试次数）
+- 冒烟测试结果
+- 漂移评分（0-1，实现与计划的匹配程度）
+- PR 数据（编号、合并提交、时间戳）
 
-Commit metrics update.
+提交指标更新。
 
 ---
 
-## Step 8: Worktree Cleanup
+## 第 8 步：工作树清理
 
 ```bash
 git worktree remove .worktrees/{plan-name}
@@ -172,19 +172,19 @@ git worktree remove .worktrees/{plan-name}
 
 ---
 
-## Usage
+## 用法
 
 ```
 /plan-pipeline:execute
 ```
 
-Picks up the most recent validated plan. Or specify:
+自动选取最近已验证的计划。或指定计划名称：
 
 ```
 /plan-pipeline:execute plan-user-authentication
 ```
 
-## Output
+## 输出示例
 
 ```
 Setting up worktree: .worktrees/user-authentication
@@ -229,16 +229,16 @@ Metrics committed. Worktree cleaned.
 ✅ Feature complete.
 ```
 
-## When to Use
+## 适用场景
 
-After `/plan-pipeline:validate` confirms all issues are resolved. Never skip validation — executing an unvalidated plan skips the independent review that catches ~18 issues on average.
+在 `/plan-pipeline:validate` 确认所有问题已解决后使用。永远不要跳过验证——执行未经验证的计划会跳过独立审查，而该审查平均能发现约 18 个问题。
 
-## Pipeline Position
+## 流水线位置
 
 ```
-/plan-pipeline:ceo-review    → product direction locked
-/plan-pipeline:eng-review    → architecture locked
-/plan-pipeline:start         → produce implementation plan
-/plan-pipeline:validate      → validate before execution
-/plan-pipeline:execute       → execute to merged PR          ← you are here
+/plan-pipeline:ceo-review    → 产品方向锁定
+/plan-pipeline:eng-review    → 架构锁定
+/plan-pipeline:start         → 生成实现计划
+/plan-pipeline:validate      → 执行前验证
+/plan-pipeline:execute       → 执行至 PR 合并          ← 当前位置
 ```

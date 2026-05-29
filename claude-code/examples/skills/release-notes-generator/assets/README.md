@@ -1,20 +1,20 @@
 > 📚 **AI Spark Wiki** · Claude Code 知识库
 
-# Assets
+# 资源文件
 
-This directory contains templates, images, and boilerplate code.
+本目录包含模板、图片及样板代码。
 
-**Note**: Assets are NOT automatically loaded into context. They must be explicitly referenced.
+**注意**：资源文件不会自动加载到上下文中，必须显式引用。
 
-## Guidelines
+## 使用指南
 
-- Use descriptive filenames
-- Include usage instructions in file headers
-- Keep templates minimal and customizable
+- 使用具有描述性的文件名
+- 在文件头部包含使用说明
+- 保持模板简洁且易于自定义
 
-## Files
+## 文件说明
 
-Add your assets here. Examples:
-- `template.md` - Output template
-- `boilerplate.ts` - Code boilerplate
-- `config.json` - Configuration template
+在此添加资源文件。示例：
+- `template.md` - 输出模板
+- `boilerplate.ts` - 代码样板
+- `config.json` - 配置模板

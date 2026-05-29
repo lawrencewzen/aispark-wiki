@@ -1,35 +1,35 @@
 > 📚 **AI Spark Wiki** · Claude Code 知识库
 
 ---
-description: "Architecture review criteria for plan and code reviews"
+description: "用于方案与代码审查的架构评审标准"
 ---
 
-# Architecture Review Criteria
+# 架构评审标准
 
-When reviewing architecture (plans or code), evaluate these dimensions:
+在评审架构（方案或代码）时，请从以下维度进行评估：
 
-## System Design
-- Are component boundaries clear and well-defined?
-- Does each component have a single, well-understood responsibility?
-- Are interfaces between components minimal and well-documented?
+## 系统设计
+- 组件边界是否清晰、定义明确？
+- 每个组件是否拥有单一、清晰的职责？
+- 组件之间的接口是否精简且有文档说明？
 
-## Dependencies
-- Is the dependency graph acyclic and manageable?
-- Are there circular dependencies that need breaking?
-- Are external dependencies justified and up-to-date?
+## 依赖关系
+- 依赖图是否无环且可维护？
+- 是否存在需要拆解的循环依赖？
+- 外部依赖是否有充分理由，且保持最新？
 
-## Data Flow
-- Is data ownership clear (which component is source of truth)?
-- Are there potential bottlenecks in the data pipeline?
-- Is data transformation happening at the right layer?
+## 数据流
+- 数据归属是否清晰（哪个组件是数据源）？
+- 数据流水线中是否存在潜在瓶颈？
+- 数据转换是否在正确的层次发生？
 
-## Scaling
-- What are the single points of failure?
-- Where will the system break under 10x load?
-- Are stateless and stateful components properly separated?
+## 扩展性
+- 系统存在哪些单点故障？
+- 在 10 倍负载下系统将在哪里崩溃？
+- 无状态组件与有状态组件是否得到合理分离？
 
-## Security
-- Are authentication and authorization properly layered?
-- Is data access controlled at the right boundaries?
-- Are API boundaries validated (input sanitization, rate limiting)?
-- Are secrets properly managed (no hardcoded values)?
+## 安全
+- 认证与授权是否有合理的层次结构？
+- 数据访问控制是否在正确的边界执行？
+- API 边界是否有验证（输入清洗、限流）？
+- 密钥是否得到妥善管理（无硬编码值）？

@@ -2,39 +2,39 @@
 
 ---
 name: optimize
-description: Analyze and suggest performance improvements for code, queries, or systems
+description: 分析并为代码、查询或系统提供性能优化建议
 argument-hint: "<file_or_module> [--focus speed|memory|bundle]"
 effort: medium
 disable-model-invocation: true
 ---
 
-# Performance Optimizer
+# 性能优化器
 
-Analyze and suggest performance improvements for code, queries, or systems.
+分析并为代码、查询或系统提供性能优化建议。
 
-## Purpose
+## 目标
 
-Identify optimization opportunities:
-- Runtime performance bottlenecks
-- Memory usage issues
-- Database query inefficiencies
-- Bundle size problems
-- Algorithm complexity
+识别优化机会：
+- 运行时性能瓶颈
+- 内存使用问题
+- 数据库查询低效
+- Bundle 体积问题
+- 算法复杂度
 
-## Instructions
+## 说明
 
-### Step 1: Scope Identification
+### 第一步：确定范围
 
-Determine optimization target:
-- **Function**: Single function performance
-- **Module**: Related functions/classes
-- **Query**: Database query optimization
-- **Bundle**: Frontend bundle analysis
-- **System**: Architecture-level optimization
+确定优化目标：
+- **函数**：单函数性能
+- **模块**：相关函数/类
+- **查询**：数据库查询优化
+- **Bundle**：前端 bundle 分析
+- **系统**：架构级别优化
 
-### Step 2: Performance Analysis
+### 第二步：性能分析
 
-#### Runtime Analysis
+#### 运行时分析
 
 ```bash
 # Find potentially slow patterns
@@ -47,7 +47,7 @@ grep -rn "for.*for\|\.forEach.*\.forEach\|\.map.*\.map" --include="*.{ts,js}" . 
 grep -rn "readFileSync\|writeFileSync\|execSync" --include="*.{ts,js}" . | head -10
 ```
 
-#### Memory Analysis
+#### 内存分析
 
 ```bash
 # Large array operations
@@ -57,7 +57,7 @@ grep -rn "new Array\|Array\.from\|\.concat\|spread" --include="*.{ts,js}" . | he
 grep -rn "addEventListener\|setInterval\|setTimeout" --include="*.{ts,js}" . | head -10
 ```
 
-#### Database Query Analysis
+#### 数据库查询分析
 
 ```bash
 # N+1 query patterns
@@ -67,7 +67,7 @@ grep -rn "await.*find\|await.*query" --include="*.{ts,js}" . | head -15
 grep -rn "WHERE\|ORDER BY\|GROUP BY" --include="*.{ts,js,sql}" . | head -15
 ```
 
-#### Bundle Analysis
+#### Bundle 分析
 
 ```bash
 # Check bundle size (if applicable)
@@ -77,37 +77,37 @@ grep -rn "WHERE\|ORDER BY\|GROUP BY" --include="*.{ts,js,sql}" . | head -15
 [ -f "package.json" ] && cat package.json | jq '.dependencies | keys[]' | head -20
 ```
 
-### Step 3: Prioritization
+### 第三步：优先级排序
 
-Rank findings by:
-1. **Impact**: How much will this improve performance?
-2. **Effort**: How hard is the fix?
-3. **Risk**: What could break?
+按以下维度对发现的问题排序：
+1. **影响**：能提升多少性能？
+2. **成本**：修复难度如何？
+3. **风险**：可能破坏哪些内容？
 
-## Output Format
+## 输出格式
 
 ---
 
-### ⚡ Performance Analysis
+### ⚡ 性能分析
 
-**Target**: [file/module/system]
-**Analysis Date**: [timestamp]
+**目标**：[文件/模块/系统]
+**分析时间**：[时间戳]
 
-### 📊 Current Metrics (if measurable)
+### 📊 当前指标（如可测量）
 
-| Metric | Current | Target | Gap |
+| 指标 | 当前 | 目标 | 差距 |
 |--------|---------|--------|-----|
-| Response time | Xms | <Yms | -Z% needed |
-| Memory usage | XMB | <YMB | -Z% needed |
-| Bundle size | XKB | <YKB | -Z% needed |
+| 响应时间 | Xms | <Yms | 需降低 -Z% |
+| 内存使用 | XMB | <YMB | 需降低 -Z% |
+| Bundle 体积 | XKB | <YKB | 需降低 -Z% |
 
-### 🔴 Critical Issues
+### 🔴 严重问题
 
-#### 1. [Issue Title] - [Location]
+#### 1. [问题标题] - [位置]
 
-**Problem**: [What's slow and why]
+**问题**：[慢在哪里以及原因]
 
-**Current**:
+**当前**：
 ```typescript
 // O(n²) - nested loops
 users.forEach(user => {
@@ -117,7 +117,7 @@ users.forEach(user => {
 });
 ```
 
-**Optimized**:
+**优化后**：
 ```typescript
 // O(n) - Map lookup
 const permMap = new Map(permissions.map(p => [p.userId, p]));
@@ -127,101 +127,101 @@ users.forEach(user => {
 });
 ```
 
-**Impact**: ~10x faster for 1000 users
-**Effort**: Low (5 min)
-**Risk**: Low
+**影响**：1000 个用户时约快 10 倍
+**成本**：低（5 分钟）
+**风险**：低
 
-### 🟠 High Priority
+### 🟠 高优先级
 
-| Issue | Location | Impact | Effort |
+| 问题 | 位置 | 影响 | 成本 |
 |-------|----------|--------|--------|
-| [description] | file:line | [estimate] | [time] |
+| [描述] | 文件:行 | [估算] | [时间] |
 
-### 🟡 Medium Priority
+### 🟡 中优先级
 
-| Issue | Location | Impact | Effort |
+| 问题 | 位置 | 影响 | 成本 |
 |-------|----------|--------|--------|
-| [description] | file:line | [estimate] | [time] |
+| [描述] | 文件:行 | [估算] | [时间] |
 
-### 💡 Quick Wins
+### 💡 快速收益
 
-1. [Small change with good impact]
-2. [Another quick optimization]
-3. [Low-hanging fruit]
+1. [改动小但收益好的优化]
+2. [另一个快速优化]
+3. [唾手可得的改进]
 
-### 📈 Optimization Roadmap
+### 📈 优化路线图
 
 ```
-Week 1: Critical fixes (items 1-3)
-Week 2: High priority (items 4-6)
-Week 3: Measure and validate improvements
+第 1 周：修复严重问题（第 1-3 项）
+第 2 周：处理高优先级（第 4-6 项）
+第 3 周：度量并验证改进效果
 ```
 
 ---
 
-## Common Patterns
+## 常见模式
 
-### Array Operations
+### 数组操作
 
-| Pattern | Issue | Fix |
+| 模式 | 问题 | 修复方案 |
 |---------|-------|-----|
-| `arr.filter().map()` | Two iterations | Single `reduce()` or `flatMap()` |
-| `arr.find()` in loop | O(n²) | Build Map/Set first |
-| `[...arr1, ...arr2]` | Memory allocation | `arr1.concat(arr2)` or push |
+| `arr.filter().map()` | 两次遍历 | 改用单次 `reduce()` 或 `flatMap()` |
+| 循环中使用 `arr.find()` | O(n²) | 先构建 Map/Set |
+| `[...arr1, ...arr2]` | 内存分配 | 改用 `arr1.concat(arr2)` 或 push |
 
-### Database
+### 数据库
 
-| Pattern | Issue | Fix |
+| 模式 | 问题 | 修复方案 |
 |---------|-------|-----|
-| Loop with await | N+1 queries | Batch query with `IN` |
-| `SELECT *` | Over-fetching | Select only needed columns |
-| Missing WHERE index | Full table scan | Add composite index |
+| 循环中使用 await | N+1 查询 | 改用 `IN` 批量查询 |
+| `SELECT *` | 查询过多字段 | 只选取需要的列 |
+| WHERE 条件缺少索引 | 全表扫描 | 添加复合索引 |
 
-### React/Frontend
+### React/前端
 
-| Pattern | Issue | Fix |
+| 模式 | 问题 | 修复方案 |
 |---------|-------|-----|
-| Inline functions in JSX | Re-renders | `useCallback` |
-| Large list rendering | DOM thrashing | Virtualization |
-| Unoptimized images | Slow LCP | Next/Image, lazy loading |
+| JSX 中内联函数 | 触发重渲染 | 改用 `useCallback` |
+| 渲染大列表 | DOM 频繁操作 | 虚拟化 |
+| 图片未优化 | LCP 慢 | Next/Image、懒加载 |
 
 ### Node.js
 
-| Pattern | Issue | Fix |
+| 模式 | 问题 | 修复方案 |
 |---------|-------|-----|
-| Sync file operations | Blocks event loop | Async alternatives |
-| JSON.parse large files | Memory spike | Streaming parser |
-| No connection pooling | Connection overhead | Pool with pg-pool, etc. |
+| 同步文件操作 | 阻塞事件循环 | 改用异步方案 |
+| `JSON.parse` 大文件 | 内存峰值 | 流式解析器 |
+| 无连接池 | 连接开销大 | 使用 pg-pool 等连接池 |
 
-## Usage
+## 用法
 
-**Analyze specific file:**
+**分析特定文件：**
 ```
 /optimize src/services/user.ts
 ```
 
-**Focus on specific area:**
+**聚焦特定方向：**
 ```
 /optimize --queries src/repositories/
 /optimize --bundle
 /optimize --memory src/workers/
 ```
 
-**With target metrics:**
+**指定目标指标：**
 ```
 /optimize --target=100ms src/api/search.ts
 ```
 
-**Quick scan:**
+**快速扫描：**
 ```
 /optimize --quick
 ```
 
-## Notes
+## 注意事项
 
-- Measurements beat assumptions: profile before optimizing
-- Premature optimization is the root of all evil (Knuth)
-- Focus on hot paths: optimize what runs often
-- Consider trade-offs: speed vs readability vs maintainability
+- 用测量代替假设：优化前先做性能分析
+- 过早优化是万恶之源（Knuth）
+- 聚焦热路径：优化高频执行的部分
+- 权衡取舍：速度 vs 可读性 vs 可维护性
 
 $ARGUMENTS

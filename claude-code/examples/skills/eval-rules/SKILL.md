@@ -2,219 +2,219 @@
 
 ---
 name: eval-rules
-description: "Audit .claude/rules/ files for structural correctness, glob validity, and real-world usefulness. Resolves each paths: pattern against actual project files, then asks the user whether each rule is still relevant and useful. Can update rules in-place based on answers. Use when setting up rules for the first time, debugging rules that fire too often or never, or doing a periodic rules hygiene pass."
+description: "审计 .claude/rules/ 文件的结构正确性、glob 有效性和实际可用性。将每个 paths: 模式与项目实际文件对比解析，然后询问用户每条规则是否仍然相关和有用。可根据回答就地更新规则。适用于首次设置规则、调试触发过于频繁或从不触发的规则，或进行定期规则整理。"
 allowed-tools: Read, Glob, Bash, Edit
 effort: medium
-argument-hint: [path to rules dir — default: .claude/rules/]
+argument-hint: [规则目录路径 — 默认: .claude/rules/]
 ---
 
-# Rules Evaluator
+# 规则评估器
 
-Discover all rule files, validate their structure and glob patterns against the real project, then run an interactive session to confirm (or improve) each rule with the user.
+发现所有规则文件，对照真实项目验证其结构和 glob 模式，然后与用户进行交互式会话以确认（或改进）每条规则。
 
-The goal is not just to score — it is to leave the rules directory in better shape than it was.
+目标不仅仅是打分——而是让规则目录比之前更整洁。
 
-## When to Use
+## 使用场景
 
-- First time writing `.claude/rules/` files (validate before committing)
-- A rule seems to never trigger, or fires on every file
-- Migrating `@` imports from CLAUDE.md to path-scoped rules
-- Periodic hygiene: "are these rules still relevant to how we work?"
-- After onboarding to a new codebase
+- 首次编写 `.claude/rules/` 文件（提交前验证）
+- 某条规则似乎从不触发，或触发于每个文件
+- 将 CLAUDE.md 中的 `@` 导入迁移到路径范围规则
+- 定期整理："这些规则对当前工作方式还有意义吗？"
+- 入职新代码库后
 
-## Key Concepts
+## 核心概念
 
-| Mechanism | When it loads | Notes |
+| 机制 | 加载时机 | 备注 |
 |---|---|---|
-| `@file` in CLAUDE.md | Session start, always | Even inside a conditional sentence |
-| No `paths:` in rule | Session start, always | Same cost as @import |
-| `paths:` frontmatter | When Claude reads a matching file | Trigger = Read tool, not Write |
+| CLAUDE.md 中的 `@file` | 会话开始，始终加载 | 即使在条件语句中也会加载 |
+| 规则中无 `paths:` | 会话开始，始终加载 | 成本与 @import 相同 |
+| `paths:` frontmatter | Claude 读取匹配文件时 | 触发于 Read 工具，而非 Write |
 
-The `paths:` field is the main lever for keeping rules contextual. An always-on rule with 80 lines loads on every session even if you're fixing a typo in README.md.
+`paths:` 字段是保持规则上下文性的主要手段。一条始终加载的规则若有 80 行，即使你只是在修复 README.md 中的错别字，也会在每次会话中加载。
 
 ---
 
-## Scoring Criteria (12 pts per rule)
+## 评分标准（每条规则满分 12 分）
 
-| # | Criterion | Max | What is checked |
+| # | 标准 | 满分 | 检查内容 |
 |---|-----------|-----|-----------------|
-| 1 | **frontmatter block** | 1 | File has YAML frontmatter (`---` delimited) |
-| 2 | **paths: field** | 2 | Present (1pt) + at least one pattern listed (1pt) |
-| 3 | **pattern validity** | 3 | Each pattern matches ≥1 file in project (up to 3 patterns checked) |
-| 4 | **scope** | 2 | Not dead (≥1 match) + not too broad (<30% of project source files) |
-| 5 | **content quality** | 3 | Has clear header/title (1pt) + rules are specific/actionable (1pt) + under 150 lines (1pt) |
-| Bonus | **focus** | +1 | Under 15 rules in file |
+| 1 | **frontmatter 块** | 1 | 文件有 YAML frontmatter（`---` 分隔） |
+| 2 | **paths: 字段** | 2 | 存在（1分）+ 至少列出一个模式（1分） |
+| 3 | **模式有效性** | 3 | 每个模式在项目中匹配 ≥1 个文件（最多检查 3 个模式） |
+| 4 | **范围** | 2 | 非失效（≥1 匹配）+ 非过宽（<30% 的项目源文件） |
+| 5 | **内容质量** | 3 | 有清晰标题（1分）+ 规则具体可执行（1分）+ 不超过 150 行（1分） |
+| 加分 | **聚焦度** | +1 | 文件中规则数量不超过 15 条 |
 
-**Thresholds:**
-- ✅ Good: ≥10/12 (≥83%)
-- ⚠️ Needs work: 7–9/12 (58–82%)
-- ❌ Fix: <7/12 (<58%)
+**阈值：**
+- ✅ 良好：≥10/12（≥83%）
+- ⚠️ 需改进：7–9/12（58–82%）
+- ❌ 需修复：<7/12（<58%）
 
-**Always-on rules** (no `paths:` field): skip criteria 2, 3, 4. Score on 5 pts max. Flag with 🔵 and go through the interactive step to decide if scoping is needed.
+**始终加载规则**（无 `paths:` 字段）：跳过标准 2、3、4，最高得 5 分。标注 🔵 并进行交互步骤，决定是否需要限定范围。
 
 ---
 
-## Execution Instructions
+## 执行说明
 
-### Step 1 — Discovery
+### 步骤一 — 发现
 
-Use Glob to find all rule files:
+使用 Glob 查找所有规则文件：
 
 ```
 .claude/rules/**/*.md
 ```
 
-If an argument was passed (e.g., `/eval-rules ./my-rules/`), use that path instead.
+如果传入了参数（例如 `/eval-rules ./my-rules/`），则使用该路径。
 
-Also count total source files for scope % calculation:
+同时统计源文件总数以计算范围百分比：
 ```bash
 find . \( -name "*.py" -o -name "*.ts" -o -name "*.tsx" -o -name "*.js" -o -name "*.go" -o -name "*.rs" \) \
   ! -path "*/node_modules/*" ! -path "*/.git/*" ! -path "*/dist/*" \
   2>/dev/null | wc -l
 ```
 
-If no `.claude/rules/` directory exists, report it and stop.
+如果不存在 `.claude/rules/` 目录，报告并停止。
 
-### Step 2 — Parse each rule
+### 步骤二 — 解析每条规则
 
-For each `.md` file found:
-1. Read the full file
-2. Extract YAML frontmatter (content between first `---` and second `---`)
-3. Parse `paths:` field — collect all glob patterns as a list
-4. Classify: **conditional** (has `paths:`) or **always-on** (no frontmatter or no `paths:`)
-5. Read the body: line count, presence of a clear title/header, whether rules are specific
+对每个找到的 `.md` 文件：
+1. 读取完整文件
+2. 提取 YAML frontmatter（第一个 `---` 和第二个 `---` 之间的内容）
+3. 解析 `paths:` 字段——将所有 glob 模式收集为列表
+4. 分类：**条件加载**（有 `paths:`）或 **始终加载**（无 frontmatter 或无 `paths:`）
+5. 读取正文：行数、是否有清晰标题、规则是否具体
 
-### Step 3 — Resolve glob patterns
+### 步骤三 — 解析 glob 模式
 
-For each rule with `paths:`, use Glob to resolve each pattern against the project:
+对每条有 `paths:` 的规则，使用 Glob 解析各模式与项目的匹配情况：
 
-- Collect total matched files per pattern
-- Show up to 10 sample paths
-- Flag dead patterns (0 matches) and broad patterns (>30% of source files)
+- 统计每个模式匹配的文件总数
+- 显示最多 10 个示例路径
+- 标记失效模式（0 匹配）和过宽模式（>30% 源文件）
 
-### Step 4 — Interactive review (core of the skill)
+### 步骤四 — 交互式审查（技能核心）
 
-Process rules **one by one**. Do not batch and skip the interaction.
+**逐条**处理规则。不要批量处理或跳过交互。
 
-**For each conditional rule (has `paths:`):**
+**对每条条件加载规则（有 `paths:`）：**
 
-Show:
+显示：
 ```
-Rule: payments.md [conditional]
+规则: payments.md [条件加载]
 paths: ["**/payments/**", "src/billing/**"]
-Matches: 12 files
+匹配: 12 个文件
   - src/payments/stripe.py
   - src/payments/webhook.py
   - src/billing/invoice.py
-  ... (9 more)
+  ... (还有 9 个)
 ```
 
-Ask three questions:
-1. "Is this scope right? (y = yes / n = needs adjustment)"
-2. "Is this rule still useful day-to-day? (y / n / unsure)"
-3. "Anything to add, remove, or update in the rule content? (describe or skip)"
+提问三个问题：
+1. "范围正确吗？（y = 是 / n = 需要调整）"
+2. "这条规则在日常工作中还有用吗？（y / n / 不确定）"
+3. "规则内容有什么需要添加、删除或更新的？（描述或跳过）"
 
-**For each always-on rule (no `paths:`):**
+**对每条始终加载规则（无 `paths:`）：**
 
-Show:
+显示：
 ```
-Rule: database.md [always-on — loads every session]
-Content: 91 lines, 8 rules
+规则: database.md [始终加载 — 每次会话都加载]
+内容: 91 行, 8 条规则
 ```
 
-Ask:
-1. "This rule loads at every session. Should it stay always-on, or be scoped to specific files? (keep / scope / skip)"
-2. "Is the content still accurate and useful? (y / n)"
+提问：
+1. "这条规则每次会话都加载。应该保持始终加载，还是限定到特定文件？（保持 / 限定范围 / 跳过）"
+2. "内容仍然准确有用吗？（y / n）"
 
-If the user says **scope**: help them define a `paths:` pattern based on the rule content (e.g., database rules → `**/models/**`, `**/migrations/**`, `**/*.sql`). Propose the frontmatter block and ask for confirmation before editing.
+如果用户选择**限定范围**：根据规则内容帮助定义 `paths:` 模式（例如，数据库规则 → `**/models/**`、`**/migrations/**`、`**/*.sql`）。提出 frontmatter 块并在编辑前请求确认。
 
-**If the user provides corrections or updates during the interaction**: apply them directly using Edit, confirm each change, then move to the next rule.
+**如果用户在交互过程中提供修正或更新**：使用 Edit 直接应用，确认每处更改，然后继续下一条规则。
 
-### Step 5 — Output report
+### 步骤五 — 输出报告
 
-After all rules are reviewed:
+审查所有规则后：
 
 ```
-# Rules Audit — [project name or path]
-Date: [today] | Scanned: N rules (X conditional, Y always-on)
+# 规则审计 — [项目名称或路径]
+日期: [今天] | 扫描: N 条规则（X 条件加载，Y 始终加载）
 
-## Summary
+## 汇总
 
-| Status | Count |
+| 状态 | 数量 |
 |--------|-------|
-| ✅ Good (≥83%) | N |
-| ⚠️ Needs work (58–82%) | N |
-| ❌ Fix (<58%) | N |
-| 🔵 Always-on (no paths:) | N |
-| ✅ User confirmed useful | N |
-| ⚠️ User flagged for update | N |
-| 🗑️ User marked as stale | N |
+| ✅ 良好 (≥83%) | N |
+| ⚠️ 需改进 (58–82%) | N |
+| ❌ 需修复 (<58%) | N |
+| 🔵 始终加载 (无 paths:) | N |
+| ✅ 用户确认有用 | N |
+| ⚠️ 用户标记待更新 | N |
+| 🗑️ 用户标记为过时 | N |
 
 ---
 
-## Per-Rule Results
+## 逐条规则结果
 
-### payments.md — 11/12 ✅ [conditional]
+### payments.md — 11/12 ✅ [条件加载]
 
 paths: `**/payments/**`, `src/billing/**`
-Matches: 12 files (3.5% of 340 source files)
+匹配: 12 个文件（占 340 个源文件的 3.5%）
 
-| Criterion | Score | Notes |
+| 标准 | 得分 | 备注 |
 |-----------|-------|-------|
 | frontmatter | ✅ 1/1 | — |
-| paths: field | ✅ 2/2 | 2 patterns |
-| pattern validity | ✅ 3/3 | All match ≥1 file |
-| scope | ✅ 2/2 | 3.5% — well-scoped |
-| content quality | ⚠️ 2/3 | 158 lines — over 150 |
+| paths: 字段 | ✅ 2/2 | 2 个模式 |
+| 模式有效性 | ✅ 3/3 | 全部匹配 ≥1 个文件 |
+| 范围 | ✅ 2/2 | 3.5% — 范围良好 |
+| 内容质量 | ⚠️ 2/3 | 158 行 — 超过 150 行 |
 
-User feedback: ✅ scope confirmed — "fires exactly when we work on Stripe"
-Content: no changes needed
+用户反馈: ✅ 范围已确认 — "恰好在处理 Stripe 时触发"
+内容: 无需更改
 
 ---
 
-### database.md — 3/5 🔵 [always-on]
+### database.md — 3/5 🔵 [始终加载]
 
-No paths: field — loads at every session.
+无 paths: 字段 — 每次会话都加载。
 
-| Criterion | Score | Notes |
+| 标准 | 得分 | 备注 |
 |-----------|-------|-------|
-| frontmatter | ❌ 0/1 | No frontmatter block |
-| content quality | ✅ 3/3 | 91 lines, specific rules, clear header |
-| focus | ✅ 1/1 | 8 rules |
+| frontmatter | ❌ 0/1 | 无 frontmatter 块 |
+| 内容质量 | ✅ 3/3 | 91 行，规则具体，标题清晰 |
+| 聚焦度 | ✅ 1/1 | 8 条规则 |
 
-User feedback: scope → added paths: ["**/models/**", "**/migrations/**", "**/*.sql"]
-Edit applied ✅
+用户反馈: 限定范围 → 已添加 paths: ["**/models/**", "**/migrations/**", "**/*.sql"]
+编辑已应用 ✅
 
 ---
 ```
 
-### Step 6 — Fix Summary
+### 步骤六 — 变更汇总
 
 ```
-## What Changed This Session
+## 本次会话的变更
 
 database.md:
-  - Added frontmatter with paths: ["**/models/**", "**/migrations/**", "**/*.sql"]
+  - 添加了 frontmatter，包含 paths: ["**/models/**", "**/migrations/**", "**/*.sql"]
 
 testing.md:
-  - User confirmed useful, no changes
+  - 用户确认有用，无更改
 
 git-workflow.md:
-  - User flagged as stale — marked for deletion (not deleted yet, awaiting confirmation)
+  - 用户标记为过时 — 标记待删除（尚未删除，等待确认）
 
 ---
-N rules audited · N edits applied · N rules flagged as stale
+N 条规则已审计 · N 处编辑已应用 · N 条规则标记为过时
 ```
 
-For any rule the user marked as stale or outdated: ask for explicit confirmation before deleting. Never delete without a clear "yes, delete it".
+对于用户标记为过时或过期的任何规则：在删除前请求明确确认。没有明确的"是，删除"则绝不删除。
 
 ---
 
-## Edge Cases
+## 边界情况
 
-- **Subdirectory rules** (e.g., `.claude/rules/frontend/react.md`): discovered and processed normally
-- **Invalid YAML frontmatter**: report parse error, score frontmatter as 0/1
-- **Empty file**: flag as ❌, skip interactive step, ask if it should be deleted
-- **Dead pattern** (0 matches): flag, suggest fix based on rule content
-- **Pattern matching >30% of files**: flag as too broad, suggest narrowing
-- **User says "unsure" about usefulness**: note it in the report, do not edit, add a comment "Review in next audit"
+- **子目录规则**（例如 `.claude/rules/frontend/react.md`）：正常发现和处理
+- **无效的 YAML frontmatter**：报告解析错误，frontmatter 得分记为 0/1
+- **空文件**：标记为 ❌，跳过交互步骤，询问是否应删除
+- **失效模式**（0 匹配）：标记，根据规则内容建议修复方案
+- **模式匹配 >30% 文件**：标记为过宽，建议缩小范围
+- **用户对有用性说"不确定"**：在报告中注明，不编辑，添加注释"在下次审计时审查"

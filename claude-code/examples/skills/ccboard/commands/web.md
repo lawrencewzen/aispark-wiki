@@ -2,85 +2,85 @@
 
 ---
 name: ccboard-web
-description: Launch ccboard web interface
+description: 启动 ccboard Web 界面
 category: monitoring
 ---
 
-# Web Interface Command
+# Web 界面命令
 
-Launch the ccboard web UI for browser-based monitoring and visualization.
+启动 ccboard Web UI，通过浏览器进行监控和可视化。
 
-## Features
+## 功能特性
 
-- **Web Dashboard**: Access ccboard from any browser
-- **Live Updates**: Server-Sent Events (SSE) for real-time data
-- **Responsive Design**: Works on desktop, tablet, mobile
-- **Same Data**: Shares data layer with TUI (single binary)
-- **Concurrent Access**: Multiple users can view simultaneously
+- **Web 仪表板**：在任意浏览器中访问 ccboard
+- **实时更新**：通过 Server-Sent Events（SSE）推送实时数据
+- **响应式设计**：支持桌面、平板、移动端
+- **数据共享**：与 TUI 共用同一数据层（单一二进制）
+- **并发访问**：多用户可同时查看
 
-## Usage
+## 使用方式
 
 ```bash
-# Launch web UI on default port 3333
+# 在默认端口 3333 启动 Web UI
 /ccboard-web
 
-# Or specify custom port
+# 或指定自定义端口
 ccboard web --port 8080
 ```
 
-## Access
+## 访问地址
 
-Once launched, open in your browser:
+启动后，在浏览器中打开：
 ```
 http://localhost:3333
 ```
 
-## Modes
+## 运行模式
 
-ccboard supports 3 execution modes:
+ccboard 支持 3 种运行模式：
 
-1. **TUI only** (default):
+1. **仅 TUI**（默认）：
    ```bash
    ccboard
    ```
 
-2. **Web only**:
+2. **仅 Web**：
    ```bash
    ccboard web --port 3333
    ```
 
-3. **Both simultaneously**:
+3. **同时运行**：
    ```bash
    ccboard both --port 3333
    ```
-   Runs TUI in terminal + web server on port 3333
+   在终端运行 TUI，同时在端口 3333 启动 Web 服务器
 
-## Web UI Features
+## Web UI 功能
 
-- Dashboard with real-time stats
-- Sessions browser with pagination
-- Configuration viewer (read-only)
-- Hooks, agents, costs visualization
-- MCP server status
-- History and search
+- 带实时统计的仪表板
+- 带分页的会话浏览器
+- 配置查看器（只读）
+- 钩子、智能体、费用可视化
+- MCP 服务器状态
+- 历史记录与搜索
 
-## Requirements
+## 前置条件
 
-ccboard must be installed. Run `/ccboard-install` if needed.
+必须已安装 ccboard。如未安装，请运行 `/ccboard-install`。
 
-## Implementation
+## 实现脚本
 
 ```bash
 #!/bin/bash
 
-# Check if ccboard is installed
+# 检查 ccboard 是否已安装
 if ! command -v ccboard &> /dev/null; then
     echo "❌ ccboard is not installed"
     echo "Run: /ccboard-install"
     exit 1
 fi
 
-# Default port
+# 默认端口
 PORT="${1:-3333}"
 
 echo "🌐 Launching ccboard web interface..."
@@ -89,8 +89,8 @@ echo ""
 echo "Press Ctrl+C to stop"
 echo ""
 
-# Launch web UI
+# 启动 Web UI
 exec ccboard web --port "$PORT"
 ```
 
-**Note**: Web UI is currently in development. TUI is the primary interface with full feature set.
+**注意**：Web UI 目前仍在开发中，TUI 是功能完整的主要界面。

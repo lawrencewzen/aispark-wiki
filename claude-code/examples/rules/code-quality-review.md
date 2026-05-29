@@ -1,35 +1,35 @@
 > 📚 **AI Spark Wiki** · Claude Code 知识库
 
 ---
-description: "Code quality review criteria for plan and code reviews"
+description: "用于方案与代码审查的代码质量评审标准"
 ---
 
-# Code Quality Review Criteria
+# 代码质量评审标准
 
-When reviewing code quality, evaluate these dimensions:
+在评审代码质量时，请从以下维度进行评估：
 
-## Organization
-- Is the module structure logical and consistent?
-- Are files in the right directories?
-- Is the naming convention consistent across the codebase?
+## 组织结构
+- 模块结构是否合理且一致？
+- 文件是否在正确的目录中？
+- 命名规范在整个代码库中是否统一？
 
-## DRY Violations
-- Flag any duplicated logic (be aggressive)
-- Identify copy-paste patterns that should be abstracted
-- Check for repeated configuration or magic values
+## DRY 原则违反
+- 标记所有重复逻辑（要严格）
+- 识别应该抽象化的复制粘贴模式
+- 检查重复的配置项或魔法值
 
-## Error Handling
-- Are errors handled at the right level (not swallowed, not over-caught)?
-- Are edge cases explicitly handled or documented as out-of-scope?
-- Do error messages provide enough context for debugging?
-- Are there silent failures (empty catch blocks, ignored return values)?
+## 错误处理
+- 错误是否在正确的层次处理（既不被吞掉，也不过度捕获）？
+- 边界情况是否被显式处理，或记录为超出范围？
+- 错误信息是否提供了足够的调试上下文？
+- 是否存在静默失败（空的 catch 块、被忽略的返回值）？
 
-## Technical Debt
-- Which areas have the highest maintenance burden?
-- Are there TODO/FIXME comments that should be addressed now?
-- Is there dead code that should be removed?
+## 技术债务
+- 哪些区域的维护负担最高？
+- 是否有应该立即处理的 TODO/FIXME 注释？
+- 是否有应该移除的死代码？
 
-## Engineering Balance
-- Are there areas that are over-engineered (premature abstraction, unnecessary complexity)?
-- Are there areas that are under-engineered (fragile, hacky, missing validation)?
-- Does the complexity match the actual requirements?
+## 工程平衡性
+- 是否有过度工程化的区域（提前抽象、不必要的复杂性）？
+- 是否有工程不足的区域（脆弱、临时方案、缺少验证）？
+- 代码复杂度是否与实际需求相匹配？

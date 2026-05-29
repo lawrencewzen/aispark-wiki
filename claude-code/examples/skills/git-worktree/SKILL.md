@@ -2,43 +2,43 @@
 
 ---
 name: git-worktree
-description: Create isolated git worktrees for feature development without switching branches
+description: 创建隔离的 Git 工作树，无需切换分支即可进行功能开发
 argument-hint: "<branch_name> [--from <base>]"
 effort: medium
 disable-model-invocation: true
 ---
 
-# Git Worktree Setup
+# Git 工作树设置
 
-Create isolated git worktrees for feature development without switching branches.
+创建隔离的 Git 工作树，无需切换分支即可进行功能开发。
 
-**Core principle:** Smart directory selection + symlink optimization + background verification = fast, reliable isolation.
+**核心原则：** 智能目录选择 + 符号链接优化 + 后台验证 = 快速、可靠的隔离环境。
 
-**Requires:** Git 2.5.0+ (July 2015)
+**依赖要求：** Git 2.5.0+（2015 年 7 月）
 
-**Companion commands:** [`/git-worktree-status`](./git-worktree-status.md) | [`/git-worktree-remove`](./git-worktree-remove.md) | [`/git-worktree-clean`](./git-worktree-clean.md)
+**配套命令：** [`/git-worktree-status`](./git-worktree-status.md) | [`/git-worktree-remove`](./git-worktree-remove.md) | [`/git-worktree-clean`](./git-worktree-clean.md)
 
-## Process
+## 流程
 
-1. **Validate Branch Name**: Check naming convention and conflicts
-2. **Check Existing Directories**: `.worktrees/` or `worktrees/`
-3. **Verify .gitignore**: Ensure worktree dir is ignored
-4. **Create Worktree**: `git worktree add`
-5. **Symlink Dependencies**: Reuse `node_modules/` from main worktree
-6. **Detect Database Provider**: Check for DB branching capability
-7. **Install Dependencies**: Auto-detect package manager (if not symlinking)
-8. **Run Background Verification**: Type check + tests in background
-9. **Report Location**: Confirm ready with status
+1. **验证分支名称**：检查命名规范与冲突
+2. **检查现有目录**：`.worktrees/` 或 `worktrees/`
+3. **验证 .gitignore**：确保工作树目录已被忽略
+4. **创建工作树**：`git worktree add`
+5. **符号链接依赖**：复用主工作树的 `node_modules/`
+6. **检测数据库提供商**：检查是否支持数据库分支
+7. **安装依赖**：自动检测包管理器（未使用符号链接时）
+8. **运行后台验证**：在后台进行类型检查 + 测试
+9. **报告位置**：确认就绪状态
 
-## Flags
+## 标志
 
-| Flag | Effect |
+| 标志 | 效果 |
 |------|--------|
-| `--fast` | Skip dependency install and baseline tests |
-| `--isolated` | Fresh `node_modules` install (no symlink) |
-| `--skip-install` | Skip dependency install, keep baseline tests |
+| `--fast` | 跳过依赖安装和基准测试 |
+| `--isolated` | 全新安装 `node_modules`（不使用符号链接） |
+| `--skip-install` | 跳过依赖安装，保留基准测试 |
 
-## Branch Name Validation
+## 分支名称验证
 
 ```bash
 # Auto-prefix based on naming convention
@@ -56,9 +56,9 @@ echo "$BRANCH_NAME" | grep -qE '^[a-zA-Z0-9/_-]+$' || exit 1
 git show-ref --verify --quiet "refs/heads/$BRANCH_NAME" && echo "Branch already exists" && exit 1
 ```
 
-## Directory Selection
+## 目录选择
 
-### Priority Order
+### 优先级顺序
 
 ```bash
 # 1. Check existing directories
@@ -71,25 +71,25 @@ grep -i "worktree.*director" CLAUDE.md 2>/dev/null
 # 3. Ask user if neither exists
 ```
 
-**If both exist:** `.worktrees/` wins.
+**两者同时存在时：** `.worktrees/` 优先。
 
-## Safety Verification
+## 安全验证
 
-**For project-local directories:**
+**对于项目本地目录：**
 
 ```bash
 # Check if directory in .gitignore
 grep -q "^\.worktrees/$" .gitignore || grep -q "^worktrees/$" .gitignore
 ```
 
-**If NOT in .gitignore:**
-1. Add line to .gitignore
-2. Commit the change
-3. Proceed with worktree creation
+**若不在 .gitignore 中：**
+1. 向 .gitignore 添加该行
+2. 提交变更
+3. 继续创建工作树
 
-**Why critical:** Prevents accidentally committing worktree contents.
+**为何关键：** 防止意外提交工作树内容。
 
-## Creation Steps
+## 创建步骤
 
 ```bash
 # 1. Detect project name
@@ -102,9 +102,9 @@ git worktree add .worktrees/$BRANCH_NAME -b $BRANCH_NAME
 cd .worktrees/$BRANCH_NAME
 ```
 
-## Dependency Optimization (Node.js)
+## 依赖优化（Node.js）
 
-**Default behavior:** Symlink `node_modules` from main worktree to avoid duplicate installs (~30s saved).
+**默认行为：** 从主工作树符号链接 `node_modules`，避免重复安装（节省约 30 秒）。
 
 ```bash
 # Symlink node_modules (default, unless --isolated)
@@ -119,12 +119,12 @@ if [ "$ISOLATED" = true ]; then
 fi
 ```
 
-**When to use `--isolated`:**
-- Schema changes requiring different package versions
-- Testing dependency upgrades
-- Debugging `node_modules` issues
+**何时使用 `--isolated`：**
+- 需要不同包版本的 Schema 变更
+- 测试依赖升级
+- 调试 `node_modules` 问题
 
-## Auto-Detect Setup (Multi-Stack)
+## 自动检测设置（多技术栈）
 
 ```bash
 # Node.js (if not symlinked)
@@ -143,9 +143,9 @@ if [ -f pyproject.toml ]; then poetry install; fi
 if [ -f go.mod ]; then go mod download; fi
 ```
 
-## Background Verification
+## 后台验证
 
-**Instead of blocking on full test suite, run verification in background:**
+**无需阻塞等待完整测试套件，在后台运行验证：**
 
 ```bash
 # Create log directory
@@ -164,9 +164,9 @@ if [ -f package.json ]; then
 fi
 ```
 
-**With `--fast`:** Skip all verification.
+**使用 `--fast`：** 跳过所有验证。
 
-## Final Report
+## 最终报告
 
 ```
 Worktree ready at <full-path>
@@ -178,20 +178,20 @@ Check status: /git-worktree-status
 Ready to implement <feature-name>
 ```
 
-## Database Branch Suggestion
+## 数据库分支建议
 
-**After worktree creation, detect database provider and suggest isolation.**
+**工作树创建完成后，检测数据库提供商并建议隔离方案。**
 
-### Quick Command Reference
+### 快速命令参考
 
-| Provider | Suggested Command |
+| 提供商 | 建议命令 |
 |----------|-------------------|
 | **Neon** | `neonctl branches create --name <branch> --parent main` |
 | **PlanetScale** | `pscale branch create <db> <branch>` |
-| **Local Postgres** | `psql -c "CREATE SCHEMA <schema>;"` |
-| **Other** | Manual setup or shared DB |
+| **本地 Postgres** | `psql -c "CREATE SCHEMA <schema>;"` |
+| **其他** | 手动设置或共享数据库 |
 
-**Example output:**
+**示例输出：**
 
 ```
 Worktree created at .worktrees/feat/auth
@@ -201,9 +201,9 @@ DB Isolation: neonctl branches create --name feat-auth --parent main
    Full guide: ../workflows/database-branch-setup.md
 ```
 
-### .worktreeinclude Setup
+### .worktreeinclude 设置
 
-**Critical for environment variables:**
+**对于环境变量至关重要：**
 
 ```bash
 # .worktreeinclude (at project root)
@@ -213,56 +213,56 @@ DB Isolation: neonctl branches create --name feat-auth --parent main
 **/.claude/settings.local.json
 ```
 
-**Why:** Without this, `.env` files won't be copied to worktrees.
+**原因：** 若不设置，`.env` 文件将不会复制到工作树。
 
-### When to Create Database Branch
+### 何时创建数据库分支
 
-| Scenario | Create Branch? |
+| 场景 | 是否创建分支 |
 |----------|---------------|
-| Schema migrations | Yes |
-| Data model refactoring | Yes |
-| Bug fix (no schema change) | No |
-| Performance experiments | Yes |
+| Schema 迁移 | 是 |
+| 数据模型重构 | 是 |
+| Bug 修复（无 Schema 变更） | 否 |
+| 性能实验 | 是 |
 
-**See:** [Database Branch Setup Guide](../workflows/database-branch-setup.md) for complete workflows.
+**参阅：** [数据库分支设置指南](../workflows/database-branch-setup.md) 了解完整工作流。
 
-## Quick Reference
+## 快速参考
 
-| Situation | Action |
+| 情况 | 操作 |
 |-----------|--------|
-| `.worktrees/` exists | Use it (verify .gitignore) |
-| `worktrees/` exists | Use it (verify .gitignore) |
-| Both exist | Use `.worktrees/` |
-| Neither exists | Check CLAUDE.md, then ask user |
-| Not in .gitignore | Add + commit immediately |
-| No branch prefix | Auto-prefix with `feat/` |
-| Node.js project | Symlink `node_modules` by default |
-| `--fast` flag | Skip install + tests |
-| `--isolated` flag | Fresh `node_modules` install |
-| Neon detected | Suggest `neonctl branches create` |
-| PlanetScale detected | Suggest `pscale branch create` |
-| No .worktreeinclude | Create with `.env` pattern |
+| `.worktrees/` 存在 | 使用它（验证 .gitignore） |
+| `worktrees/` 存在 | 使用它（验证 .gitignore） |
+| 两者都存在 | 使用 `.worktrees/` |
+| 两者都不存在 | 检查 CLAUDE.md，然后询问用户 |
+| 不在 .gitignore 中 | 立即添加并提交 |
+| 无分支前缀 | 自动添加 `feat/` 前缀 |
+| Node.js 项目 | 默认符号链接 `node_modules` |
+| `--fast` 标志 | 跳过安装 + 测试 |
+| `--isolated` 标志 | 全新安装 `node_modules` |
+| 检测到 Neon | 建议 `neonctl branches create` |
+| 检测到 PlanetScale | 建议 `pscale branch create` |
+| 无 .worktreeinclude | 使用 `.env` 模式创建 |
 
-## Common Mistakes
+## 常见错误
 
-**Skipping .gitignore verification**
-- Worktree contents get tracked, pollute git status
+**跳过 .gitignore 验证**
+- 工作树内容被跟踪，污染 git 状态
 
-**Assuming directory location**
-- Follow priority: existing > CLAUDE.md > ask
+**假定目录位置**
+- 遵循优先级：已有目录 > CLAUDE.md > 询问用户
 
-**Installing full node_modules in every worktree**
-- Wastes disk and time. Use symlink by default, `--isolated` only when needed
+**在每个工作树中都完整安装 node_modules**
+- 浪费磁盘空间和时间。默认使用符号链接，仅在必要时使用 `--isolated`
 
-**Not copying .env to worktree**
-- Symptom: Claude fails with "DATABASE_URL not found"
-- Fix: Add `.env` to `.worktreeinclude`
+**未将 .env 复制到工作树**
+- 症状：Claude 报错 "DATABASE_URL not found"
+- 修复：将 `.env` 添加到 `.worktreeinclude`
 
-**Using shared database for schema changes**
-- Symptom: Migration conflicts, broken dev environment
-- Fix: Create database branch before modifying schema
+**在 Schema 变更时使用共享数据库**
+- 症状：迁移冲突，开发环境损坏
+- 修复：在修改 Schema 前创建数据库分支
 
-## Usage
+## 使用方式
 
 ```
 /git-worktree auth

@@ -1,137 +1,137 @@
 > 📚 **AI Spark Wiki** · Claude Code 知识库
 
 ---
-description: "Session invariant template - hard constraints, quality thresholds, and anti-patterns that Claude must respect throughout a session"
+description: "会话不变量模板——Claude 在整个会话期间必须遵守的硬性约束、质量阈值和反模式"
 ---
 
-# First Principles: Session Invariants
+# 第一原则：会话不变量
 
-This is a template for the "Contract" layer of your Claude Code rules. These are constraints that must hold true for the entire session, regardless of which task is active or how much context has accumulated.
+这是 Claude Code 规则"契约层"的模板。这些约束在整个会话期间必须始终成立，无论当前激活的是哪个任务，也无论上下文积累了多少。
 
-Customize the sections below to match your team's standards. Replace the example values with your own thresholds.
+根据你团队的标准自定义以下各节。将示例值替换为你自己的阈值。
 
-> **Why this matters**: As conversation context grows, earlier instructions lose influence on Claude's behavior. This is called "context decay." Session invariants placed in CLAUDE.md or rules files act as compression anchors that resist this decay, because they're injected at the start of every context window.
+> **为什么这很重要**：随着对话上下文不断增长，早期指令对 Claude 行为的影响力会逐渐下降。这被称为"上下文衰减"。放在 CLAUDE.md 或规则文件中的会话不变量充当压缩锚点，能抵抗这种衰减，因为它们会在每个上下文窗口开始时被注入。
 
-## Hard Constraints
+## 硬性约束
 
-These rules never have exceptions. If Claude is about to violate one, it must stop and flag the conflict rather than proceeding.
-
-```markdown
-# Hard Constraints (never-break rules)
-
-## Data Safety
-- Never delete production data without explicit user confirmation in the same message
-- Never store secrets (API keys, passwords, tokens) in code files or commit them
-- Never run DROP, TRUNCATE, or DELETE without WHERE on production databases
-
-## Code Safety
-- Never disable TypeScript strict mode or ESLint rules to make code compile
-- Never catch errors silently (empty catch blocks, swallowed promises)
-- Never use `any` type in TypeScript except in test fixtures
-
-## Process Safety
-- Never force-push to main/master
-- Never skip pre-commit hooks (no --no-verify)
-- Never amend a commit that has been pushed to a shared branch
-
-## Scope Safety
-- Never modify files outside the directories specified in the current task
-- Never add dependencies without stating the reason and checking bundle size impact
-- Never refactor code that isn't part of the current task (note it for later instead)
-```
-
-## Quality Thresholds
-
-Thresholds beat vague adjectives. "Good coverage" means different things to different people; "80% line coverage" is unambiguous. Define your numbers here.
+这些规则没有例外。如果 Claude 即将违反其中某条，它必须停下来并标记冲突，而不是继续执行。
 
 ```markdown
-# Quality Thresholds
+# 硬性约束（不可违反的规则）
 
-## Testing
-- Minimum test coverage: 80% line coverage for new code
-- Every public function must have at least one test
-- Every bug fix must include a regression test
-- Integration tests required for any endpoint that touches the database
+## 数据安全
+- 不得在同一消息中没有用户明确确认的情况下删除生产数据
+- 不得将密钥（API keys、密码、token）存储在代码文件中或提交到版本库
+- 不得在生产数据库上运行没有 WHERE 条件的 DROP、TRUNCATE 或 DELETE
 
-## Performance
-- API response time: p95 < 200ms for read endpoints, < 500ms for writes
-- Bundle size: Total JS < 250KB gzipped (check with `npx bundlesize`)
-- No N+1 queries (use DataLoader or equivalent for batch fetching)
-- Database queries: no query > 100ms in development (enable slow query log)
+## 代码安全
+- 不得为了让代码编译通过而禁用 TypeScript 严格模式或 ESLint 规则
+- 不得静默捕获错误（空 catch 块、被吞掉的 Promise）
+- 不得在 TypeScript 中使用 `any` 类型，测试 fixture 除外
 
-## Code Quality
-- Cyclomatic complexity: no function > 15 (enforce via ESLint rule)
-- File length: no file > 400 lines (split when approaching limit)
-- Function length: no function > 50 lines
-- Nesting depth: no code > 4 levels of indentation
+## 流程安全
+- 不得强制推送到 main/master
+- 不得跳过 pre-commit 钩子（禁止 --no-verify）
+- 不得对已推送到共享分支的 commit 执行 amend
 
-## Dependencies
-- No dependency with known critical CVE
-- No dependency abandoned > 2 years (check last publish date)
-- Maximum 3 direct dependencies per feature module
+## 范围安全
+- 不得修改当前任务指定目录之外的文件
+- 不得在未说明原因并检查打包体积影响的情况下添加依赖
+- 不得重构不属于当前任务的代码（记录下来留待后续处理）
 ```
 
-## Workflow Invariants
+## 质量阈值
 
-Process constraints that ensure consistency across the session, especially when switching between tasks or when sub-agents are involved.
+阈值比模糊的形容词更有效。"良好的覆盖率"对不同的人意味着不同的事；"80% 行覆盖率"则没有歧义。在此定义你的数字。
 
 ```markdown
-# Workflow Invariants
+# 质量阈值
 
-## Commit Discipline
-- Every commit must pass all existing tests before being created
-- Commit messages follow Conventional Commits format (feat:, fix:, docs:, etc.)
-- One logical change per commit (don't mix refactor with feature)
+## 测试
+- 最低测试覆盖率：新代码 80% 行覆盖率
+- 每个公共函数至少有一个测试
+- 每个 bug 修复必须包含回归测试
+- 任何涉及数据库的接口需要集成测试
 
-## Review Before Action
-- Read a file before modifying it (no blind edits)
-- Run tests after every significant change (not just at the end)
-- Verify imports after adding/removing dependencies
+## 性能
+- API 响应时间：读接口 p95 < 200ms，写接口 < 500ms
+- 打包体积：总 JS < 250KB（gzip 压缩后，用 `npx bundlesize` 检查）
+- 无 N+1 查询（使用 DataLoader 或等效方案进行批量获取）
+- 数据库查询：开发环境中无查询超过 100ms（启用慢查询日志）
 
-## Communication
-- When uncertain between two approaches, present both with trade-offs (don't pick silently)
-- When a task will take more than 5 tool calls, outline the plan first
-- When hitting an unexpected error, diagnose before retrying
+## 代码质量
+- 圈复杂度：函数不超过 15（通过 ESLint 规则强制）
+- 文件长度：文件不超过 400 行（接近上限时拆分）
+- 函数长度：函数不超过 50 行
+- 嵌套深度：代码缩进不超过 4 层
+
+## 依赖
+- 不得使用存在已知严重 CVE 的依赖
+- 不得使用已停止维护超过 2 年的依赖（检查最后发布日期）
+- 每个功能模块最多 3 个直接依赖
 ```
 
-## Anti-Patterns to Detect
+## 工作流不变量
 
-Patterns Claude should flag when it encounters them in the codebase or in its own output. These work like automated code review rules, but for the AI's behavior during a session.
+确保会话内一致性的流程约束，尤其是在任务切换或涉及子智能体时。
 
 ```markdown
-# Anti-Patterns to Detect
+# 工作流不变量
 
-## Code Smells to Flag
-- God objects: classes with >10 public methods or >5 injected dependencies
-- Feature envy: a function that references another module's internals more than its own
-- Primitive obsession: passing >3 related primitives instead of a typed object
-- Temporal coupling: functions that must be called in a specific order without enforcement
+## 提交规范
+- 每次提交前必须通过所有现有测试
+- Commit 消息遵循 Conventional Commits 格式（feat:、fix:、docs: 等）
+- 每次提交只包含一个逻辑变更（不要混合重构和功能）
 
-## Process Smells to Flag
-- Yak shaving: spending >3 tool calls on something tangential to the task
-- Gold plating: adding features, abstractions, or error handling not requested
-- Shotgun surgery: a single change requiring edits in >5 files (suggests missing abstraction)
-- Copy-paste programming: duplicating >5 lines instead of extracting a function
+## 行动前先审查
+- 修改文件前先读文件（不盲目编辑）
+- 每次重要变更后运行测试（不只在最后运行）
+- 添加/删除依赖后验证导入
 
-## AI-Specific Anti-Patterns
-- Hallucinated APIs: calling a method that doesn't exist in the current version
-- Stale context: referencing file contents from earlier in the conversation that may have changed
-- Over-apology: spending tokens on apologies instead of fixing the issue
-- Premature optimization: adding caching, lazy loading, or memoization without evidence of a perf problem
+## 沟通
+- 在两种方案之间不确定时，列出两者并说明权衡（不要默默选择）
+- 当任务需要超过 5 次工具调用时，先概述方案
+- 遇到意外错误时，先诊断再重试
 ```
 
-## Mitigating Context Decay
+## 需要检测的反模式
 
-Three practical strategies to keep these invariants effective across long sessions:
+Claude 在代码库中或自身输出中遇到时应标记的模式。这些规则类似于自动化代码评审规则，但针对的是 AI 在会话过程中的行为。
 
-1. **Place in CLAUDE.md**: Rules in CLAUDE.md are injected at the start of every context window, surviving auto-compaction. This is the strongest position for invariants.
+```markdown
+# 需要检测的反模式
 
-2. **Use rules files for domain-specific constraints**: Put testing thresholds in `.claude/rules/testing.md`, security rules in `.claude/rules/security.md`. They load with CLAUDE.md but keep each file focused.
+## 代码坏味道
+- 上帝对象：拥有超过 10 个公共方法或超过 5 个注入依赖的类
+- 特性依恋：某函数引用其他模块内部实现的次数多于引用自身模块
+- 基本类型偏执：传递超过 3 个相关基本类型，而不是使用类型化对象
+- 时序耦合：函数必须按特定顺序调用，但没有机制强制保证这一点
 
-3. **LEARNINGS.md hook pattern**: Configure a hook that injects accumulated session learnings into sub-agents, so constraints discovered mid-session propagate to delegated work:
+## 流程坏味道
+- 刷毛边（Yak shaving）：在与任务无关的事情上花费超过 3 次工具调用
+- 镀金（Gold plating）：添加未被要求的功能、抽象或错误处理
+- 散弹式修改：单一变更需要修改超过 5 个文件（说明缺少抽象层）
+- 复制粘贴编程：复制超过 5 行代码，而不是提取函数
+
+## AI 特有反模式
+- 幻觉 API：调用当前版本中不存在的方法
+- 陈旧上下文：引用对话早期可能已发生变化的文件内容
+- 过度道歉：用 token 道歉而不是解决问题
+- 过早优化：在没有性能问题证据的情况下添加缓存、懒加载或 memoization
+```
+
+## 缓解上下文衰减
+
+保持不变量在长会话中有效的三个实用策略：
+
+1. **放入 CLAUDE.md**：CLAUDE.md 中的规则会在每个上下文窗口开始时被注入，在自动压缩时也能保留。这是放置不变量的最强位置。
+
+2. **使用规则文件处理领域特定约束**：将测试阈值放入 `.claude/rules/testing.md`，安全规则放入 `.claude/rules/security.md`。它们随 CLAUDE.md 加载，同时保持每个文件聚焦。
+
+3. **LEARNINGS.md 钩子模式**：配置一个钩子，将会话中积累的学习内容注入到子智能体中，使会话中途发现的约束能传播到委派的工作中：
 
 ```json
-// .claude/settings.json (hooks section)
+// .claude/settings.json（hooks 部分）
 {
   "hooks": {
     "PreToolUse": [{
@@ -142,12 +142,12 @@ Three practical strategies to keep these invariants effective across long sessio
 }
 ```
 
-This ensures that when Claude spawns sub-agents via the Task tool, they receive the same session-specific learnings and constraints.
+这确保 Claude 通过 Task 工具派生子智能体时，它们能接收相同的会话特定学习内容和约束。
 
 ---
 
-**Sources**:
-- 3-layer context model (Contract / Working Set / Noise): codeaholicguy.com (Feb 2026)
-- CLAUDE.md as "context compression anchors": Craig Johnston (imti.co)
-- "Thresholds, not vibes" pattern: specific numbers over vague adjectives
-- LEARNINGS.md hook pattern: community practice for propagating context to sub-agents
+**参考资料**：
+- 三层上下文模型（契约层 / 工作集 / 噪声）：codeaholicguy.com（2026 年 2 月）
+- CLAUDE.md 作为"上下文压缩锚点"：Craig Johnston (imti.co)
+- "阈值而非感觉"模式：具体数字优于模糊形容词
+- LEARNINGS.md 钩子模式：将上下文传播给子智能体的社区实践

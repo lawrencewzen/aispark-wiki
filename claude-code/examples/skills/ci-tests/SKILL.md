@@ -2,19 +2,19 @@
 
 ---
 name: ci-tests
-description: Run the test suite for the current repo — auto-detects Python (pytest/uv), Node (vitest/pnpm), or Rust (cargo test)
-argument-hint: "[file or folder target]"
+description: 运行当前仓库的测试套件——自动检测 Python（pytest/uv）、Node（vitest/pnpm）或 Rust（cargo test）
+argument-hint: "[文件或目录目标]"
 allowed-tools: [Bash]
 model: haiku
 effort: low
 disable-model-invocation: true
 ---
 
-# /ci:tests — Run tests
+# /ci:tests — 运行测试
 
-Detects the stack and runs tests with the right command.
+自动检测技术栈并使用正确的命令运行测试。
 
-## Stack detection
+## 技术栈检测
 
 ```bash
 if [ -f "uv.lock" ]; then
@@ -28,47 +28,47 @@ else
 fi
 ```
 
-## Commands by stack
+## 各技术栈命令
 
-### Python (uv + pytest)
+### Python（uv + pytest）
 
 ```bash
-# All tests
+# 全部测试
 uv run pytest --tb=short -q $ARGUMENTS
 
-# With coverage
+# 带覆盖率
 uv run pytest --cov=src --cov-report=term-missing -q
 
-# Specific file or folder
+# 指定文件或目录
 uv run pytest $ARGUMENTS -v
 ```
 
-### Node (pnpm + vitest)
+### Node（pnpm + vitest）
 
 ```bash
-# All tests
+# 全部测试
 pnpm vitest run $ARGUMENTS
 
-# With coverage
+# 带覆盖率
 pnpm vitest run --coverage
 
-# Watch mode (dev)
+# 监听模式（开发用）
 pnpm vitest
 ```
 
-### Node (npm + jest)
+### Node（npm + jest）
 
 ```bash
 npm test -- --passWithNoTests $ARGUMENTS
 ```
 
-### Rust (cargo)
+### Rust（cargo）
 
 ```bash
 cargo test --quiet $ARGUMENTS 2>&1
 ```
 
-## Expected output
+## 预期输出
 
 ```
 Tests — my-api (Python/pytest)
@@ -81,7 +81,7 @@ uv run pytest --tb=short -q
 ✅ 42 passed in 3.1s  →  Ready to push
 ```
 
-On failure:
+失败时：
 ```
 ❌ 2 failed
 
@@ -91,7 +91,7 @@ AssertionError: expected discount=0, got discount=10
 → Fix before pushing.
 ```
 
-## Usage
+## 使用方式
 
 ```
 /ci:tests
@@ -99,4 +99,4 @@ AssertionError: expected discount=0, got discount=10
 /ci:tests src/components/Button.test.tsx
 ```
 
-Target: $ARGUMENTS
+目标：$ARGUMENTS

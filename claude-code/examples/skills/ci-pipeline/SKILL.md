@@ -2,7 +2,7 @@
 
 ---
 name: ci-pipeline
-description: Push current branch and return the pipeline tracking URL (GitLab or GitHub Actions)
+description: 推送当前分支并返回流水线追踪 URL（GitLab 或 GitHub Actions）
 argument-hint: "[--force | --draft]"
 allowed-tools: [Bash]
 model: haiku
@@ -10,22 +10,22 @@ effort: low
 disable-model-invocation: true
 ---
 
-# /ci:pipeline — Push and trigger pipeline
+# /ci:pipeline — 推送并触发流水线
 
-Pushes the current branch and returns the pipeline tracking link.
+推送当前分支并返回流水线追踪链接。
 
-## Process
+## 执行流程
 
 ```bash
 BRANCH=$(git branch --show-current)
 
-# 1. Safety checks
+# 1. 安全检查
 if echo "$BRANCH" | grep -qE "^(main|master|production)$"; then
   echo "❌ Direct push to $BRANCH is not allowed. Create a feature/fix branch."
   exit 1
 fi
 
-# 2. Check for uncommitted changes
+# 2. 检查未提交的变更
 UNCOMMITTED=$(git status --porcelain | wc -l | tr -d ' ')
 if [ "$UNCOMMITTED" -gt 0 ]; then
   echo "⚠️  $UNCOMMITTED uncommitted file(s):"
@@ -35,12 +35,12 @@ if [ "$UNCOMMITTED" -gt 0 ]; then
   exit 0
 fi
 
-# 3. Push
+# 3. 推送
 echo "Pushing → origin/$BRANCH"
 git push origin "$BRANCH" 2>&1
 ```
 
-## Pipeline URL
+## 流水线 URL
 
 ### GitLab CI
 
@@ -51,7 +51,7 @@ echo ""
 echo "✅ Push OK"
 echo "   Pipeline: $WEB_URL/-/pipelines?ref=$BRANCH"
 
-# Live status via glab (if installed)
+# 通过 glab 查看实时状态（如已安装）
 if command -v glab &>/dev/null; then
   sleep 3
   glab ci status --branch "$BRANCH" 2>/dev/null || true
@@ -67,14 +67,14 @@ echo ""
 echo "✅ Push OK"
 echo "   Actions: $WEB_URL/actions?query=branch%3A$BRANCH"
 
-# Live status via gh (if installed)
+# 通过 gh 查看实时状态（如已安装）
 if command -v gh &>/dev/null; then
   sleep 5
   gh run list --branch "$BRANCH" --limit 3 2>/dev/null || true
 fi
 ```
 
-## Expected output
+## 预期输出
 
 ```
 Pushing → origin/feat/add-payment-retry
@@ -91,10 +91,10 @@ Pipeline status (after 3s):
   ⏸️  deploy     waiting
 ```
 
-## Usage
+## 使用方式
 
 ```
 /ci:pipeline
 ```
 
-Target: $ARGUMENTS
+目标：$ARGUMENTS

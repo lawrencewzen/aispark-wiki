@@ -2,48 +2,48 @@
 
 ---
 name: costs
-description: Open ccboard costs analysis tab
+description: 打开 ccboard 费用分析标签页
 category: analytics
 ---
 
-# Costs Analysis Command
+# 费用分析命令
 
-Launch ccboard and jump directly to the costs tracking and analytics tab.
+启动 ccboard 并直接跳转到费用追踪与分析标签页。
 
-## Features
+## 功能
 
-- **3 Views**:
-  - Overview: Total costs and breakdown
-  - By Model: Cost per AI model (Opus, Sonnet, Haiku)
-  - Daily Trend: Cost evolution over time
+- **3 个视图**：
+  - 概览：总费用及分项明细
+  - 按模型：各 AI 模型费用（Opus、Sonnet、Haiku）
+  - 每日趋势：费用随时间的变化曲线
 
-- **Token Breakdown**:
-  - Input tokens (prompt)
-  - Output tokens (generation)
-  - Cache read tokens (reused)
-  - Cache write tokens (stored)
+- **Token 分项明细**：
+  - 输入 token（提示词）
+  - 输出 token（生成内容）
+  - 缓存读取 token（复用内容）
+  - 缓存写入 token（存储内容）
 
-- **Pricing**: Automatic calculation based on 2024 Anthropic rates
+- **定价**：基于 Anthropic 2024 年费率自动计算
 
-## Usage
+## 用法
 
 ```bash
-# Open costs tab directly
+# 直接打开费用标签页
 /costs
 
-# Alternative: run with tab argument
+# 备选：带标签页参数运行
 ccboard --tab costs
 ```
 
-## Costs Tab Navigation
+## 费用标签页导航
 
-- `1` : Overview view
-- `2` : By Model view
-- `3` : Daily Trend view
-- `Tab` : Switch between views
-- `↑/↓` : Scroll through data
+- `1` ：概览视图
+- `2` ：按模型视图
+- `3` ：每日趋势视图
+- `Tab` ：切换视图
+- `↑/↓` ：滚动数据
 
-## Example Output
+## 示例输出
 
 ```
 Total Tokens: 17.32M
@@ -61,11 +61,11 @@ Token Distribution:
 - Cache Write: 1.04B  (1%)
 ```
 
-## Requirements
+## 前提条件
 
-ccboard must be installed. Run `/ccboard-install` if needed.
+需要已安装 ccboard。如未安装，请运行 `/ccboard-install`。
 
-## Implementation
+## 实现
 
 ```bash
 #!/bin/bash
@@ -82,5 +82,5 @@ fi
 exec ccboard
 ```
 
-**Note**: Currently launches ccboard in dashboard view. Press `6` to access Costs tab.
-Future version will support `ccboard --tab costs` for direct access.
+**注意**：当前以仪表盘视图启动 ccboard，按 `6` 键进入费用标签页。
+未来版本将支持 `ccboard --tab costs` 直接跳转。

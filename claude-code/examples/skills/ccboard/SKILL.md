@@ -2,399 +2,399 @@
 
 ---
 name: ccboard
-description: "Launch and navigate the ccboard TUI/Web dashboard for Claude Code. Use when monitoring token usage, tracking costs, browsing sessions, or checking MCP server status across projects."
+description: "启动并导航 ccboard TUI/Web 仪表板，用于 Claude Code 监控。适用于查看 Token 用量、追踪成本、浏览会话，以及检查各项目的 MCP 服务器状态。"
 allowed-tools: Bash
 effort: low
 metadata:
   version: 0.1.0
 ---
 
-# ccboard - Claude Code Dashboard
+# ccboard - Claude Code 仪表板
 
-Comprehensive TUI/Web dashboard for monitoring and managing your Claude Code usage.
+用于监控和管理 Claude Code 使用情况的综合 TUI/Web 仪表板。
 
-## Overview
+## 概述
 
-ccboard provides a unified interface to visualize and explore all your Claude Code data:
+ccboard 提供统一界面，可视化并探索所有 Claude Code 数据：
 
-- **Sessions**: Browse all conversations across your projects
-- **Statistics**: Real-time token usage, cache hit rates, activity trends
-- **MCP Servers**: Monitor and manage Model Context Protocol servers
-- **Costs**: Track spending with detailed token breakdown and pricing
-- **Configuration**: View cascading settings (Global > Project > Local)
-- **Hooks**: Explore pre/post execution hooks and automation
-- **Agents**: Manage custom agents, commands, and skills
-- **History**: Search across all messages with full-text search
+- **会话（Sessions）**：浏览跨项目的所有对话
+- **统计（Statistics）**：实时 Token 用量、缓存命中率、活跃度趋势
+- **MCP 服务器**：监控和管理 Model Context Protocol 服务器
+- **成本（Costs）**：通过详细 Token 明细和定价追踪支出
+- **配置（Configuration）**：查看级联设置（全局 > 项目 > 本地）
+- **钩子（Hooks）**：探索执行前/后钩子及自动化规则
+- **智能体（Agents）**：管理自定义智能体、命令和技能
+- **历史（History）**：跨所有消息的全文搜索
 
-## Installation
+## 安装
 
-### Via Cargo (Recommended)
+### 通过 Cargo 安装（推荐）
 
 ```bash
-# Using Claude Code command
+# 使用 Claude Code 命令
 /ccboard-install
 
-# Or manually
+# 或手动安装
 cargo install ccboard
 ```
 
-### Requirements
+### 环境要求
 
-- Rust 1.70+ and Cargo
-- Claude Code installed (reads from `~/.claude/`)
+- Rust 1.70+ 及 Cargo
+- 已安装 Claude Code（从 `~/.claude/` 读取数据）
 
-## Commands
+## 命令
 
-| Command | Description | Shortcut |
+| 命令 | 说明 | 快捷键 |
 |---------|-------------|----------|
-| `/dashboard` | Launch TUI dashboard | `ccboard` |
-| `/mcp-status` | Open MCP servers tab | Press `8` |
-| `/costs` | Open costs analysis | Press `6` |
-| `/sessions` | Browse sessions | Press `2` |
-| `/ccboard-web` | Launch web UI | `ccboard web` |
-| `/ccboard-install` | Install/update ccboard | - |
+| `/dashboard` | 启动 TUI 仪表板 | `ccboard` |
+| `/mcp-status` | 打开 MCP 服务器选项卡 | 按 `8` |
+| `/costs` | 打开成本分析 | 按 `6` |
+| `/sessions` | 浏览会话 | 按 `2` |
+| `/ccboard-web` | 启动 Web 界面 | `ccboard web` |
+| `/ccboard-install` | 安装/更新 ccboard | - |
 
-## Features
+## 功能
 
-### 8 Interactive Tabs
+### 8 个交互式选项卡
 
-#### 1. Dashboard (Press `1`)
-- Token usage statistics
-- Session count
-- Messages sent
-- Cache hit ratio
-- MCP server count
-- 7-day activity sparkline
-- Top 5 models usage gauges
+#### 1. 仪表板（按 `1`）
+- Token 用量统计
+- 会话数量
+- 已发送消息数
+- 缓存命中率
+- MCP 服务器数量
+- 7 天活跃度迷你图
+- 前 5 个模型的用量仪表盘
 
-#### 2. Sessions (Press `2`)
-- Dual-pane: Project tree + Session list
-- Metadata: timestamps, duration, tokens, models
-- Search: Filter by project, message, or model (press `/`)
-- File operations: `e` to edit JSONL, `o` to reveal in finder
+#### 2. 会话（按 `2`）
+- 双窗格：项目树 + 会话列表
+- 元数据：时间戳、持续时长、Token 数、模型
+- 搜索：按项目、消息或模型过滤（按 `/`）
+- 文件操作：`e` 编辑 JSONL，`o` 在 Finder 中显示
 
-#### 3. Config (Press `3`)
-- 4-column cascading view: Global | Project | Local | Merged
-- Settings inheritance visualization
-- MCP servers configuration
-- Rules (CLAUDE.md) preview
-- Permissions, hooks, environment variables
-- Edit config with `e` key
+#### 3. 配置（按 `3`）
+- 4 列级联视图：全局 | 项目 | 本地 | 合并结果
+- 配置继承关系可视化
+- MCP 服务器配置
+- 规则（CLAUDE.md）预览
+- 权限、钩子、环境变量
+- 按 `e` 键编辑配置
 
-#### 4. Hooks (Press `4`)
-- Event-based hook browsing (PreToolUse, UserPromptSubmit)
-- Hook bash script preview
-- Match patterns and conditions
-- File path tracking for easy editing
+#### 4. 钩子（按 `4`）
+- 基于事件的钩子浏览（PreToolUse、UserPromptSubmit）
+- 钩子 bash 脚本预览
+- 匹配模式与条件
+- 文件路径追踪，便于编辑
 
-#### 5. Agents (Press `5`)
-- 3 sub-tabs: Agents (12) | / Commands (5) | ★ Skills (0)
-- Frontmatter metadata extraction
-- File preview and editing
-- Recursive directory scanning
+#### 5. 智能体（按 `5`）
+- 3 个子选项卡：智能体（12）| / 命令（5）| ★ 技能（0）
+- Frontmatter 元数据提取
+- 文件预览与编辑
+- 递归目录扫描
 
-#### 6. Costs (Press `6`)
-- 3 views: Overview | By Model | Daily Trend
-- Token breakdown: input, output, cache read/write
-- Pricing: total estimated costs
-- Model distribution breakdown
+#### 6. 成本（按 `6`）
+- 3 个视图：概览 | 按模型 | 日趋势
+- Token 明细：输入、输出、缓存读/写
+- 定价：总估算成本
+- 模型分布明细
 
-#### 7. History (Press `7`)
-- Full-text search across all sessions
-- Activity by hour histogram (24h)
-- 7-day sparkline
-- All messages searchable
+#### 7. 历史（按 `7`）
+- 跨所有会话的全文搜索
+- 按小时活跃度直方图（24 小时）
+- 7 天迷你图
+- 所有消息均可搜索
 
-#### 8. MCP (Press `8`) **NEW**
-- Dual-pane: Server list (35%) | Details (65%)
-- Live status detection: ● Running, ○ Stopped, ? Unknown
-- Full server details: command, args, environment vars
-- Quick actions: `e` edit config, `o` reveal file, `r` refresh status
+#### 8. MCP（按 `8`）**新增**
+- 双窗格：服务器列表（35%）| 详情（65%）
+- 实时状态检测：● 运行中、○ 已停止、? 未知
+- 完整服务器详情：命令、参数、环境变量
+- 快捷操作：`e` 编辑配置，`o` 显示文件，`r` 刷新状态
 
-### Navigation
+### 导航
 
-**Global Keys**:
-- `1-8` : Jump to tab
-- `Tab` / `Shift+Tab` : Navigate tabs
-- `q` : Quit
-- `F5` : Refresh data
+**全局快捷键**：
+- `1-8` ：跳转到对应选项卡
+- `Tab` / `Shift+Tab` ：切换选项卡
+- `q` ：退出
+- `F5` ：刷新数据
 
-**Vim-style**:
-- `h/j/k/l` : Navigate (left/down/up/right)
-- `←/→/↑/↓` : Arrow alternatives
+**Vim 风格**：
+- `h/j/k/l` ：导航（左/下/上/右）
+- `←/→/↑/↓` ：方向键替代方案
 
-**Common Actions**:
-- `Enter` : View details / Focus pane
-- `e` : Edit file in $EDITOR
-- `o` : Reveal file in finder
-- `/` : Search (in Sessions/History tabs)
-- `Esc` : Close popup / Cancel
+**常用操作**：
+- `Enter` ：查看详情 / 聚焦窗格
+- `e` ：在 $EDITOR 中编辑文件
+- `o` ：在 Finder 中显示文件
+- `/` ：搜索（在会话/历史选项卡中）
+- `Esc` ：关闭弹窗 / 取消
 
-### Real-time Monitoring
+### 实时监控
 
-ccboard includes a file watcher that monitors `~/.claude/` for changes:
+ccboard 内置文件监听器，持续监控 `~/.claude/` 的变化：
 
-- **Stats updates**: Live refresh when `stats-cache.json` changes
-- **Session updates**: New sessions appear automatically
-- **Config updates**: Settings changes reflected in UI
-- **500ms debounce**: Prevents excessive updates
+- **统计更新**：`stats-cache.json` 变化时实时刷新
+- **会话更新**：新会话自动出现
+- **配置更新**：设置变更实时反映到界面
+- **500ms 防抖**：防止过于频繁的更新
 
-### File Editing
+### 文件编辑
 
-Press `e` on any item to open in your preferred editor:
+在任意条目上按 `e` 可在首选编辑器中打开：
 
-- Uses `$VISUAL` > `$EDITOR` > platform default (nano/notepad)
-- Supports: Sessions (JSONL), Config (JSON), Hooks (Shell), Agents (Markdown)
-- Terminal state preserved (alternate screen mode)
-- Cross-platform (macOS, Linux, Windows)
+- 优先级：`$VISUAL` > `$EDITOR` > 平台默认（nano/notepad）
+- 支持：会话（JSONL）、配置（JSON）、钩子（Shell）、智能体（Markdown）
+- 保留终端状态（备用屏幕模式）
+- 跨平台支持（macOS、Linux、Windows）
 
-### MCP Server Management
+### MCP 服务器管理
 
-The MCP tab provides comprehensive server monitoring:
+MCP 选项卡提供全面的服务器监控：
 
-**Status Detection** (Unix):
-- Checks running processes via `ps aux`
-- Extracts package name from command
-- Displays PID when running
-- Windows shows "Unknown" status
+**状态检测**（Unix）：
+- 通过 `ps aux` 检查运行中的进程
+- 从命令中提取包名
+- 运行时显示 PID
+- Windows 显示"未知"状态
 
-**Server Details**:
-- Full command and arguments
-- Environment variables with values
-- Config file path (`~/.claude/claude_desktop_config.json`)
-- Quick edit/reveal actions
+**服务器详情**：
+- 完整命令及参数
+- 环境变量及其值
+- 配置文件路径（`~/.claude/claude_desktop_config.json`）
+- 快速编辑/显示操作
 
-**Navigation**:
-- `h/l` or `←/→` : Switch between list and details
-- `j/k` or `↑/↓` : Select server
-- `Enter` : Focus detail pane
-- `e` : Edit MCP config
-- `o` : Reveal config in finder
-- `r` : Refresh server status
+**导航**：
+- `h/l` 或 `←/→` ：在列表与详情之间切换
+- `j/k` 或 `↑/↓` ：选择服务器
+- `Enter` ：聚焦详情窗格
+- `e` ：编辑 MCP 配置
+- `o` ：在 Finder 中显示配置
+- `r` ：刷新服务器状态
 
-## Usage Examples
+## 使用示例
 
-### Daily Monitoring
+### 日常监控
 
 ```bash
-# Launch dashboard
+# 启动仪表板
 /dashboard
 
-# Check activity and costs
-# Press '1' for overview
-# Press '6' for costs breakdown
-# Press '7' for recent history
+# 查看活跃度和成本
+# 按 '1' 查看概览
+# 按 '6' 查看成本明细
+# 按 '7' 查看最近历史
 ```
 
-### MCP Troubleshooting
+### MCP 故障排查
 
 ```bash
-# Open MCP tab
+# 打开 MCP 选项卡
 /mcp-status
 
-# Or: ccboard then press '8'
+# 或：运行 ccboard 后按 '8'
 
-# Check server status (● green = running)
-# Press 'e' to edit config if needed
-# Press 'r' to refresh status after changes
+# 检查服务器状态（● 绿色 = 运行中）
+# 如需要，按 'e' 编辑配置
+# 修改后按 'r' 刷新状态
 ```
 
-### Session Analysis
+### 会话分析
 
 ```bash
-# Browse sessions
+# 浏览会话
 /sessions
 
-# Press '/' to search
-# Filter by project: /my-project
-# Filter by model: /opus
-# Press 'e' on session to view full JSONL
+# 按 '/' 进行搜索
+# 按项目过滤：/my-project
+# 按模型过滤：/opus
+# 在会话上按 'e' 查看完整 JSONL
 ```
 
-### Cost Tracking
+### 成本追踪
 
 ```bash
-# View costs
+# 查看成本
 /costs
 
-# Press '1' for overview
-# Press '2' for breakdown by model
-# Press '3' for daily trend
+# 按 '1' 查看概览
+# 按 '2' 查看按模型明细
+# 按 '3' 查看日趋势
 
-# Identify expensive sessions
-# Track cache efficiency (99.9% hit rate)
+# 找出高消耗会话
+# 追踪缓存效率（99.9% 命中率）
 ```
 
-## Web Interface
+## Web 界面
 
-Launch browser-based interface for remote monitoring:
+启动基于浏览器的界面，用于远程监控：
 
 ```bash
-# Launch web UI
+# 启动 Web 界面
 /ccboard-web
 
-# Or with custom port
+# 或指定自定义端口
 ccboard web --port 8080
 
-# Access at http://localhost:3333
+# 访问地址：http://localhost:3333
 ```
 
-**Features**:
-- Same data as TUI (shared backend)
-- Server-Sent Events (SSE) for live updates
-- Responsive design (desktop/tablet/mobile)
-- Concurrent multi-user access
+**功能**：
+- 与 TUI 数据相同（共享后端）
+- 通过 Server-Sent Events（SSE）实现实时更新
+- 响应式设计（桌面/平板/移动端）
+- 支持多用户并发访问
 
-**Run both simultaneously**:
+**同时运行两种界面**：
 ```bash
 ccboard both --port 3333
 ```
 
-## Architecture
+## 架构
 
-ccboard is a single Rust binary with dual frontends:
+ccboard 是一个包含双前端的单一 Rust 二进制文件：
 
 ```
 ccboard/
-├── ccboard-core/      # Parsers, models, data store, watcher
-├── ccboard-tui/       # Ratatui frontend (8 tabs)
-└── ccboard-web/       # Axum + Leptos frontend
+├── ccboard-core/      # 解析器、模型、数据存储、文件监听
+├── ccboard-tui/       # Ratatui 前端（8 个选项卡）
+└── ccboard-web/       # Axum + Leptos 前端
 ```
 
-**Data Sources**:
-- `~/.claude/stats-cache.json` - Statistics
-- `~/.claude/claude_desktop_config.json` - MCP config
-- `~/.claude/projects/*/` - Session JSONL files
-- `~/.claude/settings.json` - Global settings
-- `.claude/settings.json` - Project settings
-- `.claude/settings.local.json` - Local overrides
-- `.claude/CLAUDE.md` - Rules and behavior
+**数据来源**：
+- `~/.claude/stats-cache.json` - 统计数据
+- `~/.claude/claude_desktop_config.json` - MCP 配置
+- `~/.claude/projects/*/` - 会话 JSONL 文件
+- `~/.claude/settings.json` - 全局设置
+- `.claude/settings.json` - 项目设置
+- `.claude/settings.local.json` - 本地覆盖配置
+- `.claude/CLAUDE.md` - 规则与行为定义
 
-## Troubleshooting
+## 故障排查
 
-### ccboard not found
+### 找不到 ccboard
 
 ```bash
-# Check installation
+# 检查安装情况
 which ccboard
 
-# Install if needed
+# 如需安装
 /ccboard-install
 ```
 
-### No data visible
+### 无数据显示
 
 ```bash
-# Verify Claude Code is installed
+# 确认 Claude Code 已安装
 ls ~/.claude/
 
-# Check stats file exists
+# 检查统计文件是否存在
 cat ~/.claude/stats-cache.json
 
-# Run with specific project
+# 指定项目运行
 ccboard --project ~/path/to/project
 ```
 
-### MCP status shows "Unknown"
+### MCP 状态显示"未知"
 
-- Status detection requires Unix (macOS/Linux)
-- Windows shows "Unknown" by default
-- Check if server process is actually running: `ps aux | grep <server-name>`
+- 状态检测需要 Unix 系统（macOS/Linux）
+- Windows 默认显示"未知"
+- 检查服务器进程是否确实在运行：`ps aux | grep <server-name>`
 
-### File watcher not working
+### 文件监听器不工作
 
-- Ensure `notify` crate supports your platform
-- Check file permissions on `~/.claude/`
-- Restart ccboard if file system events missed
+- 确认 `notify` crate 支持当前平台
+- 检查 `~/.claude/` 的文件权限
+- 若文件系统事件丢失，重启 ccboard
 
-## Advanced Usage
+## 高级用法
 
-### Command-line Options
+### 命令行选项
 
 ```bash
-ccboard --help              # Show all options
-ccboard --claude-home PATH  # Custom Claude directory
-ccboard --project PATH      # Specific project
-ccboard stats               # Print stats and exit
-ccboard web --port 8080     # Web UI on port 8080
-ccboard both                # TUI + Web simultaneously
+ccboard --help              # 显示所有选项
+ccboard --claude-home PATH  # 自定义 Claude 目录
+ccboard --project PATH      # 指定项目
+ccboard stats               # 打印统计信息后退出
+ccboard web --port 8080     # 在 8080 端口启动 Web 界面
+ccboard both                # 同时运行 TUI + Web
 ```
 
-### Environment Variables
+### 环境变量
 
 ```bash
-# Editor preference
+# 编辑器偏好
 export EDITOR=vim
 export VISUAL=code
 
-# Custom Claude home
+# 自定义 Claude 主目录
 export CLAUDE_HOME=~/custom/.claude
 ```
 
-### Integration with Claude Code
+### 与 Claude Code 集成
 
-ccboard reads **read-only** from Claude Code directories:
+ccboard 以**只读**方式从 Claude Code 目录读取数据：
 
-- Non-invasive monitoring
-- No modifications to Claude data
-- Safe to run concurrently with Claude Code
-- File watcher detects changes in real-time
+- 非侵入式监控
+- 不修改 Claude 数据
+- 可与 Claude Code 安全并发运行
+- 文件监听器实时检测变化
 
-## Performance
+## 性能
 
-- **Binary size**: 2.4MB (release build)
-- **Initial load**: <2s for 1,000+ sessions
-- **Memory**: ~50MB typical usage
-- **CPU**: <5% during monitoring
-- **Lazy loading**: Session content loaded on-demand
+- **二进制大小**：2.4MB（Release 构建）
+- **初始加载**：1000+ 会话在 2 秒内完成
+- **内存占用**：典型使用约 50MB
+- **CPU 占用**：监控过程中低于 5%
+- **懒加载**：会话内容按需加载
 
-## Limitations
+## 已知限制
 
-Current version (0.1.0):
+当前版本（0.1.0）：
 
-- **Read-only**: No write operations to Claude data
-- **MCP status**: Unix only (Windows shows "Unknown")
-- **Web UI**: In development (TUI is primary interface)
-- **Search**: Basic substring matching (no fuzzy search yet)
+- **只读**：不支持对 Claude 数据的写操作
+- **MCP 状态**：仅支持 Unix（Windows 显示"未知"）
+- **Web 界面**：仍在开发中（TUI 为主要界面）
+- **搜索**：基础子字符串匹配（暂不支持模糊搜索）
 
-Future roadmap:
+未来规划：
 
-- Enhanced MCP server management (start/stop)
-- MCP protocol health checks
-- Export reports (PDF, JSON, CSV)
-- Config editing (write settings.json)
-- Session resume integration
-- Enhanced search with fuzzy matching
+- 增强 MCP 服务器管理（启动/停止）
+- MCP 协议健康检查
+- 导出报告（PDF、JSON、CSV）
+- 配置编辑（写入 settings.json）
+- 会话恢复集成
+- 增强搜索（支持模糊匹配）
 
-## Contributing
+## 参与贡献
 
-ccboard is open source (MIT OR Apache-2.0).
+ccboard 是开源项目（MIT OR Apache-2.0）。
 
-Repository: https://github.com/{OWNER}/ccboard
+仓库地址：https://github.com/{OWNER}/ccboard
 
-Contributions welcome:
-- Bug reports and feature requests
-- Pull requests for new features
-- Documentation improvements
-- Platform-specific testing (Windows, Linux)
+欢迎以下形式的贡献：
+- 提交 Bug 报告和功能请求
+- 提交新功能 PR
+- 改进文档
+- 平台特定测试（Windows、Linux）
 
-## Credits
+## 致谢
 
-Built with:
-- [Ratatui](https://ratatui.rs/) - Terminal UI framework
-- [Axum](https://github.com/tokio-rs/axum) - Web framework
-- [Leptos](https://leptos.dev/) - Reactive frontend
-- [Notify](https://github.com/notify-rs/notify) - File watcher
-- [Serde](https://serde.rs/) - Serialization
+构建所用技术：
+- [Ratatui](https://ratatui.rs/) - 终端 UI 框架
+- [Axum](https://github.com/tokio-rs/axum) - Web 框架
+- [Leptos](https://leptos.dev/) - 响应式前端
+- [Notify](https://github.com/notify-rs/notify) - 文件监听器
+- [Serde](https://serde.rs/) - 序列化
 
-## License
+## 许可证
 
 MIT OR Apache-2.0
 
 ---
 
-**Questions?**
+**有疑问？**
 
-- GitHub Issues: https://github.com/{OWNER}/ccboard/issues
-- Documentation: https://github.com/{OWNER}/ccboard
-- Claude Code: https://claude.ai/code
+- GitHub Issues：https://github.com/{OWNER}/ccboard/issues
+- 文档：https://github.com/{OWNER}/ccboard
+- Claude Code：https://claude.ai/code

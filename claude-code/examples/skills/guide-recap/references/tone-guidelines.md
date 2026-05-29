@@ -1,79 +1,79 @@
 > 📚 **AI Spark Wiki** · Claude Code 知识库
 
-# Tone Guidelines
+# 语调规范
 
-Rules for social content generated from CHANGELOG entries. Central principle: **engagement through value, not hype**.
+基于 CHANGELOG 条目生成社交内容的规则。核心原则：**以价值吸引受众，而非噱头**。
 
-## DO / DON'T Checklist
+## 应做 / 禁做 清单
 
-### DO
+### 应做
 
-- Use concrete numbers from the CHANGELOG (`227 -> 257`, `+522 lines`, `4 new diagrams`)
-- State what the user can do now (`Test your knowledge`, `New visual guide for...`)
-- Ask genuine questions (`Visual learner?`, `How do you review PRs?`)
-- Credit named sources (`Based on Pat Cullen's workflow`, `From Addy Osmani's research`)
-- Use precise action verbs (`added`, `integrated`, `documented`, `evaluated`)
-- Reference specific patterns by name (`Permutation Frameworks`, `Split-Role Agents`)
+- 使用 CHANGELOG 中的具体数字（`227 -> 257`、`+522 lines`、`4 new diagrams`）
+- 说明用户现在能做什么（`测试你的知识`、`新增视觉指南……`）
+- 提出真实的问题（`视觉学习者？`、`你是如何 review PR 的？`）
+- 注明有名有姓的来源（`基于 Pat Cullen 的工作流`、`来自 Addy Osmani 的研究`）
+- 使用精准的动作动词（`added`、`integrated`、`documented`、`evaluated`）
+- 按名称引用具体模式（`Permutation Frameworks`、`Split-Role Agents`）
 
-### DON'T
+### 禁做
 
-- Use hype words: `game-changer`, `revolutionary`, `incredible`, `amazing`, `must-have`
-- Use FOMO: `You're missing out`, `Don't fall behind`, `Everyone is using this`
-- Use fake urgency: `Act now`, `Limited time`, `Before it's too late`
-- Use clickbait hooks: `This ONE trick`, `You won't believe`, `Hidden feature`
-- Invent metrics: `10x faster`, `saves hours`, `boosts productivity by 300%`
-- Use more than 3-4 emojis per LinkedIn post, 2 per tweet
-- Over-promise: `The only guide you'll ever need`, `Complete mastery`
+- 使用炒作词汇：`game-changer`、`revolutionary`、`incredible`、`amazing`、`must-have`
+- 制造 FOMO：`你落后了`、`别被落下`、`所有人都在用这个`
+- 制造虚假紧迫感：`立即行动`、`限时`、`赶在截止前`
+- 使用标题党：`这一个技巧`、`你不会相信`、`隐藏功能`
+- 捏造数据：`快 10 倍`、`节省数小时`、`提升 300% 生产力`
+- LinkedIn 帖子超过 3-4 个表情符号，推文超过 2 个
+- 过度承诺：`你唯一需要的指南`、`完全掌握`
 
-## Language Rules
+## 语言规则
 
-### French (FR)
+### 法语（FR）
 
-| Format | Register | Example |
-|--------|----------|---------|
-| LinkedIn | Vouvoiement | `Vous utilisez Claude Code au quotidien ?` |
-| Newsletter | Vouvoiement | `Vous trouverez dans cette version...` |
-| Twitter/X | Tutoiement | `Tu connais les Permutation Frameworks ?` |
-| Slack | Tutoiement | `Nouvelle version dispo, check ca` |
+| 格式 | 语体 | 示例 |
+|------|------|------|
+| LinkedIn | 正式（Vouvoiement） | `Vous utilisez Claude Code au quotidien ?` |
+| Newsletter | 正式（Vouvoiement） | `Vous trouverez dans cette version...` |
+| Twitter/X | 非正式（Tutoiement） | `Tu connais les Permutation Frameworks ?` |
+| Slack | 非正式（Tutoiement） | `Nouvelle version dispo, check ca` |
 
-### English (EN)
+### 英语（EN）
 
-- Direct address (`you`) in all formats
-- American English spelling (`optimize`, `analyze`, not `optimise`, `analyse`)
-- No British idioms or spellings
+- 所有格式均用第二人称（`you`）直接称呼
+- 使用美式英语拼写（`optimize`、`analyze`，而非 `optimise`、`analyse`）
+- 不使用英式英语习语或拼写
 
-## Emoji Budget
+## 表情符号预算
 
-| Format | Max Emojis | Placement |
-|--------|-----------|-----------|
-| LinkedIn | 3-4 | Hook line (0-1), bullets (1 each, max 3), CTA (0-1) |
-| Twitter | 2 | Hook (1), key point (1) |
-| Newsletter | 2-3 | Section headers only |
-| Slack | 4-6 | Status markers, emphasis |
+| 格式 | 最多表情符号数 | 放置位置 |
+|------|-------------|---------|
+| LinkedIn | 3-4 | 开头（0-1）、要点（每项 1 个，最多 3 个）、CTA（0-1） |
+| Twitter | 2 | 开头（1）、关键点（1） |
+| Newsletter | 2-3 | 仅用于章节标题 |
+| Slack | 4-6 | 状态标记、强调 |
 
-Allowed emojis: `+`, `->`, technical symbols preferred over decorative ones.
-Avoid: fire, rocket, explosion, 100, mind-blown (marketing cliches).
+推荐使用：`+`、`->`、技术符号优先于装饰性符号。
+避免：火焰、火箭、爆炸、100、脑洞大开（营销老梗）。
 
-## CTA Rules
+## CTA 规则
 
-| Format | CTA Style | Link Target |
-|--------|-----------|-------------|
-| LinkedIn | Soft question or value statement | Landing site URL |
-| Twitter | Short action or link | GitHub repo |
-| Newsletter | Explicit link with context | Landing site URL |
-| Slack | Direct link | GitHub repo |
+| 格式 | CTA 风格 | 链接目标 |
+|------|---------|---------|
+| LinkedIn | 软性提问或价值陈述 | 落地页 URL |
+| Twitter | 简短行动呼吁或链接 | GitHub 仓库 |
+| Newsletter | 带上下文的明确链接 | 落地页 URL |
+| Slack | 直接链接 | GitHub 仓库 |
 
-No `Click here`, `Check this out`, `Link in bio` patterns.
+禁止使用：`点击此处`、`看看这个`、`链接在 bio` 等模式。
 
-## Quality Checklist (Pre-Output)
+## 输出前质量检查清单
 
-Before outputting any social content, verify:
+在输出任何社交内容前，请逐项确认：
 
-1. [ ] Every number comes from the actual CHANGELOG entry
-2. [ ] No hype words (grep against DON'T list)
-3. [ ] Emoji count within budget
-4. [ ] FR register matches format (vous/tu)
-5. [ ] EN uses American spelling
-6. [ ] CTA links to correct target
-7. [ ] Named sources credited when used
-8. [ ] No invented metrics or percentages
+1. [ ] 所有数字均来自实际的 CHANGELOG 条目
+2. [ ] 无炒作词汇（对照禁做清单检查）
+3. [ ] 表情符号数量在预算内
+4. [ ] 法语语体与格式匹配（vous/tu）
+5. [ ] 英语使用美式拼写
+6. [ ] CTA 链接指向正确目标
+7. [ ] 使用有名有姓来源时已注明出处
+8. [ ] 无捏造指标或百分比

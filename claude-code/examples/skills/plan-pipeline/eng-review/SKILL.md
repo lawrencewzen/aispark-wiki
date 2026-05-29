@@ -2,163 +2,158 @@
 
 ---
 name: plan-pipeline-eng-review
-description: Engineering architecture gate — lock architecture, diagrams, edge cases, and test matrix before writing implementation code
+description: 工程架构关卡 —— 在编写实现代码前锁定架构、图表、边界情况和测试矩阵
 effort: medium
 disable-model-invocation: true
 ---
 
-# /plan-pipeline:eng-review — Engineering Architecture Gate
+# /plan-pipeline:eng-review — 工程架构关卡
 
-Post-direction, pre-implementation command. Takes validated product direction and returns a buildable technical spec with diagrams. Forces the system to think through architecture before a single line of implementation code is written.
+方向确定后、实现开始前的命令。接收已验证的产品方向，返回可构建的技术规格说明（含图表）。强制系统在编写任何一行实现代码之前先思考架构。
 
-**Use after `/plan-pipeline:ceo-review` has locked direction. Still in plan mode.**
-
----
-
-## The Problem This Solves
-
-Once product direction is locked, the next failure mode is vague architecture. "The system will handle it" is not a plan. This command forces explicit answers to the hard technical questions before they become production incidents.
-
-The key unlock: **forcing diagram generation**. Diagrams surface hidden assumptions that prose keeps vague. A sequence diagram makes you specify who calls what. A state machine makes you enumerate every failure mode explicitly.
+**在 `/plan-pipeline:ceo-review` 锁定方向后使用。仍处于计划模式。**
 
 ---
 
-## When to Use
+## 解决的问题
 
-- After product direction is validated (post `/plan-pipeline:ceo-review` or equivalent)
-- Before any implementation work starts on a non-trivial feature
-- When the feature has async components, external dependencies, or multi-step flows
-- Any time "the architecture is clear" needs to be proven, not assumed
+产品方向一旦锁定，下一个失败模式就是架构模糊。"系统会处理它"不是计划。这个命令强制在问题变成生产事故之前，先明确回答那些棘手的技术问题。
+
+关键突破：**强制生成图表**。图表能暴露文字叙述中隐藏的假设。时序图让你明确谁调用什么；状态机让你枚举所有失败模式。
 
 ---
 
-## What It Should Produce
+## 何时使用
 
-| Output | Why it matters |
+- 产品方向已验证之后（`/plan-pipeline:ceo-review` 或同等流程完成后）
+- 非琐碎功能开始任何实现工作之前
+- 功能涉及异步组件、外部依赖或多步骤流程时
+- 任何需要证明（而非假设）"架构已清晰"的时候
+
+---
+
+## 应产出的内容
+
+| 产出 | 重要性 |
 |--------|----------------|
-| Architecture diagram (Mermaid) | Makes component boundaries explicit |
-| Data flow diagram | Shows where data transforms and who owns what |
-| State machine for core flow | Forces enumeration of all states including failures |
-| Sync vs async boundary decisions | Prevents "just make it async" without reasoning |
-| Failure mode inventory | Every failure path, not just happy path |
-| Trust boundary map | Where do you accept external input? What do you validate? |
-| Test matrix | What needs to be tested and at which layer |
+| 架构图（Mermaid） | 明确组件边界 |
+| 数据流图 | 展示数据在哪里转换、谁负责什么 |
+| 核心流程的状态机 | 强制枚举所有状态（包括失败状态） |
+| 同步与异步边界决策 | 防止没有理由地"直接做成异步" |
+| 失败模式清单 | 每条失败路径，不只是正常路径 |
+| 信任边界图 | 在哪里接受外部输入？验证什么？ |
+| 测试矩阵 | 需要测试什么以及在哪一层测试 |
 
 ---
 
-## Prompt Template
+## 提示词模板
 
 ```markdown
 # /plan-pipeline:eng-review
 
-You are in engineering manager / tech lead mode. Direction is locked.
-Your job is to make it buildable — turn the product direction into a
-technical spec that an engineer can implement without making architecture
-decisions on the fly.
+你处于工程经理 / 技术负责人模式。方向已锁定。
+你的任务是让它可构建 —— 将产品方向转化为
+工程师无需临时做架构决策就能实现的技术规格说明。
 
-Do NOT question the product direction. Do NOT suggest scope changes.
-Do NOT implement anything. Return a technical spec.
+不要质疑产品方向。不要建议范围变更。
+不要实现任何内容。返回技术规格说明。
 
-## Step 1: Restate the Feature
+## 第 1 步：重述功能
 
-1-2 sentences: what is being built. Confirm you are working from the
-correct brief.
+1-2 句话：正在构建什么。确认你是在基于正确的需求说明工作。
 
-## Step 2: Architecture Diagram
+## 第 2 步：架构图
 
-Draw the component architecture in Mermaid:
-- All components involved (frontend, backend, jobs, storage, external APIs)
-- Boundaries between components
-- Data flow directions
+用 Mermaid 绘制组件架构：
+- 涉及的所有组件（前端、后端、任务、存储、外部 API）
+- 组件之间的边界
+- 数据流方向
 
 ```mermaid
 graph LR
     ...
 ```
 
-## Step 3: Core Flow — Sequence Diagram
+## 第 3 步：核心流程 —— 时序图
 
-Draw the happy path as a sequence diagram:
-- Which components call which, in what order
-- What data passes at each step
-- Where async handoffs happen
+将正常路径绘制为时序图：
+- 哪些组件调用哪些组件，按什么顺序
+- 每一步传递什么数据
+- 异步交接发生在哪里
 
 ```mermaid
 sequenceDiagram
     ...
 ```
 
-## Step 4: State Machine
+## 第 4 步：状态机
 
-Draw the state machine for the core domain object:
-- All valid states
-- All transitions and their triggers
-- Terminal states (success AND failure)
+绘制核心领域对象的状态机：
+- 所有有效状态
+- 所有转换及其触发条件
+- 终止状态（成功与失败）
 
 ```mermaid
 stateDiagram-v2
     ...
 ```
 
-## Step 5: Sync vs Async Decisions
+## 第 5 步：同步与异步决策
 
-For each operation in the flow, decide:
-- **Synchronous** (blocks the request): why, and what is the latency budget
-- **Asynchronous** (background job): why, what triggers retry, how does the
-  caller know it succeeded
+对流程中的每个操作，决定：
+- **同步**（阻塞请求）：原因，以及延迟预算是多少
+- **异步**（后台任务）：原因，什么触发重试，调用方如何知道成功
 
-## Step 6: Failure Mode Inventory
+## 第 6 步：失败模式清单
 
-For each step in the flow, enumerate:
-- What can fail
-- How it fails (silently? loudly? partial success?)
-- What the recovery path is
-- What the user sees
+对流程中的每一步，枚举：
+- 什么可能失败
+- 如何失败（静默？明显？部分成功？）
+- 恢复路径是什么
+- 用户看到什么
 
-Flag any failure that is currently silent.
+标记任何当前静默失败的情况。
 
-## Step 7: Trust Boundaries
+## 第 7 步：信任边界
 
-For each external input (user uploads, API responses, webhook payloads):
-- What do you trust? What do you validate?
-- Where could malicious input cause harm?
-- Is any external data flowing into further processing (prompt injection risk)?
+对每个外部输入（用户上传、API 响应、Webhook 载荷）：
+- 你信任什么？你验证什么？
+- 恶意输入在哪里可能造成危害？
+- 是否有外部数据流入进一步处理（提示词注入风险）？
 
-## Step 8: Test Matrix
+## 第 8 步：测试矩阵
 
-| Layer | What to test | Why |
+| 层级 | 测试内容 | 原因 |
 |-------|-------------|-----|
-| Unit | ... | ... |
-| Integration | ... | ... |
+| 单元 | ... | ... |
+| 集成 | ... | ... |
 | E2E | ... | ... |
 
-Identify any failure mode from Step 6 that does not have a corresponding test.
+找出第 6 步中没有对应测试的失败模式。
 
-## Step 9: Open Questions
+## 第 9 步：待解问题
 
-List any architectural decision that is genuinely unclear and needs a human
-decision before implementation can start. Not a comprehensive list — only
-blockers.
+列出任何真正不清楚、需要人工决策才能开始实现的架构决策。不是全面清单 —— 只列阻塞项。
 ```
 
 ---
 
-## Example
+## 示例
 
-**Feature**: Smart listing creation from photo (post-`/plan-pipeline:ceo-review`)
+**功能**：从照片智能创建列表（`/plan-pipeline:ceo-review` 完成后）
 
-**Output excerpt**:
+**产出摘录**：
 ```mermaid
 graph LR
-    Upload[Photo Upload] --> Storage[Object Storage]
-    Storage --> Classify[Vision Classification Job]
-    Classify --> Enrich[Web Enrichment Job]
-    Enrich --> DraftGen[Draft Generation]
-    DraftGen --> DB[(Listings DB)]
-    DraftGen --> UI[Listing Editor UI]
+    Upload[照片上传] --> Storage[对象存储]
+    Storage --> Classify[视觉分类任务]
+    Classify --> Enrich[Web 丰富化任务]
+    Enrich --> DraftGen[草稿生成]
+    DraftGen --> DB[(列表数据库)]
+    DraftGen --> UI[列表编辑器 UI]
 ```
 
-State machine:
+状态机：
 ```mermaid
 stateDiagram-v2
     [*] --> pending
@@ -172,20 +167,20 @@ stateDiagram-v2
     draft_ready --> discarded
 ```
 
-Failure modes:
-- Classification fails → degrade to manual listing (not silent failure)
-- Enrichment partially fails → use what succeeded, flag missing fields
-- Upload succeeds, classification job never starts → orphaned file, cleanup job required
-- Web data in draft generation → prompt injection vector, sanitize before passing to LLM
+失败模式：
+- 分类失败 → 降级为手动列表（非静默失败）
+- 丰富化部分失败 → 使用已成功的部分，标记缺失字段
+- 上传成功但分类任务从未启动 → 孤立文件，需要清理任务
+- Web 数据进入草稿生成 → 提示词注入向量，传给 LLM 前须清洗
 
 ---
 
-## Pipeline Position
+## 流水线位置
 
 ```
-/plan-pipeline:ceo-review    → product direction locked
-/plan-pipeline:eng-review    → architecture locked        ← you are here
-/plan-pipeline:start         → produce implementation plan
-/plan-pipeline:validate      → validate before execution
-/plan-pipeline:execute       → execute to merged PR
+/plan-pipeline:ceo-review    → 产品方向锁定
+/plan-pipeline:eng-review    → 架构锁定        ← 当前位置
+/plan-pipeline:start         → 生成实现计划
+/plan-pipeline:validate      → 执行前验证
+/plan-pipeline:execute       → 执行至 PR 合并
 ```

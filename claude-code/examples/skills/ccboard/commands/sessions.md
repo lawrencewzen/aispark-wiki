@@ -2,76 +2,76 @@
 
 ---
 name: sessions
-description: Browse Claude Code sessions history
+description: 浏览 Claude Code 会话历史
 category: exploration
 ---
 
-# Sessions Browser Command
+# 会话浏览命令
 
-Launch ccboard and jump directly to the sessions exploration tab.
+启动 ccboard 并直接跳转到会话探索标签页。
 
-## Features
+## 功能
 
-- **Project Tree**: Navigate 33+ projects with nested structure
-- **Session List**: 1.2K+ sessions with metadata
-- **Search**: Filter sessions by project, message, or model (press `/`)
-- **Session Details**:
-  - Timestamps (start, end, duration)
-  - Token usage breakdown
-  - Models used
-  - First message preview
-- **File Operations**:
-  - `e` : Open session JSONL in editor
-  - `o` : Reveal session file in finder
+- **项目树**：浏览 33+ 个项目的嵌套结构
+- **会话列表**：1200+ 条会话及其元数据
+- **搜索**：按项目、消息或模型过滤会话（按 `/` 激活）
+- **会话详情**：
+  - 时间戳（开始、结束、时长）
+  - Token 用量分项
+  - 使用的模型
+  - 首条消息预览
+- **文件操作**：
+  - `e` ：在编辑器中打开会话 JSONL 文件
+  - `o` ：在访达中显示会话文件
 
-## Usage
+## 用法
 
 ```bash
-# Open sessions tab directly
+# 直接打开会话标签页
 /sessions
 
-# Alternative: run with tab argument
+# 备选：带标签页参数运行
 ccboard --tab sessions
 ```
 
-## Sessions Tab Navigation
+## 会话标签页导航
 
-- `←/→` : Switch between project tree and session list
-- `↑/↓` : Navigate items
-- `Enter` : View session details
-- `/` : Open search input
-- `e` : Edit selected session JSONL file
-- `o` : Reveal session file
+- `←/→` ：在项目树和会话列表之间切换
+- `↑/↓` ：导航列表项
+- `Enter` ：查看会话详情
+- `/` ：打开搜索输入框
+- `e` ：编辑选中的会话 JSONL 文件
+- `o` ：显示会话文件
 
-## Session Metadata
+## 会话元数据
 
-Each session shows:
-- **ID**: Unique session identifier
-- **Started**: First message timestamp
-- **Duration**: Total conversation time
-- **Messages**: Message count
-- **Tokens**: Total tokens used
-- **Models**: AI models used (e.g., opus-4.5, sonnet-4.5)
-- **Preview**: First user message (200 chars)
+每条会话显示：
+- **ID**：唯一会话标识符
+- **Started**：首条消息的时间戳
+- **Duration**：对话总时长
+- **Messages**：消息条数
+- **Tokens**：消耗的总 token 数
+- **Models**：使用的 AI 模型（如 opus-4.5、sonnet-4.5）
+- **Preview**：首条用户消息（最多 200 个字符）
 
-## Search Examples
+## 搜索示例
 
 ```
-# Search by project name
+# 按项目名称搜索
 /my-project
 
-# Search by model
+# 按模型搜索
 /opus
 
-# Search by message content
+# 按消息内容搜索
 /implement feature
 ```
 
-## Requirements
+## 前提条件
 
-ccboard must be installed. Run `/ccboard-install` if needed.
+需要已安装 ccboard。如未安装，请运行 `/ccboard-install`。
 
-## Implementation
+## 实现
 
 ```bash
 #!/bin/bash
@@ -88,5 +88,5 @@ fi
 exec ccboard
 ```
 
-**Note**: Currently launches ccboard in dashboard view. Press `2` to access Sessions tab.
-Future version will support `ccboard --tab sessions` for direct access.
+**注意**：当前以仪表盘视图启动 ccboard，按 `2` 键进入会话标签页。
+未来版本将支持 `ccboard --tab sessions` 直接跳转。

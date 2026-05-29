@@ -1,40 +1,40 @@
 > 📚 **AI Spark Wiki** · Claude Code 知识库
 
-# Landing Page Pattern Reference
+# 落地页模式参考
 
-Documentation of the established landing page pattern used in `claude-code-ultimate-guide-landing` and `claude-cowork-guide-landing`.
+记录了在 `claude-code-ultimate-guide-landing` 和 `claude-cowork-guide-landing` 中使用的既有落地页模式。
 
-## Tech Stack
+## 技术栈
 
-| Component | Choice | Rationale |
+| 组件 | 选择 | 理由 |
 |-----------|--------|-----------|
-| Framework | None (vanilla) | Simplicity, no build step, easy hosting |
-| Styling | Single CSS file | Maintainable, no preprocessor needed |
-| JavaScript | Vanilla + MiniSearch CDN | Minimal dependencies, lazy-loaded |
-| Deployment | GitHub Pages + Actions | Free, automatic, reliable |
-| Search | MiniSearch with fallback | Client-side, fast, no backend needed |
+| 框架 | 无（原生） | 简洁，无需构建步骤，易于托管 |
+| 样式 | 单一 CSS 文件 | 可维护，无需预处理器 |
+| JavaScript | 原生 + MiniSearch CDN | 依赖最少，懒加载 |
+| 部署 | GitHub Pages + Actions | 免费、自动、可靠 |
+| 搜索 | MiniSearch + 降级方案 | 客户端，速度快，无需后端 |
 
-## File Structure
+## 文件结构
 
 ```
 project-landing/
-├── index.html              # Main landing (all sections)
-├── styles.css              # Complete stylesheet (~3000 lines)
-├── search.js               # Search modal + keyboard nav
-├── search-data.js          # Search index arrays
-├── *-data.js               # Additional data files (optional)
-├── favicon.svg             # Project icon
+├── index.html              # 主落地页（所有区块）
+├── styles.css              # 完整样式表（约 3000 行）
+├── search.js               # 搜索弹窗 + 键盘导航
+├── search-data.js          # 搜索索引数组
+├── *-data.js               # 额外数据文件（可选）
+├── favicon.svg             # 项目图标
 ├── robots.txt              # SEO
-├── CLAUDE.md               # Claude instructions
-├── README.md               # Repo documentation
-├── assets/                 # Images, screenshots
+├── CLAUDE.md               # Claude 指令
+├── README.md               # 仓库文档
+├── assets/                 # 图片、截图
 └── .github/workflows/
-    └── static.yml          # Pages deployment
+    └── static.yml          # Pages 部署
 ```
 
-## HTML Structure
+## HTML 结构
 
-### Document Head
+### 文档头部
 
 ```html
 <!DOCTYPE html>
@@ -69,7 +69,7 @@ project-landing/
 </head>
 ```
 
-### Body Structure
+### Body 结构
 
 ```html
 <body>
@@ -82,23 +82,23 @@ project-landing/
     <section class="features">...</section>
     <section class="install">...</section>
     <section class="faq">...</section>
-    <!-- More sections -->
+    <!-- 更多区块 -->
   </main>
 
   <footer class="footer">...</footer>
 
-  <!-- Search Modal -->
+  <!-- 搜索弹窗 -->
   <div id="search-modal" class="search-modal" role="dialog" aria-modal="true">...</div>
 
-  <!-- Scripts (order matters) -->
+  <!-- Scripts（顺序重要） -->
   <script src="search-data.js"></script>
   <script src="search.js"></script>
 </body>
 ```
 
-## Section Patterns
+## 区块模式
 
-### Header
+### 头部导航
 
 ```html
 <header class="header">
@@ -127,14 +127,14 @@ project-landing/
 </header>
 ```
 
-### Hero Section
+### Hero 区块
 
 ```html
 <section class="hero">
   <div class="container">
     <div class="hero-badges">
       <img src="https://img.shields.io/badge/..." alt="...">
-      <!-- More badges -->
+      <!-- 更多徽章 -->
     </div>
     <h1 class="hero-title">[Main Title]</h1>
     <p class="hero-tagline">[Tagline/TL;DR]</p>
@@ -150,7 +150,7 @@ project-landing/
 </section>
 ```
 
-### Risk Banner (Optional)
+### 风险提示横幅（可选）
 
 ```html
 <div class="risk-banner" role="alert">
@@ -164,7 +164,7 @@ project-landing/
 </div>
 ```
 
-### Features Grid
+### 功能特性网格
 
 ```html
 <section id="features" class="features">
@@ -176,13 +176,13 @@ project-landing/
         <h3 class="feature-title">[Title]</h3>
         <p class="feature-desc">[Description]</p>
       </div>
-      <!-- More cards -->
+      <!-- 更多卡片 -->
     </div>
   </div>
 </section>
 ```
 
-### Code Block with Copy
+### 带复制功能的代码块
 
 ```html
 <div class="code-block">
@@ -196,7 +196,7 @@ project-landing/
 </div>
 ```
 
-### FAQ Section
+### FAQ 区块
 
 ```html
 <section id="faq" class="faq">
@@ -209,13 +209,13 @@ project-landing/
           <p>[Answer]</p>
         </div>
       </details>
-      <!-- More items -->
+      <!-- 更多条目 -->
     </div>
   </div>
 </section>
 ```
 
-### Footer
+### 页脚
 
 ```html
 <footer class="footer">
@@ -239,13 +239,13 @@ project-landing/
 </footer>
 ```
 
-## CSS Architecture
+## CSS 架构
 
-### Custom Properties (Theme)
+### 自定义属性（主题）
 
 ```css
 :root {
-  /* Colors - Dark Theme */
+  /* 颜色 - 深色主题 */
   --color-bg: #0d1117;
   --color-surface: #161b22;
   --color-surface-hover: #21262d;
@@ -259,7 +259,7 @@ project-landing/
   --color-warning: #d29922;
   --color-danger: #f85149;
 
-  /* Spacing */
+  /* 间距 */
   --space-xs: 0.25rem;
   --space-sm: 0.5rem;
   --space-md: 1rem;
@@ -268,7 +268,7 @@ project-landing/
   --space-2xl: 3rem;
   --space-3xl: 4rem;
 
-  /* Typography */
+  /* 排版 */
   --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-mono: 'SF Mono', Consolas, 'Liberation Mono', monospace;
   --font-size-sm: 0.875rem;
@@ -279,29 +279,29 @@ project-landing/
   --font-size-3xl: 2rem;
   --font-size-4xl: 2.5rem;
 
-  /* Layout */
+  /* 布局 */
   --container-max: 1200px;
   --radius: 6px;
   --radius-lg: 12px;
 
-  /* Shadows */
+  /* 阴影 */
   --shadow-sm: 0 1px 2px rgba(0,0,0,0.3);
   --shadow-md: 0 4px 6px rgba(0,0,0,0.3);
   --shadow-lg: 0 10px 15px rgba(0,0,0,0.3);
 }
 ```
 
-### Component Patterns
+### 组件模式
 
 ```css
-/* Container */
+/* 容器 */
 .container {
   max-width: var(--container-max);
   margin: 0 auto;
   padding: 0 var(--space-lg);
 }
 
-/* Buttons */
+/* 按钮 */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -324,7 +324,7 @@ project-landing/
   border: 1px solid var(--color-border);
 }
 
-/* Cards */
+/* 卡片 */
 .feature-card {
   background: var(--color-surface);
   border: 1px solid var(--color-border);
@@ -338,7 +338,7 @@ project-landing/
   box-shadow: var(--shadow-md);
 }
 
-/* Grids */
+/* 网格 */
 .features-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -346,27 +346,27 @@ project-landing/
 }
 ```
 
-### Responsive Breakpoints
+### 响应式断点
 
 ```css
-/* Tablet */
+/* 平板 */
 @media (max-width: 768px) {
   .hero-title { font-size: var(--font-size-3xl); }
   .header-actions { display: none; }
   .nav { display: none; }
-  /* Mobile nav toggle */
+  /* 移动端导航切换 */
 }
 
-/* Mobile */
+/* 手机 */
 @media (max-width: 480px) {
   .hero-ctas { flex-direction: column; }
   .features-grid { grid-template-columns: 1fr; }
 }
 ```
 
-## JavaScript Patterns
+## JavaScript 模式
 
-### Search Implementation
+### 搜索实现
 
 ```javascript
 (function() {
@@ -375,23 +375,23 @@ project-landing/
   let searchIndex = null;
   let miniSearchLoaded = false;
 
-  // Lazy load MiniSearch
+  // 懒加载 MiniSearch
   async function loadMiniSearch() {
     if (miniSearchLoaded) return;
     await loadScript('https://cdn.jsdelivr.net/npm/minisearch@7/dist/umd/index.min.js');
     miniSearchLoaded = true;
   }
 
-  // Build index from window.SEARCH_* data
+  // 从 window.SEARCH_* 数据构建索引
   function buildIndex() {
     const items = [
       ...(window.SEARCH_FEATURES || []),
       ...(window.SEARCH_FAQ || []),
     ];
-    // ... index building
+    // ... 索引构建
   }
 
-  // Keyboard navigation
+  // 键盘导航
   document.addEventListener('keydown', (e) => {
     if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
       e.preventDefault();
@@ -401,7 +401,7 @@ project-landing/
 })();
 ```
 
-### Copy Code Function
+### 复制代码函数
 
 ```javascript
 async function copyCode(button) {
@@ -420,9 +420,9 @@ async function copyCode(button) {
 }
 ```
 
-## Deployment
+## 部署
 
-### GitHub Actions Workflow
+### GitHub Actions 工作流
 
 ```yaml
 name: Deploy to GitHub Pages
@@ -457,24 +457,24 @@ jobs:
         uses: actions/deploy-pages@v4
 ```
 
-## Accessibility Checklist
+## 无障碍访问检查清单
 
-- [ ] Skip link to main content
-- [ ] Semantic HTML (header, main, section, footer)
-- [ ] ARIA labels on interactive elements
-- [ ] Keyboard navigation for modals
-- [ ] Focus visible styles
-- [ ] Color contrast WCAG AA
-- [ ] Reduced motion respect
-- [ ] Alt text on images
+- [ ] 跳转到主内容的跳过链接
+- [ ] 语义化 HTML（header、main、section、footer）
+- [ ] 交互元素的 ARIA 标签
+- [ ] 弹窗的键盘导航
+- [ ] 焦点可见样式
+- [ ] 颜色对比度符合 WCAG AA
+- [ ] 尊重减少动效设置
+- [ ] 图片的 alt 文本
 
-## SEO Checklist
+## SEO 检查清单
 
-- [ ] Descriptive title tag
+- [ ] 描述性 title 标签
 - [ ] Meta description
-- [ ] Canonical URL
-- [ ] Open Graph tags
-- [ ] Twitter Card tags
-- [ ] Structured data (Schema.org)
+- [ ] 规范 URL（Canonical URL）
+- [ ] Open Graph 标签
+- [ ] Twitter Card 标签
+- [ ] 结构化数据（Schema.org）
 - [ ] robots.txt
-- [ ] Semantic heading hierarchy
+- [ ] 语义化标题层级

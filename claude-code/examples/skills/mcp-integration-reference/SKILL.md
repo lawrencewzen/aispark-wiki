@@ -9,132 +9,132 @@ metadata:
   version: 1.0.0
 ---
 
-# MCP Integration Reference Pattern
+# MCP 集成参考模式
 
-> This is a template skill. It shows how to structure a skill that wraps an MCP server. Replace `sentry` with your MCP server name and adapt the reference file at `references/sentry-mcp.md`.
+> 这是一个模板 skill。它展示了如何构建一个封装 MCP 服务器的 skill。将 `sentry` 替换为你的 MCP 服务器名称，并调整 `references/sentry-mcp.md` 中的参考文件。
 
-## What This Pattern Solves
+## 此模式解决的问题
 
-When a skill calls an MCP server without prior context, Claude guesses at the query syntax. This works for simple calls but breaks on anything with non-obvious behavior: pagination quirks, required parameter combinations, rate limits, or subtle format restrictions.
+当 skill 在没有预先上下文的情况下调用 MCP 服务器时，Claude 只能猜测查询语法。简单调用还能应付，但遇到行为不明显的情况就会出错：分页的怪异之处、必填参数组合、速率限制或微妙的格式限制。
 
-The fix: a `references/<mcp-name>.md` file that captures all the gotchas. The skill reads this file before making any MCP call. Zero guessing.
+解决方法：创建一个 `references/<mcp-name>.md` 文件，记录所有坑点。skill 在发起任何 MCP 调用前先读取此文件，彻底消除猜测。
 
-Three types of content go in the reference file:
-1. Parameter semantics that differ from what the tool name implies
-2. Known error patterns and their root causes
-3. Working query examples (copy-paste, no thinking required)
+参考文件包含三类内容：
+1. 与工具名称含义不符的参数语义
+2. 已知错误模式及其根本原因
+3. 可直接复用的查询示例（开箱即用，无需思考）
 
 ---
 
-## Step 1: Read the MCP Reference File
+## 步骤 1：读取 MCP 参考文件
 
-**Before doing anything else**, read the full MCP reference:
+**在做任何其他事情之前**，读取完整的 MCP 参考文件：
 
 ```
 Read: references/sentry-mcp.md
 ```
 
-This file contains query syntax, known gotchas, and working examples for the Sentry MCP. Do not skip this step.
+该文件包含 Sentry MCP 的查询语法、已知坑点和可用示例。不要跳过此步骤。
 
 ---
 
-## Step 2: Gather Scope from User
+## 步骤 2：从用户处获取范围信息
 
-Ask the user:
+询问用户：
 
-- **Time range**: Last 24h? 7 days? Custom range?
-- **Environments**: `production`, `staging`, or both?
-- **Projects**: All projects or specific ones? (Default: all)
+- **时间范围**：最近 24 小时？7 天？自定义范围？
+- **环境**：`production`、`staging` 还是两者都要？
+- **项目**：所有项目还是特定项目？（默认：全部）
 
-If the user says "just run it with defaults", use:
-- Time range: last 72 hours
-- Environment: `production` only
-- Projects: all
-
----
-
-## Step 3: Fetch Error Data
-
-Using the tool knowledge from Step 1, fetch:
-
-1. **Issue list**: Active unresolved issues, ordered by frequency
-2. **Event details**: Full stack traces for the top 5 issues by event count
-
-Cap results at 50 issues. If more exist, note the count and focus on the highest-frequency items.
+若用户说"直接用默认值运行"，则使用：
+- 时间范围：最近 72 小时
+- 环境：仅 `production`
+- 项目：全部
 
 ---
 
-## Step 4: Group and Analyze
+## 步骤 3：获取错误数据
 
-Group issues by root cause, not by error message. Two issues with different messages can share the same underlying cause (shared code path, same external dependency, same config).
+利用步骤 1 中获得的工具知识，获取：
 
-For each group:
-- Count of issues in the group
-- Earliest first-seen date
-- Affected users count (if available)
-- Most likely root cause (one sentence, evidence-based)
-- Relevant file paths from the stack trace
+1. **问题列表**：活跃的未解决问题，按频率排序
+2. **事件详情**：按事件数排名前 5 位问题的完整堆栈跟踪
+
+结果上限为 50 个问题。若超出，注明总数并聚焦频率最高的条目。
 
 ---
 
-## Step 5: Generate Report
+## 步骤 4：分组与分析
 
-Output a markdown report with this structure:
+按根本原因分组，而非按错误消息分组。两个消息不同的问题可能共享相同的底层原因（共享代码路径、相同外部依赖、相同配置）。
+
+每组包含：
+- 该组的问题数量
+- 最早首次出现日期
+- 受影响用户数（如有）
+- 最可能的根本原因（一句话，基于证据）
+- 堆栈跟踪中的相关文件路径
+
+---
+
+## 步骤 5：生成报告
+
+输出如下结构的 Markdown 报告：
 
 ```markdown
-# Error Report: [Project or Scope]
+# 错误报告：[项目或范围]
 
-**Period**: [start] to [end]
-**Environment**: [env]
-**Total active issues**: [N]
+**时间段**：[开始] 至 [结束]
+**环境**：[env]
+**活跃问题总数**：[N]
 
-## Summary
+## 概述
 
-[2-3 sentences: what is the overall health picture?]
+[2-3 句话：整体健康状况如何？]
 
-## Issue Groups
+## 问题分组
 
-### Group 1: [Root Cause Label]
+### 分组 1：[根本原因标签]
 
-| Attribute      | Value                    |
+| 属性           | 值                       |
 |----------------|--------------------------|
-| Issues         | N                        |
-| Total events   | N                        |
-| Affected users | N                        |
-| First seen     | YYYY-MM-DD               |
-| Key file       | path/to/file.py:line     |
+| 问题数         | N                        |
+| 总事件数       | N                        |
+| 受影响用户     | N                        |
+| 首次出现       | YYYY-MM-DD               |
+| 关键文件       | path/to/file.py:line     |
 
-**Root cause**: [One paragraph. Specific, evidence-based. Point to file and line.]
+**根本原因**：[一段话。具体、基于证据。指向文件和行号。]
 
-**Suggested investigation**: [One or two concrete next steps.]
+**建议排查方向**：[一到两个具体的后续步骤。]
 
 ---
 
-[Repeat for each group]
+[对每个分组重复上述结构]
 
-## Out of Scope
+## 超出范围
 
-[List issues explicitly excluded and why. Example: "404s on /static/ excluded - expected behavior for SPA asset versioning."]
+[列出明确排除的问题及原因。示例："已排除 /static/ 上的 404 错误——这是 SPA 资源版本管理的预期行为。"]
 ```
 
 ---
 
-## Scope Rules
+## 范围规则
 
-- This skill detects and describes issues. It does not modify code or create tickets.
-- If an issue is ambiguous, flag it as "needs investigation" rather than guessing.
-- Do not include informational logs or warnings unless they correlate directly with errors.
+- 本 skill 负责检测和描述问题，不修改代码，不创建工单。
+- 若某个问题存在歧义，标记为"需要排查"，而非猜测原因。
+- 不包含信息性日志或警告，除非它们与错误直接相关。
 
 ---
 
-## Adapting This Template
+## 调整此模板
 
-To fork this skill for a different MCP:
+要为不同的 MCP fork 本 skill：
 
-1. Copy this directory: `cp -r examples/skills/mcp-integration-reference examples/skills/<your-skill>/`
-2. Rename `references/sentry-mcp.md` to `references/<your-mcp>.md`
-3. Replace the reference file content with your MCP's gotchas
-4. Update `allowed-tools` in the frontmatter to match your MCP tool names
-5. Adjust the analysis steps to match your data domain
+1. 复制目录：`cp -r examples/skills/mcp-integration-reference examples/skills/<your-skill>/`
+2. 将 `references/sentry-mcp.md` 重命名为 `references/<your-mcp>.md`
+3. 将参考文件内容替换为你的 MCP 的坑点说明
+4. 更新 frontmatter 中的 `allowed-tools` 以匹配你的 MCP 工具名称
+5. 根据你的数据领域调整分析步骤
 
-The pattern works for any MCP that has non-obvious query behavior: Datadog, PagerDuty, Linear, Jira, Posthog, Mixpanel, etc.
+此模式适用于任何存在非显而易见查询行为的 MCP：Datadog、PagerDuty、Linear、Jira、Posthog、Mixpanel 等。

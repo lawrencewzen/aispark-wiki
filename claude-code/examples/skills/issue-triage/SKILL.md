@@ -2,231 +2,231 @@
 
 ---
 name: issue-triage
-description: "3-phase issue backlog management with audit, deep analysis, and validated triage actions. Use when triaging GitHub issues, sorting bug reports, cleaning up stale tickets, or detecting duplicate issues. Args: 'all' to analyze all, issue numbers to focus (e.g. '42 57'), 'en'/'fr' for language, no arg = audit only."
+description: "三阶段 issue 积压管理工作流：审计、深度分析与已验证的分类操作。适用于分类 GitHub issue、整理 bug 报告、清理过期工单或检测重复 issue。参数：'all' 分析全部，issue 编号指定处理（如 '42 57'），'en'/'fr' 选择语言，无参数 = 仅审计。"
 allowed-tools: Bash
 effort: medium
 ---
 
-# Issue Triage
+# Issue 分类
 
-3-phase workflow for maintainers: automated audit of all open issues, opt-in deep analysis via parallel agents, and validated triage actions (comments, labels, closures).
+面向维护者的三阶段工作流：自动审计所有开放 issue、按需通过并行智能体进行深度分析，以及已验证的分类操作（评论、标签、关闭）。
 
-## When to Use This Skill
+## 何时使用本技能
 
-| Skill | Usage | Output |
-|-------|-------|--------|
-| `/issue-triage` | Sort, analyze, and act on an issue backlog | Triage tables + analysis + executed actions |
-| `/pr-triage` | Sort, review, and comment on a PR backlog | Triage table + reviews + posted comments |
+| 技能 | 用途 | 输出 |
+|------|------|------|
+| `/issue-triage` | 整理、分析并处理 issue 积压 | 分类表格 + 分析结果 + 已执行操作 |
+| `/pr-triage` | 整理、审查并评论 PR 积压 | 分类表格 + 审查结果 + 已发布评论 |
 
-**Triggers**:
-- Manually: `/issue-triage` or `/issue-triage all` or `/issue-triage 42 57`
-- Proactively: when >10 open issues without label, or stale issues >30 days detected
-
----
-
-## Language
-
-- Check the argument passed to the skill
-- If `en` or `english` → tables and summary in English
-- If `fr`, `french`, or no argument → French (default)
-- Note: GitHub comments and labels (Phase 3) are ALWAYS in English (international audience)
+**触发时机**：
+- 手动触发：`/issue-triage` 或 `/issue-triage all` 或 `/issue-triage 42 57`
+- 主动触发：检测到超过 10 个无标签的开放 issue，或存在超过 30 天未更新的过期 issue
 
 ---
 
-## Configuration
+## 语言
 
-Thresholds used throughout the workflow. Edit to match your project:
-
-| Parameter | Default | Description |
-|-----------|---------|-------------|
-| `staleness_days` | 30 | Days without activity before flagging as stale |
-| `very_stale_days` | 90 | Days without activity before flagging as very stale |
-| `jaccard_threshold` | 60% | Minimum Jaccard similarity to flag two issues as duplicates |
-| `closed_compare_count` | 20 | Number of recent closed issues to compare for duplicate detection |
-| `open_limit` | 100 | Maximum open issues to fetch and analyze |
+- 检查传入技能的参数
+- 若为 `en` 或 `english` → 表格和摘要使用英文
+- 若为 `fr`、`french` 或无参数 → 使用法语（默认）
+- 注意：第 3 阶段的 GitHub 评论和标签**始终**使用英文（面向国际受众）
 
 ---
 
-## Preconditions
+## 配置
+
+整个工作流使用的阈值，可根据项目需要调整：
+
+| 参数 | 默认值 | 说明 |
+|------|--------|------|
+| `staleness_days` | 30 | 无活动超过多少天后标记为过期 |
+| `very_stale_days` | 90 | 无活动超过多少天后标记为严重过期 |
+| `jaccard_threshold` | 60% | 将两个 issue 标记为重复的最低 Jaccard 相似度 |
+| `closed_compare_count` | 20 | 用于重复检测的最近已关闭 issue 数量 |
+| `open_limit` | 100 | 获取和分析的最大开放 issue 数量 |
+
+---
+
+## 前置条件
 
 ```bash
 git rev-parse --is-inside-work-tree
 gh auth status
 ```
 
-If either fails, stop and explain what is missing.
+若任一命令失败，则停止并说明缺少什么。
 
 ---
 
-## Phase 1 — Audit (always executed)
+## 第 1 阶段 — 审计（始终执行）
 
-### Data Gathering (parallel commands)
+### 数据收集（并行命令）
 
 ```bash
-# Repo identity
+# 仓库标识
 gh repo view --json nameWithOwner -q .nameWithOwner
 
-# Open issues (exclude PRs, limit 100)
+# 开放 issue（排除 PR，限制 100 条）
 gh issue list --state open --limit 100 \
   --json number,title,author,createdAt,updatedAt,labels,body,comments,assignees,milestone
 
-# Recent closed issues (for duplicate detection)
+# 最近已关闭 issue（用于重复检测）
 gh issue list --state closed --limit 20 \
   --json number,title,body,labels,stateReason
 
-# Open PRs (bodies for cross-reference detection)
+# 开放 PR（正文用于交叉引用检测）
 gh pr list --state open --limit 50 --json number,title,body
 
-# Collaborators (to distinguish reporter types)
+# 协作者列表（用于区分报告者类型）
 gh api "repos/{owner}/{repo}/collaborators" --jq '.[].login'
 ```
 
-**Collaborators fallback**: if `gh api .../collaborators` returns 403/404:
+**协作者列表降级方案**：若 `gh api .../collaborators` 返回 403/404：
 ```bash
-# Extract authors from last 10 merged PRs
+# 从最近 10 个已合并 PR 中提取作者
 gh pr list --state merged --limit 10 --json author --jq '.[].author.login' | sort -u
 ```
-If still ambiguous, ask via `AskUserQuestion`.
+若仍无法确定，通过 `AskUserQuestion` 询问用户。
 
-**Note**: `comments` field in `gh issue list --json comments` returns the count, not content. For Phase 2, fetch full content separately: `gh issue view {num} --json comments`.
+**注意**：`gh issue list --json comments` 中的 `comments` 字段返回的是数量，而非内容。第 2 阶段需单独获取完整内容：`gh issue view {num} --json comments`。
 
-### Analysis Dimensions
+### 分析维度
 
-Run all 6 dimensions for each open issue:
+对每个开放 issue 运行以下 6 个维度的分析：
 
-#### 1. Categorization
+#### 1. 分类
 
-Classify each issue by reading `title` + first 200 chars of `body`:
+通过读取 `title` + `body` 前 200 个字符对每个 issue 进行分类：
 
-| Category | Label | Criteria |
-|----------|-------|----------|
-| Bug | `bug` | Describes broken behavior, unexpected output, crash |
-| Feature Request | `enhancement` | Asks for new functionality |
-| Question / Support | `question` | User asking how something works |
-| Documentation | `documentation` | Missing or incorrect docs |
-| Out of Scope | `wontfix` | Clearly outside project boundaries |
-| Unclear | `needs-info` | Body empty, too vague to categorize |
+| 类别 | 标签 | 判断标准 |
+|------|------|----------|
+| Bug | `bug` | 描述了异常行为、意外输出或崩溃 |
+| 功能请求 | `enhancement` | 要求新功能 |
+| 问题 / 支持 | `question` | 用户询问功能用法 |
+| 文档 | `documentation` | 文档缺失或有误 |
+| 超出范围 | `wontfix` | 明显超出项目边界 |
+| 不明确 | `needs-info` | 正文为空或过于模糊无法分类 |
 
-If body is empty → category is always `Unclear` (never assume).
+若正文为空 → 类别始终为"不明确"（切勿推测）。
 
-#### 2. Cross-reference to PRs
+#### 2. 与 PR 的交叉引用
 
-Scan each open PR body for references to the issue number:
-- Patterns: `fixes #N`, `closes #N`, `resolves #N`, `fix #N`, `close #N` (case-insensitive, `N` = issue number)
-- Use regex locally on the `body` fields already fetched — do NOT make N additional API calls
-- If found: flag issue as "PR-linked" with PR number
+扫描每个开放 PR 的正文，查找对 issue 编号的引用：
+- 匹配模式：`fixes #N`、`closes #N`、`resolves #N`、`fix #N`、`close #N`（不区分大小写，`N` = issue 编号）
+- 对已获取的 `body` 字段本地使用正则匹配，**不**发起额外 API 调用
+- 若找到匹配：将 issue 标记为"PR 关联"并附上 PR 编号
 
-#### 3. Duplicate Detection via Jaccard Similarity
+#### 3. 通过 Jaccard 相似度检测重复
 
-**Algorithm (self-contained — no external library)**:
+**算法（自包含，无需外部库）**：
 
-For each open issue, compute Jaccard similarity against all other open issues AND the 20 most recent closed issues.
+对每个开放 issue，计算其与所有其他开放 issue 以及最近 20 个已关闭 issue 的 Jaccard 相似度。
 
 ```
-Step 1 — Normalize title + first 300 chars of body:
-  - Lowercase the full text
-  - Strip category prefixes: "feat:", "fix:", "bug:", "chore:", "docs:", "test:", "refactor:"
-  - Remove punctuation: .,!?;:'"()[]{}-_/\@#
+步骤 1 — 规范化标题 + 正文前 300 个字符：
+  - 将完整文本转为小写
+  - 去除类别前缀："feat:"、"fix:"、"bug:"、"chore:"、"docs:"、"test:"、"refactor:"
+  - 去除标点：.,!?;:'"()[]{}-_/\@#
 
-Step 2 — Tokenize:
-  - Split on whitespace
-  - Remove stop words: the a an is in on to for of and or with this that it can not no be
-  - Remove tokens shorter than 3 characters
+步骤 2 — 分词：
+  - 按空白字符分割
+  - 去除停用词：the a an is in on to for of and or with this that it can not no be
+  - 去除长度小于 3 的词元
 
-Step 3 — Compute Jaccard:
-  tokens_A = set of tokens from issue A
-  tokens_B = set of tokens from issue B
+步骤 3 — 计算 Jaccard：
+  tokens_A = issue A 的词元集合
+  tokens_B = issue B 的词元集合
   jaccard = |tokens_A ∩ tokens_B| / |tokens_A ∪ tokens_B|
 
-Step 4 — Flag:
-  - If jaccard >= 0.60: mark as potential duplicate
-  - Report: "Similar to #N (Jaccard: 0.72)"
-  - Keep the OLDER issue as canonical; newer = duplicate candidate
+步骤 4 — 标记：
+  - 若 jaccard >= 0.60：标记为潜在重复
+  - 报告："Similar to #N (Jaccard: 0.72)"
+  - 保留较旧的 issue 为主版本；较新的为重复候选
 ```
 
-Jaccard is computed at runtime using the fetched data — no API calls beyond Phase 1 gather.
+Jaccard 在运行时使用已获取数据计算，第 1 阶段收集之外无需额外 API 调用。
 
-#### 4. Risk Classification
+#### 4. 风险分类
 
-Assign Red / Yellow / Green based on signals in title + body:
+根据标题 + 正文中的信号，分配红色 / 黄色 / 绿色：
 
-| Level | Color | Criteria |
-|-------|-------|----------|
-| Critical | Red | Security vulnerability, data loss, regression blocking users, crash in production |
-| Needs Attention | Yellow | Missing validation, performance degradation, breaking change undocumented, Unclear with no response for >7 days |
-| Normal | Green | Everything else |
+| 级别 | 颜色 | 判断标准 |
+|------|------|----------|
+| 严重 | 红色 | 安全漏洞、数据丢失、影响用户的回归问题、生产环境崩溃 |
+| 需关注 | 黄色 | 缺少验证、性能下降、未记录的破坏性变更、不明确且超过 7 天无响应 |
+| 正常 | 绿色 | 其他所有情况 |
 
-#### 5. Staleness
+#### 5. 过期状态
 
-| Status | Criterion |
-|--------|-----------|
-| Active | Updated within 30 days |
-| Stale | No activity 30–90 days |
-| Very Stale | No activity >90 days |
+| 状态 | 判断标准 |
+|------|----------|
+| 活跃 | 30 天内有更新 |
+| 过期 | 30–90 天无活动 |
+| 严重过期 | 超过 90 天无活动 |
 
-Use `updatedAt` field. Staleness does NOT depend on comments count — a commented-on issue with old `updatedAt` is still stale.
+使用 `updatedAt` 字段。过期状态与评论数量无关——有评论但 `updatedAt` 较旧的 issue 仍视为过期。
 
-#### 6. Recommendations
+#### 6. 建议操作
 
-One recommended action per issue:
+每个 issue 对应一条建议操作：
 
-| Situation | Action |
-|-----------|--------|
-| Category = Unclear, body empty | Comment requesting details |
-| Jaccard >= 0.60 with known issue | Close as duplicate, link original |
-| Very stale + no assignee | Comment requesting status, suggest close |
-| Risk = Red | Pin to top of triage, escalate immediately |
-| Category = OOS | Close with explanation |
-| PR-linked | No action needed (tracked via PR) |
-| Normal + labeled | No action needed |
+| 情况 | 操作 |
+|------|------|
+| 类别 = 不明确，正文为空 | 评论请求详细信息 |
+| Jaccard >= 0.60 与已知 issue 相似 | 关闭为重复，并链接原始 issue |
+| 严重过期且无负责人 | 评论询问状态，建议关闭 |
+| 风险 = 红色 | 置顶到分类列表顶部，立即上报 |
+| 类别 = 超出范围 | 附说明关闭 |
+| PR 关联 | 无需操作（通过 PR 跟踪） |
+| 正常 + 已有标签 | 无需操作 |
 
-### Output — Triage Tables
+### 输出 — 分类表格
 
 ```
-## Open Issues ({count})
+## 开放 Issue（{count} 个）
 
-### Critical — Immediate Attention (Risk: Red)
-| # | Title | Category | Reporter | Days Open | Action |
-|---|-------|----------|----------|-----------|--------|
+### 严重 — 立即处理（风险：红色）
+| # | 标题 | 类别 | 报告者 | 开放天数 | 操作 |
+|---|------|------|--------|----------|------|
 
-### PR-Linked (tracked in open PRs)
-| # | Title | Category | PR | Days Open |
-|---|-------|----------|----|-----------|
+### PR 关联（在开放 PR 中跟踪）
+| # | 标题 | 类别 | PR | 开放天数 |
+|---|------|------|----|----------|
 
-### Active Issues
-| # | Title | Category | Labels | Reporter | Days | Action |
-|---|-------|----------|--------|----------|------|--------|
+### 活跃 Issue
+| # | 标题 | 类别 | 标签 | 报告者 | 天数 | 操作 |
+|---|------|------|------|--------|------|------|
 
-### Duplicate Candidates
-| # | Title | Similar To | Jaccard | Action |
-|---|-------|------------|---------|--------|
+### 重复候选
+| # | 标题 | 相似于 | Jaccard | 操作 |
+|---|------|--------|---------|------|
 
-### Stale Issues
-| # | Title | Category | Last Activity | Reporter | Action |
-|---|-------|----------|---------------|----------|--------|
+### 过期 Issue
+| # | 标题 | 类别 | 最后活动 | 报告者 | 操作 |
+|---|------|------|----------|--------|------|
 
-### Summary
-- Total open: {N}
-- Critical (Red): {count}
-- PR-linked: {count}
-- Duplicate candidates: {count}
-- Stale (30–90d): {count}
-- Very stale (>90d): {count}
-- Unlabeled: {count}
-- Recommended actions: {comment: N, label: N, close: N}
+### 摘要
+- 开放总数：{N}
+- 严重（红色）：{count}
+- PR 关联：{count}
+- 重复候选：{count}
+- 过期（30–90 天）：{count}
+- 严重过期（>90 天）：{count}
+- 无标签：{count}
+- 建议操作：{评论: N, 标签: N, 关闭: N}
 ```
 
-0 issues → display `No open issues.` and stop.
+0 个 issue → 显示 `No open issues.` 并停止。
 
-**Protection rules** (apply to all phases):
-- Never close an issue authored by a collaborator without explicit user confirmation
-- Never re-label an issue that already has labels (only add missing labels)
-- If body is empty → always request details before any other action
-- Never auto-close a Red issue without user confirmation
+**保护规则**（适用于所有阶段）：
+- 未经明确用户确认，不得关闭协作者创建的 issue
+- 不得重新标记已有标签的 issue（只添加缺失的标签）
+- 若正文为空 → 在执行任何其他操作前，始终先请求详细信息
+- 未经用户确认，不得自动关闭红色风险 issue
 
-### Automatic Copy
+### 自动复制
 
-After displaying the triage tables, copy to clipboard using platform-appropriate command:
+展示分类表格后，使用平台对应的命令复制到剪贴板：
 
 ```bash
 UNAME=$(uname -s)
@@ -243,208 +243,208 @@ elif command -v clip.exe &>/dev/null; then
 fi
 ```
 
-Confirm: `Triage tables copied to clipboard.` (EN) / `Tableaux copiés dans le presse-papier.` (FR)
+确认提示：`Triage tables copied to clipboard.`（英文）/ `Tableaux copiés dans le presse-papier.`（法文）
 
 ---
 
-## Phase 2 — Deep Analysis (opt-in)
+## 第 2 阶段 — 深度分析（按需）
 
-### Issue Selection
+### Issue 选择
 
-**If argument passed**:
-- `"all"` → all issues with recommended actions
-- Numbers (`"42 57"`) → only those issues
-- No argument → propose via `AskUserQuestion`
+**若已传入参数**：
+- `"all"` → 所有有建议操作的 issue
+- 编号（如 `"42 57"`）→ 仅指定的 issue
+- 无参数 → 通过 `AskUserQuestion` 询问用户
 
-**If no argument**, display:
+**若无参数**，显示：
 
 ```
-question: "Which issues do you want to analyze in depth?"
-header: "Deep Analysis"
+question: "你想深度分析哪些 issue？"
+header: "深度分析"
 multiSelect: true
 options:
-  - label: "All ({N} issues with recommended actions)"
-    description: "Launch parallel analysis agents for each actionable issue"
-  - label: "Critical only ({M} Red issues)"
-    description: "Focus on high-risk issues requiring immediate action"
-  - label: "Duplicate candidates ({K} issues)"
-    description: "Verify Jaccard similarity with full body + comments"
-  - label: "Stale only ({J} stale issues)"
-    description: "Decide which stale issues to close vs. revive"
-  - label: "Skip"
-    description: "Stop here — audit only"
+  - label: "全部（{N} 个有建议操作的 issue）"
+    description: "为每个可操作 issue 启动并行分析智能体"
+  - label: "仅严重问题（{M} 个红色风险 issue）"
+    description: "聚焦于需立即处理的高风险 issue"
+  - label: "重复候选（{K} 个 issue）"
+    description: "通过完整正文和评论验证 Jaccard 相似度"
+  - label: "仅过期（{J} 个过期 issue）"
+    description: "决定哪些过期 issue 需关闭，哪些需重新跟进"
+  - label: "跳过"
+    description: "到此为止——仅审计"
 ```
 
-If "Skip" → end workflow.
+若选择"跳过" → 结束工作流。
 
-### Executing Analysis
+### 执行分析
 
-For each selected issue, launch an analysis agent via **Task tool in parallel**:
+对每个选定的 issue，通过 **Task 工具并行**启动分析智能体：
 
 ```
 subagent_type: general
 model: sonnet
 prompt: |
-  Analyze GitHub issue #{num}: "{title}"
+  分析 GitHub issue #{num}："{title}"
 
-  **Metadata**: Category={category}, Risk={risk}, Days open={days}, Labels={labels}
-  **Reporter**: @{author} ({collaborator? "collaborator" : "external"})
-  **Assignees**: {assignees or "none"}
+  **元数据**：类别={category}，风险={risk}，开放天数={days}，标签={labels}
+  **报告者**：@{author}（{collaborator? "协作者" : "外部用户"}）
+  **负责人**：{assignees 或 "无"}
 
-  **Body**:
+  **正文**：
   {body}
 
-  **Comments** (fetch via: gh issue view {num} --json comments):
-  {comments[].body — truncate at 5000 chars total}
+  **评论**（通过以下命令获取：gh issue view {num} --json comments）：
+  {comments[].body — 总计截断至 5000 字符}
 
-  **Duplicate candidates**: {jaccard_results or "none found"}
-  **Linked PRs**: {pr_refs or "none"}
+  **重复候选**：{jaccard_results 或 "未发现"}
+  **关联 PR**：{pr_refs 或 "无"}
 
-  Tasks:
-  1. Verify the category assigned in Phase 1 (correct? suggest alternative if not)
-  2. If duplicate candidate: confirm or deny similarity with rationale
-  3. If Unclear/needs-info: identify exactly what information is missing
-  4. Suggest the most appropriate action with exact text if a comment is needed
-  5. Estimate effort to fix if it's a Bug or Feature Request (XS/S/M/L/XL)
+  任务：
+  1. 验证第 1 阶段分配的类别（是否正确？若不正确，建议替代类别）
+  2. 若为重复候选：确认或否认相似性，并说明理由
+  3. 若为不明确/needs-info：明确指出缺少哪些信息
+  4. 建议最合适的操作，若需要评论，提供完整评论文本
+  5. 若为 Bug 或功能请求，估计修复所需工作量（XS/S/M/L/XL）
 
-  Return structured output:
-  ### Verification
-  ### Duplicate Analysis
-  ### Missing Information
-  ### Recommended Action
-  ### Effort Estimate
+  返回结构化输出：
+  ### 验证
+  ### 重复分析
+  ### 缺失信息
+  ### 建议操作
+  ### 工作量估计
 ```
 
-**Fallback if parallel agents unavailable**: run analysis sequentially, one issue at a time. Notify user: `Running sequential analysis (parallel agents not available).`
+**并行智能体不可用时的降级方案**：按顺序逐个分析 issue。通知用户：`Running sequential analysis (parallel agents not available).`
 
-Fetch full comments via:
+通过以下命令获取完整评论：
 ```bash
 gh issue view {num} --json comments --jq '.comments[].body'
 ```
 
-Aggregate all reports. Display a summary after all analyses complete.
+汇总所有报告，所有分析完成后展示摘要。
 
 ---
 
-## Phase 3 — Actions (mandatory validation)
+## 第 3 阶段 — 操作（强制验证）
 
-### Draft Generation
+### 草稿生成
 
-For each analyzed issue, generate the appropriate action using the template `templates/issue-comment.md`.
+对每个已分析的 issue，使用模板 `templates/issue-comment.md` 生成对应操作。
 
-**3 action types**:
+**3 种操作类型**：
 
-| Type | Command | When |
-|------|---------|------|
-| Comment | `gh issue comment {num} --body-file -` | Needs info, stale ping, OOS explanation |
-| Label | `gh issue edit {num} --add-label "{label}"` | Unlabeled issue with clear category |
-| Close | `gh issue close {num} --reason "not planned"` | Duplicate, OOS, very stale |
+| 类型 | 命令 | 适用场景 |
+|------|------|----------|
+| 评论 | `gh issue comment {num} --body-file -` | 需要信息、过期提醒、超出范围说明 |
+| 标签 | `gh issue edit {num} --add-label "{label}"` | 类别明确的无标签 issue |
+| 关闭 | `gh issue close {num} --reason "not planned"` | 重复、超出范围、严重过期 |
 
-**Rules**:
-- Language for comments: **English** (international audience)
-- Labels added: use existing repo labels only (fetch with `gh label list`)
-- Close reason: `"not planned"` for OOS/duplicate, `"completed"` only if a fix was merged
-- Never post a comment AND close in the same action without user seeing both drafts
-- Always attach a comment when closing (explain why)
+**规则**：
+- 评论语言：**英文**（面向国际受众）
+- 添加标签：仅使用仓库已有标签（通过 `gh label list` 获取）
+- 关闭原因：超出范围/重复使用 `"not planned"`，仅在修复已合并时使用 `"completed"`
+- 不得在用户未看到两份草稿的情况下同时发布评论并关闭 issue
+- 关闭时始终附加评论（说明原因）
 
-### Display and Validation
+### 展示与验证
 
-**Display ALL drafted actions** in format:
+以如下格式**展示所有草稿操作**：
 
 ```
 ---
-### Draft — Issue #{num}: {title}
+### 草稿 — Issue #{num}：{title}
 
-**Action**: {Comment / Label / Close + Comment}
-**Reason**: {1 sentence}
+**操作**：{评论 / 标签 / 关闭 + 评论}
+**原因**：{一句话说明}
 
-{full comment text if applicable}
+{如有评论，显示完整评论文本}
 
 ---
 ```
 
-Then request validation via `AskUserQuestion`:
+然后通过 `AskUserQuestion` 请求验证：
 
 ```
-question: "These actions are ready. Which ones do you want to execute?"
-header: "Execute Triage Actions"
+question: "这些操作已就绪。你想执行哪些？"
+header: "执行分类操作"
 multiSelect: true
 options:
-  - label: "All ({N} actions)"
-    description: "Execute all drafted triage actions"
-  - label: "Issue #{x} — {title_truncated} ({action_type})"
-    description: "Execute only this action"
-  - label: "None"
-    description: "Cancel — execute nothing"
+  - label: "全部（{N} 个操作）"
+    description: "执行所有已草拟的分类操作"
+  - label: "Issue #{x} — {title_truncated}（{action_type}）"
+    description: "仅执行此操作"
+  - label: "无"
+    description: "取消——不执行任何操作"
 ```
 
-(Generate one option per issue + "All" + "None")
+（为每个 issue 生成一个选项，加上"全部"和"无"）
 
-### Execution
+### 执行
 
-For each validated action:
+对每个已验证的操作：
 
 ```bash
-# Comment
+# 评论
 gh issue comment {num} --body-file - <<'TRIAGE_EOF'
 {comment}
 TRIAGE_EOF
 
-# Label
+# 标签
 gh issue edit {num} --add-label "{label}"
 
-# Close with comment
+# 关闭并附评论
 gh issue comment {num} --body-file - <<'TRIAGE_EOF'
 {close comment}
 TRIAGE_EOF
 gh issue close {num} --reason "not planned"
 ```
 
-Confirm each action: `Action executed on issue #{num}: {title}`
+确认每个操作：`Action executed on issue #{num}: {title}`
 
-If "None" → `No actions executed. Workflow complete.`
-
----
-
-## Edge Cases
-
-| Situation | Behavior |
-|-----------|----------|
-| 0 open issues | Display `No open issues.` + stop |
-| Body empty | Category = Unclear, action = request details, never assume |
-| Collaborator as reporter | Protect from auto-close, flag explicitly in table |
-| Jaccard inconclusive (0.55–0.65) | Flag as "possible duplicate — verify manually" |
-| Label not in repo | Skip label action, notify user to create the label first |
-| Issue already closed during workflow | Skip silently, note in summary |
-| `gh api .../collaborators` 403/404 | Fallback to last 10 merged PR authors |
-| Parallel agents unavailable | Run sequential analysis, notify user |
-| Very large body (>5000 chars) | Truncate to 5000 chars with `[truncated]` note |
-| Milestone assigned | Include in table, never close milestoned issues without confirmation |
+若选择"无" → `No actions executed. Workflow complete.`
 
 ---
 
-## Notes
+## 边界情况
 
-- Always derive owner/repo via `gh repo view`, never hardcode
-- Use `gh` CLI (not `curl` GitHub API) except for collaborators list
-- `comments` in `gh issue list --json comments` = count only; full content requires `gh issue view {num} --json comments`
-- Never execute any action without explicit user validation in chat
-- Drafted actions must be visible BEFORE any `gh issue comment` or `gh issue close`
-- Jaccard is computed locally — no external API, no library, pure set operations on fetched data
-- Signature on all comments: `*Triaged via Claude Code /issue-triage*`
+| 情况 | 处理方式 |
+|------|----------|
+| 0 个开放 issue | 显示 `No open issues.` 并停止 |
+| 正文为空 | 类别 = 不明确，操作 = 请求详细信息，不得推测 |
+| 协作者作为报告者 | 防止自动关闭，在表格中明确标记 |
+| Jaccard 不确定（0.55–0.65） | 标记为"可能重复——请手动确认" |
+| 标签不在仓库中 | 跳过标签操作，通知用户先创建该标签 |
+| 工作流进行中 issue 已关闭 | 静默跳过，在摘要中注明 |
+| `gh api .../collaborators` 返回 403/404 | 降级为最近 10 个已合并 PR 的作者 |
+| 并行智能体不可用 | 顺序执行分析，通知用户 |
+| 正文过长（>5000 字符） | 截断至 5000 字符并附 `[truncated]` 说明 |
+| 已分配里程碑 | 在表格中显示，未经确认不得关闭里程碑 issue |
 
 ---
 
-## Related: /pr-triage
+## 注意事项
+
+- 始终通过 `gh repo view` 获取 owner/repo，不得硬编码
+- 使用 `gh` CLI（而非 `curl` GitHub API），协作者列表除外
+- `gh issue list --json comments` 中的 `comments` 仅为数量；完整内容需通过 `gh issue view {num} --json comments` 获取
+- 未经用户在对话中明确验证，不得执行任何操作
+- 草稿操作必须在执行任何 `gh issue comment` 或 `gh issue close` **之前**展示
+- Jaccard 本地计算——无外部 API，无库，纯粹基于已获取数据的集合运算
+- 所有评论的署名：`*Triaged via Claude Code /issue-triage*`
+
+---
+
+## 相关技能：/pr-triage
 
 | | `/issue-triage` | `/pr-triage` |
 |--|----------------|--------------|
-| **Scope** | Issue backlog | PR backlog |
-| **Use when** | Catching up on reporter feedback, periodic issue cleanup | Catching up after PR accumulation |
-| **Phases** | 3 (audit + deep analysis + actions) | 3 (audit + deep review + comments) |
-| **Agents** | Parallel sub-agents per issue | Parallel sub-agents per PR |
-| **Duplicate detection** | Jaccard similarity on title+body | File overlap % between PRs |
-| **Actions** | Comment / label / close | GitHub review comment |
-| **Validation** | AskUserQuestion before executing | AskUserQuestion before posting |
+| **范围** | Issue 积压 | PR 积压 |
+| **适用场景** | 跟进报告者反馈、定期清理 issue | 跟进 PR 积压 |
+| **阶段** | 3 个（审计 + 深度分析 + 操作） | 3 个（审计 + 深度审查 + 评论） |
+| **智能体** | 每个 issue 并行子智能体 | 每个 PR 并行子智能体 |
+| **重复检测** | 标题+正文的 Jaccard 相似度 | PR 间文件重叠百分比 |
+| **操作** | 评论 / 标签 / 关闭 | GitHub 审查评论 |
+| **验证** | 执行前通过 AskUserQuestion 确认 | 发布前通过 AskUserQuestion 确认 |
 
-**Decision rule**: use `/issue-triage` for issue backlog management, `/pr-triage` for code review backlog.
+**决策规则**：`/issue-triage` 用于 issue 积压管理，`/pr-triage` 用于代码审查积压管理。

@@ -1,20 +1,20 @@
 > 📚 **AI Spark Wiki** · Claude Code 知识库
 
-# Slack Template
+# Slack 模板
 
-Compact, scannable, emoji-rich. Ready to paste.
+精简、易读、富含 emoji，可直接粘贴使用。
 
-## FR Template
+## 中文模板
 
 ```
-:newspaper: *{title_fr}*
+:newspaper: *{title_zh}*
 
-{highlights_fr}
+{highlights_zh}
 
 :link: {link}
 ```
 
-## EN Template
+## 英文模板
 
 ```
 :newspaper: *{title_en}*
@@ -24,28 +24,28 @@ Compact, scannable, emoji-rich. Ready to paste.
 :link: {link}
 ```
 
-## Field Rules
+## 字段规则
 
-### title (max 60 chars)
+### title（最多 60 个字符）
 
 ```
-FR: "Guide v3.20.5 - Reference visuelle"
+ZH: "指南 v3.20.5 - 视觉参考"
 EN: "Guide v3.20.5 - Visual reference"
 
-FR: "Recap semaine : 4 releases"
+ZH: "本周回顾：4 个版本发布"
 EN: "Week recap: 4 releases"
 ```
 
-### highlights (3-5 lines)
+### highlights（3-5 行）
 
-Each line: Slack emoji + short description. No bold in bullet text.
+每行：Slack emoji + 简短描述。正文不加粗。
 
 ```
-FR:
-:art: 4 nouveaux diagrammes ASCII (TDD, UVAL, securite, incidents)
-:brain: 30 nouvelles questions quiz (257 total)
-:shield: Guide sandbox isolation Docker
-:mag: 9 patterns avances identifies via claudelog.com
+ZH:
+:art: 4 张新 ASCII 示意图（TDD、UVAL、安全、事故）
+:brain: 30 道新测验题（共 257 道）
+:shield: Docker 沙盒隔离指南
+:mag: 通过 claudelog.com 识别的 9 种高级模式
 
 EN:
 :art: 4 new ASCII diagrams (TDD, UVAL, security, incidents)
@@ -56,33 +56,33 @@ EN:
 
 ### link
 
-GitHub repo URL.
+GitHub 代码库 URL。
 
-## Slack Emoji Reference
+## Slack Emoji 参考
 
-Use standard Slack emojis that render in all workspaces:
+使用在所有工作区都能正常渲染的标准 Slack emoji：
 
-| Emoji | Code | Use For |
+| Emoji | 代码 | 适用场景 |
 |-------|------|---------|
-| :newspaper: | `:newspaper:` | Title marker |
-| :art: | `:art:` | Visual content, diagrams, UI |
-| :brain: | `:brain:` | Quiz, learning, knowledge |
-| :shield: | `:shield:` | Security content |
-| :mag: | `:mag:` | Research, analysis, competitive intel |
-| :wrench: | `:wrench:` | Tools, workflows, configuration |
-| :books: | `:books:` | New guides, documentation |
-| :chart_with_upwards_trend: | `:chart_with_upwards_trend:` | Growth metrics |
-| :white_check_mark: | `:white_check_mark:` | Fixes, corrections |
-| :link: | `:link:` | Link marker |
-| :arrow_right: | `:arrow_right:` | Growth indicator (X -> Y) |
+| :newspaper: | `:newspaper:` | 标题标记 |
+| :art: | `:art:` | 视觉内容、示意图、UI |
+| :brain: | `:brain:` | 测验、学习、知识 |
+| :shield: | `:shield:` | 安全相关内容 |
+| :mag: | `:mag:` | 研究、分析、竞品情报 |
+| :wrench: | `:wrench:` | 工具、工作流、配置 |
+| :books: | `:books:` | 新指南、文档 |
+| :chart_with_upwards_trend: | `:chart_with_upwards_trend:` | 增长指标 |
+| :white_check_mark: | `:white_check_mark:` | 修复、纠正 |
+| :link: | `:link:` | 链接标记 |
+| :arrow_right: | `:arrow_right:` | 增长指示（X -> Y） |
 
-## Constraints
+## 限制
 
-- Max 500 characters total
-- Emoji budget: 4-6 (1 title + 1 per highlight + 1 link)
-- No hype words
-- FR: tutoiement
-- EN: American English
-- Single link (GitHub)
-- No hashtags (not a Slack convention)
-- Use Slack formatting: `*bold*`, `_italic_`, `:emoji:` codes
+- 总字符数不超过 500
+- emoji 用量：4-6 个（标题 1 个 + 每条要点 1 个 + 链接 1 个）
+- 禁用夸张词汇
+- 中文：使用口语化表达
+- 英文：美式英语
+- 仅一个链接（GitHub）
+- 禁用话题标签（不符合 Slack 惯例）
+- 使用 Slack 格式：`*粗体*`、`_斜体_`、`:emoji:` 代码

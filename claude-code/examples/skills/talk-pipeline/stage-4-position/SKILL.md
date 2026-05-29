@@ -2,47 +2,47 @@
 
 ---
 name: talk-stage4-position
-description: "Generates 3-4 strategic talk angles with strength/weakness analysis, title options, CFP descriptions, and a peer feedback draft, then enforces a mandatory CHECKPOINT for user confirmation before scripting. Use when deciding how to frame a talk, preparing a CFP submission, or choosing between multiple narrative angles."
+description: "生成 3-4 个战略性演讲角度，包含优缺点分析、标题选项、CFP 描述和同行反馈草稿，然后强制执行检查点等待用户确认，之后才进入脚本阶段。适用于决定演讲框架、准备 CFP 投稿或在多个叙事角度之间做选择时使用。"
 tags: [talk, pipeline, presentation, stage-4, checkpoint]
 allowed-tools: "Write, Read, AskUserQuestion"
 effort: high
 ---
 
-# Talk Stage 4: Position + CHECKPOINT
+# 演讲第 4 阶段：定位 + 检查点
 
-Generates strategic angles, titles, descriptions, and a peer-feedback draft. Then **stops and waits** for your angle + title choice before Stage 5 can proceed.
+生成战略性角度、标题、描述和同行反馈草稿，然后**停止并等待**你确认角度和标题选择，第 5 阶段才能继续。
 
-## When to Use This Skill
+## 适用场景
 
-- After Stage 3 (Concepts) — needs the concept catalogue
-- When deciding how to frame the talk
-- Before sending the CFP (uses the generated descriptions directly)
+- 第 3 阶段（概念）之后——需要概念目录
+- 决定演讲框架时
+- 投递 CFP 之前（直接使用生成的描述）
 
-## What This Skill Does
+## 此技能的功能
 
-1. **Reads inputs** — summary + concepts + event constraints
-2. **Generates angles** — 3-4 distinct angles with force/weakness analysis
-3. **Recommends** — one clear choice with structured justification
-4. **Generates titles** — 3-5 options per angle
-5. **Generates descriptions** — short abstract + long CFP description
-6. **Generates feedback draft** — ready-to-send message (3 formats)
-7. **CHECKPOINT** — displays choice request and waits for user response
-8. **Saves 4 files**
+1. **读取输入** — 摘要 + 概念 + 活动约束条件
+2. **生成角度** — 3-4 个不同角度，含优缺点分析
+3. **给出推荐** — 明确的选择建议及结构化理由
+4. **生成标题** — 每个角度 3-5 个选项
+5. **生成描述** — 简短摘要 + 完整 CFP 描述
+6. **生成反馈草稿** — 可直接发送的消息（3 种格式）
+7. **检查点** — 显示选择请求并等待用户回应
+8. **保存 4 个文件**
 
-## Input
+## 输入
 
-- `talks/{YYYY}-{slug}-summary.md` (required)
-- `talks/{YYYY}-{slug}-concepts.md` (required)
-- Event constraints: duration, audience, CFP format if applicable
+- `talks/{YYYY}-{slug}-summary.md`（必填）
+- `talks/{YYYY}-{slug}-concepts.md`（必填）
+- 活动约束：时长、受众、CFP 格式（如适用）
 
-## Output
+## 输出
 
 - `talks/{YYYY}-{slug}-angles.md`
 - `talks/{YYYY}-{slug}-titre.md`
 - `talks/{YYYY}-{slug}-descriptions.md`
 - `talks/{YYYY}-{slug}-feedback-draft.md`
 
-## angles.md Format
+## angles.md 格式
 
 ```markdown
 # Talk Angles — {provisional title}
@@ -100,7 +100,7 @@ Generates strategic angles, titles, descriptions, and a peer-feedback draft. The
 ...
 ```
 
-## titre.md Format
+## titre.md 格式
 
 ```markdown
 # Titles — Talk {slug}
@@ -143,7 +143,7 @@ Strengths: {strengths}
 **Why**: {short justification}
 ```
 
-## descriptions.md Format
+## descriptions.md 格式
 
 ```markdown
 # Descriptions — Talk {slug}
@@ -176,9 +176,9 @@ Direct and factual tone.}
 {5-10 relevant tags for CFP or search}
 ```
 
-## CHECKPOINT (mandatory — Step 7)
+## 检查点（强制执行 — 第 7 步）
 
-After generating and saving the 4 files, display:
+生成并保存 4 个文件后，显示：
 
 ```
 ---
@@ -200,45 +200,45 @@ Reply to start the script.
 ---
 ```
 
-**Do not invoke Stage 5 without explicit user confirmation.**
+**未经用户明确确认，不得调用第 5 阶段。**
 
-## Angle Generation Rules
+## 角度生成规则
 
-- Minimum 3 angles, maximum 4 (beyond that it's noise)
-- Each angle must be genuinely distinct (not variations of the same)
-- The recommendation must be clear and argued — not "your choice"
-- Always test: "can this angle sustain the full duration without repeating?"
+- 最少 3 个角度，最多 4 个（超过则形成噪声）
+- 每个角度必须真正不同（不能是同一角度的变体）
+- 推荐必须明确且有论据——不能是"你来选"
+- 始终测试："这个角度能在不重复的情况下撑满整个时长吗？"
 
-## Anti-patterns
+## 反模式
 
-- Click-bait titles ("What nobody tells you about AI")
-- Recommending the last angle listed by default (recency bias)
-- Descriptions that read like slide summaries
-- Skipping the CHECKPOINT — it's the pipeline's most important control point
-- Marketing language in descriptions (revolutionary, game-changer)
+- 标题党（"关于 AI 没人告诉你的事"）
+- 默认推荐最后列出的角度（近因偏差）
+- 描述读起来像幻灯片摘要
+- 跳过检查点——这是流水线中最重要的控制节点
+- 描述中使用营销语言（革命性的、颠覆性的）
 
-## Validation Checklist
+## 验证清单
 
-- [ ] 3-4 angles with force/weakness/audience-fit analysis
-- [ ] Clear recommendation with structured justification
-- [ ] 3-5 titles for the recommended angle
-- [ ] Short description (~100 words) and long description (~250 words)
-- [ ] Feedback draft generated from template
-- [ ] CHECKPOINT displayed clearly
-- [ ] 4 files saved
+- [ ] 3-4 个角度，含优缺点和受众适配分析
+- [ ] 明确的推荐及结构化理由
+- [ ] 推荐角度的 3-5 个标题
+- [ ] 简短描述（约 100 字）和完整描述（约 250 字）
+- [ ] 从模板生成反馈草稿
+- [ ] 检查点清晰显示
+- [ ] 4 个文件已保存
 
-## Tips
+## 技巧
 
-- Send `feedback-draft.md` to a peer before the checkpoint — 10 minutes of external feedback can save hours of rework on the script
-- The recommendation is a starting point, not an order — your audience knowledge overrides any algorithmic suggestion
-- Weak titles are usually too abstract: test each title by asking "would someone in the hallway stop walking to read this?"
+- 在检查点之前将 `feedback-draft.md` 发给同行——10 分钟的外部反馈可以节省数小时的脚本返工
+- 推荐是起点，不是命令——你对受众的了解优先于任何算法建议
+- 弱标题通常过于抽象：用这个问题测试每个标题——"走廊里的人看到这个标题会停下脚步吗？"
 
-## Templates
+## 模板
 
-- Peer feedback formats: [`templates/feedback-draft.md`](templates/feedback-draft.md)
+- 同行反馈格式：[`templates/feedback-draft.md`](templates/feedback-draft.md)
 
-## Related
+## 相关内容
 
-- [Stage 3: Concepts](../stage-3-concepts/SKILL.md) — prerequisite
-- [Stage 5: Script](../stage-5-script/SKILL.md) — starts after this CHECKPOINT
-- [Orchestrator](../orchestrator/SKILL.md)
+- [第 3 阶段：概念](../stage-3-concepts/SKILL.md) — 前置条件
+- [第 5 阶段：脚本](../stage-5-script/SKILL.md) — 通过此检查点后启动
+- [编排器](../orchestrator/SKILL.md)

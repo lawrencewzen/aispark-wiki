@@ -1,14 +1,12 @@
 > 📚 **AI Spark Wiki** · Claude Code 知识库
 
-# Session Retrospective Template
+# 会话复盘模板
 
-A structured prompt to run at the end of Claude Code sessions. The goal is to capture
-knowledge while it's fresh and turn it into durable rules — keeping your `CLAUDE.md`
-accurate as the project evolves.
+在 Claude Code 会话结束时运行的结构化提示词。目标是趁知识还新鲜时将其沉淀下来，转化为持久规则——随着项目演进持续保持 `CLAUDE.md` 的准确性。
 
-## The Prompt
+## 提示词
 
-Copy this and paste it into Claude at the end of a session:
+在会话结束时复制并粘贴给 Claude：
 
 ```
 Session complete. Before we close, run a quick retrospective:
@@ -24,22 +22,22 @@ Skip anything obvious, generic, or already in CLAUDE.md.
 Format each item as an actionable rule ready to copy in.
 ```
 
-## When to Run It
+## 何时运行
 
-| Trigger | Run retro? |
+| 触发场景 | 是否运行复盘？ |
 |---------|-----------|
-| Feature or major refactor completed | Yes |
-| Debugging session that uncovered a systemic gap | Yes |
-| Architectural decision made | Yes |
-| Onboarding session where someone flagged missing context | Yes |
-| Monthly, even if nothing major happened | Yes — catches accumulation |
-| Trivial session (typo fix, doc edit) | No |
+| 完成一个功能或重大重构 | 是 |
+| 调试会话发现了系统性缺口 | 是 |
+| 做出了架构决策 | 是 |
+| 新人入职时发现了缺失的上下文 | 是 |
+| 每月例行，即使没有大事发生 | 是——捕捉积累性漂移 |
+| 琐碎会话（改错别字、编辑文档） | 否 |
 
-Monthly is the minimum cadence even for quiet projects. Small drifts accumulate silently.
+即使对于平静的项目，每月运行一次也是最低频率。小幅漂移会悄无声息地积累。
 
-## What Good Output Looks Like
+## 好的输出长什么样
 
-Claude should return something like this (not verbatim — but this level of specificity):
+Claude 应该返回类似下面的内容（不是一字不差——而是这个颗粒度）：
 
 ```
 Knowledge Feed — 2025-09-15
@@ -62,32 +60,30 @@ Knowledge Feed — 2025-09-15
    to call next(err)."
 ```
 
-## After the Retro
+## 复盘之后
 
-### Review the output
+### 审阅输出内容
 
-Not everything Claude surfaces belongs in `CLAUDE.md`. Ask:
+不是 Claude 给出的所有内容都适合写进 `CLAUDE.md`。逐条问自己：
 
-- Is this specific to our project, or generic advice Claude already knows?
-- Is it actionable? Would a new Claude session make the same mistake without this rule?
-- Is it already covered? Search before adding — duplicates reduce adherence.
+- 这是针对我们项目的特定知识，还是 Claude 已知的通用建议？
+- 它具有可操作性吗？如果没有这条规则，新的 Claude 会话是否会犯同样的错误？
+- 已经有了吗？添加之前先搜索——重复条目会降低遵守率。
 
-### Update CLAUDE.md
+### 更新 CLAUDE.md
 
-Add new rules to the most relevant section. Remove any stale rules Claude flagged.
+将新规则添加到最相关的章节。删除 Claude 标记出的过时规则。
 
-### Commit with a traceable message
+### 用可追溯的提交信息提交
 
 ```bash
 git add CLAUDE.md
-git commit -m "context: [what changed and why]"
+git commit -m "context: [改了什么以及为什么]"
 ```
 
-Meaningful commit messages create a traceable history of how your AI context evolved. Useful
-for debugging: "Claude started doing X wrong after we made change Y" becomes diagnosable
-from git log.
+有意义的提交信息会留下 AI 上下文演进的可追溯历史，方便调试："Claude 在我们做了 Y 更改之后开始把 X 做错了"——从 git log 就能定位。
 
-Examples of good commit messages:
+好的提交信息示例：
 
 ```
 context: add lodash ban — use native array methods
@@ -97,14 +93,12 @@ context: document payment webhook idempotency requirement
 context: add Prisma-direct query ban after code review
 ```
 
-## Team Usage
+## 团队使用
 
-When multiple people work with Claude on the same project, retros become especially valuable.
-Each developer may get different corrections — different gaps in `CLAUDE.md` surface from
-different angles. Consider:
+当多人在同一项目中与 Claude 协作时，复盘尤为有价值。不同开发者会收到不同的纠正——`CLAUDE.md` 的不同缺口会从不同角度暴露出来。建议：
 
-- Running a retro at the end of any PR that involved significant Claude-assisted work
-- Including `CLAUDE.md` in PR reviews as a standing agenda item
-- Doing a quarterly joint retro with the whole team to review accumulated changes
+- 在任何有大量 Claude 辅助工作的 PR 结束时运行复盘
+- 将 `CLAUDE.md` 纳入 PR Review 的常规议程
+- 与整个团队每季度进行一次联合复盘，回顾积累的变更
 
-The `CLAUDE.md` file is a shared asset. Its quality reflects how well the team maintains it.
+`CLAUDE.md` 是共享资产。它的质量反映了团队维护它的用心程度。

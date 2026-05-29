@@ -2,39 +2,39 @@
 
 ---
 name: sandbox-status
-description: Display native sandbox status, configuration, and recent violations
+description: 展示原生沙盒状态、配置信息及近期违规记录
 effort: low
 disable-model-invocation: true
 ---
 
-# Sandbox Status Command
+# 沙盒状态命令
 
-Inspect the native Claude Code sandbox state, active configuration, and security events.
+检查原生 Claude Code 沙盒的运行状态、激活配置及安全事件。
 
-## Usage
+## 用法
 
 ```
 /sandbox-status
 ```
 
-## What It Does
+## 功能说明
 
-1. **Check sandbox availability**
-   - Verify OS primitives installed (bubblewrap on Linux, Seatbelt on macOS)
-   - Display platform support status
+1. **检查沙盒可用性**
+   - 验证 OS 原语是否已安装（Linux 上的 bubblewrap、macOS 上的 Seatbelt）
+   - 展示平台支持状态
 
-2. **Show active configuration**
-   - Sandbox mode (Auto-allow vs Regular permissions)
-   - Filesystem policies (allowed writes, denied reads)
-   - Network policies (domain allowlist/denylist)
-   - Excluded commands
+2. **展示激活配置**
+   - 沙盒模式（自动允许 vs 常规权限）
+   - 文件系统策略（允许写入的路径、禁止读取的路径）
+   - 网络策略（域名白名单/黑名单）
+   - 排除的命令
 
-3. **List recent sandbox violations**
-   - Blocked filesystem access attempts
-   - Blocked network connections
-   - Escape hatch invocations (`dangerouslyDisableSandbox`)
+3. **列出近期沙盒违规记录**
+   - 被拦截的文件系统访问尝试
+   - 被拦截的网络连接
+   - 逃生舱调用（`dangerouslyDisableSandbox`）
 
-## Implementation
+## 实现代码
 
 ```bash
 #!/bin/bash
@@ -136,7 +136,7 @@ echo "  Official: https://code.claude.com/docs/en/sandboxing"
 echo "  Runtime: https://github.com/anthropic-experimental/sandbox-runtime"
 ```
 
-## Example Output
+## 示例输出
 
 ```
 === Native Sandbox Status ===
@@ -167,15 +167,15 @@ Documentation:
   Runtime: https://github.com/anthropic-experimental/sandbox-runtime
 ```
 
-## Use Cases
+## 适用场景
 
-- **Pre-deployment**: Verify sandbox config before running autonomous workflows
-- **Debugging**: Investigate why certain commands are blocked
-- **Security audit**: Review allowed domains and filesystem access
-- **Onboarding**: Help new team members understand project sandbox policy
+- **部署前**：在运行自主工作流之前验证沙盒配置
+- **调试**：排查某些命令被拦截的原因
+- **安全审查**：检查已允许的域名和文件系统访问权限
+- **新人入职**：帮助新团队成员理解项目的沙盒策略
 
-## See Also
+## 另请参阅
 
-- [Native Sandboxing Guide](../../guide/security/sandbox-native.md) - Complete technical reference
-- [Sandbox Validation Hook](../hooks/bash/sandbox-validation.sh) - Pre-command validation
-- [Sandbox Config Example](../config/sandbox-native.json) - Production-ready settings
+- [原生沙盒指南](../../guide/security/sandbox-native.md) - 完整技术参考
+- [沙盒验证钩子](../hooks/bash/sandbox-validation.sh) - 命令前验证
+- [沙盒配置示例](../config/sandbox-native.json) - 生产就绪配置

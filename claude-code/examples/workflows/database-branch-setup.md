@@ -2,356 +2,356 @@
 
 ---
 title: "Database Branch Setup with Worktrees"
-description: "Guide for isolated feature development using database branches with Neon or PlanetScale"
+description: "使用 Neon 或 PlanetScale 数据库分支进行隔离功能开发的指南"
 tags: [workflow, git, devops]
 ---
 
-# Database Branch Setup with Worktrees
+# 使用 Worktree 配置数据库分支
 
-Complete guide for isolated feature development with database branches.
+隔离功能开发与数据库分支的完整指南。
 
-**Source**: Inspired by [Neon database branching](https://neon.com/docs/introduction/branching) and [PlanetScale branching workflows](https://planetscale.com/docs/concepts/branching).
+**来源**：参考 [Neon 数据库分支](https://neon.com/docs/introduction/branching) 和 [PlanetScale 分支工作流](https://planetscale.com/docs/concepts/branching)。
 
 ---
 
-## TL;DR (90% Use Case)
+## 简要说明（90% 的使用场景）
 
-**Using Neon:**
+**使用 Neon：**
 ```bash
 /git-worktree feature/auth
 cd .worktrees/feature-auth
 neonctl branches create --name feature-auth --parent main
-# Copy DATABASE_URL from output to .env
+# 将输出中的 DATABASE_URL 复制到 .env
 pnpm prisma migrate dev
 ```
 
-Done. Skip to [workflow examples](#workflow-examples).
+完成。直接跳到[工作流示例](#工作流示例)。
 
 ---
 
-## Provider Setup
+## 服务商配置
 
-### Neon (Recommended)
+### Neon（推荐）
 
-**Install CLI:**
+**安装 CLI：**
 ```bash
 npm install -g neonctl
 neonctl auth
 ```
 
-**Create branch:**
+**创建分支：**
 ```bash
 neonctl branches create --name <branch-name> --parent main
 ```
 
-**Get connection string:**
+**获取连接字符串：**
 ```bash
 neonctl connection-string --branch <branch-name>
 ```
 
-**Update .env in worktree:**
+**更新 worktree 中的 .env：**
 ```bash
 echo "DATABASE_URL=<connection-string>" > .worktrees/<branch>/.env
 ```
 
-**Delete when done:**
+**完成后删除：**
 ```bash
 neonctl branches delete <branch-name>
 ```
 
-**Strengths:**
-- Instant branch creation (~1s)
-- True copy-on-write (efficient storage)
-- Branch resets without data loss
-- Excellent CLI
+**优势：**
+- 即时创建分支（约 1 秒）
+- 真正的写时复制（高效存储）
+- 分支重置无数据丢失
+- 优秀的 CLI
 
-**Limitations:**
-- Connection pooling configuration needed
+**局限：**
+- 需要配置连接池
 
 ---
 
 ### PlanetScale
 
-**Install CLI:**
+**安装 CLI：**
 ```bash
 brew install pscale
 pscale auth login
 ```
 
-**Create branch:**
+**创建分支：**
 ```bash
 pscale branch create <database-name> <branch-name>
 ```
 
-**Connect (spawns local proxy):**
+**连接（启动本地代理）：**
 ```bash
 pscale connect <database-name> <branch-name> --port 3309
 ```
 
-**Update .env to use localhost:3309:**
+**更新 .env 使用 localhost:3309：**
 ```bash
 echo "DATABASE_URL=mysql://root@127.0.0.1:3309/<database-name>" > .worktrees/<branch>/.env
 ```
 
-**Delete when done:**
+**完成后删除：**
 ```bash
 pscale branch delete <database-name> <branch-name>
 ```
 
-**Strengths:**
-- Git-like workflow for schema
-- Built-in schema diff
-- Safe deploy requests
+**优势：**
+- 类似 Git 的 schema 工作流
+- 内置 schema 差异对比
+- 安全的部署请求
 
-**Limitations:**
-- Different connection string per branch
-- Requires `pscale connect` for local dev
+**局限：**
+- 每个分支连接字符串不同
+- 本地开发需要 `pscale connect`
 
 ---
 
-### Local Postgres (Schema-based)
+### 本地 Postgres（基于 Schema）
 
-For projects without cloud DB:
+适用于没有云数据库的项目：
 
-**Create schema:**
+**创建 schema：**
 ```bash
 psql $DATABASE_URL -c "CREATE SCHEMA <schema-name>;"
 ```
 
-**Update .env to use schema:**
+**更新 .env 使用 schema：**
 ```bash
 DATABASE_URL="postgresql://user:pass@localhost:5432/db?schema=<schema-name>"
 ```
 
-**Run migrations in schema:**
+**在 schema 中运行迁移：**
 ```bash
 npx prisma migrate deploy
 ```
 
-**Cleanup:**
+**清理：**
 ```bash
 psql $DATABASE_URL -c "DROP SCHEMA <schema-name> CASCADE;"
 ```
 
-**Strengths:**
-- Free
-- Full control
+**优势：**
+- 免费
+- 完全可控
 
-**Limitations:**
-- Manual setup
-- No automatic copy-on-write
-
----
-
-## When to Use Database Branches
-
-### Decision Tree
-
-```
-Does feature touch database schema?
-├─ No → Use shared database, skip branch creation
-└─ Yes → Create database branch
-    ├─ Using Neon/PlanetScale? → Use native branching
-    ├─ Using local Postgres? → Create dedicated schema
-    └─ Other provider? → Consider Docker or shared DB with caution
-```
-
-### Scenario Table
-
-| Scenario | Use DB Branch? | Rationale |
-|----------|---------------|-----------|
-| Adding database migrations | ✅ Yes | Isolate schema changes |
-| Refactoring data model | ✅ Yes | Safe to experiment |
-| Performance testing | ✅ Yes | Dedicated resources |
-| Bug fix (no schema change) | ❌ No | Shared DB is fine |
-| Feature with schema changes | ✅ Yes | Avoid conflicts |
-| Hotfix (urgent) | ❌ No | Speed over isolation |
+**局限：**
+- 手动配置
+- 无自动写时复制
 
 ---
 
-## Workflow Examples
+## 何时使用数据库分支
 
-### Example 1: Schema Migration Feature
+### 决策树
+
+```
+功能是否涉及数据库 schema？
+├─ 否 → 使用共享数据库，跳过分支创建
+└─ 是 → 创建数据库分支
+    ├─ 使用 Neon/PlanetScale？ → 使用原生分支功能
+    ├─ 使用本地 Postgres？ → 创建专用 schema
+    └─ 其他服务商？ → 考虑 Docker 或谨慎使用共享数据库
+```
+
+### 场景对照表
+
+| 场景 | 使用数据库分支？ | 理由 |
+|------|----------------|------|
+| 添加数据库迁移 | ✅ 是 | 隔离 schema 变更 |
+| 重构数据模型 | ✅ 是 | 安全实验 |
+| 性能测试 | ✅ 是 | 独立资源 |
+| Bug 修复（无 schema 变更） | ❌ 否 | 共享数据库即可 |
+| 带 schema 变更的功能 | ✅ 是 | 避免冲突 |
+| 紧急热修复 | ❌ 否 | 速度优先于隔离 |
+
+---
+
+## 工作流示例
+
+### 示例 1：Schema 迁移功能
 
 ```bash
-# 1. Create worktree + DB branch
+# 1. 创建 worktree + 数据库分支
 /git-worktree feature/add-user-roles
 cd .worktrees/feature-add-user-roles
 
-# 2. Create Neon branch
+# 2. 创建 Neon 分支
 neonctl branches create --name feature-add-user-roles --parent main
 
-# 3. Update .env with new DATABASE_URL
-# (Copy from neonctl output)
+# 3. 用新的 DATABASE_URL 更新 .env
+# （从 neonctl 输出中复制）
 
-# 4. Create migration in steps
+# 4. 分步创建迁移
 npx prisma migrate dev --name step1_add_role_column
 npx prisma migrate dev --name step2_migrate_existing_users
 npx prisma migrate dev --name step3_add_constraints
 
-# 5. Test entire migration sequence
+# 5. 测试完整迁移序列
 pnpm prisma migrate reset --skip-seed
 pnpm prisma migrate deploy
 pnpm test
 
-# 6. If successful, merge PR
-# 7. Apply to main DB after deploy
+# 6. 成功后合并 PR
+# 7. 部署后应用到主数据库
 ```
 
 ---
 
-### Example 2: Data Model Experimentation
+### 示例 2：数据模型实验
 
 ```bash
-# Try different schemas without commitment
+# 无需承诺即可尝试不同 schema
 /git-worktree experiment/normalize-addresses
 cd .worktrees/experiment-normalize-addresses
 
-# Create DB branch
+# 创建数据库分支
 neonctl branches create --name experiment-normalize-addresses --parent main
 
-# Completely remodel data
-# Test with real-ish data
-# Compare performance
+# 完全重塑数据
+# 用近似真实的数据测试
+# 对比性能
 
-# If better → merge
-# If worse → delete branch (no cleanup needed)
+# 效果更好 → 合并
+# 效果更差 → 删除分支（无需清理）
 ```
 
 ---
 
-### Example 3: Parallel Feature Development
+### 示例 3：并行功能开发
 
 ```bash
-# Terminal 1
+# 终端 1
 /git-worktree feature/payments
 cd .worktrees/feature-payments
 neonctl branches create --name feature-payments --parent main
-# DATABASE_URL → feature-payments branch
+# DATABASE_URL → feature-payments 分支
 
-# Terminal 2
+# 终端 2
 /git-worktree feature/subscriptions
 cd .worktrees/feature-subscriptions
 neonctl branches create --name feature-subscriptions --parent main
-# DATABASE_URL → feature-subscriptions branch
+# DATABASE_URL → feature-subscriptions 分支
 
-# Both can modify schema independently
-# No conflicts until merge
+# 两者可独立修改 schema
+# 合并前互不冲突
 ```
 
 ---
 
-## Checklist
+## 检查清单
 
-### Before starting work in worktree with DB changes:
-- [ ] `.worktreeinclude` contains `.env`
-- [ ] Database branch created (if provider supports it)
-- [ ] `.env` in worktree updated with new `DATABASE_URL`
-- [ ] Connection tested (`npx prisma db execute --stdin <<< "SELECT 1;"`)
-- [ ] Migrations applied (`npx prisma migrate dev`)
+### 在 worktree 中开始数据库变更前：
+- [ ] `.worktreeinclude` 包含 `.env`
+- [ ] 已创建数据库分支（如服务商支持）
+- [ ] worktree 中的 `.env` 已更新为新的 `DATABASE_URL`
+- [ ] 已测试连接（`npx prisma db execute --stdin <<< "SELECT 1;"`）
+- [ ] 已应用迁移（`npx prisma migrate dev`）
 
-### After PR merge:
-- [ ] Git worktree removed
-- [ ] Database branch deleted
-- [ ] No orphaned connections
+### PR 合并后：
+- [ ] 已移除 Git worktree
+- [ ] 已删除数据库分支
+- [ ] 无孤立连接
 
 ---
 
-## Troubleshooting
+## 故障排查
 
-### Issue: "Database not found" in worktree
-**Fix:** Check `.env` was copied, verify `.worktreeinclude` setup
+### 问题：worktree 中出现"Database not found"
+**修复：** 检查 `.env` 是否已复制，验证 `.worktreeinclude` 配置
 
-### Issue: Migrations affect main database
-**Fix:** Verify `DATABASE_URL` points to branch, not main
+### 问题：迁移影响了主数据库
+**修复：** 确认 `DATABASE_URL` 指向分支而非主库
 
-### Issue: Can't create Neon branch - "not authenticated"
-**Fix:** Run `neonctl auth` to log in
+### 问题：无法创建 Neon 分支——"not authenticated"
+**修复：** 运行 `neonctl auth` 登录
 
-### Issue: PlanetScale branch exists but can't connect
-**Fix:** Use `pscale connect` proxy, don't connect directly
+### 问题：PlanetScale 分支存在但无法连接
+**修复：** 使用 `pscale connect` 代理，不要直接连接
 
-### Issue: "Branch already exists"
+### 问题："Branch already exists"
 ```bash
-# List existing branches
+# 列出现有分支
 neonctl branches list
 
-# Delete if stale
+# 如已过期则删除
 neonctl branches delete <branch-name> --force
 ```
 
-### Issue: Migration failed
+### 问题：迁移失败
 ```bash
-# Reset DB branch to clean state
+# 将数据库分支重置为干净状态
 neonctl branches reset <branch-name> --parent main
 
-# Re-apply migrations
+# 重新应用迁移
 npx prisma migrate deploy
 ```
 
 ---
 
-## Security Notes
+## 安全注意事项
 
-⚠️ **Remember:**
-- Database branches are NOT in `.gitignore` by default
-- Add `.env` to `.worktreeinclude` so credentials are copied
-- Never commit `DATABASE_URL` with real credentials
-- Use different credentials per environment
+⚠️ **注意：**
+- 数据库分支默认不在 `.gitignore` 中
+- 将 `.env` 添加到 `.worktreeinclude` 以便凭据被复制
+- 切勿提交包含真实凭据的 `DATABASE_URL`
+- 每个环境使用不同的凭据
 
-✅ **Best Practice:**
+✅ **最佳实践：**
 ```bash
 # .worktreeinclude
 .env
 .env.local
 .env.development
 
-# Each worktree gets copy of credentials
-# But each points to different DB branch
+# 每个 worktree 获得凭据副本
+# 但每个都指向不同的数据库分支
 ```
 
 ---
 
-## Advanced Patterns
+## 高级模式
 
-### Pattern: Progressive Schema Migration
+### 模式：渐进式 Schema 迁移
 
 ```bash
-# 1. Create worktree + DB branch
+# 1. 创建 worktree + 数据库分支
 /git-worktree migration/split-user-table
 cd .worktrees/migration-split-user-table
 
-# 2. Create migration in steps
+# 2. 分步创建迁移
 npx prisma migrate dev --name step1_add_new_columns
 npx prisma migrate dev --name step2_migrate_data
 npx prisma migrate dev --name step3_drop_old_columns
 
-# 3. Test entire migration sequence
+# 3. 测试完整迁移序列
 pnpm prisma migrate reset --skip-seed
 pnpm prisma migrate deploy
 
-# 4. If successful, merge PR
-# 5. Apply to main DB after deploy
+# 4. 成功后合并 PR
+# 5. 部署后应用到主数据库
 ```
 
-### Pattern: Performance Benchmarking
+### 模式：性能基准测试
 
 ```bash
-# Create worktree with isolated DB
+# 创建带独立数据库的 worktree
 /git-worktree perf/optimize-queries
 cd .worktrees/perf-optimize-queries
 
-# DB branch lets you:
-# - Add indexes without affecting dev
-# - Run load tests safely
-# - Compare before/after metrics
+# 数据库分支让你可以：
+# - 添加索引而不影响开发环境
+# - 安全地运行负载测试
+# - 对比前后指标
 
-# Merge proven optimizations only
+# 仅合并经过验证的优化
 ```
 
 ---
 
-**Related guides:**
-- [Git Worktree Command Reference](../commands/git-worktree.md)
-- [Neon Branching Docs](https://neon.com/docs/introduction/branching)
-- [PlanetScale Branching](https://planetscale.com/docs/concepts/branching)
+**相关指南：**
+- [Git Worktree 命令参考](../commands/git-worktree.md)
+- [Neon 分支文档](https://neon.com/docs/introduction/branching)
+- [PlanetScale 分支](https://planetscale.com/docs/concepts/branching)

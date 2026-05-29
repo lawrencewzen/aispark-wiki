@@ -2,63 +2,63 @@
 
 ---
 name: generate-tests
-description: Generate comprehensive tests for specified code
+description: 为指定代码生成全面的测试用例
 argument-hint: "<file_or_module> [--framework jest|vitest|pytest]"
 effort: medium
 disable-model-invocation: true
 ---
 
-# Generate Tests
+# 生成测试
 
-Generate comprehensive tests for specified code.
+为指定代码生成全面的测试用例。
 
-## Instructions
+## 操作说明
 
-1. Read the target file(s)
-2. Identify testable units (functions, classes, methods)
-3. Generate tests following project conventions
-4. Ensure high coverage of edge cases
+1. 读取目标文件
+2. 识别可测试单元（函数、类、方法）
+3. 按照项目规范生成测试
+4. 确保边界情况有高覆盖率
 
-## Test Generation Process
+## 测试生成流程
 
-### 1. Analyze Target
-- Identify public interfaces
-- Understand dependencies
-- Note edge cases and boundaries
+### 1. 分析目标
+- 识别公共接口
+- 理解依赖关系
+- 标注边界情况与边界值
 
-### 2. Detect Test Framework
-Check for:
+### 2. 检测测试框架
+检查以下文件：
 - `jest.config.js` → Jest
 - `vitest.config.ts` → Vitest
 - `pytest.ini` → pytest
-- `mocha` in package.json → Mocha
+- `package.json` 中含 `mocha` → Mocha
 
-### 3. Generate Tests
-Follow the detected framework conventions.
+### 3. 生成测试
+遵循检测到的框架规范。
 
-## Test Categories
+## 测试分类
 
-### Happy Path
-Normal expected behavior with valid input.
+### 正常路径
+使用有效输入的正常预期行为。
 
-### Edge Cases
-- Empty inputs
-- Null/undefined values
-- Boundary values (0, -1, MAX_INT)
-- Single item vs multiple items
+### 边界情况
+- 空输入
+- Null/undefined 值
+- 边界值（0、-1、MAX_INT）
+- 单项 vs 多项
 
-### Error Cases
-- Invalid input types
-- Missing required parameters
-- Network/IO failures
-- Timeout scenarios
+### 错误情况
+- 无效输入类型
+- 缺少必填参数
+- 网络/IO 故障
+- 超时场景
 
-### Integration Points
-- Database interactions
-- External API calls
-- File system operations
+### 集成点
+- 数据库交互
+- 外部 API 调用
+- 文件系统操作
 
-## Output Format
+## 输出格式
 
 ```typescript
 describe('[ComponentName]', () => {
@@ -80,15 +80,15 @@ describe('[ComponentName]', () => {
 });
 ```
 
-## Conventions
+## 编写规范
 
-- One assertion per test (when practical)
-- Descriptive test names
-- AAA pattern (Arrange-Act-Assert)
-- No test interdependence
-- Mock external dependencies
+- 每个测试一个断言（在实际可行时）
+- 描述性测试名称
+- AAA 模式（Arrange-Act-Assert）
+- 测试之间不相互依赖
+- Mock 外部依赖
 
-## Usage
+## 使用方式
 
 ```
 /generate-tests src/utils/calculator.ts

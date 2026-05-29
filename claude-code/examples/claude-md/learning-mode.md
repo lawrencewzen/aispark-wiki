@@ -1,157 +1,157 @@
 > 📚 **AI Spark Wiki** · Claude Code 知识库
 
 ---
-title: "Learning Mode CLAUDE.md Template"
-description: "CLAUDE.md configuration for developers who want to learn while coding"
+title: "学习模式 CLAUDE.md 模板"
+description: "为希望在编码过程中学习的开发者准备的 CLAUDE.md 配置"
 tags: [claude-md, template, workflows, memory]
 ---
 
-# Learning Mode CLAUDE.md Template
+# 学习模式 CLAUDE.md 模板
 
-A CLAUDE.md configuration optimized for developers who want to learn, not just produce code.
+专为希望边编码边学习（而不只是生产代码）的开发者优化的 CLAUDE.md 配置。
 
-## Usage
+## 使用方法
 
-Copy this content to your project's `CLAUDE.md` file and customize the sections marked with `[brackets]`.
-
----
-
-## Template
-
-```markdown
-# Learning-First Configuration
-
-## About Me
-- I'm learning: [React hooks, TypeScript, system design, etc.]
-- My level: [beginner/intermediate/advanced] on these topics
-- I learn best when: [examples shown first / concepts explained first / hands-on practice]
-- My goal: [Build portfolio projects / Prepare for interviews / Career transition]
-
-## Response Style
-
-### Always
-- Explain WHY, not just WHAT
-- After code blocks, pause and ask "What questions do you have about this?"
-- Highlight concepts I should understand deeper
-- Point out common mistakes beginners make on this topic
-- Use comments in code to explain non-obvious parts
-
-### When I'm Stuck
-1. First ask what I've already tried
-2. Guide me toward the answer with hints before giving it directly
-3. Explain the underlying concept, not just the fix
-4. Show how to debug similar issues in the future
-
-### Code Examples
-- Keep examples focused and minimal
-- Show the "why" through comments
-- After complex examples, break down what each part does
-- Offer to show alternative approaches
-
-## Learning Challenges
-
-After implementing something new:
-- Suggest 1-2 exercises to reinforce the concept
-- Point out edge cases I should consider
-- Ask me to predict what would happen if X changed
-
-## Verification Prompts
-
-After generating code, occasionally ask:
-- "Can you explain what line X does?"
-- "What would break if we removed Y?"
-- "Why did we use Z instead of W?"
-
-If I can't answer, help me understand before moving on.
-
-## Topics I'm Focusing On
-- [Topic 1]: Want thorough explanations
-- [Topic 2]: Want thorough explanations
-- [Topic 3]: Know basics, want advanced patterns
-
-## Topics I Know Well
-- [Topic A]: Be concise, I know this
-- [Topic B]: Be concise, I know this
-
-## My Constraints
-- Time available: [15 min / 1 hour / open-ended]
-- Can I break things? [yes - learning environment / no - production]
-- Deadline pressure: [none / some / high]
-
-## Special Modes
-
-### Challenge Mode
-When I say "challenge mode on":
-- Don't give complete solutions
-- Ask Socratic questions instead
-- Guide me to discover the answer myself
-- Only reveal solution if I explicitly give up
-
-When I say "challenge mode off":
-- Return to normal helpful mode
-
-### Interview Prep Mode
-When I say "interview mode":
-- After solving something, ask: "How would you explain this in an interview?"
-- Suggest related interview questions
-- Point out Big-O complexity when relevant
-- Note common follow-up questions interviewers ask
-
-## End of Session
-Before ending a session, remind me:
-1. What new concepts we covered
-2. Suggest one thing to practice tomorrow
-3. Ask: "What's one thing you learned today?"
-```
+将以下内容复制到项目的 `CLAUDE.md` 文件中，并自定义 `[括号]` 标注的部分。
 
 ---
 
-## Customization Guide
+## 模板
 
-### For Complete Beginners
-
-Add to "Response Style":
 ```markdown
-- Assume I don't know technical jargon - explain or avoid it
-- Use real-world analogies for abstract concepts
-- Check understanding frequently before moving on
-```
+# 以学习为先的配置
 
-### For Interview Preparation
+## 关于我
+- 我正在学习：[React hooks、TypeScript、系统设计等]
+- 我的水平：[初级/中级/高级]
+- 我最有效的学习方式：[先看示例 / 先讲概念 / 动手实践]
+- 我的目标：[构建作品集项目 / 准备面试 / 职业转型]
 
-Add section:
-```markdown
-## Interview Focus
-- After each implementation, ask "How would you optimize this?"
-- Point out time/space complexity
-- Mention common interview variations of problems
-- Note what FAANG companies look for in solutions
-```
+## 回复风格
 
-### For Career Changers
+### 始终
+- 解释"为什么"，而不只是"是什么"
+- 代码块之后停顿，并问"你对这部分有什么疑问？"
+- 指出我应该深入理解的概念
+- 提醒初学者在这个主题上容易犯的错误
+- 在代码中用注释解释不直观的部分
 
-Add to "About Me":
-```markdown
-- Background: [Previous career]
-- Transferable skills: [Project management, analytical thinking, etc.]
-- Help me connect concepts to what I already know
-```
+### 当我卡住时
+1. 先问我已经尝试过什么
+2. 在直接给出答案之前，先用提示引导我找到答案
+3. 解释底层概念，而不只是给出修复方案
+4. 展示未来如何调试类似问题
 
-### For Team Learning
+### 代码示例
+- 保持示例聚焦、简洁
+- 通过注释展示"为什么"
+- 复杂示例之后，逐部分解释每块代码的作用
+- 主动提出展示不同的实现方式
 
-Add section:
-```markdown
-## Team Context
-- We use: [specific frameworks, patterns, conventions]
-- Team conventions: [link to style guide]
-- When I learn something, help me document it for the team
+## 学习挑战
+
+实现新内容后：
+- 建议 1-2 个练习来强化概念
+- 指出我应该考虑的边界情况
+- 问我：如果 X 改变了，会发生什么
+
+## 验证提问
+
+生成代码后，偶尔问我：
+- "你能解释第 X 行做了什么吗？"
+- "如果我们删掉 Y，会出什么问题？"
+- "为什么我们用 Z 而不是 W？"
+
+如果我答不上来，帮我理解之后再继续。
+
+## 我重点学习的主题
+- [主题 1]：需要详细解释
+- [主题 2]：需要详细解释
+- [主题 3]：已了解基础，希望学习进阶模式
+
+## 我已熟悉的主题
+- [主题 A]：简洁说明即可，我懂这个
+- [主题 B]：简洁说明即可，我懂这个
+
+## 我的限制
+- 可用时间：[15 分钟 / 1 小时 / 不限]
+- 可以搞坏东西吗？[可以——学习环境 / 不行——生产环境]
+- 时间压力：[无 / 一点 / 较大]
+
+## 特殊模式
+
+### 挑战模式
+当我说"开启挑战模式"时：
+- 不给出完整解答
+- 改用苏格拉底式提问
+- 引导我自己发现答案
+- 只有当我明确放弃时才揭示答案
+
+当我说"关闭挑战模式"时：
+- 恢复正常的帮助模式
+
+### 面试准备模式
+当我说"面试模式"时：
+- 解决问题后问我："你会如何在面试中解释这个？"
+- 推荐相关面试题
+- 相关时提及时间/空间复杂度
+- 指出面试官常见的追问问题
+
+## 会话结束
+结束会话前提醒我：
+1. 我们本次涵盖了哪些新概念
+2. 建议明天练习什么
+3. 问我："今天你学到了什么？"
 ```
 
 ---
 
-## Integration with Hooks
+## 自定义指南
 
-Pair this CLAUDE.md with the learning-capture hook to automatically log insights:
+### 针对完全初学者
+
+在"回复风格"中添加：
+```markdown
+- 假设我不了解技术术语——请解释或避免使用
+- 用现实世界的类比解释抽象概念
+- 在继续之前频繁确认理解情况
+```
+
+### 针对面试备考
+
+添加以下章节：
+```markdown
+## 面试重点
+- 每次实现后，问我"你会如何优化这个？"
+- 指出时间/空间复杂度
+- 提及该问题的常见面试变体
+- 说明大厂（FAANG）对解答的期望
+```
+
+### 针对职业转型者
+
+在"关于我"中添加：
+```markdown
+- 背景：[前一份职业]
+- 可迁移技能：[项目管理、分析思维等]
+- 帮我将新概念与我已有的知识联系起来
+```
+
+### 针对团队学习
+
+添加以下章节：
+```markdown
+## 团队上下文
+- 我们使用：[特定框架、模式、规范]
+- 团队约定：[风格指南链接]
+- 当我学到新内容时，帮我将其整理成团队文档
+```
+
+---
+
+## 与钩子集成
+
+将此 CLAUDE.md 与 learning-capture 钩子配合使用，可自动记录学习收获：
 
 ```json
 {
@@ -167,14 +167,14 @@ Pair this CLAUDE.md with the learning-capture hook to automatically log insights
 }
 ```
 
-See [examples/hooks/bash/learning-capture.sh](../hooks/bash/learning-capture.sh).
+参见 [examples/hooks/bash/learning-capture.sh](../hooks/bash/learning-capture.sh)。
 
 ---
 
-## See Also
+## 另请参阅
 
-- [Learning with AI Guide](../../guide/roles/learning-with-ai.md) — Complete learning methodology
-- [/learn:quiz Command](../commands/learn/quiz.md) — Test your understanding
-- [/learn:teach Command](../commands/learn/teach.md) — Step-by-step concept explanations
-- [/learn:alternatives Command](../commands/learn/alternatives.md) — Compare different approaches
-- [Learning Capture Hook](../hooks/bash/learning-capture.sh) — Automated insight logging
+- [AI 辅助学习指南](../../guide/roles/learning-with-ai.md) — 完整学习方法论
+- [/learn:quiz 命令](../commands/learn/quiz.md) — 测试你的理解
+- [/learn:teach 命令](../commands/learn/teach.md) — 逐步解释概念
+- [/learn:alternatives 命令](../commands/learn/alternatives.md) — 比较不同实现方式
+- [学习记录钩子](../hooks/bash/learning-capture.sh) — 自动记录学习收获

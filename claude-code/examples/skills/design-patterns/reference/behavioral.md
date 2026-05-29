@@ -1,27 +1,27 @@
 > 📚 **AI Spark Wiki** · Claude Code 知识库
 
 ---
-title: "Behavioral Design Patterns"
-description: "Reference for Observer, Strategy, Command, Chain of Responsibility and other behavior patterns"
+title: "行为型设计模式"
+description: "观察者、策略、命令、职责链等行为模式参考手册"
 tags: [reference, design-patterns, architecture]
 ---
 
-# Behavioral Design Patterns
+# 行为型设计模式
 
-Patterns concerned with algorithms and the assignment of responsibilities between objects, focusing on communication patterns.
+关注算法以及对象间职责分配的模式，重点在于对象之间的通信方式。
 
-## Chain of Responsibility
+## 职责链
 
-### Definition
-Passes requests along a chain of handlers, where each handler decides either to process the request or pass it to the next handler.
+### 定义
+将请求沿处理器链传递，每个处理器决定是处理该请求还是将其传递给下一个处理器。
 
-### When to Use
-- [x] More than one object may handle a request, and handler isn't known a priori
-- [x] Want to issue request without specifying receiver explicitly
-- [x] Set of handlers can be specified dynamically
-- [x] Processing order matters
+### 适用场景
+- [x] 可能有多个对象处理请求，且处理器事先未知
+- [x] 希望在不明确指定接收者的情况下发出请求
+- [x] 处理器集合可动态指定
+- [x] 处理顺序有要求
 
-### TypeScript Signature
+### TypeScript 签名
 ```typescript
 interface Handler {
   setNext(handler: Handler): Handler;
@@ -70,39 +70,39 @@ handlerA.setNext(handlerB);
 console.log(handlerA.handle('B')); // HandlerB processed B
 ```
 
-### Stack-Native Alternatives
+### 框架原生替代方案
 
-**Express Middleware**:
+**Express 中间件**：
 ```typescript
 app.use(authMiddleware);
 app.use(loggingMiddleware);
 app.use(errorMiddleware);
 ```
 
-**NestJS Guards/Interceptors**:
+**NestJS Guards/Interceptors**：
 ```typescript
 @UseGuards(AuthGuard, RolesGuard)
 @UseInterceptors(LoggingInterceptor)
 ```
 
-### Code Smells It Fixes
-- **Tight coupling to request handler**: Client doesn't know which handler processes request
-- **Complex conditional logic**: Each handler has simple logic
+### 可修复的代码异味
+- **与请求处理器紧耦合**：客户端无需知道由哪个处理器处理请求
+- **复杂的条件判断逻辑**：每个处理器只需包含简单逻辑
 
 ---
 
-## Command
+## 命令
 
-### Definition
-Encapsulates a request as an object, letting you parameterize clients with different requests, queue or log requests, and support undoable operations.
+### 定义
+将请求封装为对象，从而可以用不同的请求参数化客户端、对请求进行排队或记录日志，并支持可撤销操作。
 
-### When to Use
-- [x] Parameterize objects with operations
-- [x] Queue, specify, and execute requests at different times
-- [x] Support undo/redo operations
-- [x] Log changes for system crash recovery
+### 适用场景
+- [x] 需要用操作对对象进行参数化
+- [x] 需要在不同时刻对请求进行排队、指定和执行
+- [x] 支持撤销/重做操作
+- [x] 记录变更以便系统崩溃后恢复
 
-### TypeScript Signature
+### TypeScript 签名
 ```typescript
 // Command interface
 interface Command {
@@ -171,7 +171,7 @@ remote.execute(new TurnOffCommand(light)); // Light is off
 remote.undo();                             // Light is on
 ```
 
-### Stack-Native: Redux Actions
+### 框架原生：Redux Actions
 ```typescript
 const incrementAction = { type: 'INCREMENT', payload: 1 };
 dispatch(incrementAction); // Command pattern
@@ -179,17 +179,17 @@ dispatch(incrementAction); // Command pattern
 
 ---
 
-## Iterator
+## 迭代器
 
-### Definition
-Provides a way to access elements of a collection sequentially without exposing its underlying representation.
+### 定义
+提供一种顺序访问集合元素的方式，而无需暴露其底层表示。
 
-### When to Use
-- [x] Need to access collection's contents without exposing internal structure
-- [x] Support multiple traversals of collections
-- [x] Provide uniform interface for traversing different structures
+### 适用场景
+- [x] 需要在不暴露内部结构的情况下访问集合内容
+- [x] 支持对集合进行多次遍历
+- [x] 为遍历不同结构提供统一接口
 
-### TypeScript Signature
+### TypeScript 签名
 ```typescript
 // Iterator interface
 interface Iterator<T> {
@@ -230,7 +230,7 @@ class NumberCollection implements Iterable<number> {
 }
 ```
 
-### JavaScript Native Support
+### JavaScript 原生支持
 ```typescript
 // Symbol.iterator
 const collection = {
@@ -266,17 +266,17 @@ for (const num of numberGenerator()) {
 
 ---
 
-## Mediator
+## 中介者
 
-### Definition
-Defines an object that encapsulates how a set of objects interact, promoting loose coupling by keeping objects from referring to each other explicitly.
+### 定义
+定义一个封装一组对象交互方式的对象，通过避免对象之间的显式相互引用来促进松耦合。
 
-### When to Use
-- [x] Set of objects communicate in complex ways
-- [x] Reusing object is difficult because it refers to many others
-- [x] Behavior distributed between classes should be customizable without subclassing
+### 适用场景
+- [x] 一组对象之间的通信方式复杂
+- [x] 对象因引用了太多其他对象而难以复用
+- [x] 分布在各类中的行为应当可在不使用子类的情况下定制
 
-### TypeScript Signature
+### TypeScript 签名
 ```typescript
 // Mediator interface
 interface Mediator {
@@ -351,7 +351,7 @@ c1.doA();
 // Component 2 does C
 ```
 
-### Stack-Native: React Context
+### 框架原生：React Context
 ```typescript
 const ChatContext = createContext<ChatMediator>(null!);
 
@@ -369,23 +369,23 @@ function ChatRoom({ children }: Props) {
 }
 ```
 
-### Code Smells It Fixes
-- **Complex web of interactions**: Centralized in mediator
-- **God object with many responsibilities**: Mediator focuses on coordination only
+### 可修复的代码异味
+- **复杂的交互网络**：集中到中介者中管理
+- **承担过多职责的上帝对象**：中介者只专注于协调
 
 ---
 
-## Memento
+## 备忘录
 
-### Definition
-Captures and externalizes an object's internal state without violating encapsulation, so the object can be restored to this state later.
+### 定义
+在不违反封装的前提下，捕获并外部化对象的内部状态，以便之后可以将对象恢复到该状态。
 
-### When to Use
-- [x] Need to save/restore object snapshots (undo/redo)
-- [x] Direct interface to state would expose implementation
-- [x] Want to preserve encapsulation boundaries
+### 适用场景
+- [x] 需要保存/恢复对象快照（撤销/重做）
+- [x] 直接访问状态接口会暴露实现细节
+- [x] 希望保留封装边界
 
-### TypeScript Signature
+### TypeScript 签名
 ```typescript
 // Memento
 class Memento {
@@ -451,24 +451,24 @@ editor.restore(history.pop()!);
 console.log(editor.getContent()); // Hello World
 ```
 
-### Code Smells It Fixes
-- **Exposing internal state for undo**: Memento encapsulates state
-- **Complex undo logic**: History manages snapshots
+### 可修复的代码异味
+- **为实现撤销而暴露内部状态**：备忘录封装状态
+- **复杂的撤销逻辑**：历史记录管理快照
 
 ---
 
-## Observer
+## 观察者
 
-### Definition
-Defines a one-to-many dependency between objects so that when one object changes state, all its dependents are notified automatically.
+### 定义
+定义对象之间的一对多依赖关系，使得当一个对象状态改变时，所有依赖它的对象都会自动收到通知。
 
-### When to Use
-- [x] Change to one object requires changing others (unknown number)
-- [x] Object should notify others without knowing who they are
-- [x] Event-driven architectures
-- [x] Reactive programming
+### 适用场景
+- [x] 一个对象的变更需要同时改变其他对象（数量未知）
+- [x] 对象需要在不知道通知对象是谁的情况下发出通知
+- [x] 事件驱动架构
+- [x] 响应式编程
 
-### TypeScript Signature
+### TypeScript 签名
 ```typescript
 // Observer interface
 interface Observer {
@@ -543,9 +543,9 @@ subject.setState(5);
 // ObserverB: State is now 5
 ```
 
-### Stack-Native Alternatives
+### 框架原生替代方案
 
-**React**:
+**React**：
 ```typescript
 const [value, setValue] = useState(0);
 useEffect(() => {
@@ -553,41 +553,41 @@ useEffect(() => {
 }, [value]);
 ```
 
-**RxJS**:
+**RxJS**：
 ```typescript
 const subject = new BehaviorSubject(0);
 subject.subscribe(value => console.log(value));
 subject.next(5); // Notifies subscribers
 ```
 
-**Angular**:
+**Angular**：
 ```typescript
 private data$ = new BehaviorSubject<Data>(initial);
 getData() { return this.data$.asObservable(); }
 ```
 
-### Code Smells It Fixes
-- **Scattered notification logic**: Centralized in subject
-- **Tight coupling**: Observers don't know about each other
+### 可修复的代码异味
+- **分散的通知逻辑**：集中到主题对象中管理
+- **紧耦合**：观察者之间互不感知
 
-### Common Mistakes
-- **Memory leaks**: Forgetting to unsubscribe/detach
-- **Notification storms**: Too many updates triggering cascades
-- **Order dependency**: Observers should be independent
+### 常见错误
+- **内存泄漏**：忘记取消订阅/解除注册
+- **通知风暴**：过多更新引发级联通知
+- **顺序依赖**：观察者之间应保持独立
 
 ---
 
-## State
+## 状态
 
-### Definition
-Allows an object to alter its behavior when its internal state changes, appearing to change its class.
+### 定义
+允许对象在内部状态改变时改变其行为，看起来就像更改了对象所属的类。
 
-### When to Use
-- [x] Object behavior depends on its state
-- [x] Operations have large conditional statements that depend on state
-- [x] State transitions are well-defined
+### 适用场景
+- [x] 对象行为取决于其状态
+- [x] 操作中包含大量依赖状态的条件语句
+- [x] 状态转换定义清晰
 
-### TypeScript Signature
+### TypeScript 签名
 ```typescript
 // State interface
 interface State {
@@ -633,7 +633,7 @@ context.request(); // StateA handles request, transitions to StateB
 context.request(); // StateB handles request, transitions to StateA
 ```
 
-### Real-World: Document States
+### 实际应用：文档状态
 ```typescript
 interface DocumentState {
   publish(doc: Document): void;
@@ -686,7 +686,7 @@ class Document {
 }
 ```
 
-### Stack-Native: React useReducer
+### 框架原生：React useReducer
 ```typescript
 const reducer = (state: State, action: Action) => {
   switch (action.type) {
@@ -699,24 +699,24 @@ const reducer = (state: State, action: Action) => {
 const [state, dispatch] = useReducer(reducer, { status: 'draft' });
 ```
 
-### Code Smells It Fixes
-- **Complex conditionals on state**: Each state is a separate class
-- **Scattered state-dependent behavior**: Localized in state classes
+### 可修复的代码异味
+- **基于状态的复杂条件判断**：每个状态是独立的类
+- **分散的状态相关行为**：集中到各状态类中
 
 ---
 
-## Strategy
+## 策略
 
-### Definition
-Defines a family of algorithms, encapsulates each one, and makes them interchangeable, letting the algorithm vary independently from clients.
+### 定义
+定义一组算法，将每个算法封装起来并使其可以互换，让算法独立于使用它的客户端而变化。
 
-### When to Use
-- [x] Many related classes differ only in behavior
-- [x] Need different variants of an algorithm
-- [x] Algorithm uses data clients shouldn't know about
-- [x] Class has multiple conditional statements for selecting behavior
+### 适用场景
+- [x] 多个相关类仅在行为上有所不同
+- [x] 需要同一算法的不同变体
+- [x] 算法使用了客户端不应知道的数据
+- [x] 类中包含多个用于选择行为的条件语句
 
-### TypeScript Signature
+### TypeScript 签名
 ```typescript
 // Strategy interface
 interface Strategy {
@@ -757,7 +757,7 @@ calculator.setStrategy(new MultiplyStrategy());
 console.log(calculator.calculate(5, 3)); // 15
 ```
 
-### Stack-Native: React Hooks
+### 框架原生：React Hooks
 ```typescript
 // Strategies as hooks
 const useCreditPayment = () => ({ process: async (amount) => { /* ... */ } });
@@ -778,28 +778,28 @@ const PaymentForm = ({ type }: Props) => {
 };
 ```
 
-### Code Smells It Fixes
-- **Switch on type**: `switch (type) { case 'A': ... case 'B': ... }`
-  → Replace with strategy selection
-- **Hardcoded algorithms**: Strategies are interchangeable
+### 可修复的代码异味
+- **按类型 switch**：`switch (type) { case 'A': ... case 'B': ... }`
+  → 替换为策略选择
+- **硬编码算法**：策略可以互换替换
 
-### Common Mistakes
-- **Strategy explosion**: Too many small strategies
-- **Client awareness**: Client shouldn't know strategy details
+### 常见错误
+- **策略爆炸**：策略数量过多且粒度过细
+- **客户端感知策略细节**：客户端不应了解策略的内部实现
 
 ---
 
-## Template Method
+## 模板方法
 
-### Definition
-Defines the skeleton of an algorithm in a method, deferring some steps to subclasses, letting subclasses redefine certain steps without changing structure.
+### 定义
+在方法中定义算法的骨架，将某些步骤延迟到子类中实现，允许子类在不改变算法结构的前提下重新定义特定步骤。
 
-### When to Use
-- [x] Implement invariant parts of algorithm once, leave varying parts to subclasses
-- [x] Common behavior among subclasses should be factored and localized
-- [x] Control subclass extensions (hook operations)
+### 适用场景
+- [x] 算法的不变部分只实现一次，变化部分留给子类
+- [x] 子类中的公共行为应被提取并集中管理
+- [x] 控制子类的扩展方式（钩子操作）
 
-### TypeScript Signature
+### TypeScript 签名
 ```typescript
 abstract class AbstractClass {
   // Template method
@@ -859,23 +859,23 @@ const classA = new ConcreteClassA();
 classA.templateMethod();
 ```
 
-### Code Smells It Fixes
-- **Duplicated algorithm structure**: Template defines common steps
-- **Inconsistent step order**: Template enforces order
+### 可修复的代码异味
+- **重复的算法结构**：模板定义公共步骤
+- **步骤顺序不一致**：模板强制规定顺序
 
 ---
 
-## Visitor
+## 访问者
 
-### Definition
-Represents an operation to be performed on elements of an object structure, letting you define new operations without changing classes of elements.
+### 定义
+表示对对象结构中各元素执行的操作，允许在不修改元素类的前提下定义新操作。
 
-### When to Use
-- [x] Object structure contains many classes with differing interfaces
-- [x] Many distinct operations need to be performed on objects
-- [x] Object structure rarely changes but operations on it often do
+### 适用场景
+- [x] 对象结构包含许多接口各异的类
+- [x] 需要对对象执行多种不同的操作
+- [x] 对象结构很少变化，但对其的操作经常变化
 
-### TypeScript Signature
+### TypeScript 签名
 ```typescript
 // Element interface
 interface Element {
@@ -932,27 +932,27 @@ for (const element of elements) {
 }
 ```
 
-### Code Smells It Fixes
-- **Adding new operations requires modifying elements**: Visitor externalizes operations
-- **Operations scattered across classes**: Visitor groups related operations
+### 可修复的代码异味
+- **添加新操作需要修改元素类**：访问者将操作外部化
+- **操作分散在各类中**：访问者将相关操作集中管理
 
-### Common Mistakes
-- **Adding new element types**: Requires modifying all visitors (rigid)
-- **Breaking encapsulation**: Visitor may need access to internals
+### 常见错误
+- **添加新元素类型**：需要修改所有访问者（扩展性差）
+- **破坏封装**：访问者可能需要访问内部状态
 
 ---
 
-## Interpreter
+## 解释器
 
-### Definition
-Defines a representation for a grammar along with an interpreter that uses the representation to interpret sentences in the language.
+### 定义
+为某种语言定义语法表示，并提供一个使用该表示来解释语言中句子的解释器。
 
-### When to Use
-- [x] Grammar is simple (for complex grammars, use parser generators)
-- [x] Efficiency is not critical
-- [x] Building a simple domain-specific language (DSL)
+### 适用场景
+- [x] 语法简单（复杂语法应使用解析器生成器）
+- [x] 性能要求不高
+- [x] 构建简单的领域特定语言（DSL）
 
-### TypeScript Signature
+### TypeScript 签名
 ```typescript
 // Context
 class Context {
@@ -1003,38 +1003,38 @@ const expression = new MultiplyExpression(
 console.log(expression.interpret(context)); // 16
 ```
 
-### Code Smells It Fixes
-- **Complex parsing logic**: Grammar rules are explicit classes
-- **Hardcoded language interpretation**: Extensible grammar
+### 可修复的代码异味
+- **复杂的解析逻辑**：语法规则以显式类表达
+- **硬编码的语言解释**：可扩展的语法结构
 
 ---
 
-## Summary Table
+## 汇总表
 
-| Pattern | Complexity | Use Frequency | Main Benefit |
-|---------|------------|---------------|--------------|
-| Chain of Responsibility | Medium | Medium | Decouple sender from receiver |
-| Command | Medium | Medium | Parameterize, queue, undo operations |
-| Iterator | Low | High | Sequential access without exposure |
-| Mediator | Medium | Medium | Reduce coupling between objects |
-| Memento | Medium | Low | Save/restore state |
-| Observer | Low | Very High | One-to-many notifications |
-| State | Medium | Medium | State-dependent behavior |
-| Strategy | Low | High | Interchangeable algorithms |
-| Template Method | Medium | Medium | Algorithm skeleton with variants |
-| Visitor | High | Low | Operations on object structure |
-| Interpreter | High | Very Low | Simple DSL interpretation |
+| 模式 | 复杂度 | 使用频率 | 主要优势 |
+|------|--------|----------|----------|
+| 职责链 | 中 | 中 | 解耦发送者与接收者 |
+| 命令 | 中 | 中 | 参数化、排队、撤销操作 |
+| 迭代器 | 低 | 高 | 顺序访问而不暴露内部结构 |
+| 中介者 | 中 | 中 | 降低对象间耦合 |
+| 备忘录 | 中 | 低 | 保存/恢复状态 |
+| 观察者 | 低 | 很高 | 一对多通知 |
+| 状态 | 中 | 中 | 状态相关行为 |
+| 策略 | 低 | 高 | 可互换的算法 |
+| 模板方法 | 中 | 中 | 带变体的算法骨架 |
+| 访问者 | 高 | 低 | 对对象结构执行操作 |
+| 解释器 | 高 | 很低 | 简单 DSL 解释 |
 
-## Best Practices
+## 最佳实践
 
-1. **Observer**: Always unsubscribe to prevent memory leaks
-2. **Strategy vs State**: Strategy changes behavior externally; State changes internally
-3. **Use framework patterns**: React hooks, RxJS, Redux provide these patterns
-4. **Command for undo**: Store history of command objects
-5. **Chain of Responsibility**: Keep handlers simple, ensure request is handled
+1. **观察者**：务必取消订阅以防止内存泄漏
+2. **策略 vs 状态**：策略从外部改变行为；状态从内部改变行为
+3. **使用框架模式**：React hooks、RxJS、Redux 已内置这些模式
+4. **命令用于撤销**：保存命令对象的历史记录
+5. **职责链**：保持处理器逻辑简单，确保请求得到处理
 
-## References
+## 参考资料
 
-- *Design Patterns: Elements of Reusable Object-Oriented Software* (Gang of Four)
-- [Refactoring Guru: Behavioral Patterns](https://refactoring.guru/design-patterns/behavioral-patterns)
-- [RxJS Documentation](https://rxjs.dev/)
+- *Design Patterns: Elements of Reusable Object-Oriented Software*（四人帮）
+- [Refactoring Guru：行为型模式](https://refactoring.guru/design-patterns/behavioral-patterns)
+- [RxJS 文档](https://rxjs.dev/)

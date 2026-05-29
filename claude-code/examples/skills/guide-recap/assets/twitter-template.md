@@ -1,14 +1,14 @@
 > 📚 **AI Spark Wiki** · Claude Code 知识库
 
-# Twitter/X Template
+# Twitter/X 模板
 
-Two modes: single tweet (280 chars) or thread (2-3 tweets).
+两种模式：单条推文（280 字符）或话题串（2-3 条推文）。
 
-## Single Tweet
+## 单条推文
 
-Use when: 1-2 highlights, simple version update.
+适用场景：1-2 个亮点，简单版本更新。
 
-### FR Template
+### FR 模板
 
 ```
 {hook_line_fr}
@@ -18,7 +18,7 @@ Use when: 1-2 highlights, simple version update.
 {link}
 ```
 
-### EN Template
+### EN 模板
 
 ```
 {hook_line_en}
@@ -28,19 +28,19 @@ Use when: 1-2 highlights, simple version update.
 {link}
 ```
 
-### Rules
+### 规则
 
-- Max 280 characters total (including link)
-- Max 2 emojis
-- Link to GitHub repo
-- FR: tutoiement
-- EN: direct address
+- 总计最多 280 字符（含链接）
+- 最多 2 个 emoji
+- 链接至 GitHub 仓库
+- FR：使用非正式称谓（tutoiement）
+- EN：直接称呼
 
-## Thread (2-3 tweets)
+## 话题串（2-3 条推文）
 
-Use when: 3+ highlights, rich version/week.
+适用场景：3 个及以上亮点，内容丰富的版本/周报。
 
-### FR Template
+### FR 模板
 
 ```
 Tweet 1/N:
@@ -58,14 +58,14 @@ Tweet 2/N:
 
 ---
 
-Tweet 3/N (optional):
+Tweet 3/N（可选）:
 {highlight_3_fr}
 
 {cta_fr}
 {link}
 ```
 
-### EN Template
+### EN 模板
 
 ```
 Tweet 1/N:
@@ -90,34 +90,34 @@ Tweet 3/N (optional):
 {link}
 ```
 
-## Field Rules
+## 字段规则
 
-### hook_line (max 100 chars)
+### hook_line（最多 100 字符）
 
-Shortest form of top highlight. Must fit in first tweet with context.
+顶部亮点的最简表达形式，须与上下文一起放入第一条推文。
 
-| Pattern | FR | EN |
+| 模式 | FR | EN |
 |---------|-----|-----|
-| Number-led | `30 nouvelles questions quiz Claude Code` | `30 new Claude Code quiz questions` |
-| Direct | `Nouveau guide : sandbox isolation Docker` | `New guide: Docker sandbox isolation` |
+| 数字开头 | `30 nouvelles questions quiz Claude Code` | `30 new Claude Code quiz questions` |
+| 直接陈述 | `Nouveau guide : sandbox isolation Docker` | `New guide: Docker sandbox isolation` |
 
-### context (max 80 chars)
+### context（最多 80 字符）
 
 ```
 FR: "Guide v3.20.5 vient de sortir"
 EN: "Guide v3.20.5 just dropped"
 ```
 
-### highlights (max 120 chars each)
+### highlights（每条最多 120 字符）
 
-Transformed entries, one per line. No bullet points (use line breaks).
+经过转化的条目，每条一行，不使用列表符号（用换行分隔）。
 
 ```
 FR: "4 diagrammes ASCII pour TDD, UVAL, securite"
 EN: "4 ASCII diagrams for TDD, UVAL, security"
 ```
 
-### cta (max 60 chars)
+### cta（最多 60 字符）
 
 ```
 FR: "Tout est open source"
@@ -126,22 +126,22 @@ EN: "All open source"
 
 ### link
 
-GitHub repo URL. Counts toward 280 char limit (23 chars for t.co).
+GitHub 仓库 URL。计入 280 字符限制（t.co 短链占 23 字符）。
 
-## Decision: Single vs Thread
+## 决策：单条 vs 话题串
 
-| Condition | Format |
+| 条件 | 格式 |
 |-----------|--------|
-| 1-2 highlights, all fit in 280 chars | Single tweet |
-| 3+ highlights or rich content | Thread (2-3 tweets) |
-| Week with multiple versions | Thread |
-| Only maintenance changes | Single tweet (or skip) |
+| 1-2 个亮点，全部内容在 280 字符内 | 单条推文 |
+| 3 个及以上亮点或内容丰富 | 话题串（2-3 条） |
+| 包含多个版本的周报 | 话题串 |
+| 仅为维护性变更 | 单条推文（或跳过） |
 
-## Constraints
+## 约束
 
-- Each tweet: max 280 characters
-- Emoji budget: 2 total across thread
-- No hype words
-- FR: tutoiement
-- EN: American English
-- Thread max: 3 tweets (not 5+)
+- 每条推文：最多 280 字符
+- Emoji 预算：整个话题串总计 2 个
+- 不使用夸张词汇
+- FR：使用非正式称谓（tutoiement）
+- EN：美式英语
+- 话题串上限：3 条（不得超过 5 条）

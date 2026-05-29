@@ -2,200 +2,200 @@
 
 ---
 name: learn-alternatives
-description: Compare different approaches to solve the same problem
-argument-hint: "[topic]"
+description: 对比解决同一问题的不同方案
+argument-hint: "[主题]"
 effort: low
 ---
 
-# Show Alternatives
+# 展示替代方案
 
-Compare different approaches to solve the same problem.
+对比解决同一问题的不同方法。
 
-## Usage
+## 使用方式
 
 ```
-/learn:alternatives              # Compare approaches for current code
-/learn:alternatives auth         # Compare authentication methods
-/learn:alternatives state        # Compare state management options
-/learn:alternatives --detailed   # Include code examples for each
+/learn:alternatives              # 对比当前代码的实现方案
+/learn:alternatives auth         # 对比身份验证方法
+/learn:alternatives state        # 对比状态管理方案
+/learn:alternatives --detailed   # 包含每种方案的代码示例
 ```
 
-## Instructions
+## 执行步骤
 
-1. Identify the **problem being solved** (from context or argument)
-2. Present **3-5 alternative approaches**
-3. For each approach, explain:
-   - What it is (one sentence)
-   - When to use it
-   - Trade-offs (pros/cons)
-4. Provide a **recommendation** based on context
-5. Optionally show code examples for top choices
+1. 从上下文或参数中明确**待解决的问题**
+2. 列出 **3-5 种替代方案**
+3. 对每种方案说明：
+   - 是什么（一句话描述）
+   - 适用场景
+   - 权衡取舍（优缺点）
+4. 根据上下文给出**推荐方案**
+5. 可选：为最优方案提供代码示例
 
-## Response Format
+## 响应格式
 
 ```markdown
-## Problem: [What we're trying to solve]
+## 问题：[待解决的问题]
 
-### Approach 1: [Name]
+### 方案 1：[名称]
 
-**What**: [One-sentence description]
+**是什么**：[一句话描述]
 
-**When to use**:
-- [Scenario 1]
-- [Scenario 2]
+**适用场景**：
+- [场景 1]
+- [场景 2]
 
-**Pros**: [List]
-**Cons**: [List]
+**优点**：[列表]
+**缺点**：[列表]
 
 ---
 
-### Approach 2: [Name]
+### 方案 2：[名称]
 ...
 
 ---
 
-## Comparison Table
+## 对比表格
 
-| Criteria | Approach 1 | Approach 2 | Approach 3 |
-|----------|------------|------------|------------|
-| Complexity | Low | Medium | High |
-| Performance | ★★☆ | ★★★ | ★★☆ |
-| Bundle size | Small | Medium | Large |
-| Learning curve | Easy | Medium | Steep |
+| 评估维度 | 方案 1 | 方案 2 | 方案 3 |
+|---------|--------|--------|--------|
+| 复杂度 | 低 | 中 | 高 |
+| 性能 | ★★☆ | ★★★ | ★★☆ |
+| 包体积 | 小 | 中 | 大 |
+| 学习曲线 | 易 | 中 | 陡 |
 
-## Recommendation
+## 推荐
 
-**For your case**: [Recommended approach] because [reason based on context]
+**针对你的情况**：[推荐方案]，因为 [基于上下文的理由]
 
-**Consider instead if**: [Alternative scenarios]
+**考虑其他方案的情形**：[替代场景]
 ```
 
-## Comparison Criteria
+## 评估维度
 
-Standard criteria to evaluate (adjust based on problem):
+标准评估维度（根据问题灵活调整）：
 
-| Criteria | Description |
-|----------|-------------|
-| **Complexity** | How hard to implement and maintain |
-| **Performance** | Runtime speed, memory usage |
-| **Bundle size** | Impact on frontend bundle |
-| **Learning curve** | Time to understand and use correctly |
-| **Flexibility** | Ease of extending or modifying |
-| **Community** | Documentation, ecosystem, support |
-| **Testing** | How easy to test |
-| **Type safety** | TypeScript support quality |
+| 维度 | 说明 |
+|------|------|
+| **复杂度** | 实现和维护的难易程度 |
+| **性能** | 运行速度、内存占用 |
+| **包体积** | 对前端打包体积的影响 |
+| **学习曲线** | 理解并正确使用所需时间 |
+| **灵活性** | 扩展或修改的便利性 |
+| **生态社区** | 文档完善度、生态系统、社区支持 |
+| **可测试性** | 测试的容易程度 |
+| **类型安全** | TypeScript 支持质量 |
 
-## Depth Modes
+## 深度模式
 
-### Default
-- 3-4 alternatives
-- Brief description each
-- Comparison table
-- Recommendation
+### 默认模式
+- 3-4 种方案
+- 简要描述每种方案
+- 对比表格
+- 推荐建议
 
-### `--detailed`
-- 4-5 alternatives
-- Code example for each
-- Detailed trade-offs
-- Migration considerations
-- Real-world case studies
+### `--detailed`（详细模式）
+- 4-5 种方案
+- 每种方案附代码示例
+- 详细权衡分析
+- 迁移注意事项
+- 真实案例参考
 
-### `--quick`
-- 2-3 alternatives
-- One-line each
-- Quick recommendation
+### `--quick`（快速模式）
+- 2-3 种方案
+- 每种方案一行说明
+- 快速推荐
 
-## Example Session
+## 示例会话
 
 ```
 User: I'm using useState for form state. /learn:alternatives
 
-Claude: ## Problem: Managing Form State in React
+Claude: ## 问题：React 表单状态管理
 
-### Approach 1: Multiple useState
+### 方案 1：多个 useState
 
-**What**: Separate useState for each field
+**是什么**：每个字段独立使用 useState
 
-**When to use**:
-- Simple forms (< 5 fields)
-- No complex validation
-- No cross-field dependencies
+**适用场景**：
+- 简单表单（< 5 个字段）
+- 无复杂校验逻辑
+- 字段间无依赖关系
 
-**Pros**: Simple, no dependencies, easy to understand
-**Cons**: Verbose with many fields, scattered state
-
----
-
-### Approach 2: Single useState with Object
-
-**What**: One useState holding all fields as object
-
-**When to use**:
-- Medium forms (5-10 fields)
-- Need to reset entire form
-- Want cleaner code
-
-**Pros**: Grouped state, easy reset, cleaner
-**Cons**: Need spread operator, can cause unnecessary re-renders
+**优点**：简单直接，无依赖，易于理解
+**缺点**：字段多时代码冗余，状态分散
 
 ---
 
-### Approach 3: useReducer
+### 方案 2：单个 useState + 对象
 
-**What**: Reducer pattern for complex state transitions
+**是什么**：用一个 useState 将所有字段存为对象
 
-**When to use**:
-- Complex validation logic
-- Multi-step forms
-- Undo/redo functionality
+**适用场景**：
+- 中等规模表单（5-10 个字段）
+- 需要一键重置整个表单
+- 追求更整洁的代码
 
-**Pros**: Predictable updates, handles complex logic, testable
-**Cons**: More boilerplate, learning curve
-
----
-
-### Approach 4: Form Library (React Hook Form, Formik)
-
-**What**: Dedicated form state management library
-
-**When to use**:
-- Large forms (10+ fields)
-- Complex validation (async, cross-field)
-- Performance critical (many fields)
-
-**Pros**: Optimized re-renders, validation built-in, less code
-**Cons**: Dependency, learning curve, bundle size
+**优点**：状态集中，易于重置，代码更清晰
+**缺点**：需要展开运算符，可能触发不必要的重渲染
 
 ---
 
-## Comparison Table
+### 方案 3：useReducer
 
-| Criteria | useState | useReducer | React Hook Form |
-|----------|----------|------------|-----------------|
-| Complexity | Low | Medium | Medium |
-| Performance | ★★☆ | ★★☆ | ★★★ |
-| Bundle size | 0kb | 0kb | ~8kb |
-| Validation | Manual | Manual | Built-in |
-| Best for | Simple | Complex logic | Large forms |
+**是什么**：用 Reducer 模式处理复杂状态转换
 
-## Recommendation
+**适用场景**：
+- 复杂校验逻辑
+- 多步骤表单
+- 撤销/重做功能
 
-**For your case**: If this is a simple login/contact form, stick with **useState**. If you're building a multi-step checkout or admin form, consider **React Hook Form** for the validation and performance benefits.
+**优点**：状态更新可预测，处理复杂逻辑，易于测试
+**缺点**：样板代码多，有学习成本
 
-**Consider useReducer if**: You need undo/redo, complex state machines, or want reducer-style testing.
+---
+
+### 方案 4：表单库（React Hook Form、Formik）
+
+**是什么**：专用表单状态管理库
+
+**适用场景**：
+- 大型表单（10+ 个字段）
+- 复杂校验（异步、跨字段）
+- 性能敏感场景（字段数量多）
+
+**优点**：优化重渲染，内置校验，代码量少
+**缺点**：引入依赖，有学习成本，增加包体积
+
+---
+
+## 对比表格
+
+| 维度 | useState | useReducer | React Hook Form |
+|------|----------|------------|-----------------|
+| 复杂度 | 低 | 中 | 中 |
+| 性能 | ★★☆ | ★★☆ | ★★★ |
+| 包体积 | 0kb | 0kb | ~8kb |
+| 校验 | 手动 | 手动 | 内置 |
+| 最适合 | 简单表单 | 复杂逻辑 | 大型表单 |
+
+## 推荐
+
+**针对你的情况**：如果是简单的登录/联系表单，继续用 **useState** 即可。如果是多步骤结账或后台管理表单，推荐 **React Hook Form**，可获得校验和性能优势。
+
+**考虑 useReducer 的情形**：需要撤销/重做、复杂状态机，或希望以 Reducer 风格编写测试时。
 ```
 
-## Common Alternative Comparisons
+## 常见方案对比主题
 
-| Topic | Typical Alternatives |
-|-------|---------------------|
-| **State** | useState, useReducer, Zustand, Redux, Jotai |
-| **Styling** | CSS Modules, Tailwind, styled-components, CSS-in-JS |
-| **Data fetching** | fetch, axios, React Query, SWR |
-| **Forms** | useState, React Hook Form, Formik |
-| **Auth** | JWT, sessions, OAuth, magic links |
-| **API design** | REST, GraphQL, tRPC, gRPC |
-| **Testing** | Jest, Vitest, Testing Library, Cypress |
-| **Databases** | PostgreSQL, MySQL, MongoDB, SQLite |
+| 主题 | 典型备选方案 |
+|------|------------|
+| **状态管理** | useState、useReducer、Zustand、Redux、Jotai |
+| **样式方案** | CSS Modules、Tailwind、styled-components、CSS-in-JS |
+| **数据请求** | fetch、axios、React Query、SWR |
+| **表单处理** | useState、React Hook Form、Formik |
+| **身份验证** | JWT、Session、OAuth、Magic Links |
+| **API 设计** | REST、GraphQL、tRPC、gRPC |
+| **测试框架** | Jest、Vitest、Testing Library、Cypress |
+| **数据库** | PostgreSQL、MySQL、MongoDB、SQLite |
 
 $ARGUMENTS

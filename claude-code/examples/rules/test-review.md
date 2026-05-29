@@ -1,31 +1,31 @@
 > 📚 **AI Spark Wiki** · Claude Code 知识库
 
 ---
-description: "Test review criteria for plan and code reviews"
+description: "方案和代码审查中的测试评审标准"
 ---
 
-# Test Review Criteria
+# 测试评审标准
 
-When reviewing tests, evaluate these dimensions:
+进行测试评审时，从以下维度进行评估：
 
-## Coverage Gaps
-- Are there untested public functions or API endpoints?
-- Is there unit, integration, AND e2e coverage where appropriate?
-- Are critical paths (auth, payments, data mutations) fully tested?
+## 覆盖盲区
+- 是否存在未经测试的公开函数或 API 端点？
+- 是否在适当场景下同时具备单元测试、集成测试和 E2E 测试？
+- 关键路径（认证、支付、数据变更）是否已被充分测试？
 
-## Test Quality
-- Do assertions test behavior, not implementation details?
-- Are test descriptions clear about what they verify?
-- Do tests fail for the right reasons (not brittle/flaky)?
-- Is each test independent (no shared mutable state)?
+## 测试质量
+- 断言是否针对行为而非实现细节？
+- 测试描述是否清晰说明了验证目标？
+- 测试是否因正确原因失败（不脆弱、不不稳定）？
+- 每个测试是否相互独立（无共享的可变状态）？
 
-## Edge Cases
-- Are boundary values tested (empty, null, max, negative)?
-- Are error paths tested (network failures, invalid input, timeouts)?
-- Are race conditions and concurrent access scenarios covered?
+## 边界情况
+- 边界值是否已测试（空值、null、最大值、负值）？
+- 异常路径是否已测试（网络故障、无效输入、超时）？
+- 竞态条件和并发访问场景是否已覆盖？
 
-## Failure Modes
-- What happens when external services are unavailable?
-- Are retry and fallback mechanisms tested?
-- Do tests verify graceful degradation?
-- Are error messages and status codes correct for each failure?
+## 故障模式
+- 外部服务不可用时会发生什么？
+- 重试和降级机制是否已测试？
+- 测试是否验证了优雅降级行为？
+- 每种故障场景下的错误信息和状态码是否正确？

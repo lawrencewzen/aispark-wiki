@@ -2,19 +2,19 @@
 
 ---
 name: cyber-defense-team
-description: "Orchestrate a 4-agent cyber defense pipeline to analyze log files for threats. Use when investigating security logs, detecting anomalies in access patterns, classifying breach severity, or generating incident reports from nginx/auth/syslog files."
+description: "编排一个由 4 个智能体组成的网络防御流水线，对日志文件进行威胁分析。适用于调查安全日志、检测访问模式异常、对入侵严重程度分级，或从 nginx/auth/syslog 文件生成事件报告。"
 allowed-tools: Read Bash
-argument-hint: "[log-file-path]"
+argument-hint: "[日志文件路径]"
 effort: high
 metadata:
   version: 1.0.0
 ---
 
-# Cyber Defense Team Skill
+# 网络防御团队 Skill
 
-Orchestrate a 4-agent pipeline that analyzes log files for security threats and produces an incident report.
+编排一个由 4 个智能体组成的流水线，对日志文件进行安全威胁分析，并生成事件报告。
 
-## Pipeline Architecture
+## 流水线架构
 
 ```
 [You] → Team Lead (this skill)
@@ -29,54 +29,54 @@ Orchestrate a 4-agent pipeline that analyzes log files for security threats and 
                                                (reads all 3 JSON files)
 ```
 
-Stages 2 and 3 are sequential (each depends on previous output). Stage 4 runs after all data is ready.
+第 2、3 阶段顺序执行（每个阶段依赖前一阶段的输出）。第 4 阶段在所有数据就绪后运行。
 
-## Execution Steps
+## 执行步骤
 
-### Step 1 — Validate Input
+### 第一步 — 验证输入
 
-Check that the log file exists (or that log content was provided inline). If the path doesn't exist, tell the user immediately — don't proceed.
+确认日志文件存在（或已内联提供日志内容）。如果路径不存在，立即告知用户——不要继续执行。
 
-### Step 2 — Spawn Log Ingestor
+### 第二步 — 启动日志摄取智能体
 
-Use the Agent tool to spawn the `log-ingestor` agent:
+使用 Agent 工具启动 `log-ingestor` 智能体：
 
 ```
 Task: Parse the log file at [log_path] and write structured events to cyber-defense-events.json.
 Log path: [log_path]
 ```
 
-Wait for completion. Confirm `cyber-defense-events.json` was created.
+等待完成。确认 `cyber-defense-events.json` 已生成。
 
-### Step 3 — Spawn Anomaly Detector
+### 第三步 — 启动异常检测智能体
 
-Use the Agent tool to spawn the `anomaly-detector` agent:
+使用 Agent 工具启动 `anomaly-detector` 智能体：
 
 ```
 Task: Read cyber-defense-events.json and detect anomalies. Write results to cyber-defense-anomalies.json.
 ```
 
-Wait for completion. If `anomalies_found: 0`, skip to Step 5 (reporter still runs).
+等待完成。如果 `anomalies_found: 0`，跳至第五步（报告智能体仍会运行）。
 
-### Step 4 — Spawn Risk Classifier
+### 第四步 — 启动风险分级智能体
 
-Use the Agent tool to spawn the `risk-classifier` agent:
+使用 Agent 工具启动 `risk-classifier` 智能体：
 
 ```
 Task: Read cyber-defense-anomalies.json and classify overall risk. Write result to cyber-defense-risk.json.
 ```
 
-### Step 5 — Spawn Threat Reporter
+### 第五步 — 启动威胁报告智能体
 
-Use the Agent tool to spawn the `threat-reporter` agent:
+使用 Agent 工具启动 `threat-reporter` 智能体：
 
 ```
 Task: Read cyber-defense-events.json, cyber-defense-anomalies.json, and cyber-defense-risk.json. Generate a complete incident report and save it to cyber-defense-report.md.
 ```
 
-### Step 6 — Summarize for User
+### 第六步 — 向用户汇总
 
-Read `cyber-defense-risk.json` and present:
+读取 `cyber-defense-risk.json` 并展示：
 
 ```
 ✅ Analysis complete
@@ -90,25 +90,25 @@ Primary threat: Brute force attack from 192.168.1.105
 Immediate action required: [first recommended_action]
 ```
 
-## Error Handling
+## 错误处理
 
-- Agent fails at step 2: Tell user, stop pipeline, show raw error.
-- Agent fails at step 3+: Show partial results, note which stage failed.
-- Log file not found: "File [path] not found. Provide a valid path or paste log content."
+- 第 2 步智能体失败：告知用户，停止流水线，显示原始错误信息。
+- 第 3 步及之后智能体失败：展示已有的部分结果，标注哪个阶段失败。
+- 日志文件未找到："File [path] not found. Provide a valid path or paste log content."
 
-## Cost Estimate
+## 费用估算
 
-| Stage | Model | Typical tokens |
+| 阶段 | 模型 | 典型 Token 用量 |
 |-------|-------|----------------|
 | log-ingestor | haiku | ~2K |
 | anomaly-detector | sonnet | ~3K |
 | risk-classifier | sonnet | ~2K |
 | threat-reporter | sonnet | ~3K |
-| **Total** | | **~10K** |
+| **合计** | | **~10K** |
 
-For large log files (>10K lines), log-ingestor may use up to 20K tokens.
+对于大型日志文件（超过 10K 行），log-ingestor 最多可能消耗 20K Token。
 
-## Example Usage
+## 使用示例
 
 ```
 /cyber-defense-team /var/log/nginx/access.log
