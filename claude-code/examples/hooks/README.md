@@ -1,95 +1,95 @@
 > 📚 **AI Spark Wiki** · Claude Code 知识库
 
 ---
-title: "Claude Code Hooks"
-description: "Event-driven scripts for automation, security blocking, and context enrichment"
+title: "Claude Code 钩子"
+description: "用于自动化、安全拦截和上下文注入的事件驱动脚本"
 tags: [hooks, security, template, config]
 ---
 
-# Claude Code Hooks
+# Claude Code 钩子
 
-Hooks are scripts that execute automatically on Claude Code events. They enable automation, block dangerous operations, and enrich context.
+钩子是在 Claude Code 事件触发时自动执行的脚本。它们可以实现自动化、拦截危险操作，并丰富上下文信息。
 
-## Available Hooks
+## 可用钩子
 
-| Hook | Event | Purpose | Platform |
+| 钩子 | 事件 | 用途 | 平台 |
 |------|-------|---------|----------|
-| [dangerous-actions-blocker.sh](./bash/dangerous-actions-blocker.sh) | PreToolUse | Block dangerous commands/edits | Bash |
-| [security-check.sh](./bash/security-check.sh) | PreToolUse | Block secrets in commands | Bash |
-| [prompt-injection-detector.sh](./bash/prompt-injection-detector.sh) | PreToolUse | Detect injection attempts (+ANSI, null bytes, nested cmd) | Bash |
-| [unicode-injection-scanner.sh](./bash/unicode-injection-scanner.sh) | PreToolUse | Detect zero-width, RTL override, ANSI escape, null bytes | Bash |
-| [repo-integrity-scanner.sh](./bash/repo-integrity-scanner.sh) | PreToolUse | Scan README/package.json for hidden injection | Bash |
-| [mcp-config-integrity.sh](./bash/mcp-config-integrity.sh) | SessionStart | Verify MCP config hash (CVE-2025-54135/54136) | Bash |
-| [claudemd-scanner.sh](./bash/claudemd-scanner.sh) | SessionStart | Detect CLAUDE.md injection attacks | Bash |
-| [output-secrets-scanner.sh](./bash/output-secrets-scanner.sh) | PostToolUse | Detect secrets + env leakage in tool outputs | Bash |
-| [auto-format.sh](./bash/auto-format.sh) | PostToolUse | Auto-format after edits | Bash |
-| [rtk-baseline.sh](./bash/rtk-baseline.sh) | SessionStart | Save RTK baseline for session savings tracking | Bash |
-| [session-summary.sh](./bash/session-summary.sh) | SessionEnd | Full session analytics (15 configurable sections) | Bash |
-| [session-summary-config.sh](./bash/session-summary-config.sh) | CLI tool | Configure session-summary sections, order, preview | Bash |
-| [learning-capture.sh](./bash/learning-capture.sh) | Stop | Prompt for daily learning capture | Bash |
-| [sandbox-validation.sh](./bash/sandbox-validation.sh) | PreToolUse | Validate sandbox isolation | Bash |
-| [file-guard.sh](./bash/file-guard.sh) | PreToolUse | Protect sensitive files from modification | Bash |
-| [permission-request.sh](./bash/permission-request.sh) | PreToolUse | Explicit permission flow for risky ops | Bash |
-| [rtk-auto-wrapper.sh](./bash/rtk-auto-wrapper.sh) | PreToolUse | Auto-wrap commands with RTK for token savings | Bash |
-| [setup-init.sh](./bash/setup-init.sh) | SessionStart | Initialize session environment | Bash |
-| [auto-checkpoint.sh](./bash/auto-checkpoint.sh) | PostToolUse | Auto-checkpoint work at intervals | Bash |
-| [typecheck-on-save.sh](./bash/typecheck-on-save.sh) | PostToolUse | Run TypeScript checks on save | Bash |
-| [test-on-change.sh](./bash/test-on-change.sh) | PostToolUse | Run tests on file changes | Bash |
-| [output-validator.sh](./bash/output-validator.sh) | PostToolUse | Heuristic output validation | Bash |
-| [session-logger.sh](./bash/session-logger.sh) | PostToolUse | Log operations for monitoring | Bash |
-| [privacy-warning.sh](./bash/privacy-warning.sh) | PostToolUse | Warn on potential privacy leaks | Bash |
-| [tts-selective.sh](./bash/tts-selective.sh) | PostToolUse | Text-to-speech for selected outputs | Bash |
-| [subagent-stop.sh](./bash/subagent-stop.sh) | Stop | Clean up sub-agent resources | Bash |
-| [pre-commit-secrets.sh](./bash/pre-commit-secrets.sh) | Git hook | Block secrets from entering commits | Bash |
-| [pre-commit-evaluator.sh](./bash/pre-commit-evaluator.sh) | Git hook | LLM-as-a-Judge pre-commit validation | Bash |
-| [notification.sh](./bash/notification.sh) | Notification | Contextual macOS sound alerts | Bash (macOS) |
-| [auto-rename-session.sh](./bash/auto-rename-session.sh) | SessionEnd | AI-powered session title generation via Haiku | Bash |
-| [security-gate.sh](./bash/security-gate.sh) | PreToolUse | Detect vulnerable code patterns before writing to source files | Bash |
-| [velocity-governor.sh](./bash/velocity-governor.sh) | PreToolUse | Rate-limit tool calls to avoid API throttling | Bash |
-| [security-check.ps1](./powershell/security-check.ps1) | PreToolUse | Block secrets in commands | PowerShell |
-| [auto-format.ps1](./powershell/auto-format.ps1) | PostToolUse | Auto-format after edits | PowerShell |
+| [dangerous-actions-blocker.sh](./bash/dangerous-actions-blocker.sh) | PreToolUse | 拦截危险命令/编辑操作 | Bash |
+| [security-check.sh](./bash/security-check.sh) | PreToolUse | 拦截命令中的密钥 | Bash |
+| [prompt-injection-detector.sh](./bash/prompt-injection-detector.sh) | PreToolUse | 检测注入攻击尝试（含 ANSI、空字节、嵌套命令） | Bash |
+| [unicode-injection-scanner.sh](./bash/unicode-injection-scanner.sh) | PreToolUse | 检测零宽字符、RTL 覆盖、ANSI 转义、空字节 | Bash |
+| [repo-integrity-scanner.sh](./bash/repo-integrity-scanner.sh) | PreToolUse | 扫描 README/package.json 中的隐藏注入 | Bash |
+| [mcp-config-integrity.sh](./bash/mcp-config-integrity.sh) | SessionStart | 验证 MCP 配置哈希值（CVE-2025-54135/54136） | Bash |
+| [claudemd-scanner.sh](./bash/claudemd-scanner.sh) | SessionStart | 检测 CLAUDE.md 注入攻击 | Bash |
+| [output-secrets-scanner.sh](./bash/output-secrets-scanner.sh) | PostToolUse | 检测工具输出中的密钥泄漏和环境变量泄漏 | Bash |
+| [auto-format.sh](./bash/auto-format.sh) | PostToolUse | 编辑后自动格式化 | Bash |
+| [rtk-baseline.sh](./bash/rtk-baseline.sh) | SessionStart | 保存 RTK 基线以追踪会话节省量 | Bash |
+| [session-summary.sh](./bash/session-summary.sh) | SessionEnd | 完整会话分析（15 个可配置模块） | Bash |
+| [session-summary-config.sh](./bash/session-summary-config.sh) | CLI 工具 | 配置 session-summary 模块、顺序及预览 | Bash |
+| [learning-capture.sh](./bash/learning-capture.sh) | Stop | 提示每日学习记录 | Bash |
+| [sandbox-validation.sh](./bash/sandbox-validation.sh) | PreToolUse | 验证沙箱隔离状态 | Bash |
+| [file-guard.sh](./bash/file-guard.sh) | PreToolUse | 保护敏感文件不被修改 | Bash |
+| [permission-request.sh](./bash/permission-request.sh) | PreToolUse | 对高风险操作进行显式授权流程 | Bash |
+| [rtk-auto-wrapper.sh](./bash/rtk-auto-wrapper.sh) | PreToolUse | 自动为命令包装 RTK 以节省 Token | Bash |
+| [setup-init.sh](./bash/setup-init.sh) | SessionStart | 初始化会话环境 | Bash |
+| [auto-checkpoint.sh](./bash/auto-checkpoint.sh) | PostToolUse | 定期自动保存检查点 | Bash |
+| [typecheck-on-save.sh](./bash/typecheck-on-save.sh) | PostToolUse | 保存时运行 TypeScript 检查 | Bash |
+| [test-on-change.sh](./bash/test-on-change.sh) | PostToolUse | 文件变更时运行测试 | Bash |
+| [output-validator.sh](./bash/output-validator.sh) | PostToolUse | 启发式输出验证 | Bash |
+| [session-logger.sh](./bash/session-logger.sh) | PostToolUse | 记录操作日志用于监控 | Bash |
+| [privacy-warning.sh](./bash/privacy-warning.sh) | PostToolUse | 警告潜在的隐私泄漏 | Bash |
+| [tts-selective.sh](./bash/tts-selective.sh) | PostToolUse | 对选定输出进行文字转语音 | Bash |
+| [subagent-stop.sh](./bash/subagent-stop.sh) | Stop | 清理子代理资源 | Bash |
+| [pre-commit-secrets.sh](./bash/pre-commit-secrets.sh) | Git hook | 阻止密钥进入提交 | Bash |
+| [pre-commit-evaluator.sh](./bash/pre-commit-evaluator.sh) | Git hook | LLM 作为评审员的提交前验证 | Bash |
+| [notification.sh](./bash/notification.sh) | Notification | 基于上下文的 macOS 音效提醒 | Bash（macOS） |
+| [auto-rename-session.sh](./bash/auto-rename-session.sh) | SessionEnd | 通过 Haiku 模型 AI 自动生成会话标题 | Bash |
+| [security-gate.sh](./bash/security-gate.sh) | PreToolUse | 在写入源文件前检测易受攻击的代码模式 | Bash |
+| [velocity-governor.sh](./bash/velocity-governor.sh) | PreToolUse | 限制工具调用频率以避免 API 限流 | Bash |
+| [security-check.ps1](./powershell/security-check.ps1) | PreToolUse | 拦截命令中的密钥 | PowerShell |
+| [auto-format.ps1](./powershell/auto-format.ps1) | PostToolUse | 编辑后自动格式化 | PowerShell |
 
-## Hook Events
+## 钩子事件
 
-| Event | When | Typical Use Cases |
+| 事件 | 触发时机 | 典型用途 |
 |-------|------|-------------------|
-| `SessionStart` | Session begins or resumes | Initialization, environment setup, config scanning |
-| `UserPromptSubmit` | User sends a message | Context enrichment, preprocessing |
-| `PreToolUse` | Before a tool executes | Validation, blocking dangerous operations |
-| `PermissionRequest` | Permission dialog appears | Custom approval logic |
-| `PostToolUse` | After a tool succeeds | Formatting, logging, cleanup |
-| `PostToolUseFailure` | After a tool fails | Error logging, recovery actions |
-| `Notification` | Claude sends a notification | Sound alerts, external notifications |
-| `SubagentStart` | Sub-agent spawns | Subagent initialization |
-| `SubagentStop` | Sub-agent finishes | Subagent cleanup |
-| `Stop` | Claude finishes responding | Post-response actions, state saving |
-| `TeammateIdle` | Agent teammate goes idle | Team coordination |
-| `TaskCompleted` | Task marked completed | Workflow triggers |
-| `ConfigChange` | Config file changes during session | Enterprise audit, block unauthorized changes |
-| `WorktreeCreate` | Agent worktree created | Set up DB branch, install deps |
-| `WorktreeRemove` | Agent worktree torn down | Clean up DB branch, temp credentials |
-| `PreCompact` | Before context compaction | Save state before compaction |
-| `SessionEnd` | Session terminates | Cleanup, session summary |
+| `SessionStart` | 会话开始或恢复时 | 初始化、环境设置、配置扫描 |
+| `UserPromptSubmit` | 用户发送消息时 | 上下文注入、预处理 |
+| `PreToolUse` | 工具执行前 | 验证、拦截危险操作 |
+| `PermissionRequest` | 权限对话框出现时 | 自定义审批逻辑 |
+| `PostToolUse` | 工具成功执行后 | 格式化、日志记录、清理 |
+| `PostToolUseFailure` | 工具执行失败后 | 错误日志、恢复操作 |
+| `Notification` | Claude 发送通知时 | 音效提醒、外部通知 |
+| `SubagentStart` | 子代理生成时 | 子代理初始化 |
+| `SubagentStop` | 子代理结束时 | 子代理清理 |
+| `Stop` | Claude 完成响应时 | 响应后操作、状态保存 |
+| `TeammateIdle` | 代理队友空闲时 | 团队协调 |
+| `TaskCompleted` | 任务标记完成时 | 工作流触发 |
+| `ConfigChange` | 会话期间配置文件变更时 | 企业审计、阻止未授权变更 |
+| `WorktreeCreate` | 代理工作树创建时 | 创建数据库分支、安装依赖 |
+| `WorktreeRemove` | 代理工作树销毁时 | 清理数据库分支、临时凭证 |
+| `PreCompact` | 上下文压缩前 | 压缩前保存状态 |
+| `SessionEnd` | 会话终止时 | 清理、会话摘要 |
 
-## Advanced Guardrails (NEW in v3.3.0)
+## 高级防护（v3.3.0 新增）
 
-Advanced protection patterns inspired by production LLM systems.
+受生产 LLM 系统启发的高级防护模式。
 
 ### prompt-injection-detector.sh
 
-**Event**: `PreToolUse`
+**事件**：`PreToolUse`
 
-Detects and blocks prompt injection attempts before they reach Claude:
+在注入攻击到达 Claude 之前进行检测和拦截：
 
-**Detected Patterns**:
-- Role override: "ignore previous instructions", "you are now", "pretend to be"
-- Jailbreak attempts: "DAN mode", "developer mode", "no restrictions"
-- Delimiter injection: `</system>`, `[INST]`, `<<SYS>>`
-- Authority impersonation: "anthropic employee", "authorized to bypass"
-- Base64-encoded payloads (decoded and scanned)
-- Context manipulation: false claims about previous messages
+**检测模式**：
+- 角色覆盖："ignore previous instructions"、"you are now"、"pretend to be"
+- 越狱尝试："DAN mode"、"developer mode"、"no restrictions"
+- 分隔符注入：`</system>`、`[INST]`、`<<SYS>>`
+- 权限伪造："anthropic employee"、"authorized to bypass"
+- Base64 编码载荷（解码后扫描）
+- 上下文操控：对之前消息的虚假声称
 
-**Configuration**:
+**配置**：
 ```json
 {
   "hooks": {
@@ -106,100 +106,100 @@ Detects and blocks prompt injection attempts before they reach Claude:
 
 ### output-validator.sh
 
-**Event**: `PostToolUse`
+**事件**：`PostToolUse`
 
-Heuristic validation of Claude's outputs (no LLM call, pure bash):
+对 Claude 输出进行启发式验证（无需 LLM 调用，纯 Bash 实现）：
 
-**Validation Checks**:
-- Placeholder paths: `/path/to/`, `/your/project/`
-- Placeholder content: `TODO:`, `your-api-key`, `example.com`
-- Potential secrets in output (regex patterns)
-- Uncertainty indicators (multiple "I'm not sure", "probably")
-- Incomplete implementations: `NotImplementedError`, `throw new Error`
-- Unverified reference claims
+**验证检查**：
+- 占位符路径：`/path/to/`、`/your/project/`
+- 占位符内容：`TODO:`、`your-api-key`、`example.com`
+- 输出中的潜在密钥（正则匹配）
+- 不确定性指示词（多次出现"I'm not sure"、"probably"）
+- 不完整实现：`NotImplementedError`、`throw new Error`
+- 未经验证的引用声明
 
-**Behavior**: Warns via `systemMessage`, does not block. For deeper validation, use the `output-evaluator` agent.
+**行为**：通过 `systemMessage` 发出警告，不进行拦截。如需更深层的验证，请使用 `output-evaluator` 代理。
 
 ### session-logger.sh
 
-**Event**: `PostToolUse`
+**事件**：`PostToolUse`
 
-Logs all Claude operations to JSONL files for monitoring and cost tracking:
+将所有 Claude 操作记录到 JSONL 文件，用于监控和费用追踪：
 
-**Log Location**: `~/.claude/logs/activity-YYYY-MM-DD.jsonl`
+**日志位置**：`~/.claude/logs/activity-YYYY-MM-DD.jsonl`
 
-**Logged Data**:
-- Timestamp, session ID, tool name
-- File paths and commands (truncated)
-- Project name
-- Token estimates (input/output)
+**记录内容**：
+- 时间戳、会话 ID、工具名称
+- 文件路径和命令（截断处理）
+- 项目名称
+- Token 估算（输入/输出）
 
-**Analysis**: Use `session-stats.sh` script to analyze logs.
+**分析**：使用 `session-stats.sh` 脚本分析日志。
 
-**Environment Variables**:
-| Variable | Default | Description |
+**环境变量**：
+| 变量 | 默认值 | 说明 |
 |----------|---------|-------------|
-| `CLAUDE_LOG_DIR` | `~/.claude/logs` | Log directory |
-| `CLAUDE_LOG_TOKENS` | `true` | Enable token estimation |
-| `CLAUDE_SESSION_ID` | auto | Custom session ID |
+| `CLAUDE_LOG_DIR` | `~/.claude/logs` | 日志目录 |
+| `CLAUDE_LOG_TOKENS` | `true` | 启用 Token 估算 |
+| `CLAUDE_SESSION_ID` | 自动 | 自定义会话 ID |
 
-See [Observability Guide](../../guide/ops/observability.md) for full documentation.
+详见[可观测性指南](../../guide/ops/observability.md)。
 
 ### pre-commit-evaluator.sh
 
-**Type**: Git pre-commit hook (not Claude hook)
+**类型**：Git 提交前钩子（非 Claude 钩子）
 
-LLM-as-a-Judge evaluation before every commit. **Opt-in only** due to API costs.
+每次提交前进行 LLM 作为评审员的评估。**需手动开启**，因为会产生 API 费用。
 
-**Installation**:
+**安装**：
 ```bash
 cp pre-commit-evaluator.sh .git/hooks/pre-commit
 chmod +x .git/hooks/pre-commit
 export CLAUDE_PRECOMMIT_EVAL=1  # Enable evaluation
 ```
 
-**Cost**: ~$0.01-0.05 per commit (Haiku model)
+**费用**：每次提交约 $0.01-0.05（Haiku 模型）
 
-**Bypass**: `git commit --no-verify` or `CLAUDE_SKIP_EVAL=1 git commit`
+**跳过方式**：`git commit --no-verify` 或 `CLAUDE_SKIP_EVAL=1 git commit`
 
 ---
 
-## Security Hooks
+## 安全类钩子
 
 ### dangerous-actions-blocker.sh
 
-**Event**: `PreToolUse` (Bash, Edit, Write)
+**事件**：`PreToolUse`（Bash、Edit、Write）
 
-Comprehensive protection against dangerous operations:
+针对危险操作的全面防护：
 
-**Bash - Blocked Commands**:
-- System destruction: `rm -rf /`, `rm -rf ~`, `sudo rm`
-- Disk operations: `dd if=`, `mkfs`, `> /dev/sda`
-- Fork bombs: `:(){:|:&};:`
-- Database drops: `DROP DATABASE`, `DROP TABLE`
-- Force pushes: `git push --force main/master`
-- Package publishing: `npm publish`, `pnpm publish`
-- Secret patterns: `password=`, `api_key=`, `token=`
+**Bash - 被拦截的命令**：
+- 系统破坏：`rm -rf /`、`rm -rf ~`、`sudo rm`
+- 磁盘操作：`dd if=`、`mkfs`、`> /dev/sda`
+- Fork 炸弹：`:(){:|:&};:`
+- 数据库删除：`DROP DATABASE`、`DROP TABLE`
+- 强制推送：`git push --force main/master`
+- 包发布：`npm publish`、`pnpm publish`
+- 密钥模式：`password=`、`api_key=`、`token=`
 
-**Edit/Write - Protected Files**:
-- Environment: `.env`, `.env.local`, `.env.production`
-- Credentials: `credentials.json`, `serviceAccountKey.json`
-- SSH keys: `id_rsa`, `id_ed25519`, `id_ecdsa`
-- Config: `.npmrc`, `.pypirc`, `secrets.yml`
+**Edit/Write - 受保护的文件**：
+- 环境变量：`.env`、`.env.local`、`.env.production`
+- 凭证：`credentials.json`、`serviceAccountKey.json`
+- SSH 密钥：`id_rsa`、`id_ed25519`、`id_ecdsa`
+- 配置：`.npmrc`、`.pypirc`、`secrets.yml`
 
-**Edit/Write - Allowed Paths**:
-- `$CLAUDE_PROJECT_DIR` (current project)
-- `~/.claude/` (Claude config)
-- `/tmp/` (temporary files)
-- Additional paths via `$ALLOWED_PATHS` environment variable
+**Edit/Write - 允许的路径**：
+- `$CLAUDE_PROJECT_DIR`（当前项目）
+- `~/.claude/`（Claude 配置）
+- `/tmp/`（临时文件）
+- 通过 `$ALLOWED_PATHS` 环境变量添加的额外路径
 
-**Exit Codes**:
+**退出码**：
 ```bash
 exit 0  # Allow operation
 exit 2  # Block (stderr message shown to Claude)
 ```
 
-**Configuration**:
+**配置**：
 ```bash
 # Add custom allowed paths (colon-separated)
 export ALLOWED_PATHS="/custom/path:/another/path"
@@ -207,37 +207,37 @@ export ALLOWED_PATHS="/custom/path:/another/path"
 
 ### security-check.sh
 
-**Event**: `PreToolUse` (Bash)
+**事件**：`PreToolUse`（Bash）
 
-Focused on detecting secrets in commands:
-- Password patterns
-- API keys (common formats like `sk-xxx`, `pk-xxx`)
-- AWS credentials
-- Private keys
-- Hardcoded tokens
+专注于检测命令中的密钥：
+- 密码模式
+- API 密钥（常见格式如 `sk-xxx`、`pk-xxx`）
+- AWS 凭证
+- 私钥
+- 硬编码 Token
 
 ### claudemd-scanner.sh
 
-**Event**: `SessionStart`
+**事件**：`SessionStart`
 
-Scans CLAUDE.md files at session start for potential prompt injection attacks:
+在会话开始时扫描 CLAUDE.md 文件，检测潜在的提示注入攻击：
 
-**Detected Patterns**:
-- "ignore previous instructions" variants
-- Shell injection: `curl | bash`, `wget | sh`, `eval(`
-- Base64 encoded content (potential obfuscation)
-- Hidden instructions in HTML comments
-- Suspicious long lines (>500 chars)
-- Non-ASCII characters near sensitive keywords (homoglyph attacks)
+**检测模式**：
+- "ignore previous instructions" 变体
+- Shell 注入：`curl | bash`、`wget | sh`、`eval(`
+- Base64 编码内容（潜在混淆）
+- HTML 注释中的隐藏指令
+- 异常长行（>500 字符）
+- 敏感关键词附近的非 ASCII 字符（同形字攻击）
 
-**Files Scanned**:
-- `CLAUDE.md` (project root)
-- `.claude/CLAUDE.md` (local override)
-- Any `.md` files in `.claude/` directory
+**扫描的文件**：
+- `CLAUDE.md`（项目根目录）
+- `.claude/CLAUDE.md`（本地覆盖）
+- `.claude/` 目录中的所有 `.md` 文件
 
-**Why This Matters**: When you clone an unfamiliar repository, a malicious CLAUDE.md could inject instructions that compromise your system. This hook warns you before Claude processes potentially dangerous instructions.
+**为何重要**：克隆陌生仓库时，恶意的 CLAUDE.md 可能注入指令从而危害您的系统。此钩子会在 Claude 处理潜在危险指令前发出警告。
 
-**Configuration**:
+**配置**：
 ```json
 {
   "hooks": {
@@ -254,20 +254,20 @@ Scans CLAUDE.md files at session start for potential prompt injection attacks:
 
 ### output-secrets-scanner.sh
 
-**Event**: `PostToolUse`
+**事件**：`PostToolUse`
 
-Complements `security-check.sh` by scanning tool **outputs** (not inputs) for leaked secrets.
+补充 `security-check.sh` 的功能，扫描工具**输出**（而非输入）中的密钥泄漏。
 
-**Detected Patterns**:
-- API Keys: OpenAI, Anthropic, AWS, GCP, Azure, Stripe, Twilio, SendGrid
-- Tokens: GitHub, GitLab, NPM, PyPI, JWT
-- Private Keys: RSA, EC, DSA, OpenSSH, PGP
-- Database URLs with embedded passwords
-- Generic `api_key=`, `secret=`, `password=` patterns
+**检测模式**：
+- API 密钥：OpenAI、Anthropic、AWS、GCP、Azure、Stripe、Twilio、SendGrid
+- Token：GitHub、GitLab、NPM、PyPI、JWT
+- 私钥：RSA、EC、DSA、OpenSSH、PGP
+- 含嵌入密码的数据库 URL
+- 通用的 `api_key=`、`secret=`、`password=` 模式
 
-**Why This Matters**: Claude might read a `.env` file and include credentials in its response or a commit. This hook catches secrets before they leak.
+**为何重要**：Claude 可能读取 `.env` 文件并将凭证包含在响应或提交中。此钩子在密钥泄漏前将其拦截。
 
-**Configuration**:
+**配置**：
 ```json
 {
   "hooks": {
@@ -282,15 +282,15 @@ Complements `security-check.sh` by scanning tool **outputs** (not inputs) for le
 }
 ```
 
-## Productivity Hooks
+## 效率类钩子
 
 ### rtk-baseline.sh
 
-**Event**: `SessionStart`
+**事件**：`SessionStart`
 
-Captures RTK cumulative stats at session start for delta tracking. Paired with `session-summary.sh` which computes per-session RTK savings at session end.
+在会话开始时捕获 RTK 累计统计基线，用于增量追踪。与 `session-summary.sh` 配合使用，后者会在会话结束时计算每次会话的 RTK 节省量。
 
-**Configuration**:
+**配置**：
 ```json
 {
   "hooks": {
@@ -305,61 +305,61 @@ Captures RTK cumulative stats at session start for delta tracking. Paired with `
 }
 ```
 
-### session-summary.sh (v3)
+### session-summary.sh（v3）
 
-**Event**: `SessionEnd`
+**事件**：`SessionEnd`
 
-Full session analytics with 15 configurable sections, CLI config tool, and JSONL logging.
+完整会话分析，包含 15 个可配置模块、CLI 配置工具及 JSONL 日志。
 
-**Plugin Install (Recommended)**:
+**插件安装（推荐）**：
 ```bash
 claude plugin marketplace add claude-code-ultimate-guide/claude-code-plugins
 claude plugin install session-summary@florian-claude-tools
 ```
-Hooks are auto-wired, no manual configuration needed. See the [plugin repo](https://github.com/claude-code-ultimate-guide/claude-code-plugins) for details.
+钩子自动配置，无需手动设置。详见[插件仓库](https://github.com/claude-code-ultimate-guide/claude-code-plugins)。
 
-**Sections** (all configurable via env vars or config file):
+**模块**（均可通过环境变量或配置文件调整）：
 
-| Section | Default | Description |
+| 模块 | 默认状态 | 说明 |
 |---------|---------|-------------|
-| `meta` | always | Session ID, name, branch |
-| `duration` | always | Wall time, active time, turns, exit reason |
-| `tools` | always | Tool calls breakdown (OK/ERR) |
-| `errors` | on | Error details grouped by tool |
-| `files` | on | Files read/edited/created with top edited |
-| `features` | on | MCP servers, agents, skills, teams, plan mode |
-| `git` | on | Git diff summary (+/- lines, files changed) |
-| `loc` | on | Lines of code written via Edit/Write |
-| `models` | always | Model usage (requests, tokens) |
-| `cache` | always | Cache hit rate |
-| `cost` | always | Estimated cost (ccusage or pricing table) |
-| `rtk` | on | RTK token savings (delta from session start) |
-| `ratio` | on | Conversation ratio (interactive/auto turns) |
-| `thinking` | off | Thinking blocks count |
-| `context` | off | Context window estimate (peak %) |
+| `meta` | 始终开启 | 会话 ID、名称、分支 |
+| `duration` | 始终开启 | 总时长、活跃时长、轮次、退出原因 |
+| `tools` | 始终开启 | 工具调用明细（成功/失败） |
+| `errors` | 开启 | 按工具分组的错误详情 |
+| `files` | 开启 | 读取/编辑/创建的文件及编辑最多的文件 |
+| `features` | 开启 | MCP 服务器、代理、技能、团队、计划模式 |
+| `git` | 开启 | Git 差异摘要（增减行数、变更文件数） |
+| `loc` | 开启 | 通过 Edit/Write 写入的代码行数 |
+| `models` | 始终开启 | 模型使用情况（请求数、Token 数） |
+| `cache` | 始终开启 | 缓存命中率 |
+| `cost` | 始终开启 | 估算费用（ccusage 或定价表） |
+| `rtk` | 开启 | RTK Token 节省量（与会话开始的增量） |
+| `ratio` | 开启 | 对话比例（交互轮次/自动轮次） |
+| `thinking` | 关闭 | 思考块数量 |
+| `context` | 关闭 | 上下文窗口估算（峰值百分比） |
 
-**Log File**: `~/.claude/logs/session-summaries.jsonl` (structured JSONL with all metrics)
+**日志文件**：`~/.claude/logs/session-summaries.jsonl`（包含所有指标的结构化 JSONL）
 
-**Configuration Priority**: `env vars (SESSION_SUMMARY_*)` > `config file (~/.config/session-summary/config.sh)` > `defaults`
+**配置优先级**：`环境变量（SESSION_SUMMARY_*）` > `配置文件（~/.config/session-summary/config.sh）` > `默认值`
 
-**Environment Variables**:
-| Variable | Default | Description |
+**环境变量**：
+| 变量 | 默认值 | 说明 |
 |----------|---------|-------------|
-| `NO_COLOR` | - | Disable ANSI colors |
-| `SESSION_SUMMARY_SKIP` | `0` | Set to `1` to disable summary |
-| `SESSION_SUMMARY_LOG` | `~/.claude/logs` | Override log directory |
-| `SESSION_SUMMARY_FILES` | `1` | Files section toggle |
+| `NO_COLOR` | - | 禁用 ANSI 颜色 |
+| `SESSION_SUMMARY_SKIP` | `0` | 设为 `1` 禁用摘要 |
+| `SESSION_SUMMARY_LOG` | `~/.claude/logs` | 覆盖日志目录 |
+| `SESSION_SUMMARY_FILES` | `1` | 文件模块开关 |
 | `SESSION_SUMMARY_RTK` | `auto` | `auto` / `1` / `0` |
-| `SESSION_SUMMARY_GIT` | `1` | Git diff toggle |
-| `SESSION_SUMMARY_ERRORS` | `1` | Error details toggle |
-| `SESSION_SUMMARY_LOC` | `1` | Lines of code toggle |
-| `SESSION_SUMMARY_RATIO` | `1` | Conversation ratio toggle |
-| `SESSION_SUMMARY_FEATURES` | `1` | Features used toggle |
-| `SESSION_SUMMARY_THINKING` | `0` | Thinking blocks toggle |
-| `SESSION_SUMMARY_CONTEXT` | `0` | Context estimate toggle |
-| `SESSION_SUMMARY_SECTIONS` | (all) | Comma-separated section order |
+| `SESSION_SUMMARY_GIT` | `1` | Git 差异开关 |
+| `SESSION_SUMMARY_ERRORS` | `1` | 错误详情开关 |
+| `SESSION_SUMMARY_LOC` | `1` | 代码行数开关 |
+| `SESSION_SUMMARY_RATIO` | `1` | 对话比例开关 |
+| `SESSION_SUMMARY_FEATURES` | `1` | 功能使用开关 |
+| `SESSION_SUMMARY_THINKING` | `0` | 思考块开关 |
+| `SESSION_SUMMARY_CONTEXT` | `0` | 上下文估算开关 |
+| `SESSION_SUMMARY_SECTIONS` | （全部） | 以逗号分隔的模块顺序 |
 
-**CLI Config Tool** (`session-summary-config.sh`):
+**CLI 配置工具**（`session-summary-config.sh`）：
 ```bash
 session-summary-config show              # Current config with section status
 session-summary-config set git=0         # Disable a section
@@ -372,16 +372,16 @@ session-summary-config install           # Install hooks in settings.json
 session-summary-config log 5             # Last 5 session summaries
 ```
 
-**Requirements**:
-- `jq` (required for JSON parsing)
-- `ccusage` (optional, for accurate cost calculation)
-- `rtk` (optional, for token savings tracking)
+**依赖**：
+- `jq`（必需，用于 JSON 解析）
+- `ccusage`（可选，用于精确费用计算）
+- `rtk`（可选，用于 Token 节省追踪）
 
-**Screenshot** (real session output):
+**截图**（真实会话输出）：
 
 ![Session Summary v3](../../docs/images/session-summary-v3.png)
 
-**Example Output** (all sections enabled):
+**示例输出**（所有模块开启）：
 ```
 ═══ Session Summary ═══════════════════
 ID:       abc-123-def-456...
@@ -414,7 +414,7 @@ Turns: 12 (8 interactive · 4 auto) · Avg 6.7s/turn
 ═══════════════════════════════════════
 ```
 
-**Configuration**:
+**配置**：
 ```json
 {
   "hooks": {
@@ -428,40 +428,40 @@ Turns: 12 (8 interactive · 4 auto) · Avg 6.7s/turn
 }
 ```
 
-**Quick Install**: Plugin system (see above) or manual: `session-summary-config.sh install` (copies hooks + updates settings.json)
+**快速安装**：插件系统（见上文）或手动安装：`session-summary-config.sh install`（复制钩子并更新 settings.json）
 
-**How it compares to tweakcc's `/cost` patch**:
+**与 tweakcc 的 `/cost` 补丁对比**：
 
-[tweakcc](https://github.com/Piebald-AI/tweakcc) (1K+ stars) patches Claude Code's `cli.js` to re-enable `/cost` for Pro/Max subscribers. Different approach, different trade-offs:
+[tweakcc](https://github.com/Piebald-AI/tweakcc)（1K+ 星）通过修补 Claude Code 的 `cli.js` 为 Pro/Max 订阅者重新启用 `/cost` 功能。两者方式不同，各有利弊：
 
 | | tweakcc `/cost` | session-summary.sh |
 |---|---|---|
-| Approach | Patches Claude Code binary | Official hooks API (no modification) |
-| Survives CC updates | No (re-apply each update) | Yes |
-| Trigger | Manual (`/cost` command) | Automatic on session exit |
-| Metrics | Cost, duration, tokens, LOC | 15 sections (cost, tokens, tools, errors, files, features, git diff, LOC, cache, RTK, ratio...) |
-| History | No | JSONL log with all metrics |
-| Dependencies | Node.js | jq (bash native) |
+| 方式 | 修补 Claude Code 二进制文件 | 官方钩子 API（无需修改） |
+| 是否随 CC 更新存活 | 否（每次更新后需重新应用） | 是 |
+| 触发方式 | 手动（`/cost` 命令） | 会话退出时自动触发 |
+| 指标 | 费用、时长、Token、代码行数 | 15 个模块（费用、Token、工具、错误、文件、功能、Git 差异、代码行数、缓存、RTK、比例……） |
+| 历史记录 | 无 | 含所有指标的 JSONL 日志 |
+| 依赖 | Node.js | jq（Bash 原生） |
 
-tweakcc is a broader tool (themes, prompts, toolsets) — the `/cost` patch is one feature among many. This hook focuses specifically on session analytics with deeper metrics and zero modification of Claude Code internals.
+tweakcc 是一个更广泛的工具（主题、提示词、工具集），`/cost` 补丁只是其众多功能之一。本钩子专注于会话分析，提供更深层的指标，且不修改 Claude Code 内部文件。
 
 ### auto-format.sh / auto-format.ps1
 
-**Event**: `PostToolUse` (Edit, Write)
+**事件**：`PostToolUse`（Edit、Write）
 
-Automatically format files after editing:
+编辑后自动格式化文件：
 
-| Extension | Formatter |
+| 扩展名 | 格式化工具 |
 |-----------|-----------|
-| `.ts`, `.tsx`, `.js`, `.jsx` | Prettier |
-| `.json`, `.css`, `.scss`, `.md` | Prettier |
+| `.ts`、`.tsx`、`.js`、`.jsx` | Prettier |
+| `.json`、`.css`、`.scss`、`.md` | Prettier |
 | `.prisma` | `prisma format` |
 | `.py` | Black / autopep8 |
 | `.go` | `go fmt` |
 
-**Silent Operation**: No output, failures ignored to avoid blocking Claude.
+**静默运行**：无输出，忽略失败以避免阻塞 Claude。
 
-**Requirements**: Install formatters in your project:
+**依赖**：在项目中安装格式化工具：
 ```bash
 # Node.js projects
 npm install -D prettier
@@ -475,29 +475,29 @@ go fmt
 
 ### notification.sh
 
-**Event**: `Notification` (macOS only)
+**事件**：`Notification`（仅限 macOS）
 
-Contextual sound alerts based on notification content:
+根据通知内容触发对应音效提醒：
 
-| Context | Sound | Triggered By |
+| 上下文 | 音效 | 触发词 |
 |---------|-------|--------------|
-| Success | Hero.aiff | "completed", "done", "success" |
-| Error | Basso.aiff | "error", "failed", "problem" |
-| Waiting | Submarine.aiff | "waiting", "permission", "input" |
-| Warning | Sosumi.aiff | "warning", "attention", "alert" |
-| Default | Ping.aiff | Other notifications |
+| 成功 | Hero.aiff | "completed"、"done"、"success" |
+| 错误 | Basso.aiff | "error"、"failed"、"problem" |
+| 等待 | Submarine.aiff | "waiting"、"permission"、"input" |
+| 警告 | Sosumi.aiff | "warning"、"attention"、"alert" |
+| 默认 | Ping.aiff | 其他通知 |
 
-**Features**:
-- Non-blocking (plays in background)
-- Native macOS notifications
-- Automatic context detection via keywords
-- Multi-language support (English/French)
+**特性**：
+- 非阻塞（后台播放）
+- 原生 macOS 通知
+- 通过关键词自动识别上下文
+- 多语言支持（英语/法语）
 
-**Requirements**: macOS with `afplay` and `osascript` (built-in)
+**依赖**：macOS 系统内置的 `afplay` 和 `osascript`
 
-## Configuration
+## 配置
 
-Hooks are configured in `.claude/settings.json`:
+钩子在 `.claude/settings.json` 中配置：
 
 ```json
 {
@@ -535,15 +535,15 @@ Hooks are configured in `.claude/settings.json`:
 }
 ```
 
-**Matcher Patterns**:
-- `".*"` - Match all tools
-- `"Bash"` - Match only Bash tool
-- `"Edit|Write"` - Match Edit OR Write tools
-- `"Bash|Edit|Write"` - Match multiple tools
+**Matcher 模式**：
+- `".*"` - 匹配所有工具
+- `"Bash"` - 仅匹配 Bash 工具
+- `"Edit|Write"` - 匹配 Edit 或 Write 工具
+- `"Bash|Edit|Write"` - 匹配多个工具
 
-## Creating Custom Hooks
+## 创建自定义钩子
 
-### Basic Template
+### 基础模板
 
 ```bash
 #!/bin/bash
@@ -574,30 +574,30 @@ EOF
 exit 0
 ```
 
-### Environment Variables
+### 环境变量
 
-Available in hook scripts:
+钩子脚本中可用的变量：
 
-| Variable | Description |
+| 变量 | 说明 |
 |----------|-------------|
-| `CLAUDE_PROJECT_DIR` | Current project path |
-| `CLAUDE_FILE_PATHS` | Files passed with `-f` flag |
-| `CLAUDE_TOOL_INPUT` | Tool input as JSON |
-| `HOME` | User home directory |
+| `CLAUDE_PROJECT_DIR` | 当前项目路径 |
+| `CLAUDE_FILE_PATHS` | 通过 `-f` 标志传入的文件 |
+| `CLAUDE_TOOL_INPUT` | JSON 格式的工具输入 |
+| `HOME` | 用户主目录 |
 
-### Best Practices
+### 最佳实践
 
-1. **Short Timeout**: Max 5-10s to avoid blocking Claude
-2. **Fail Gracefully**: Use `|| true` for non-critical operations
-3. **Minimal Logging**: Avoid stdout except structured JSON
-4. **Require jq**: Parse JSON with `jq` for reliability
-5. **Test Thoroughly**: Test with various inputs before deploying
-6. **Document Behavior**: Clear comments on what hook does
-7. **Handle Errors**: Proper error messages for debugging
+1. **控制超时**：最长 5-10 秒，避免阻塞 Claude
+2. **优雅降级**：非关键操作使用 `|| true`
+3. **最小化日志**：除结构化 JSON 外避免输出到 stdout
+4. **依赖 jq**：使用 `jq` 解析 JSON 以确保可靠性
+5. **充分测试**：部署前用各种输入进行测试
+6. **文档化行为**：用清晰注释说明钩子的作用
+7. **处理错误**：提供清晰的错误信息便于调试
 
-### Example: Git Context Enrichment
+### 示例：Git 上下文注入
 
-Create `git-context.sh` (UserPromptSubmit event):
+创建 `git-context.sh`（UserPromptSubmit 事件）：
 
 ```bash
 #!/bin/bash
@@ -623,7 +623,7 @@ EOF
 exit 0
 ```
 
-Register in settings:
+在 settings 中注册：
 ```json
 {
   "hooks": {
@@ -640,96 +640,96 @@ Register in settings:
 }
 ```
 
-## Installation
+## 安装
 
-### Project-Level (Shared with Team)
+### 项目级别（与团队共享）
 
-1. Create hooks directory:
+1. 创建钩子目录：
 ```bash
 mkdir -p .claude/hooks
 ```
 
-2. Copy hook from examples:
+2. 从示例中复制钩子：
 ```bash
 cp /path/to/examples/hooks/bash/dangerous-actions-blocker.sh .claude/hooks/
 chmod +x .claude/hooks/*.sh
 ```
 
-3. Configure in `.claude/settings.json` (see Configuration section above)
+3. 在 `.claude/settings.json` 中配置（参见上方配置章节）
 
-4. Commit to repository:
+4. 提交到仓库：
 ```bash
 git add .claude/hooks/ .claude/settings.json
 git commit -m "Add Claude Code hooks"
 ```
 
-### Personal/Global (Your Machine Only)
+### 个人/全局级别（仅限本机）
 
-1. Create global hooks directory:
+1. 创建全局钩子目录：
 ```bash
 mkdir -p ~/.claude/hooks
 ```
 
-2. Copy hook:
+2. 复制钩子：
 ```bash
 cp /path/to/examples/hooks/bash/notification.sh ~/.claude/hooks/
 chmod +x ~/.claude/hooks/*.sh
 ```
 
-3. Configure in `~/.claude/settings.json`
+3. 在 `~/.claude/settings.json` 中配置
 
-**Priority**: Project hooks override global hooks.
+**优先级**：项目钩子优先于全局钩子。
 
-## Platform-Specific Notes
+## 平台说明
 
-### macOS / Linux (Bash)
+### macOS / Linux（Bash）
 
-- Use `.sh` extension
-- Requires `chmod +x` for execution
-- Path separator: `/`
-- Home directory: `~` or `$HOME`
+- 使用 `.sh` 扩展名
+- 需要 `chmod +x` 授予执行权限
+- 路径分隔符：`/`
+- 主目录：`~` 或 `$HOME`
 
-### Windows (PowerShell)
+### Windows（PowerShell）
 
-- Use `.ps1` extension
-- May require execution policy: `Set-ExecutionPolicy RemoteSigned`
-- Path separator: `\`
-- Home directory: `$env:USERPROFILE`
+- 使用 `.ps1` 扩展名
+- 可能需要设置执行策略：`Set-ExecutionPolicy RemoteSigned`
+- 路径分隔符：`\`
+- 主目录：`$env:USERPROFILE`
 
-## Troubleshooting
+## 故障排查
 
-### Hook Not Executing
+### 钩子未执行
 
-**Cause**: Not registered in settings.json or wrong path
+**原因**：未在 settings.json 中注册，或路径错误
 
-**Fix**: Verify configuration and use absolute paths or `$CLAUDE_PROJECT_DIR`
+**解决**：验证配置，使用绝对路径或 `$CLAUDE_PROJECT_DIR`
 
-### Permission Denied
+### 权限被拒绝
 
-**Cause**: Hook not executable
+**原因**：钩子没有执行权限
 
-**Fix**:
+**解决**：
 ```bash
 chmod +x .claude/hooks/*.sh
 ```
 
-### Hook Blocks Everything
+### 钩子拦截所有操作
 
-**Cause**: Exit code 2 without conditions
+**原因**：无条件使用了退出码 2
 
-**Fix**: Check logic, ensure `exit 0` is default case
+**解决**：检查逻辑，确保默认情况下使用 `exit 0`
 
-### Timeout Errors
+### 超时错误
 
-**Cause**: Hook takes too long (>timeout value)
+**原因**：钩子执行时间超过超时限制
 
-**Fix**: Optimize hook performance or increase timeout in settings
+**解决**：优化钩子性能，或在 settings 中增大超时值
 
-### jq Not Found
+### jq 未找到
 
-**Cause**: `jq` not installed
+**原因**：`jq` 未安装
 
-**Fix**: Install jq:
+**解决**：安装 jq：
 ```bash
 # macOS
 brew install jq
@@ -741,11 +741,11 @@ sudo apt-get install jq
 choco install jq
 ```
 
-## Advanced Examples
+## 高级示例
 
-### Activity Logger
+### 操作日志记录器
 
-Log all Claude operations to JSONL file:
+将所有 Claude 操作记录到 JSONL 文件：
 
 ```bash
 #!/bin/bash
@@ -767,9 +767,9 @@ EOF
 exit 0
 ```
 
-### Database Migration Detector
+### 数据库迁移检测器
 
-Alert when migrations are created:
+在创建迁移文件时发出提醒：
 
 ```bash
 #!/bin/bash
@@ -795,21 +795,21 @@ fi
 exit 0
 ```
 
-## Security Considerations
+## 安全注意事项
 
-1. **Never Store Secrets in Hooks**: Use environment variables
-2. **Validate Input**: Always sanitize data from stdin
-3. **Limit Hook Scope**: Use specific matchers, not `".*"`
-4. **Review Blocked Operations**: Log when hooks block actions
-5. **Test in Isolation**: Test hooks outside Claude first
-6. **Version Control**: Commit hooks to repository for team sharing
+1. **不要在钩子中存储密钥**：使用环境变量
+2. **验证输入**：始终对 stdin 数据进行净化处理
+3. **限制钩子范围**：使用精确的 matcher，不要用 `".*"`
+4. **记录拦截操作**：钩子拦截操作时记录日志
+5. **隔离测试**：先在 Claude 外部测试钩子
+6. **版本控制**：将钩子提交到仓库以便团队共享
 
-## Resources
+## 相关资源
 
-- [Main Guide - Section 7: Hooks](../../guide/ultimate-guide.md#7-hooks)
-- [Claude Code Documentation](https://docs.anthropic.com/en/docs/claude-code)
-- [Hook Event Reference](../../guide/ultimate-guide.md#71-hook-events)
+- [主指南 - 第 7 章：钩子](../../guide/ultimate-guide.md#7-hooks)
+- [Claude Code 文档](https://docs.anthropic.com/en/docs/claude-code)
+- [钩子事件参考](../../guide/ultimate-guide.md#71-hook-events)
 
 ---
 
-*See the [main guide](../../guide/ultimate-guide.md) for detailed explanations and advanced patterns.*
+*详细说明和高级模式请参见[主指南](../../guide/ultimate-guide.md)。*

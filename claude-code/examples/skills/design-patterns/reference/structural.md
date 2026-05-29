@@ -1,27 +1,27 @@
 > 📚 **AI Spark Wiki** · Claude Code 知识库
 
 ---
-title: "Structural Design Patterns"
-description: "Reference for Adapter, Decorator, Facade, Proxy and other composition patterns"
+title: "结构型设计模式"
+description: "适配器、装饰器、外观、代理等组合模式参考"
 tags: [reference, design-patterns, architecture]
 ---
 
-# Structural Design Patterns
+# 结构型设计模式
 
-Patterns that deal with object composition and relationships between entities, providing ways to assemble objects and classes into larger structures.
+处理对象组合与实体间关系的模式，提供将对象和类组装成更大结构的方式。
 
-## Adapter
+## 适配器
 
-### Definition
-Converts the interface of a class into another interface clients expect, allowing incompatible interfaces to work together.
+### 定义
+将一个类的接口转换为客户端期望的另一个接口，使原本不兼容的接口能够协同工作。
 
-### When to Use
-- [x] Want to use an existing class with an incompatible interface
-- [x] Need to integrate third-party libraries with different interfaces
-- [x] Want to create a reusable class that cooperates with unrelated classes
-- [x] Legacy code must work with new systems
+### 适用场景
+- [x] 希望使用一个接口不兼容的现有类
+- [x] 需要将具有不同接口的第三方库集成进来
+- [x] 希望创建可与不相关类协作的可复用类
+- [x] 旧代码必须与新系统协同工作
 
-### TypeScript Signature
+### TypeScript 签名
 ```typescript
 // Target interface (what client expects)
 interface Target {
@@ -60,7 +60,7 @@ const adapter = new Adapter(adaptee);
 clientCode(adapter);
 ```
 
-### Real-World Example: Third-Party Library Integration
+### 实战示例：第三方库集成
 ```typescript
 // Third-party library (can't modify)
 class XMLDataProvider {
@@ -91,35 +91,35 @@ const adapter = new XMLToJSONAdapter(xmlProvider);
 const data = adapter.getJSONData();
 ```
 
-### Detection Markers
-- Class implements target interface
-- Holds reference to adaptee
-- Delegates to adaptee with interface conversion
-- Names like `*Adapter`, `*Wrapper`
+### 识别特征
+- 类实现目标接口
+- 持有对被适配者的引用
+- 通过接口转换委托给被适配者
+- 命名如 `*Adapter`、`*Wrapper`
 
-### Code Smells It Fixes
-- **Incompatible interfaces**: Makes legacy or third-party code compatible
-- **Interface proliferation**: Single adapter vs modifying multiple client calls
+### 可解决的代码坏味道
+- **接口不兼容**：使旧代码或第三方代码兼容
+- **接口蔓延**：单个适配器替代修改多个客户端调用
 
-### Common Mistakes
-- **Two-way adapters**: Bidirectional conversion is complex; create two adapters
-- **Adapter chains**: Multiple adapters in sequence indicate design issues
-- **Overusing for new code**: Design compatible interfaces from the start
+### 常见错误
+- **双向适配器**：双向转换较为复杂，建议创建两个独立适配器
+- **适配器链**：多个适配器串联表明存在设计问题
+- **对新代码滥用**：应从一开始就设计兼容的接口
 
 ---
 
-## Bridge
+## 桥接
 
-### Definition
-Decouples an abstraction from its implementation so the two can vary independently.
+### 定义
+将抽象部分与其实现部分解耦，使两者可以独立变化。
 
-### When to Use
-- [x] Want to avoid permanent binding between abstraction and implementation
-- [x] Both abstractions and implementations should be extensible by subclassing
-- [x] Changes in implementation shouldn't affect clients
-- [x] Want to share implementation among multiple objects (Flyweight-like)
+### 适用场景
+- [x] 希望避免抽象与实现之间的永久绑定
+- [x] 抽象和实现都应通过子类化进行扩展
+- [x] 实现的变化不应影响客户端
+- [x] 希望在多个对象间共享实现（类似享元）
 
-### TypeScript Signature
+### TypeScript 签名
 ```typescript
 // Implementation interface
 interface Implementation {
@@ -165,7 +165,7 @@ const abstraction2 = new ExtendedAbstraction(implB);
 console.log(abstraction2.operation());
 ```
 
-### Real-World Example: UI Components with Multiple Renderers
+### 实战示例：支持多种渲染器的 UI 组件
 ```typescript
 // Implementation: Renderers
 interface Renderer {
@@ -220,28 +220,28 @@ const vectorCircle = new Circle(new VectorRenderer(), 5);
 const rasterSquare = new Square(new RasterRenderer(), 10);
 ```
 
-### Detection Markers
-- Abstraction holds reference to implementation interface
-- Constructor injects implementation
-- Two parallel hierarchies (abstraction and implementation)
+### 识别特征
+- 抽象持有对实现接口的引用
+- 构造函数注入实现
+- 两条平行的层次结构（抽象与实现）
 
-### Common Mistakes
-- **Confusion with Adapter**: Bridge is design-time; Adapter is runtime fix
-- **Over-engineering simple scenarios**: Use only when both hierarchies need to vary
+### 常见错误
+- **与适配器混淆**：桥接是设计时决策；适配器是运行时的补救
+- **简单场景过度设计**：仅在两个层次结构都需要独立变化时使用
 
 ---
 
-## Composite
+## 组合
 
-### Definition
-Composes objects into tree structures to represent part-whole hierarchies, letting clients treat individual objects and compositions uniformly.
+### 定义
+将对象组合成树形结构以表示部分-整体层次关系，使客户端能以统一方式处理单个对象和对象组合。
 
-### When to Use
-- [x] Want to represent part-whole hierarchies of objects
-- [x] Want clients to ignore difference between compositions and individual objects
-- [x] Tree structures are natural for the domain (file systems, UI components, org charts)
+### 适用场景
+- [x] 希望表示对象的部分-整体层次结构
+- [x] 希望客户端忽略组合对象与单个对象的差异
+- [x] 树形结构适合该领域（文件系统、UI 组件、组织架构图）
 
-### TypeScript Signature
+### TypeScript 签名
 ```typescript
 // Component interface
 interface Component {
@@ -304,7 +304,7 @@ console.log(tree.operation());
 // Output: root(branch1(leaf1, leaf2), branch2(leaf3), leaf4)
 ```
 
-### Real-World Example: File System
+### 实战示例：文件系统
 ```typescript
 interface FileSystemComponent {
   getName(): string;
@@ -365,35 +365,35 @@ root.add(work);
 root.print('');
 ```
 
-### Detection Markers
-- Tree structure with uniform interface
-- Collection of children components
-- `add()`, `remove()`, `getChild()` methods
-- Recursive operation calls
+### 识别特征
+- 具有统一接口的树形结构
+- 子组件的集合
+- `add()`、`remove()`、`getChild()` 方法
+- 递归调用操作
 
-### Code Smells It Fixes
-- **Type checking for composition vs leaf**: Uniform interface eliminates `instanceof` checks
-- **Different handling for parts vs wholes**: Clients treat both uniformly
+### 可解决的代码坏味道
+- **对组合节点与叶节点的类型判断**：统一接口消除 `instanceof` 检查
+- **部分与整体的差异化处理**：客户端以统一方式对待两者
 
-### Common Mistakes
-- **Violating uniformity**: Leaf and Composite should have same interface
-- **Incorrect child management**: Not handling removal properly
-- **Deep recursion**: Can cause stack overflow on very deep trees
+### 常见错误
+- **破坏统一性**：叶节点和组合节点应共享同一接口
+- **子节点管理不当**：未正确处理删除操作
+- **深度递归**：树结构过深时可能导致栈溢出
 
 ---
 
-## Decorator
+## 装饰器
 
-### Definition
-Attaches additional responsibilities to an object dynamically, providing a flexible alternative to subclassing for extending functionality.
+### 定义
+动态地为对象附加额外职责，作为子类化的灵活替代方案来扩展功能。
 
-### When to Use
-- [x] Need to add responsibilities to objects dynamically and transparently
-- [x] Responsibilities can be withdrawn
-- [x] Extension by subclassing is impractical (many possible combinations)
-- [x] Want to add features incrementally
+### 适用场景
+- [x] 需要动态且透明地为对象添加职责
+- [x] 职责可以被撤销
+- [x] 通过子类化扩展不切实际（存在大量可能的组合）
+- [x] 希望逐步添加功能
 
-### TypeScript Signature
+### TypeScript 签名
 ```typescript
 // Component interface
 interface Component {
@@ -437,9 +437,9 @@ console.log(decorated2.operation());
 // Output: DecoratorB(DecoratorA(ConcreteComponent))
 ```
 
-### Stack-Native Alternatives
+### 框架原生替代方案
 
-**React - Higher-Order Components**:
+**React - 高阶组件**：
 ```typescript
 // HOC decorator
 function withAuth<P extends object>(
@@ -457,7 +457,7 @@ const AuthenticatedProfile = withAuth(Profile);
 const AuthenticatedAdminProfile = withLogging(withAuth(Profile));
 ```
 
-**NestJS - Interceptors**:
+**NestJS - 拦截器**：
 ```typescript
 @Injectable()
 export class LoggingInterceptor implements NestInterceptor {
@@ -475,35 +475,35 @@ export class LoggingInterceptor implements NestInterceptor {
 export class UsersController {}
 ```
 
-### Detection Markers
-- Implements same interface as wrapped object
-- Holds reference to wrapped object
-- Delegates to wrapped, adding behavior
-- Can be stacked
+### 识别特征
+- 实现与被包装对象相同的接口
+- 持有对被包装对象的引用
+- 委托给被包装对象并附加行为
+- 可以叠加使用
 
-### Code Smells It Fixes
-- **Class explosion**: Avoid creating subclass for every feature combination
-- **Rigid feature addition**: Add/remove features dynamically
+### 可解决的代码坏味道
+- **类爆炸**：避免为每种功能组合创建子类
+- **僵化的功能添加**：动态添加/移除功能
 
-### Common Mistakes
-- **Order dependency**: DecoratorA(DecoratorB(x)) ≠ DecoratorB(DecoratorA(x))
-- **Decorator explosion**: Too many small decorators can be hard to manage
-- **Breaking interface**: Decorator must maintain interface contract
+### 常见错误
+- **顺序依赖**：`DecoratorA(DecoratorB(x))` ≠ `DecoratorB(DecoratorA(x))`
+- **装饰器爆炸**：过多的小装饰器难以管理
+- **破坏接口约定**：装饰器必须维持接口契约
 
 ---
 
-## Facade
+## 外观
 
-### Definition
-Provides a unified interface to a set of interfaces in a subsystem, making the subsystem easier to use.
+### 定义
+为子系统中的一组接口提供统一接口，使子系统更易于使用。
 
-### When to Use
-- [x] Want to provide a simple interface to a complex subsystem
-- [x] Many dependencies exist between clients and implementation classes
-- [x] Want to layer subsystems
-- [x] Need to decouple subsystem from clients
+### 适用场景
+- [x] 希望为复杂子系统提供简单接口
+- [x] 客户端与实现类之间存在大量依赖
+- [x] 希望对子系统进行分层
+- [x] 需要将子系统与客户端解耦
 
-### TypeScript Signature
+### TypeScript 签名
 ```typescript
 // Complex subsystem classes
 class SubsystemA {
@@ -553,7 +553,7 @@ console.log(facade.simpleOperation());
 // a.operationA(); b.operationB(); c.operationC();
 ```
 
-### Real-World Example: Payment Processing
+### 实战示例：支付处理
 ```typescript
 // Complex subsystems
 class PaymentValidator {
@@ -606,33 +606,33 @@ const payment = new PaymentFacade();
 payment.processPayment(100, '1234567890123456', 'user@example.com');
 ```
 
-### Detection Markers
-- Class with multiple subsystem dependencies
-- Simple public methods coordinating subsystems
-- Named `*Facade`, `*API`, `*Service`
+### 识别特征
+- 依赖多个子系统的类
+- 协调子系统的简单公共方法
+- 命名如 `*Facade`、`*API`、`*Service`
 
-### Code Smells It Fixes
-- **Complex subsystem usage**: Clients don't need to know subsystem details
-- **Tight coupling**: Clients depend on facade, not many classes
+### 可解决的代码坏味道
+- **复杂子系统使用**：客户端无需了解子系统细节
+- **紧耦合**：客户端依赖外观，而非依赖众多类
 
-### Common Mistakes
-- **God Facade**: Facade does too much; should coordinate, not contain logic
-- **Leaky abstraction**: Exposing subsystem details defeats the purpose
+### 常见错误
+- **上帝外观**：外观做了过多的事；应协调而非包含业务逻辑
+- **抽象泄漏**：暴露子系统细节违背了使用外观的初衷
 
 ---
 
-## Flyweight
+## 享元
 
-### Definition
-Uses sharing to support large numbers of fine-grained objects efficiently by storing shared state externally.
+### 定义
+通过将共享状态外部化，使用共享的方式高效支持大量细粒度对象。
 
-### When to Use
-- [x] Application uses large number of objects
-- [x] Storage cost is high due to object quantity
-- [x] Most object state can be made extrinsic (externalized)
-- [x] Many groups of objects may be replaced by relatively few shared objects
+### 适用场景
+- [x] 应用程序使用大量对象
+- [x] 由于对象数量庞大导致存储成本高
+- [x] 大部分对象状态可以变为外部状态（外化）
+- [x] 多组对象可以用相对少量的共享对象替代
 
-### TypeScript Signature
+### TypeScript 签名
 ```typescript
 // Flyweight
 class Flyweight {
@@ -691,7 +691,7 @@ const flyweight2 = factory.getFlyweight(['Chevrolet', 'Camaro2018', 'pink']);
 flyweight2.operation('license-456'); // Reuses same flyweight
 ```
 
-### Real-World Example: Text Editor Characters
+### 实战示例：文本编辑器字符
 ```typescript
 // Flyweight: Character formatting (shared)
 class CharacterFormat {
@@ -740,29 +740,29 @@ for (let i = 0; i < 10000; i++) {
 }
 ```
 
-### Detection Markers
-- Factory managing pool of shared objects
-- Intrinsic (shared) vs extrinsic (unique) state separation
-- Map/cache of flyweights
+### 识别特征
+- 工厂管理共享对象池
+- 内部状态（共享）与外部状态（唯一）分离
+- 享元的 Map/缓存
 
-### Common Mistakes
-- **Premature optimization**: Only use if memory is actually a problem
-- **Incorrect state separation**: Mixing intrinsic and extrinsic state
+### 常见错误
+- **过早优化**：仅在内存确实成为问题时使用
+- **状态分离错误**：将内部状态与外部状态混淆
 
 ---
 
-## Proxy
+## 代理
 
-### Definition
-Provides a surrogate or placeholder for another object to control access to it.
+### 定义
+为另一个对象提供代理或占位符，以控制对该对象的访问。
 
-### When to Use
-- [x] Lazy initialization (virtual proxy): Create expensive object only when needed
-- [x] Access control (protection proxy): Control access to original object
-- [x] Local representative of remote object (remote proxy)
-- [x] Logging, caching, or monitoring access
+### 适用场景
+- [x] 延迟初始化（虚拟代理）：仅在需要时创建昂贵对象
+- [x] 访问控制（保护代理）：控制对原始对象的访问
+- [x] 远程对象的本地代表（远程代理）
+- [x] 记录日志、缓存或监控访问
 
-### TypeScript Signature
+### TypeScript 签名
 ```typescript
 // Subject interface
 interface Subject {
@@ -815,7 +815,7 @@ proxy.request();
 // RealSubject: Handling request
 ```
 
-### Modern JavaScript Proxy
+### 现代 JavaScript Proxy
 ```typescript
 const target = {
   message: 'Hello',
@@ -841,41 +841,41 @@ console.log(proxy.message); // Logs: Accessing property: message
 proxy.message = 'World';     // Logs: Setting property: message = World
 ```
 
-### Detection Markers
-- Implements same interface as real subject
-- Holds reference to real subject
-- Controls access (checks, logging, caching)
-- Lazy initialization of real subject
+### 识别特征
+- 实现与真实主体相同的接口
+- 持有对真实主体的引用
+- 控制访问（检查、日志记录、缓存）
+- 延迟初始化真实主体
 
-### Common Mistakes
-- **Proxy chains**: Multiple proxies wrapping each other
-- **Performance overhead**: Every access goes through proxy
-- **Confusion with Decorator**: Proxy controls access; Decorator adds behavior
+### 常见错误
+- **代理链**：多个代理相互嵌套
+- **性能开销**：每次访问都经过代理
+- **与装饰器混淆**：代理控制访问；装饰器添加行为
 
 ---
 
-## Summary Table
+## 汇总表
 
-| Pattern | Complexity | Use Frequency | Main Benefit |
-|---------|------------|---------------|--------------|
-| Adapter | Low | High | Interface compatibility |
-| Bridge | High | Low | Decouple abstraction from implementation |
-| Composite | Medium | High | Uniform tree structure handling |
-| Decorator | Medium | High | Dynamic responsibility addition |
-| Facade | Low | Very High | Simplified subsystem interface |
-| Flyweight | High | Low | Memory optimization |
-| Proxy | Medium | Medium | Controlled access |
+| 模式 | 复杂度 | 使用频率 | 主要优势 |
+|------|--------|----------|----------|
+| 适配器 | 低 | 高 | 接口兼容性 |
+| 桥接 | 高 | 低 | 抽象与实现解耦 |
+| 组合 | 中 | 高 | 统一处理树形结构 |
+| 装饰器 | 中 | 高 | 动态添加职责 |
+| 外观 | 低 | 很高 | 简化子系统接口 |
+| 享元 | 高 | 低 | 内存优化 |
+| 代理 | 中 | 中 | 受控访问 |
 
-## Best Practices
+## 最佳实践
 
-1. **Adapter vs Bridge**: Adapter fixes incompatibility; Bridge designs flexibility
-2. **Decorator vs Proxy**: Decorator adds features; Proxy controls access
-3. **Facade simplicity**: Should coordinate, not contain business logic
-4. **Composite uniformity**: Leaf and Composite must share interface
-5. **Use native Proxy**: JavaScript `Proxy` object for dynamic property access
+1. **适配器 vs 桥接**：适配器修复不兼容问题；桥接从设计上提供灵活性
+2. **装饰器 vs 代理**：装饰器添加功能；代理控制访问
+3. **外观的简洁性**：应协调各子系统，而非包含业务逻辑
+4. **组合的统一性**：叶节点和组合节点必须共享接口
+5. **使用原生 Proxy**：JavaScript `Proxy` 对象用于动态属性访问
 
-## References
+## 参考资料
 
-- *Design Patterns: Elements of Reusable Object-Oriented Software* (Gang of Four)
+- *Design Patterns: Elements of Reusable Object-Oriented Software*（Gang of Four）
 - [MDN: Proxy](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy)
 - [Refactoring Guru: Structural Patterns](https://refactoring.guru/design-patterns/structural-patterns)

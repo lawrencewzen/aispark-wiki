@@ -1,798 +1,798 @@
 > 📚 **AI Spark Wiki** · Claude Code 知识库
 
-# Template Catalog
+# 模板目录
 
-Auto-generated template index with complexity, time, and domain filters.
+自动生成的模板索引，支持按复杂度、时间和领域筛选。
 
-**Last updated**: [auto-generated]
-
----
-
-**Total Templates**: 181
-
-- **Agents**: 23
-- **Commands**: 52
-- **Skills**: 64
-- **Hooks**: 37
-- **Workflows**: 3
-- **Scripts**: 2
-
-## Filter by Complexity
-
-- **Beginner**: 0 templates
-- **Intermediate**: 181 templates
-- **Advanced**: 0 templates
-
-## Filter by Time
-
-- **30 min**: 181 templates
+**最后更新**：[自动生成]
 
 ---
 
-## By Category
+**模板总数**：181
 
-### Agents (23)
+- **智能体**：23
+- **命令**：52
+- **技能**：64
+- **钩子**：37
+- **工作流**：3
+- **脚本**：2
 
-- **[adr-writer](agents/adr-writer.md)** *intermediate* • 30 min
-  Architecture Decision Record generator agent — read-only. Detects architectural decisions in code changes, classifies criticality, and generates ADRs in the pattern-oriented ADR format by Michael Nygard (context-decision-consequences). Never modifies code. Use after significant changes or when a decision needs documenting.
+## 按复杂度筛选
 
-- **[analytics-agent](agents/analytics-with-eval/analytics-agent.md)** *intermediate* • 30 min
-  SQL query generator with built-in evaluation and safety checks
+- **初级**：0 个模板
+- **中级**：181 个模板
+- **高级**：0 个模板
 
-- **[anomaly-detector](agents/cyber-defense/anomaly-detector.md)** *intermediate* • 30 min
-  Detect statistical anomalies and attack patterns from structured security events. Second stage of the cyber defense pipeline — reads cyber-defense-events.json and produces anomalies.
+## 按时间筛选
 
-- **[architecture-reviewer](agents/architecture-reviewer.md)** *intermediate* • 30 min
-  Architecture and design review agent — read-only. Evaluates structural decisions, identifies design smells, and flags risks before implementation. Never modifies code. Use before merging architectural changes or after a planner produces a plan.
+- **30 分钟**：181 个模板
 
-- **[code-reviewer](agents/code-reviewer.md)** *intermediate* • 30 min
-  Use for thorough code review with quality, security, and performance checks
+---
 
-- **[devops-sre](agents/devops-sre.md)** *intermediate* • 30 min
-  Infrastructure troubleshooting using the FIRE framework (First Response, Investigate, Remediate, Evaluate)
+## 按分类浏览
 
-- **[implementer](agents/implementer.md)** *intermediate* • 30 min
-  Mechanical execution agent for bounded, well-defined tasks. Scope and approach must be explicit in the task prompt. Use after a planner has produced a plan. For complex logic or design decisions, use Sonnet instead.
+### 智能体（23）
 
-- **[integration-reviewer](agents/integration-reviewer.md)** *intermediate* • 30 min
-  Runtime integration validator — read-only. Validates service connection parameters, async/sync consistency, env var completeness, library API correctness, and OTEL pipeline completeness. Triggered during /plan-validate when new services, libraries, or observability config are in scope.
+- **[adr-writer](agents/adr-writer.md)** *中级* • 30 分钟
+  架构决策记录生成智能体 — 只读。检测代码变更中的架构决策，对其重要性进行分级，并按照 Michael Nygard 的模式化 ADR 格式（上下文-决策-结果）生成架构决策记录。不修改代码。适合在重大变更后或需要记录某个决策时使用。
 
-- **[log-ingestor](agents/cyber-defense/log-ingestor.md)** *intermediate* • 30 min
-  Parse raw logs into structured security events. First stage of the cyber defense pipeline — reads log files and extracts typed events (errors, warnings, auth failures, anomalies).
+- **[analytics-agent](agents/analytics-with-eval/analytics-agent.md)** *中级* • 30 分钟
+  内置评估和安全检查的 SQL 查询生成智能体
 
-- **[loop-monitor](agents/loop-monitor.md)** *intermediate* • 30 min
-  Autonomous loop monitor — detects stalls, token runaway, and infinite loops in long-running unattended Claude sessions. Use alongside a watchdog process when running autonomous pipelines.
+- **[anomaly-detector](agents/cyber-defense/anomaly-detector.md)** *中级* • 30 分钟
+  从结构化安全事件中检测统计异常和攻击模式。网络防御流水线的第二阶段 — 读取 cyber-defense-events.json 并生成异常报告。
 
-- **[output-evaluator](agents/output-evaluator.md)** *intermediate* • 30 min
-  Evaluate Claude Code outputs for quality before commit/action (LLM-as-a-Judge pattern)
+- **[architecture-reviewer](agents/architecture-reviewer.md)** *中级* • 30 分钟
+  架构与设计审查智能体 — 只读。评估结构性决策，识别设计异味，并在实现前标记风险。不修改代码。适合在合并架构变更前或规划智能体生成计划后使用。
 
-- **[plan-challenger](agents/plan-challenger.md)** *intermediate* • 30 min
-  Adversarial plan review agent — read-only. Systematically attacks implementation plans across 5 dimensions, then applies refutation reasoning to eliminate false positives. Never modifies code. Use before committing to any significant implementation plan.
+- **[code-reviewer](agents/code-reviewer.md)** *中级* • 30 分钟
+  用于全面代码审查，涵盖质量、安全和性能检查
 
-- **[planner](agents/planner.md)** *intermediate* • 30 min
-  Strategic planning agent — read-only exploration before implementation. Use to decompose tasks, analyze codebases, and produce a detailed plan. Never modifies files.
+- **[devops-sre](agents/devops-sre.md)** *中级* • 30 分钟
+  使用 FIRE 框架（首次响应、调查、修复、评估）进行基础设施故障排查
 
-- **[planning-coordinator](agents/planning-coordinator.md)** *intermediate* • 30 min
-  Synthesis agent for dynamic research teams — read-only. Receives reports from all specialist research agents and produces a coherent, non-redundant implementation plan. Spawned automatically when 2+ agents are selected in /plan-start Phase 4.
+- **[implementer](agents/implementer.md)** *中级* • 30 分钟
+  用于边界清晰、定义明确任务的机械执行智能体。任务提示中必须明确说明范围和方案。适合在规划智能体生成计划后使用。对于复杂逻辑或设计决策，请改用 Sonnet。
 
-- **[README](agents/cyber-defense/README.md)** *intermediate* • 30 min
-  A 4-agent pipeline that detects security threats in log files. Built natively with Claude Code Agent
+- **[integration-reviewer](agents/integration-reviewer.md)** *中级* • 30 min
+  运行时集成校验智能体 — 只读。校验服务连接参数、异步/同步一致性、环境变量完整性、库 API 正确性以及 OTEL 流水线完整性。当 /plan-validate 涉及新服务、库或可观测性配置时自动触发。
 
-- **[README](agents/analytics-with-eval/README.md)** *intermediate* • 30 min
-  Production-ready analytics agent with automated metrics collection and safety validation
+- **[log-ingestor](agents/cyber-defense/log-ingestor.md)** *中级* • 30 分钟
+  将原始日志解析为结构化安全事件。网络防御流水线的第一阶段 — 读取日志文件并提取类型化事件（错误、警告、认证失败、异常）。
 
-- **[refactoring-specialist](agents/refactoring-specialist.md)** *intermediate* • 30 min
-  Use for clean code refactoring following SOLID principles and best practices
+- **[loop-monitor](agents/loop-monitor.md)** *中级* • 30 分钟
+  自主循环监控智能体 — 检测长时间无人值守 Claude 会话中的停滞、token 失控和无限循环。在运行自主流水线时配合看门狗进程使用。
 
-- **[report-template](agents/analytics-with-eval/eval/report-template.md)** *intermediate* • 30 min
-  Monthly evaluation template for scoring analytics agent performance and accuracy
+- **[output-evaluator](agents/output-evaluator.md)** *中级* • 30 分钟
+  在提交/执行前评估 Claude Code 输出质量（LLM 作为评判者模式）
 
-- **[risk-classifier](agents/cyber-defense/risk-classifier.md)** *intermediate* • 30 min
-  Classify overall risk level from detected anomalies. Third stage of the cyber defense pipeline — reads cyber-defense-anomalies.json and assigns CRITICAL/HIGH/MEDIUM/LOW with justification.
+- **[plan-challenger](agents/plan-challenger.md)** *中级* • 30 分钟
+  对抗性计划审查智能体 — 只读。从 5 个维度系统性地攻击实现计划，然后应用反驳推理消除误报。不修改代码。在提交任何重要实现计划之前使用。
 
-- **[security-auditor](agents/security-auditor.md)** *intermediate* • 30 min
-  Use for security vulnerability detection and OWASP compliance checks
+- **[planner](agents/planner.md)** *中级* • 30 分钟
+  战略规划智能体 — 在实现前进行只读探索。用于分解任务、分析代码库并生成详细计划。不修改文件。
 
-- **[security-patcher](agents/security-patcher.md)** *intermediate* • 30 min
-  Apply security patches from security-auditor findings. Requires audit report as input. Always proposes patches for human review — never applies without approval.
+- **[planning-coordinator](agents/planning-coordinator.md)** *中级* • 30 分钟
+  动态研究团队的综合智能体 — 只读。接收所有专项研究智能体的报告，生成连贯、无冗余的实现计划。在 /plan-start 第 4 阶段选择 2 个及以上智能体时自动启动。
 
-- **[test-writer](agents/test-writer.md)** *intermediate* • 30 min
-  Use for generating comprehensive tests following TDD/BDD principles
+- **[README](agents/cyber-defense/README.md)** *中级* • 30 分钟
+  一个在日志文件中检测安全威胁的 4 智能体流水线，基于 Claude Code Agent 原生构建
 
-- **[threat-reporter](agents/cyber-defense/threat-reporter.md)** *intermediate* • 30 min
-  Generate a human-readable security incident report. Final stage of the cyber defense pipeline — reads all three JSON files and produces a Markdown report for security teams.
+- **[README](agents/analytics-with-eval/README.md)** *中级* • 30 分钟
+  生产就绪的分析智能体，具备自动化指标收集和安全校验功能
 
+- **[refactoring-specialist](agents/refactoring-specialist.md)** *中级* • 30 分钟
+  用于遵循 SOLID 原则和最佳实践进行整洁代码重构
 
-### Commands (52)
+- **[report-template](agents/analytics-with-eval/eval/report-template.md)** *中级* • 30 分钟
+  用于评分分析智能体性能和准确性的月度评估模板
 
-- **[audit-agents-skills](commands/audit-agents-skills.md)** *intermediate* • 30 min
-  Audit quality of agents, skills, and commands in a Claude Code project
+- **[risk-classifier](agents/cyber-defense/risk-classifier.md)** *中级* • 30 分钟
+  从检测到的异常中分类整体风险等级。网络防御流水线的第三阶段 — 读取 cyber-defense-anomalies.json 并给出带理由的 CRITICAL/HIGH/MEDIUM/LOW 评级。
 
-- **[audit-codebase](commands/audit-codebase.md)** *intermediate* • 30 min
-  Codebase health audit scoring 7 categories with progression plan
+- **[security-auditor](agents/security-auditor.md)** *中级* • 30 分钟
+  用于安全漏洞检测和 OWASP 合规检查
 
-- **[autoresearch](commands/autoresearch.md)** *intermediate* • 30 min
-  Autonomous improvement loop — scan codebase metrics, scaffold experiment files, run agent-driven iterations until metric improves
+- **[security-patcher](agents/security-patcher.md)** *中级* • 30 分钟
+  根据 security-auditor 的发现应用安全补丁。需要审计报告作为输入。始终向人工审核提交补丁建议 — 未经批准不自动应用。
 
-- **[canary](commands/canary.md)** *intermediate* • 30 min
-  Post-deploy monitoring — watch production after a deploy and alert on regressions
+- **[test-writer](agents/test-writer.md)** *中级* • 30 分钟
+  用于遵循 TDD/BDD 原则生成全面测试
 
-- **[catchup](commands/catchup.md)** *intermediate* • 30 min
-  Restore context after /clear by summarizing recent work and project state
+- **[threat-reporter](agents/cyber-defense/threat-reporter.md)** *中级* • 30 分钟
+  生成人类可读的安全事件报告。网络防御流水线的最终阶段 — 读取全部三个 JSON 文件，为安全团队生成 Markdown 报告。
 
-- **[check-cache-bugs](commands/check-cache-bugs.md)** *intermediate* • 30 min
-  Audit Claude Code setup for cache bugs (CC#40524) — sentinel, --resume/--continue, attribution header + ArkNill B3/B4/B5
 
-- **[ci:all](commands/ci/all.md)** *intermediate* • 30 min
-  Full CI pipeline: run local tests, type check, push branch, and return the pipeline URL. The only command you need before opening a PR.
+### 命令（52）
 
-- **[ci:pipeline](commands/ci/pipeline.md)** *intermediate* • 30 min
-  Push current branch and return the pipeline tracking URL (GitLab or GitHub Actions)
+- **[audit-agents-skills](commands/audit-agents-skills.md)** *中级* • 30 分钟
+  审计 Claude Code 项目中智能体、技能和命令的质量
 
-- **[ci:status](commands/ci/status.md)** *intermediate* • 30 min
-  Show current pipeline status for the active branch — GitLab CI or GitHub Actions
+- **[audit-codebase](commands/audit-codebase.md)** *中级* • 30 分钟
+  代码库健康审计，对 7 个类别评分并生成改进计划
 
-- **[ci:tests](commands/ci/tests.md)** *intermediate* • 30 min
-  Run the test suite for the current repo — auto-detects Python (pytest/uv), Node (vitest/pnpm), or Rust (cargo test)
+- **[autoresearch](commands/autoresearch.md)** *中级* • 30 分钟
+  自主改进循环 — 扫描代码库指标，构建实验文件，运行智能体驱动的迭代直至指标改善
 
-- **[commit](commands/commit.md)** *intermediate* • 30 min
-  Generate a conventional commit message for staged changes
+- **[canary](commands/canary.md)** *中级* • 30 分钟
+  部署后监控 — 在部署后监测生产环境并对回归发出告警
 
-- **[create-handoff](commands/handoff/create-handoff.md)** *intermediate* • 30 min
-  Generate a structured handoff document from the current session. Captures scope, relevant files with line numbers, key discoveries, work completed, current status, next steps, and code snippets. Use before ending a session or handing work to another agent.
+- **[catchup](commands/catchup.md)** *中级* • 30 分钟
+  执行 /clear 后通过汇总近期工作和项目状态来恢复上下文
 
-- **[diagnose](commands/diagnose.md)** *intermediate* • 30 min
-  Interactive troubleshooting assistant for Claude Code issues
+- **[check-cache-bugs](commands/check-cache-bugs.md)** *中级* • 30 分钟
+  审计 Claude Code 配置中的缓存 bug（CC#40524）— 哨兵标记、--resume/--continue、归因头部及 ArkNill B3/B4/B5
 
-- **[explain](commands/explain.md)** *intermediate* • 30 min
-  Explain code, concepts, or system behavior with adjustable depth levels
+- **[ci:all](commands/ci/all.md)** *中级* • 30 分钟
+  完整 CI/CD 流水线：运行本地测试、类型检查、推送分支并返回流水线 URL。开 PR 前只需运行这一个命令。
 
-- **[generate-tests](commands/generate-tests.md)** *intermediate* • 30 min
-  Generate comprehensive tests for specified code
+- **[ci:pipeline](commands/ci/pipeline.md)** *中级* • 30 分钟
+  推送当前分支并返回流水线跟踪 URL（GitLab 或 GitHub Actions）
 
-- **[git-worktree](commands/git-worktree.md)** *intermediate* • 30 min
-  Create isolated git worktrees for feature development without switching branches
+- **[ci:status](commands/ci/status.md)** *中级* • 30 分钟
+  显示当前分支的流水线状态 — GitLab CI 或 GitHub Actions
 
-- **[git-worktree-clean](commands/git-worktree-clean.md)** *intermediate* • 30 min
-  Clean up stale git worktrees with merged branch detection and disk usage report
+- **[ci:tests](commands/ci/tests.md)** *中级* • 30 分钟
+  运行当前仓库的测试套件 — 自动检测 Python（pytest/uv）、Node（vitest/pnpm）或 Rust（cargo test）
 
-- **[git-worktree-remove](commands/git-worktree-remove.md)** *intermediate* • 30 min
-  Safely remove a git worktree with branch cleanup and safety checks
+- **[commit](commands/commit.md)** *中级* • 30 分钟
+  为已暂存的变更生成符合规范的提交信息
 
-- **[git-worktree-status](commands/git-worktree-status.md)** *intermediate* • 30 min
-  Check status of background verification tasks running in a git worktree
+- **[create-handoff](commands/handoff/create-handoff.md)** *中级* • 30 分钟
+  从当前会话生成结构化交接文档。捕获范围、含行号的相关文件、关键发现、已完成工作、当前状态、后续步骤和代码片段。在结束会话或将工作移交给其他智能体前使用。
 
-- **[investigate](commands/investigate.md)** *intermediate* • 30 min
-  Systematic root-cause debugging — find the cause before writing any fix
+- **[diagnose](commands/diagnose.md)** *中级* • 30 分钟
+  Claude Code 问题的交互式故障排查助手
 
-- **[land-and-deploy](commands/land-and-deploy.md)** *intermediate* • 30 min
-  Merge PR, wait for CI, verify deploy, run canary — the complete landing pipeline
+- **[explain](commands/explain.md)** *中级* • 30 分钟
+  以可调节的深度级别解释代码、概念或系统行为
 
-- **[learn-alternatives](commands/learn/alternatives.md)** *intermediate* • 30 min
-  Compare different approaches to solve the same problem
+- **[generate-tests](commands/generate-tests.md)** *中级* • 30 分钟
+  为指定代码生成全面测试
 
-- **[learn-quiz](commands/learn/quiz.md)** *intermediate* • 30 min
-  Test understanding of recently written or accepted code
+- **[git-worktree](commands/git-worktree.md)** *中级* • 30 分钟
+  创建隔离的 Git 工作树，无需切换分支即可进行功能开发
 
-- **[learn-teach](commands/learn/teach.md)** *intermediate* • 30 min
-  Step-by-step explanation of a concept with progressive depth
+- **[git-worktree-clean](commands/git-worktree-clean.md)** *中级* • 30 分钟
+  清理过期的 Git 工作树，包含已合并分支检测和磁盘使用报告
 
-- **[methodology-advisor](commands/methodology-advisor.md)** *intermediate* • 30 min
-  Analyzes your codebase and asks 3 targeted questions to recommend the right AI-assisted development methodology stack
+- **[git-worktree-remove](commands/git-worktree-remove.md)** *中级* • 30 分钟
+  安全移除 Git 工作树，包含分支清理和安全检查
 
-- **[optimize](commands/optimize.md)** *intermediate* • 30 min
-  Analyze and suggest performance improvements for code, queries, or systems
+- **[git-worktree-status](commands/git-worktree-status.md)** *中级* • 30 分钟
+  检查在 Git 工作树中运行的后台校验任务状态
 
-- **[plan-ceo-review](commands/plan-ceo-review.md)** *intermediate* • 30 min
-  Strategic product gate — challenge the brief, find the 10-star product hiding inside the request, before writing any code
+- **[investigate](commands/investigate.md)** *中级* • 30 分钟
+  系统性根因调试 — 在编写任何修复方案前先找到原因
 
-- **[plan-eng-review](commands/plan-eng-review.md)** *intermediate* • 30 min
-  Engineering architecture gate — lock architecture, diagrams, edge cases, and test matrix before writing implementation code
+- **[land-and-deploy](commands/land-and-deploy.md)** *中级* • 30 分钟
+  合并 PR、等待 CI、验证部署、运行金丝雀 — 完整的落地流水线
 
-- **[plan-execute](commands/plan-execute.md)** *intermediate* • 30 min
-  Execute a validated plan: worktree isolation, TDD scaffolding, level-based parallel agents, quality gate with smoke test, PR creation and merge. Handles everything through to merged PR.
+- **[learn-alternatives](commands/learn/alternatives.md)** *中级* • 30 分钟
+  比较解决同一问题的不同方案
 
-- **[plan-start](commands/plan-start.md)** *intermediate* • 30 min
-  5-phase planning command: PRD analysis, design review, technical decisions, dynamic research team, metrics. Produces a complete implementation plan + ADRs before any code is written.
+- **[learn-quiz](commands/learn/quiz.md)** *中级* • 30 分钟
+  测试对最近编写或接受代码的理解程度
 
-- **[plan-validate](commands/plan-validate.md)** *intermediate* • 30 min
-  2-layer plan validation: instant structural checks + trigger-based specialist agents. Auto-fixes issues using ADRs and first principles. Every issue must be resolved before execution.
+- **[learn-teach](commands/learn/teach.md)** *中级* • 30 分钟
+  以递进深度逐步讲解某个概念
 
-- **[pr](commands/pr.md)** *intermediate* • 30 min
-  Analyze changes, detect scope issues, and create a well-structured PR
+- **[methodology-advisor](commands/methodology-advisor.md)** *中级* • 30 分钟
+  分析您的代码库并提出 3 个针对性问题，以推荐合适的 AI 辅助开发方法论组合
 
-- **[qa](commands/qa.md)** *intermediate* • 30 min
-  Systematic QA testing of a web application — diff-aware, tiered, with fix-and-verify loop
+- **[optimize](commands/optimize.md)** *中级* • 30 分钟
+  分析代码、查询或系统并提出性能改进建议
 
-- **[README](commands/ci/README.md)** *intermediate* • 30 min
-  Slash commands for CI/CD workflows. Auto-detect stack (Python/Node/Rust) and support both GitLab CI 
+- **[plan-ceo-review](commands/plan-ceo-review.md)** *中级* • 30 分钟
+  战略产品关卡 — 在编写任何代码之前，挑战需求简报，发掘隐藏在请求中的 10 星级产品
 
-- **[recipe-template](commands/recipe-template.md)** *intermediate* • 30 min
-  Template for commands that implement a structured recipe: validate preconditions, then execute numbered steps. Fork this and replace the placeholder content. The 'Context Validation Checkpoints' section is the key pattern — it forces Claude to verify preconditions before starting.
+- **[plan-eng-review](commands/plan-eng-review.md)** *中级* • 30 分钟
+  工程架构关卡 — 在编写实现代码之前锁定架构、图表、边界情况和测试矩阵
 
-- **[refactor](commands/refactor.md)** *intermediate* • 30 min
-  Analyze code for SOLID violations and suggest targeted improvements
+- **[plan-execute](commands/plan-execute.md)** *中级* • 30 分钟
+  执行已验证的计划：工作树隔离、TDD 脚手架、基于层级的并行智能体、含冒烟测试的质量关卡、PR 创建与合并。全程处理直至 PR 合并。
 
-- **[release-notes](commands/release-notes.md)** *intermediate* • 30 min
-  Generate release notes in multiple formats from git commits
+- **[plan-start](commands/plan-start.md)** *中级* • 30 分钟
+  5 阶段规划命令：PRD 分析、设计评审、技术决策、动态研究团队、指标。在编写任何代码之前生成完整实现计划和架构决策记录。
 
-- **[resume-handoff](commands/handoff/resume-handoff.md)** *intermediate* • 30 min
-  Load a handoff document and resume work from where a previous session left off. Parses scope, file references, completed work, and next steps, then confirms understanding before proceeding.
+- **[plan-validate](commands/plan-validate.md)** *中级* • 30 分钟
+  2 层计划验证：即时结构检查 + 基于触发器的专项智能体。使用架构决策记录和第一性原理自动修复问题。所有问题必须在执行前解决。
 
-- **[review-plan](commands/review-plan.md)** *intermediate* • 30 min
-  Structured plan review across 4 axes before writing any code (inspired by Garry Tan's workflow)
+- **[pr](commands/pr.md)** *中级* • 30 分钟
+  分析变更、检测范围问题并创建结构良好的 PR
 
-- **[review-pr](commands/review-pr.md)** *intermediate* • 30 min
-  Perform a comprehensive code review of a pull request
+- **[qa](commands/qa.md)** *中级* • 30 分钟
+  对 Web 应用进行系统性 QA 测试 — 感知差异、分层处理，并带修复验证循环
 
-- **[routines-discover](commands/routines-discover.md)** *intermediate* • 30 min
-  Analyzes the current project to surface high-value Routines use cases across the three trigger types (schedule, API, GitHub events). Usage: /routines-discover
+- **[README](commands/ci/README.md)** *中级* • 30 分钟
+  CI/CD 工作流的斜杠命令。自动检测技术栈（Python/Node/Rust）并同时支持 GitLab CI 和 GitHub Actions
 
-- **[sandbox-status](commands/sandbox-status.md)** *intermediate* • 30 min
-  Display native sandbox status, configuration, and recent violations
+- **[recipe-template](commands/recipe-template.md)** *中级* • 30 分钟
+  用于实现结构化配方的命令模板：验证前置条件，然后执行编号步骤。复制此模板并替换占位内容。"上下文验证检查点"部分是核心模式 — 它强制 Claude 在开始前验证前置条件。
 
-- **[scaffold](commands/scaffold.md)** *intermediate* • 30 min
-  Interactive coach that asks 4-5 questions to determine whether you need an agent, command, skill, hook, or rule — then generates a ready-to-use template. Usage: /scaffold (no arguments — starts the coaching session)
+- **[refactor](commands/refactor.md)** *中级* • 30 分钟
+  分析代码中的 SOLID 违规并提出针对性改进建议
 
-- **[security](commands/security.md)** *intermediate* • 30 min
-  Rapid security assessment focused on OWASP Top 10 vulnerabilities
+- **[release-notes](commands/release-notes.md)** *中级* • 30 分钟
+  从 Git 提交生成多种格式的发版说明
 
-- **[security-audit](commands/security-audit.md)** *intermediate* • 30 min
-  Comprehensive security audit with scored posture assessment
+- **[resume-handoff](commands/handoff/resume-handoff.md)** *中级* • 30 分钟
+  加载交接文档并从上一个会话停止的地方继续工作。解析范围、文件引用、已完成工作和后续步骤，确认理解后再继续。
 
-- **[security-check](commands/security-check.md)** *intermediate* • 30 min
-  Quick configuration security check against known threats database
+- **[review-plan](commands/review-plan.md)** *中级* • 30 分钟
+  在编写任何代码之前从 4 个维度进行结构化计划审查（灵感来自 Garry Tan 的工作流）
 
-- **[session-save](commands/session-save.md)** *intermediate* • 30 min
-  Save the current session state — decisions, modified files, current status, and next steps — to a handoff file for later resume.
+- **[review-pr](commands/review-pr.md)** *中级* • 30 分钟
+  对 Pull Request 进行全面代码审查
 
-- **[ship](commands/ship.md)** *intermediate* • 30 min
-  Comprehensive pre-deployment verification to ensure release readiness
+- **[routines-discover](commands/routines-discover.md)** *中级* • 30 分钟
+  分析当前项目，发现三种触发类型（定时、API、GitHub 事件）中的高价值 Routines 使用场景。用法：/routines-discover
 
-- **[sonarqube](commands/sonarqube.md)** *intermediate* • 30 min
-  Analyze SonarCloud quality issues for a specific PR
+- **[sandbox-status](commands/sandbox-status.md)** *中级* • 30 分钟
+  显示原生沙箱状态、配置和近期违规记录
 
-- **[update-handoff](commands/handoff/update-handoff.md)** *intermediate* • 30 min
-  Update an existing handoff document with current session progress. Applies section-specific merge rules: append-only for Work Done (never deletes history), replace for Status and Next Steps, merge for Files and Discoveries. Falls back to creating a new handoff if no source file is found.
+- **[scaffold](commands/scaffold.md)** *中级* • 30 分钟
+  交互式辅导，通过 4-5 个问题判断您需要智能体、命令、技能、钩子还是规则，然后生成开箱即用的模板。用法：/scaffold（无参数 — 启动辅导会话）
 
-- **[update-threat-db](commands/update-threat-db.md)** *intermediate* • 30 min
-  Research and update the AI agent security threat intelligence database
+- **[security](commands/security.md)** *中级* • 30 分钟
+  聚焦 OWASP Top 10 漏洞的快速安全评估
 
-- **[validate-changes](commands/validate-changes.md)** *intermediate* • 30 min
-  Evaluate staged changes using LLM-as-a-Judge before committing
+- **[security-audit](commands/security-audit.md)** *中级* • 30 分钟
+  包含评分安全态势评估的全面安全审计
 
+- **[security-check](commands/security-check.md)** *中级* • 30 分钟
+  针对已知威胁数据库的快速配置安全检查
 
-### Skills (64)
+- **[session-save](commands/session-save.md)** *中级* • 30 分钟
+  将当前会话状态 — 决策、修改的文件、当前状态和后续步骤 — 保存到交接文件以便后续恢复。
 
-- **[ast-grep-patterns](skills/ast-grep-patterns.md)** *intermediate* • 30 min
-  Skill teaching Claude when and how to use ast-grep for structural code searches
+- **[ship](commands/ship.md)** *中级* • 30 分钟
+  全面的部署前验证，确保发布就绪
 
-- **[audit-agents-skills](skills/audit-agents-skills/SKILL.md)** *intermediate* • 30 min
-  Audit Claude Code agents, skills, and commands for quality and production readiness. Use when evaluating skill quality, checking production readiness scores, or comparing agents against best-practice templates.
+- **[sonarqube](commands/sonarqube.md)** *中级* • 30 分钟
+  分析特定 PR 的 SonarCloud 质量问题
 
-- **[before-after](skills/voice-refine/examples/before-after.md)** *intermediate* • 30 min
-  Real-world examples of verbose voice input transformed into structured prompts
+- **[update-handoff](commands/handoff/update-handoff.md)** *中级* • 30 分钟
+  用当前会话进度更新现有交接文档。按章节应用特定合并规则：已完成工作仅追加（不删除历史），状态和后续步骤替换，文件和发现合并。若找不到源文件则回退到创建新交接文档。
 
-- **[behavioral](skills/design-patterns/reference/behavioral.md)** *intermediate* • 30 min
-  Reference for Observer, Strategy, Command, Chain of Responsibility and other behavior patterns
+- **[update-threat-db](commands/update-threat-db.md)** *中级* • 30 分钟
+  研究并更新 AI 智能体安全威胁情报数据库
 
-- **[ccboard](skills/ccboard/SKILL.md)** *intermediate* • 30 min
-  Launch and navigate the ccboard TUI/Web dashboard for Claude Code. Use when monitoring token usage, tracking costs, browsing sessions, or checking MCP server status across projects.
+- **[validate-changes](commands/validate-changes.md)** *中级* • 30 分钟
+  在提交前使用 LLM 作为评判者模式评估已暂存的变更
 
-- **[ccboard-install](skills/ccboard/commands/install.md)** *intermediate* • 30 min
-  Install or update ccboard
 
-- **[ccboard-web](skills/ccboard/commands/web.md)** *intermediate* • 30 min
-  Launch ccboard web interface
+### 技能（64）
 
-- **[changelog-parsing-rules](skills/guide-recap/references/changelog-parsing-rules.md)** *intermediate* • 30 min
-  How to extract and categorize entries from `CHANGELOG.md` for social content generation.
+- **[ast-grep-patterns](skills/ast-grep-patterns.md)** *中级* • 30 分钟
+  教导 Claude 何时以及如何使用 ast-grep 进行结构化代码搜索的技能
 
-- **[changelog-template](skills/release-notes-generator/assets/changelog-template.md)** *intermediate* • 30 min
-  Use this template for generating CHANGELOG.md entries.
+- **[audit-agents-skills](skills/audit-agents-skills/SKILL.md)** *中级* • 30 分钟
+  审计 Claude Code 智能体、技能和命令的质量与生产就绪程度。适合评估技能质量、检查生产就绪评分或将智能体与最佳实践模板对比时使用。
 
-- **[commit-categories](skills/release-notes-generator/references/commit-categories.md)** *intermediate* • 30 min
-  This document defines how to categorize commits based on Conventional Commits format.
+- **[before-after](skills/voice-refine/examples/before-after.md)** *中级* • 30 分钟
+  将冗长语音输入转换为结构化提示的真实案例
 
-- **[content-transformation](skills/guide-recap/references/content-transformation.md)** *intermediate* • 30 min
-  Maps technical CHANGELOG language to user-facing social value. Apply tone-guidelines.md rules to all
+- **[behavioral](skills/design-patterns/reference/behavioral.md)** *中级* • 30 分钟
+  观察者、策略、命令、责任链等行为模式参考
 
-- **[costs](skills/ccboard/commands/costs.md)** *intermediate* • 30 min
-  Open ccboard costs analysis tab
+- **[ccboard](skills/ccboard/SKILL.md)** *中级* • 30 分钟
+  启动并导航 ccboard TUI/Web 仪表盘以监控 Claude Code。适合监控 token 用量、跟踪费用、浏览会话或检查跨项目 MCP 服务器状态时使用。
 
-- **[creational](skills/design-patterns/reference/creational.md)** *intermediate* • 30 min
-  Reference for Singleton, Factory, Builder, Prototype and other object creation patterns
+- **[ccboard-install](skills/ccboard/commands/install.md)** *中级* • 30 分钟
+  安装或更新 ccboard
 
-- **[cyber-defense-team](skills/cyber-defense-team/SKILL.md)** *intermediate* • 30 min
-  Orchestrate a 4-agent cyber defense pipeline to analyze log files for threats. Use when investigating security logs, detecting anomalies in access patterns, classifying breach severity, or generating incident reports from nginx/auth/syslog files.
+- **[ccboard-web](skills/ccboard/commands/web.md)** *中级* • 30 分钟
+  启动 ccboard Web 界面
 
-- **[dashboard](skills/ccboard/commands/dashboard.md)** *intermediate* • 30 min
-  Launch ccboard TUI dashboard
+- **[changelog-parsing-rules](skills/guide-recap/references/changelog-parsing-rules.md)** *中级* • 30 分钟
+  如何从 `CHANGELOG.md` 中提取和分类条目以生成社交内容。
 
-- **[design-patterns](skills/design-patterns/SKILL.md)** *intermediate* • 30 min
-  Detect, suggest, and evaluate GoF design patterns in TypeScript/JavaScript codebases. Use when refactoring code, applying singleton/factory/observer/strategy patterns, reviewing pattern quality, or finding stack-native alternatives for React, Angular, NestJS, and Vue.
+- **[changelog-template](skills/release-notes-generator/assets/changelog-template.md)** *中级* • 30 分钟
+  用于生成 CHANGELOG.md 条目的模板。
 
-- **[eval-rules](skills/eval-rules/SKILL.md)** *intermediate* • 30 min
-  Audit .claude/rules/ files for structural correctness, glob validity, and real-world usefulness. Resolves each paths: pattern against actual project files, then asks the user whether each rule is still relevant and useful. Can update rules in-place based on answers. Use when setting up rules for the first time, debugging rules that fire too often or never, or doing a periodic rules hygiene pass.
+- **[commit-categories](skills/release-notes-generator/references/commit-categories.md)** *中级* • 30 分钟
+  本文档定义如何根据规范化提交格式对提交进行分类。
 
-- **[eval-skills](skills/eval-skills/SKILL.md)** *intermediate* • 30 min
-  Audit all skills in the current project for frontmatter completeness, effort level appropriateness, allowed-tools scoping, and content quality. Produces a scored report with effort-level recommendations for each skill. Use when onboarding to a new project, reviewing skill quality before shipping, or adding effort fields to an existing skill library.
+- **[content-transformation](skills/guide-recap/references/content-transformation.md)** *中级* • 30 分钟
+  将技术性 CHANGELOG 语言映射为面向用户的社交价值。将 tone-guidelines.md 的规则应用于所有内容
 
-- **[feedback-draft](skills/talk-pipeline/stage-4-position/templates/feedback-draft.md)** *intermediate* • 30 min
-  Usage: Send to 1-2 trusted peers BEFORE submitting the CFP or finalizing the script.
+- **[costs](skills/ccboard/commands/costs.md)** *中级* • 30 分钟
+  打开 ccboard 费用分析标签页
 
-- **[git-ai-archaeology](skills/git-ai-archaeology/SKILL.md)** *intermediate* • 30 min
-  Analyze AI config evolution in a git repo — first commits per path, monthly distribution, major PRs, maturity phases
+- **[creational](skills/design-patterns/reference/creational.md)** *中级* • 30 分钟
+  单例、工厂、构建器、原型等对象创建模式参考
 
-- **[guide-recap](skills/guide-recap/SKILL.md)** *intermediate* • 30 min
-  Transform CHANGELOG entries into social content (LinkedIn, Twitter/X, Newsletter, Slack) in FR + EN. Use after releases or weekly to generate release notes, announcements, social media posts, or recap summaries from guide updates.
+- **[cyber-defense-team](skills/cyber-defense-team/SKILL.md)** *中级* • 30 分钟
+  编排 4 智能体网络防御流水线以分析日志文件中的威胁。适合调查安全日志、检测访问模式异常、评估入侵严重程度或从 nginx/auth/syslog 文件生成事件报告时使用。
 
-- **[issue-comment](skills/issue-triage/templates/issue-comment.md)** *intermediate* • 30 min
-  Use these templates to generate GitHub issue comments during `/issue-triage` Phase 3. Comments are p
+- **[dashboard](skills/ccboard/commands/dashboard.md)** *中级* • 30 分钟
+  启动 ccboard TUI 仪表盘
 
-- **[issue-triage](skills/issue-triage/SKILL.md)** *intermediate* • 30 min
-  3-phase issue backlog management with audit, deep analysis, and validated triage actions. Use when triaging GitHub issues, sorting bug reports, cleaning up stale tickets, or detecting duplicate issues. Args: 'all' to analyze all, issue numbers to focus (e.g. '42 57'), 'en'/'fr' for language, no arg = audit only.
+- **[design-patterns](skills/design-patterns/SKILL.md)** *中级* • 30 分钟
+  检测、建议和评估 TypeScript/JavaScript 代码库中的 GoF 设计模式。适合重构代码、应用单例/工厂/观察者/策略模式、审查模式质量或为 React、Angular、NestJS 和 Vue 寻找栈原生替代方案时使用。
 
-- **[kimi-prompt-template](skills/talk-pipeline/stage-5-script/templates/kimi-prompt-template.md)** *intermediate* • 30 min
-  > Copy-paste this entire prompt into Kimi.com to generate the presentation.
+- **[eval-rules](skills/eval-rules/SKILL.md)** *中级* • 30 分钟
+  审计 .claude/rules/ 文件的结构正确性、glob 有效性和实际可用性。将每个路径模式与实际项目文件解析匹配，然后询问用户每条规则是否仍然相关且有用。可根据回答就地更新规则。适合首次配置规则、调试触发过于频繁或从不触发的规则，或进行定期规则清理时使用。
 
-- **[landing-page-generator](skills/landing-page-generator/SKILL.md)** *intermediate* • 30 min
-  Generate complete, deploy-ready landing pages from any repository. Use when creating a homepage for an open-source project, building a project website, converting a README into a marketing page, or standardizing landing pages across multiple repos.
+- **[eval-skills](skills/eval-skills/SKILL.md)** *中级* • 30 分钟
+  审计当前项目中所有技能的 frontmatter 完整性、effort 级别适当性、allowed-tools 范围和内容质量。为每个技能生成含 effort 级别建议的评分报告。适合入职新项目、发布前审查技能质量或为现有技能库添加 effort 字段时使用。
 
-- **[landing-pattern](skills/landing-page-generator/references/landing-pattern.md)** *intermediate* • 30 min
-  Documentation of the established landing page pattern used in `claude-code-ultimate-guide-landing` a
+- **[feedback-draft](skills/talk-pipeline/stage-4-position/templates/feedback-draft.md)** *中级* • 30 分钟
+  用法：在提交 CFP 或最终确定脚本之前发送给 1-2 位可信同行。
 
-- **[linkedin-template](skills/guide-recap/assets/linkedin-template.md)** *intermediate* • 30 min
-  Target: ~1300 characters. Structure: hook + context + bullets + CTA + hashtags.
+- **[git-ai-archaeology](skills/git-ai-archaeology/SKILL.md)** *中级* • 30 分钟
+  分析 Git 仓库中的 AI 配置演进 — 每个路径的首次提交、月度分布、重大 PR 和成熟阶段
 
-- **[mcp-integration-reference](skills/mcp-integration-reference/SKILL.md)** *intermediate* • 30 min
-  Template for skills that integrate with an MCP server. Demonstrates the reference file pattern: Claude reads a domain-specific MCP cheatsheet before making any tool calls, reducing query failures caused by server-specific gotchas. Fork this skill and replace the Sentry example with your target MCP.
+- **[guide-recap](skills/guide-recap/SKILL.md)** *中级* • 30 分钟
+  将 CHANGELOG 条目转换为社交内容（LinkedIn、Twitter/X、Newsletter、Slack），支持中英双语。适合发版后或每周从指南更新生成版本说明、公告、社交媒体帖子或摘要时使用。
 
-- **[mcp-status](skills/ccboard/commands/mcp-status.md)** *intermediate* • 30 min
-  Open ccboard MCP servers tab
+- **[issue-comment](skills/issue-triage/templates/issue-comment.md)** *中级* • 30 分钟
+  在 `/issue-triage` 第 3 阶段使用这些模板生成 GitHub issue 评论。评论经过审核
 
-- **[newsletter-template](skills/guide-recap/assets/newsletter-template.md)** *intermediate* • 30 min
-  Target: ~500 words. Structured sections with depth.
+- **[issue-triage](skills/issue-triage/SKILL.md)** *中级* • 30 分钟
+  3 阶段 issue 积压管理，包含审计、深度分析和经验证的分类操作。适合分类 GitHub issue、整理 bug 报告、清理过期工单或检测重复 issue 时使用。参数：'all' 分析全部，issue 编号聚焦特定 issue（如 '42 57'），'en'/'fr' 指定语言，无参数 = 仅审计。
 
-- **[pattern-evaluation](skills/design-patterns/checklists/pattern-evaluation.md)** *intermediate* • 30 min
-  Systematic scoring criteria for evaluating design pattern implementation quality
+- **[kimi-prompt-template](skills/talk-pipeline/stage-5-script/templates/kimi-prompt-template.md)** *中级* • 30 分钟
+  > 将此完整提示复制粘贴到 Kimi.com 以生成演示文稿。
 
-- **[pdf-generator](skills/pdf-generator.md)** *intermediate* • 30 min
-  Generate professional PDFs using Quarto/Typst stack with modern design template
+- **[landing-page-generator](skills/landing-page-generator/SKILL.md)** *中级* • 30 分钟
+  从任何仓库生成完整的、可直接部署的落地页。适合为开源项目创建主页、构建项目网站、将 README 转换为营销页面或在多个仓库间统一落地页风格时使用。
 
-- **[pr-triage](skills/pr-triage/SKILL.md)** *intermediate* • 30 min
-  4-phase PR backlog management with audit, deep code review, validated comments, and optional worktree setup. Use when triaging pull requests, catching up on pending code reviews, or managing a backlog of open PRs. Args: 'all' to review all, PR numbers to focus (e.g. '42 57'), 'en'/'fr' for language, no arg = audit only.
+- **[landing-pattern](skills/landing-page-generator/references/landing-pattern.md)** *中级* • 30 分钟
+  `claude-code-ultimate-guide-landing` 中已建立的落地页模式文档
 
-- **[README](skills/ccboard/README.md)** *intermediate* • 30 min
-  > Comprehensive TUI/Web dashboard for monitoring and managing Claude Code
+- **[linkedin-template](skills/guide-recap/assets/linkedin-template.md)** *中级* • 30 分钟
+  目标：约 1300 个字符。结构：钩子 + 上下文 + 要点 + 行动召唤 + 话题标签。
 
-- **[README](skills/talk-pipeline/README.md)** *intermediate* • 30 min
-  6-stage skill pipeline that transforms raw material (article, transcript, notes) into a complete con
+- **[mcp-integration-reference](skills/mcp-integration-reference/SKILL.md)** *中级* • 30 分钟
+  与 MCP 服务器集成的技能模板。演示参考文件模式：Claude 在进行任何工具调用之前先读取特定领域的 MCP 速查表，从而减少因服务器特定问题导致的查询失败。复制此技能并将 Sentry 示例替换为您的目标 MCP。
 
-- **[README](skills/release-notes-generator/references/README.md)** *intermediate* • 30 min
-  This directory contains documentation that will be loaded contextually during skill execution.
+- **[mcp-status](skills/ccboard/commands/mcp-status.md)** *中级* • 30 分钟
+  打开 ccboard MCP 服务器标签页
 
-- **[README](skills/release-notes-generator/scripts/README.md)** *intermediate* • 30 min
-  This directory contains executable scripts for deterministic, repeatable tasks.
+- **[newsletter-template](skills/guide-recap/assets/newsletter-template.md)** *中级* • 30 分钟
+  目标：约 500 字。具有深度的结构化章节。
 
-- **[README](skills/release-notes-generator/assets/README.md)** *intermediate* • 30 min
-  This directory contains templates, images, and boilerplate code.
+- **[pattern-evaluation](skills/design-patterns/checklists/pattern-evaluation.md)** *中级* • 30 分钟
+  评估设计模式实现质量的系统性评分标准
 
-- **[release-notes-generator](skills/release-notes-generator/SKILL.md)** *intermediate* • 30 min
-  Generate release notes in 3 formats (CHANGELOG.md, PR body, Slack announcement) from git commits. Automatically categorizes changes and converts technical language to user-friendly messaging. Use for releases, changelogs, version notes, what's new summaries, or ship announcements.
+- **[pdf-generator](skills/pdf-generator.md)** *中级* • 30 分钟
+  使用 Quarto/Typst 技术栈和现代设计模板生成专业 PDF
 
-- **[review-comment](skills/pr-triage/templates/review-comment.md)** *intermediate* • 30 min
-  Use this template to generate GitHub PR review comments. Fill in each section based on the code-revi
+- **[pr-triage](skills/pr-triage/SKILL.md)** *中级* • 30 分钟
+  4 阶段 PR 积压管理，包含审计、深度代码审查、经验证的评论和可选工作树设置。适合分类 Pull Request、跟进待处理代码审查或管理大量开放 PR 积压时使用。参数：'all' 审查全部，PR 编号聚焦特定 PR（如 '42 57'），'en'/'fr' 指定语言，无参数 = 仅审计。
 
-- **[rtk-optimizer](skills/rtk-optimizer/SKILL.md)** *intermediate* • 30 min
-  Wrap high-verbosity shell commands with RTK to reduce token consumption. Use when running git log, git diff, cargo test, pytest, or other verbose CLI output that wastes context window tokens.
+- **[README](skills/ccboard/README.md)** *中级* • 30 分钟
+  > 用于监控和管理 Claude Code 的综合 TUI/Web 仪表盘
 
-- **[security-checklist](skills/security-checklist.md)** *intermediate* • 30 min
-  Comprehensive security checklist for web applications
+- **[README](skills/talk-pipeline/README.md)** *中级* • 30 分钟
+  6 阶段技能流水线，将原始素材（文章、录音、笔记）转化为完整的演讲内容
 
-- **[sentry-mcp](skills/mcp-integration-reference/references/sentry-mcp.md)** *intermediate* • 30 min
-  Reference file for the Sentry MCP server. Read this before making any Sentry MCP calls. It contains 
+- **[README](skills/release-notes-generator/references/README.md)** *中级* • 30 分钟
+  本目录包含在技能执行期间按需加载的文档。
 
-- **[sessions](skills/ccboard/commands/sessions.md)** *intermediate* • 30 min
-  Browse Claude Code sessions history
+- **[README](skills/release-notes-generator/scripts/README.md)** *中级* • 30 分钟
+  本目录包含用于确定性、可重复任务的可执行脚本。
 
-- **[skill-creator](skills/skill-creator/SKILL.md)** *intermediate* • 30 min
-  Scaffold a new Claude Code skill with SKILL.md, frontmatter, and bundled resources. Use when creating a custom skill, standardizing skill structure across a team, or packaging a skill for distribution.
+- **[README](skills/release-notes-generator/assets/README.md)** *中级* • 30 分钟
+  本目录包含模板、图片和样板代码。
 
-- **[slack-template](skills/guide-recap/assets/slack-template.md)** *intermediate* • 30 min
-  Compact, scannable, emoji-rich. Ready to paste.
+- **[release-notes-generator](skills/release-notes-generator/SKILL.md)** *中级* • 30 分钟
+  从 Git 提交生成 3 种格式的发版说明（CHANGELOG.md、PR 正文、Slack 公告）。自动分类变更并将技术语言转换为用户友好的表述。适合发版、变更日志、版本说明、新功能汇总或发布公告时使用。
 
-- **[slack-template](skills/release-notes-generator/assets/slack-template.md)** *intermediate* • 30 min
-  Use this template for generating product-focused Slack messages.
+- **[review-comment](skills/pr-triage/templates/review-comment.md)** *中级* • 30 分钟
+  使用此模板生成 GitHub PR 审查评论。根据代码审查结果填写每个部分
 
-- **[smart-explore](skills/smart-explore.md)** *intermediate* • 30 min
-  Progressive code exploration using tree-sitter AST — structure first, drill second. Reduces code reading from 10-15k tokens per file to 200-500 tokens.
+- **[rtk-optimizer](skills/rtk-optimizer/SKILL.md)** *中级* • 30 分钟
+  用 RTK 包装高输出量 Shell 命令以减少 token 消耗。适合运行 git log、git diff、cargo test、pytest 或其他浪费上下文窗口 token 的冗长 CLI 输出时使用。
 
-- **[structural](skills/design-patterns/reference/structural.md)** *intermediate* • 30 min
-  Reference for Adapter, Decorator, Facade, Proxy and other composition patterns
+- **[security-checklist](skills/security-checklist.md)** *中级* • 30 分钟
+  Web 应用的全面安全检查清单
 
-- **[talk-pipeline](skills/talk-pipeline/orchestrator/SKILL.md)** *intermediate* • 30 min
-  Orchestrates the complete talk preparation pipeline from raw material to revision sheets, running 6 stages in sequence with human-in-the-loop checkpoints for REX or Concept mode talks. Use when starting a new talk pipeline, resuming a pipeline from a specific stage, or running the full end-to-end preparation workflow.
+- **[sentry-mcp](skills/mcp-integration-reference/references/sentry-mcp.md)** *中级* • 30 分钟
+  Sentry MCP 服务器的参考文件。在进行任何 Sentry MCP 调用前阅读本文件，其中包含
 
-- **[talk-stage1-extract](skills/talk-pipeline/stage-1-extract/SKILL.md)** *intermediate* • 30 min
-  Extracts and structures source material (articles, transcripts, notes) into a talk summary with narrative arc, themes, metrics, and gaps. Auto-detects REX vs Concept type. Use when starting a new talk from any source material or auditing existing material before committing to a talk.
+- **[sessions](skills/ccboard/commands/sessions.md)** *中级* • 30 分钟
+  浏览 Claude Code 会话历史
 
-- **[talk-stage2-research](skills/talk-pipeline/stage-2-research/SKILL.md)** *intermediate* • 30 min
-  Performs git archaeology, changelog analysis, and builds a verified factual timeline by cross-referencing git history with source material. REX mode only — skipped automatically in Concept mode. Use when building a REX talk and you need verified commit metrics, release timelines, and contributor data from a git repository.
+- **[skill-creator](skills/skill-creator/SKILL.md)** *中级* • 30 分钟
+  构建含 SKILL.md、frontmatter 和捆绑资源的新 Claude Code 技能脚手架。适合创建自定义技能、跨团队统一技能结构或将技能打包分发时使用。
 
-- **[talk-stage3-concepts](skills/talk-pipeline/stage-3-concepts/SKILL.md)** *intermediate* • 30 min
-  Builds a numbered, categorized concept catalogue from the talk summary and timeline, scoring each concept HIGH / MEDIUM / LOW for talk potential with optional repo enrichment. Use when you need a structured inventory of concepts before choosing a talk angle, or when assessing which ideas have the strongest presentation potential.
+- **[slack-template](skills/guide-recap/assets/slack-template.md)** *中级* • 30 分钟
+  简洁、易扫描、富含表情符号。可直接粘贴使用。
 
-- **[talk-stage4-position](skills/talk-pipeline/stage-4-position/SKILL.md)** *intermediate* • 30 min
-  Generates 3-4 strategic talk angles with strength/weakness analysis, title options, CFP descriptions, and a peer feedback draft, then enforces a mandatory CHECKPOINT for user confirmation before scripting. Use when deciding how to frame a talk, preparing a CFP submission, or choosing between multiple narrative angles.
+- **[slack-template](skills/release-notes-generator/assets/slack-template.md)** *中级* • 30 分钟
+  用于生成以产品为中心的 Slack 消息的模板。
 
-- **[talk-stage5-script](skills/talk-pipeline/stage-5-script/SKILL.md)** *intermediate* • 30 min
-  Produces a complete 5-act pitch with speaker notes, a slide-by-slide specification, and a ready-to-paste Kimi prompt for AI slide generation. Requires validated angle and title from Stage 4. Use when you have a confirmed talk angle and need the full script, slide spec, and AI-generated presentation prompt.
+- **[smart-explore](skills/smart-explore.md)** *中级* • 30 分钟
+  使用 tree-sitter AST 进行渐进式代码探索 — 先获取结构，再深入细节。将每个文件的代码阅读从 10-15k token 减少到 200-500 token。
 
-- **[talk-stage6-revision](skills/talk-pipeline/stage-6-revision/SKILL.md)** *intermediate* • 30 min
-  Produces revision sheets with quick navigation by act, a master concept-to-URL table, Q&A cheat-sheet with 6-10 anticipated questions, glossary, and external resources list. Use when preparing for a talk with Q&A, creating shareable reference material for attendees, or building a safety-net glossary for live delivery.
+- **[structural](skills/design-patterns/reference/structural.md)** *中级* • 30 分钟
+  适配器、装饰器、外观、代理等组合模式参考
 
-- **[tdd-workflow](skills/tdd-workflow.md)** *intermediate* • 30 min
-  Test-Driven Development workflow and best practices
+- **[talk-pipeline](skills/talk-pipeline/orchestrator/SKILL.md)** *中级* • 30 分钟
+  编排从原始素材到修订表的完整演讲准备流水线，按顺序运行 6 个阶段，在 REX 或概念模式演讲中设置人机协作检查点。适合启动新演讲流水线、从特定阶段恢复流水线或运行完整端到端准备工作流时使用。
 
-- **[tech-to-product-mappings](skills/release-notes-generator/references/tech-to-product-mappings.md)** *intermediate* • 30 min
-  This document defines how to transform technical commit messages into user-friendly product language
+- **[talk-stage1-extract](skills/talk-pipeline/stage-1-extract/SKILL.md)** *中级* • 30 分钟
+  从源素材（文章、录音、笔记）中提取和整理内容，生成含叙事弧、主题、指标和缺口的演讲摘要。自动检测 REX 与概念类型。适合从任何源素材开始新演讲或在确定演讲前审查现有素材时使用。
 
-- **[token-audit](skills/token-audit/skill.md)** *intermediate* • 30 min
-  Audit Claude Code configuration to measure fixed-context token overhead and produce a prioritized action plan
+- **[talk-stage2-research](skills/talk-pipeline/stage-2-research/SKILL.md)** *中级* • 30 分钟
+  执行 Git 考古、变更日志分析，并通过交叉引用 Git 历史与源素材来构建经验证的事实时间线。仅限 REX 模式 — 概念模式下自动跳过。适合构建 REX 演讲且需要从 Git 仓库获取经验证的提交指标、发版时间线和贡献者数据时使用。
 
-- **[tone-guidelines](skills/guide-recap/references/tone-guidelines.md)** *intermediate* • 30 min
-  Rules for social content generated from CHANGELOG entries. Central principle: **engagement through v
+- **[talk-stage3-concepts](skills/talk-pipeline/stage-3-concepts/SKILL.md)** *中级* • 30 分钟
+  从演讲摘要和时间线构建编号、分类的概念目录，为每个概念评定演讲潜力 HIGH/MEDIUM/LOW，并可选择仓库扩充。适合在选择演讲角度之前需要结构化概念清单，或评估哪些想法具有最强演示潜力时使用。
 
-- **[twitter-template](skills/guide-recap/assets/twitter-template.md)** *intermediate* • 30 min
-  Two modes: single tweet (280 chars) or thread (2-3 tweets).
+- **[talk-stage4-position](skills/talk-pipeline/stage-4-position/SKILL.md)** *中级* • 30 分钟
+  生成 3-4 个战略性演讲角度，包含优劣势分析、标题选项、CFP 描述和同行反馈草稿，然后强制执行必要的检查点以确认用户意见，再进行脚本编写。适合决定演讲框架、准备 CFP 提交或在多个叙事角度中做选择时使用。
 
-- **[version-output](skills/guide-recap/examples/version-output.md)** *intermediate* • 30 min
-  Input: `/guide-recap v3.20.5`
+- **[talk-stage5-script](skills/talk-pipeline/stage-5-script/SKILL.md)** *中级* • 30 分钟
+  生成完整的 5 幕演讲提纲（含演讲者备注）、逐张幻灯片规格说明，以及用于 AI 幻灯片生成的即用 Kimi 提示。需要第 4 阶段确认的角度和标题。适合已确定演讲角度并需要完整脚本、幻灯片规格和 AI 生成演示文稿提示时使用。
 
-- **[voice-refine](skills/voice-refine/SKILL.md)** *intermediate* • 30 min
-  Transform verbose voice input into structured, token-efficient Claude prompts. Use when cleaning up voice memos, dictation output, or speech-to-text transcriptions that contain filler words, repetitions, and unstructured thoughts.
+- **[talk-stage6-revision](skills/talk-pipeline/stage-6-revision/SKILL.md)** *中级* • 30 分钟
+  生成按幕快速导航的修订表、主概念-URL 对照表、含 6-10 个预期问题的 Q&A 速查表、术语表和外部资源列表。适合准备含 Q&A 的演讲、为听众创建可分享参考资料或为现场演讲构建安全备忘术语表时使用。
 
-- **[week-output](skills/guide-recap/examples/week-output.md)** *intermediate* • 30 min
-  Input: `/guide-recap week 2026-01-27`
+- **[tdd-workflow](skills/tdd-workflow.md)** *中级* • 30 分钟
+  测试驱动开发工作流与最佳实践
 
+- **[tech-to-product-mappings](skills/release-notes-generator/references/tech-to-product-mappings.md)** *中级* • 30 分钟
+  本文档定义如何将技术性提交信息转换为用户友好的产品语言
 
-### Hooks (37)
+- **[token-audit](skills/token-audit/skill.md)** *中级* • 30 分钟
+  审计 Claude Code 配置以测量固定上下文 token 开销，并生成优先级行动计划
 
-- **[auto-checkpoint](hooks/bash/auto-checkpoint.sh)** *intermediate* • 30 min
+- **[tone-guidelines](skills/guide-recap/references/tone-guidelines.md)** *中级* • 30 分钟
+  从 CHANGELOG 条目生成社交内容的规则。核心原则：**通过价值驱动参与**
+
+- **[twitter-template](skills/guide-recap/assets/twitter-template.md)** *中级* • 30 分钟
+  两种模式：单条推文（280 字符）或话题串（2-3 条推文）。
+
+- **[version-output](skills/guide-recap/examples/version-output.md)** *中级* • 30 分钟
+  输入：`/guide-recap v3.20.5`
+
+- **[voice-refine](skills/voice-refine/SKILL.md)** *中级* • 30 分钟
+  将冗长的语音输入转换为结构化、token 高效的 Claude 提示。适合清理包含填充词、重复和无结构思路的语音备忘录、口述内容或语音转文字稿时使用。
+
+- **[week-output](skills/guide-recap/examples/week-output.md)** *中级* • 30 分钟
+  输入：`/guide-recap week 2026-01-27`
+
+
+### 钩子（37）
+
+- **[auto-checkpoint](hooks/bash/auto-checkpoint.sh)** *中级* • 30 分钟
   set -euo pipefail
 
-- **[auto-format](hooks/bash/auto-format.sh)** *intermediate* • 30 min
+- **[auto-format](hooks/bash/auto-format.sh)** *中级* • 30 分钟
   INPUT=$(cat)
 
-- **[auto-format](hooks/powershell/auto-format.ps1)** *intermediate* • 30 min
+- **[auto-format](hooks/powershell/auto-format.ps1)** *中级* • 30 分钟
   $inputJson = [Console]::In.ReadToEnd() | ConvertFrom-Json
 
-- **[auto-rename-session](hooks/bash/auto-rename-session.sh)** *intermediate* • 30 min
+- **[auto-rename-session](hooks/bash/auto-rename-session.sh)** *中级* • 30 分钟
   set -uo pipefail
 
-- **[claudemd-scanner](hooks/bash/claudemd-scanner.sh)** *intermediate* • 30 min
+- **[claudemd-scanner](hooks/bash/claudemd-scanner.sh)** *中级* • 30 分钟
   set -euo pipefail
 
-- **[dangerous-actions-blocker](hooks/bash/dangerous-actions-blocker.sh)** *intermediate* • 30 min
+- **[dangerous-actions-blocker](hooks/bash/dangerous-actions-blocker.sh)** *中级* • 30 分钟
   set -e
 
-- **[file-guard](hooks/bash/file-guard.sh)** *intermediate* • 30 min
+- **[file-guard](hooks/bash/file-guard.sh)** *中级* • 30 分钟
   set -euo pipefail
 
-- **[governance-enforcement-hook](hooks/bash/governance-enforcement-hook.sh)** *intermediate* • 30 min
+- **[governance-enforcement-hook](hooks/bash/governance-enforcement-hook.sh)** *中级* • 30 分钟
   set -euo pipefail
 
-- **[identity-reinjection](hooks/bash/identity-reinjection.sh)** *intermediate* • 30 min
+- **[identity-reinjection](hooks/bash/identity-reinjection.sh)** *中级* • 30 分钟
   set -uo pipefail
 
-- **[learning-capture](hooks/bash/learning-capture.sh)** *intermediate* • 30 min
+- **[learning-capture](hooks/bash/learning-capture.sh)** *中级* • 30 分钟
   set -e
 
-- **[mcp-config-integrity](hooks/bash/mcp-config-integrity.sh)** *intermediate* • 30 min
+- **[mcp-config-integrity](hooks/bash/mcp-config-integrity.sh)** *中级* • 30 分钟
   set -euo pipefail
 
-- **[notification](hooks/bash/notification.sh)** *intermediate* • 30 min
+- **[notification](hooks/bash/notification.sh)** *中级* • 30 分钟
   set -e
 
-- **[output-secrets-scanner](hooks/bash/output-secrets-scanner.sh)** *intermediate* • 30 min
+- **[output-secrets-scanner](hooks/bash/output-secrets-scanner.sh)** *中级* • 30 分钟
   set -euo pipefail
 
-- **[output-validator](hooks/bash/output-validator.sh)** *intermediate* • 30 min
+- **[output-validator](hooks/bash/output-validator.sh)** *中级* • 30 分钟
   set -e
 
-- **[permission-request](hooks/bash/permission-request.sh)** *intermediate* • 30 min
+- **[permission-request](hooks/bash/permission-request.sh)** *中级* • 30 分钟
   INPUT=$(cat)
 
-- **[pre-commit-evaluator](hooks/bash/pre-commit-evaluator.sh)** *intermediate* • 30 min
+- **[pre-commit-evaluator](hooks/bash/pre-commit-evaluator.sh)** *中级* • 30 分钟
   set -e
 
-- **[pre-commit-secrets](hooks/bash/pre-commit-secrets.sh)** *intermediate* • 30 min
+- **[pre-commit-secrets](hooks/bash/pre-commit-secrets.sh)** *中级* • 30 分钟
   set -euo pipefail
 
-- **[privacy-warning](hooks/bash/privacy-warning.sh)** *intermediate* • 30 min
+- **[privacy-warning](hooks/bash/privacy-warning.sh)** *中级* • 30 分钟
   if [[ -n "$PRIVACY_WARNING_SHOWN" ]]; then
 
-- **[prompt-injection-detector](hooks/bash/prompt-injection-detector.sh)** *intermediate* • 30 min
+- **[prompt-injection-detector](hooks/bash/prompt-injection-detector.sh)** *中级* • 30 分钟
   set -e
 
-- **[repo-integrity-scanner](hooks/bash/repo-integrity-scanner.sh)** *intermediate* • 30 min
+- **[repo-integrity-scanner](hooks/bash/repo-integrity-scanner.sh)** *中级* • 30 分钟
   set -euo pipefail
 
-- **[rtk-auto-wrapper](hooks/bash/rtk-auto-wrapper.sh)** *intermediate* • 30 min
+- **[rtk-auto-wrapper](hooks/bash/rtk-auto-wrapper.sh)** *中级* • 30 分钟
   if ! command -v rtk &> /dev/null; then
 
-- **[rtk-baseline](hooks/bash/rtk-baseline.sh)** *intermediate* • 30 min
+- **[rtk-baseline](hooks/bash/rtk-baseline.sh)** *中级* • 30 分钟
   set -euo pipefail
 
-- **[sandbox-validation](hooks/bash/sandbox-validation.sh)** *intermediate* • 30 min
+- **[sandbox-validation](hooks/bash/sandbox-validation.sh)** *中级* • 30 分钟
   set -euo pipefail
 
-- **[security-check](hooks/bash/security-check.sh)** *intermediate* • 30 min
+- **[security-check](hooks/bash/security-check.sh)** *中级* • 30 分钟
   INPUT=$(cat)
 
-- **[security-check](hooks/powershell/security-check.ps1)** *intermediate* • 30 min
+- **[security-check](hooks/powershell/security-check.ps1)** *中级* • 30 分钟
   $inputJson = [Console]::In.ReadToEnd() | ConvertFrom-Json
 
-- **[security-gate](hooks/bash/security-gate.sh)** *intermediate* • 30 min
+- **[security-gate](hooks/bash/security-gate.sh)** *中级* • 30 分钟
   set -e
 
-- **[session-logger](hooks/bash/session-logger.sh)** *intermediate* • 30 min
+- **[session-logger](hooks/bash/session-logger.sh)** *中级* • 30 分钟
   set -e
 
-- **[session-summary](hooks/bash/session-summary.sh)** *intermediate* • 30 min
+- **[session-summary](hooks/bash/session-summary.sh)** *中级* • 30 分钟
   set -euo pipefail
 
-- **[session-summary-config](hooks/bash/session-summary-config.sh)** *intermediate* • 30 min
+- **[session-summary-config](hooks/bash/session-summary-config.sh)** *中级* • 30 分钟
   set -euo pipefail
 
-- **[setup-init](hooks/bash/setup-init.sh)** *intermediate* • 30 min
+- **[setup-init](hooks/bash/setup-init.sh)** *中级* • 30 分钟
   INPUT=$(cat)
 
-- **[smart-suggest](hooks/bash/smart-suggest.sh)** *intermediate* • 30 min
+- **[smart-suggest](hooks/bash/smart-suggest.sh)** *中级* • 30 分钟
   set -euo pipefail
 
-- **[subagent-stop](hooks/bash/subagent-stop.sh)** *intermediate* • 30 min
+- **[subagent-stop](hooks/bash/subagent-stop.sh)** *中级* • 30 分钟
   INPUT=$(cat)
 
-- **[test-on-change](hooks/bash/test-on-change.sh)** *intermediate* • 30 min
+- **[test-on-change](hooks/bash/test-on-change.sh)** *中级* • 30 分钟
   set -euo pipefail
 
-- **[tts-selective](hooks/bash/tts-selective.sh)** *intermediate* • 30 min
+- **[tts-selective](hooks/bash/tts-selective.sh)** *中级* • 30 分钟
   set -e
 
-- **[typecheck-on-save](hooks/bash/typecheck-on-save.sh)** *intermediate* • 30 min
+- **[typecheck-on-save](hooks/bash/typecheck-on-save.sh)** *中级* • 30 分钟
   set -euo pipefail
 
-- **[unicode-injection-scanner](hooks/bash/unicode-injection-scanner.sh)** *intermediate* • 30 min
+- **[unicode-injection-scanner](hooks/bash/unicode-injection-scanner.sh)** *中级* • 30 分钟
   set -euo pipefail
 
-- **[velocity-governor](hooks/bash/velocity-governor.sh)** *intermediate* • 30 min
+- **[velocity-governor](hooks/bash/velocity-governor.sh)** *中级* • 30 分钟
   set -euo pipefail
 
 
-### Workflows (3)
+### 工作流（3）
 
-- **[database-branch-setup](workflows/database-branch-setup.md)** *intermediate* • 30 min
-  Guide for isolated feature development using database branches with Neon or PlanetScale
+- **[database-branch-setup](workflows/database-branch-setup.md)** *中级* • 30 分钟
+  使用 Neon 或 PlanetScale 数据库分支进行隔离功能开发的指南
 
-- **[memory-stack-integration](workflows/memory-stack-integration.md)** *intermediate* • 30 min
-  5-day sprint example combining claude-mem, Serena, grepai and rg for auth refactoring
+- **[memory-stack-integration](workflows/memory-stack-integration.md)** *中级* • 30 分钟
+  结合 claude-mem、Serena、grepai 和 rg 进行认证重构的 5 天冲刺示例
 
-- **[remotion-quickstart](workflows/remotion-quickstart.md)** *intermediate* • 30 min
-  15-minute quickstart to create programmatic videos with Remotion and Claude Code
+- **[remotion-quickstart](workflows/remotion-quickstart.md)** *中级* • 30 分钟
+  使用 Remotion 和 Claude Code 创建程序化视频的 15 分钟快速入门
 
 
-### Scripts (2)
+### 脚本（2）
 
-- **[ai-usage-charter-template](scripts/ai-usage-charter-template.md)** *intermediate* • 30 min
-  > **Template** — Copy to `docs/ai-usage-charter.md` in your organization's docs repo.
+- **[ai-usage-charter-template](scripts/ai-usage-charter-template.md)** *中级* • 30 分钟
+  > **模板** — 复制到您组织文档仓库中的 `docs/ai-usage-charter.md`。
 
-- **[README](scripts/README.md)** *intermediate* • 30 min
-  Utility scripts for Claude Code power users: audits, health checks, and session management
+- **[README](scripts/README.md)** *中级* • 30 分钟
+  面向 Claude Code 高级用户的实用脚本：审计、健康检查和会话管理
 
 
 ---
 
-## By Domain
+## 按领域浏览
 
-### General (181)
+### 通用（181）
 
-- **README** (intermediate, 30 min)
-- **README** (intermediate, 30 min)
-- **README** (intermediate, 30 min)
-- **README** (intermediate, 30 min)
-- **README** (intermediate, 30 min)
-- **README** (intermediate, 30 min)
-- **README** (intermediate, 30 min)
-- **README** (intermediate, 30 min)
-- **README** (intermediate, 30 min)
-- **adr-writer** (intermediate, 30 min)
-- **ai-usage-charter-template** (intermediate, 30 min)
-- **analytics-agent** (intermediate, 30 min)
-- **anomaly-detector** (intermediate, 30 min)
-- **architecture-reviewer** (intermediate, 30 min)
-- **ast-grep-patterns** (intermediate, 30 min)
-- **audit-agents-skills** (intermediate, 30 min)
-- **audit-agents-skills** (intermediate, 30 min)
-- **audit-codebase** (intermediate, 30 min)
-- **auto-checkpoint** (intermediate, 30 min)
-- **auto-format** (intermediate, 30 min)
-- **auto-format** (intermediate, 30 min)
-- **auto-rename-session** (intermediate, 30 min)
-- **autoresearch** (intermediate, 30 min)
-- **before-after** (intermediate, 30 min)
-- **behavioral** (intermediate, 30 min)
-- **canary** (intermediate, 30 min)
-- **catchup** (intermediate, 30 min)
-- **ccboard** (intermediate, 30 min)
-- **ccboard-install** (intermediate, 30 min)
-- **ccboard-web** (intermediate, 30 min)
-- **changelog-parsing-rules** (intermediate, 30 min)
-- **changelog-template** (intermediate, 30 min)
-- **check-cache-bugs** (intermediate, 30 min)
-- **ci:all** (intermediate, 30 min)
-- **ci:pipeline** (intermediate, 30 min)
-- **ci:status** (intermediate, 30 min)
-- **ci:tests** (intermediate, 30 min)
-- **claudemd-scanner** (intermediate, 30 min)
-- **code-reviewer** (intermediate, 30 min)
-- **commit** (intermediate, 30 min)
-- **commit-categories** (intermediate, 30 min)
-- **content-transformation** (intermediate, 30 min)
-- **costs** (intermediate, 30 min)
-- **create-handoff** (intermediate, 30 min)
-- **creational** (intermediate, 30 min)
-- **cyber-defense-team** (intermediate, 30 min)
-- **dangerous-actions-blocker** (intermediate, 30 min)
-- **dashboard** (intermediate, 30 min)
-- **database-branch-setup** (intermediate, 30 min)
-- **design-patterns** (intermediate, 30 min)
-- **devops-sre** (intermediate, 30 min)
-- **diagnose** (intermediate, 30 min)
-- **eval-rules** (intermediate, 30 min)
-- **eval-skills** (intermediate, 30 min)
-- **explain** (intermediate, 30 min)
-- **feedback-draft** (intermediate, 30 min)
-- **file-guard** (intermediate, 30 min)
-- **generate-tests** (intermediate, 30 min)
-- **git-ai-archaeology** (intermediate, 30 min)
-- **git-worktree** (intermediate, 30 min)
-- **git-worktree-clean** (intermediate, 30 min)
-- **git-worktree-remove** (intermediate, 30 min)
-- **git-worktree-status** (intermediate, 30 min)
-- **governance-enforcement-hook** (intermediate, 30 min)
-- **guide-recap** (intermediate, 30 min)
-- **identity-reinjection** (intermediate, 30 min)
-- **implementer** (intermediate, 30 min)
-- **integration-reviewer** (intermediate, 30 min)
-- **investigate** (intermediate, 30 min)
-- **issue-comment** (intermediate, 30 min)
-- **issue-triage** (intermediate, 30 min)
-- **kimi-prompt-template** (intermediate, 30 min)
-- **land-and-deploy** (intermediate, 30 min)
-- **landing-page-generator** (intermediate, 30 min)
-- **landing-pattern** (intermediate, 30 min)
-- **learn-alternatives** (intermediate, 30 min)
-- **learn-quiz** (intermediate, 30 min)
-- **learn-teach** (intermediate, 30 min)
-- **learning-capture** (intermediate, 30 min)
-- **linkedin-template** (intermediate, 30 min)
-- **log-ingestor** (intermediate, 30 min)
-- **loop-monitor** (intermediate, 30 min)
-- **mcp-config-integrity** (intermediate, 30 min)
-- **mcp-integration-reference** (intermediate, 30 min)
-- **mcp-status** (intermediate, 30 min)
-- **memory-stack-integration** (intermediate, 30 min)
-- **methodology-advisor** (intermediate, 30 min)
-- **newsletter-template** (intermediate, 30 min)
-- **notification** (intermediate, 30 min)
-- **optimize** (intermediate, 30 min)
-- **output-evaluator** (intermediate, 30 min)
-- **output-secrets-scanner** (intermediate, 30 min)
-- **output-validator** (intermediate, 30 min)
-- **pattern-evaluation** (intermediate, 30 min)
-- **pdf-generator** (intermediate, 30 min)
-- **permission-request** (intermediate, 30 min)
-- **plan-ceo-review** (intermediate, 30 min)
-- **plan-challenger** (intermediate, 30 min)
-- **plan-eng-review** (intermediate, 30 min)
-- **plan-execute** (intermediate, 30 min)
-- **plan-start** (intermediate, 30 min)
-- **plan-validate** (intermediate, 30 min)
-- **planner** (intermediate, 30 min)
-- **planning-coordinator** (intermediate, 30 min)
-- **pr** (intermediate, 30 min)
-- **pr-triage** (intermediate, 30 min)
-- **pre-commit-evaluator** (intermediate, 30 min)
-- **pre-commit-secrets** (intermediate, 30 min)
-- **privacy-warning** (intermediate, 30 min)
-- **prompt-injection-detector** (intermediate, 30 min)
-- **qa** (intermediate, 30 min)
-- **recipe-template** (intermediate, 30 min)
-- **refactor** (intermediate, 30 min)
-- **refactoring-specialist** (intermediate, 30 min)
-- **release-notes** (intermediate, 30 min)
-- **release-notes-generator** (intermediate, 30 min)
-- **remotion-quickstart** (intermediate, 30 min)
-- **repo-integrity-scanner** (intermediate, 30 min)
-- **report-template** (intermediate, 30 min)
-- **resume-handoff** (intermediate, 30 min)
-- **review-comment** (intermediate, 30 min)
-- **review-plan** (intermediate, 30 min)
-- **review-pr** (intermediate, 30 min)
-- **risk-classifier** (intermediate, 30 min)
-- **routines-discover** (intermediate, 30 min)
-- **rtk-auto-wrapper** (intermediate, 30 min)
-- **rtk-baseline** (intermediate, 30 min)
-- **rtk-optimizer** (intermediate, 30 min)
-- **sandbox-status** (intermediate, 30 min)
-- **sandbox-validation** (intermediate, 30 min)
-- **scaffold** (intermediate, 30 min)
-- **security** (intermediate, 30 min)
-- **security-audit** (intermediate, 30 min)
-- **security-auditor** (intermediate, 30 min)
-- **security-check** (intermediate, 30 min)
-- **security-check** (intermediate, 30 min)
-- **security-check** (intermediate, 30 min)
-- **security-checklist** (intermediate, 30 min)
-- **security-gate** (intermediate, 30 min)
-- **security-patcher** (intermediate, 30 min)
-- **sentry-mcp** (intermediate, 30 min)
-- **session-logger** (intermediate, 30 min)
-- **session-save** (intermediate, 30 min)
-- **session-summary** (intermediate, 30 min)
-- **session-summary-config** (intermediate, 30 min)
-- **sessions** (intermediate, 30 min)
-- **setup-init** (intermediate, 30 min)
-- **ship** (intermediate, 30 min)
-- **skill-creator** (intermediate, 30 min)
-- **slack-template** (intermediate, 30 min)
-- **slack-template** (intermediate, 30 min)
-- **smart-explore** (intermediate, 30 min)
-- **smart-suggest** (intermediate, 30 min)
-- **sonarqube** (intermediate, 30 min)
-- **structural** (intermediate, 30 min)
-- **subagent-stop** (intermediate, 30 min)
-- **talk-pipeline** (intermediate, 30 min)
-- **talk-stage1-extract** (intermediate, 30 min)
-- **talk-stage2-research** (intermediate, 30 min)
-- **talk-stage3-concepts** (intermediate, 30 min)
-- **talk-stage4-position** (intermediate, 30 min)
-- **talk-stage5-script** (intermediate, 30 min)
-- **talk-stage6-revision** (intermediate, 30 min)
-- **tdd-workflow** (intermediate, 30 min)
-- **tech-to-product-mappings** (intermediate, 30 min)
-- **test-on-change** (intermediate, 30 min)
-- **test-writer** (intermediate, 30 min)
-- **threat-reporter** (intermediate, 30 min)
-- **token-audit** (intermediate, 30 min)
-- **tone-guidelines** (intermediate, 30 min)
-- **tts-selective** (intermediate, 30 min)
-- **twitter-template** (intermediate, 30 min)
-- **typecheck-on-save** (intermediate, 30 min)
-- **unicode-injection-scanner** (intermediate, 30 min)
-- **update-handoff** (intermediate, 30 min)
-- **update-threat-db** (intermediate, 30 min)
-- **validate-changes** (intermediate, 30 min)
-- **velocity-governor** (intermediate, 30 min)
-- **version-output** (intermediate, 30 min)
-- **voice-refine** (intermediate, 30 min)
-- **week-output** (intermediate, 30 min)
-
----
-
-## For Beginners
-
-Templates recommended for first-time users:
-
-No templates explicitly marked as beginner-friendly yet.
+- **README** （中级，30 分钟）
+- **README** （中级，30 分钟）
+- **README** （中级，30 分钟）
+- **README** （中级，30 分钟）
+- **README** （中级，30 分钟）
+- **README** （中级，30 分钟）
+- **README** （中级，30 分钟）
+- **README** （中级，30 分钟）
+- **README** （中级，30 分钟）
+- **adr-writer** （中级，30 分钟）
+- **ai-usage-charter-template** （中级，30 分钟）
+- **analytics-agent** （中级，30 分钟）
+- **anomaly-detector** （中级，30 分钟）
+- **architecture-reviewer** （中级，30 分钟）
+- **ast-grep-patterns** （中级，30 分钟）
+- **audit-agents-skills** （中级，30 分钟）
+- **audit-agents-skills** （中级，30 分钟）
+- **audit-codebase** （中级，30 分钟）
+- **auto-checkpoint** （中级，30 分钟）
+- **auto-format** （中级，30 分钟）
+- **auto-format** （中级，30 分钟）
+- **auto-rename-session** （中级，30 分钟）
+- **autoresearch** （中级，30 分钟）
+- **before-after** （中级，30 分钟）
+- **behavioral** （中级，30 分钟）
+- **canary** （中级，30 分钟）
+- **catchup** （中级，30 分钟）
+- **ccboard** （中级，30 分钟）
+- **ccboard-install** （中级，30 分钟）
+- **ccboard-web** （中级，30 分钟）
+- **changelog-parsing-rules** （中级，30 分钟）
+- **changelog-template** （中级，30 分钟）
+- **check-cache-bugs** （中级，30 分钟）
+- **ci:all** （中级，30 分钟）
+- **ci:pipeline** （中级，30 分钟）
+- **ci:status** （中级，30 分钟）
+- **ci:tests** （中级，30 分钟）
+- **claudemd-scanner** （中级，30 分钟）
+- **code-reviewer** （中级，30 分钟）
+- **commit** （中级，30 分钟）
+- **commit-categories** （中级，30 分钟）
+- **content-transformation** （中级，30 分钟）
+- **costs** （中级，30 分钟）
+- **create-handoff** （中级，30 分钟）
+- **creational** （中级，30 分钟）
+- **cyber-defense-team** （中级，30 分钟）
+- **dangerous-actions-blocker** （中级，30 分钟）
+- **dashboard** （中级，30 分钟）
+- **database-branch-setup** （中级，30 分钟）
+- **design-patterns** （中级，30 分钟）
+- **devops-sre** （中级，30 分钟）
+- **diagnose** （中级，30 分钟）
+- **eval-rules** （中级，30 分钟）
+- **eval-skills** （中级，30 分钟）
+- **explain** （中级，30 分钟）
+- **feedback-draft** （中级，30 分钟）
+- **file-guard** （中级，30 分钟）
+- **generate-tests** （中级，30 分钟）
+- **git-ai-archaeology** （中级，30 分钟）
+- **git-worktree** （中级，30 分钟）
+- **git-worktree-clean** （中级，30 分钟）
+- **git-worktree-remove** （中级，30 分钟）
+- **git-worktree-status** （中级，30 分钟）
+- **governance-enforcement-hook** （中级，30 分钟）
+- **guide-recap** （中级，30 分钟）
+- **identity-reinjection** （中级，30 分钟）
+- **implementer** （中级，30 分钟）
+- **integration-reviewer** （中级，30 分钟）
+- **investigate** （中级，30 分钟）
+- **issue-comment** （中级，30 分钟）
+- **issue-triage** （中级，30 分钟）
+- **kimi-prompt-template** （中级，30 分钟）
+- **land-and-deploy** （中级，30 分钟）
+- **landing-page-generator** （中级，30 分钟）
+- **landing-pattern** （中级，30 分钟）
+- **learn-alternatives** （中级，30 分钟）
+- **learn-quiz** （中级，30 分钟）
+- **learn-teach** （中级，30 分钟）
+- **learning-capture** （中级，30 分钟）
+- **linkedin-template** （中级，30 分钟）
+- **log-ingestor** （中级，30 分钟）
+- **loop-monitor** （中级，30 分钟）
+- **mcp-config-integrity** （中级，30 分钟）
+- **mcp-integration-reference** （中级，30 分钟）
+- **mcp-status** （中级，30 分钟）
+- **memory-stack-integration** （中级，30 分钟）
+- **methodology-advisor** （中级，30 分钟）
+- **newsletter-template** （中级，30 分钟）
+- **notification** （中级，30 分钟）
+- **optimize** （中级，30 分钟）
+- **output-evaluator** （中级，30 分钟）
+- **output-secrets-scanner** （中级，30 分钟）
+- **output-validator** （中级，30 分钟）
+- **pattern-evaluation** （中级，30 分钟）
+- **pdf-generator** （中级，30 分钟）
+- **permission-request** （中级，30 分钟）
+- **plan-ceo-review** （中级，30 分钟）
+- **plan-challenger** （中级，30 分钟）
+- **plan-eng-review** （中级，30 分钟）
+- **plan-execute** （中级，30 分钟）
+- **plan-start** （中级，30 分钟）
+- **plan-validate** （中级，30 分钟）
+- **planner** （中级，30 分钟）
+- **planning-coordinator** （中级，30 分钟）
+- **pr** （中级，30 分钟）
+- **pr-triage** （中级，30 分钟）
+- **pre-commit-evaluator** （中级，30 分钟）
+- **pre-commit-secrets** （中级，30 分钟）
+- **privacy-warning** （中级，30 分钟）
+- **prompt-injection-detector** （中级，30 分钟）
+- **qa** （中级，30 分钟）
+- **recipe-template** （中级，30 分钟）
+- **refactor** （中级，30 分钟）
+- **refactoring-specialist** （中级，30 分钟）
+- **release-notes** （中级，30 分钟）
+- **release-notes-generator** （中级，30 分钟）
+- **remotion-quickstart** （中级，30 分钟）
+- **repo-integrity-scanner** （中级，30 分钟）
+- **report-template** （中级，30 分钟）
+- **resume-handoff** （中级，30 分钟）
+- **review-comment** （中级，30 分钟）
+- **review-plan** （中级，30 分钟）
+- **review-pr** （中级，30 分钟）
+- **risk-classifier** （中级，30 分钟）
+- **routines-discover** （中级，30 分钟）
+- **rtk-auto-wrapper** （中级，30 分钟）
+- **rtk-baseline** （中级，30 分钟）
+- **rtk-optimizer** （中级，30 分钟）
+- **sandbox-status** （中级，30 分钟）
+- **sandbox-validation** （中级，30 分钟）
+- **scaffold** （中级，30 分钟）
+- **security** （中级，30 分钟）
+- **security-audit** （中级，30 分钟）
+- **security-auditor** （中级，30 分钟）
+- **security-check** （中级，30 分钟）
+- **security-check** （中级，30 分钟）
+- **security-check** （中级，30 分钟）
+- **security-checklist** （中级，30 分钟）
+- **security-gate** （中级，30 分钟）
+- **security-patcher** （中级，30 分钟）
+- **sentry-mcp** （中级，30 分钟）
+- **session-logger** （中级，30 分钟）
+- **session-save** （中级，30 分钟）
+- **session-summary** （中级，30 分钟）
+- **session-summary-config** （中级，30 分钟）
+- **sessions** （中级，30 分钟）
+- **setup-init** （中级，30 分钟）
+- **ship** （中级，30 分钟）
+- **skill-creator** （中级，30 分钟）
+- **slack-template** （中级，30 分钟）
+- **slack-template** （中级，30 分钟）
+- **smart-explore** （中级，30 分钟）
+- **smart-suggest** （中级，30 分钟）
+- **sonarqube** （中级，30 分钟）
+- **structural** （中级，30 分钟）
+- **subagent-stop** （中级，30 分钟）
+- **talk-pipeline** （中级，30 分钟）
+- **talk-stage1-extract** （中级，30 分钟）
+- **talk-stage2-research** （中级，30 分钟）
+- **talk-stage3-concepts** （中级，30 分钟）
+- **talk-stage4-position** （中级，30 分钟）
+- **talk-stage5-script** （中级，30 分钟）
+- **talk-stage6-revision** （中级，30 分钟）
+- **tdd-workflow** （中级，30 分钟）
+- **tech-to-product-mappings** （中级，30 分钟）
+- **test-on-change** （中级，30 分钟）
+- **test-writer** （中级，30 分钟）
+- **threat-reporter** （中级，30 分钟）
+- **token-audit** （中级，30 分钟）
+- **tone-guidelines** （中级，30 分钟）
+- **tts-selective** （中级，30 分钟）
+- **twitter-template** （中级，30 分钟）
+- **typecheck-on-save** （中级，30 分钟）
+- **unicode-injection-scanner** （中级，30 分钟）
+- **update-handoff** （中级，30 分钟）
+- **update-threat-db** （中级，30 分钟）
+- **validate-changes** （中级，30 分钟）
+- **velocity-governor** （中级，30 分钟）
+- **version-output** （中级，30 分钟）
+- **voice-refine** （中级，30 分钟）
+- **week-output** （中级，30 分钟）
 
 ---
 
-## Metadata Reference
+## 初学者入门
 
-Templates can include the following metadata in YAML frontmatter:
+推荐首次使用者参考的模板：
+
+暂无明确标注为初学者友好的模板。
+
+---
+
+## 元数据参考
+
+模板可在 YAML frontmatter 中包含以下元数据：
 
 ```yaml
 

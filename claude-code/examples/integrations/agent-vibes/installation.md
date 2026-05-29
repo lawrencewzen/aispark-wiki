@@ -1,115 +1,115 @@
 > 📚 **AI Spark Wiki** · Claude Code 知识库
 
 ---
-title: "Agent Vibes TTS - Complete Installation Guide"
-description: "Step-by-step installation guide for Agent Vibes text-to-speech integration on macOS"
+title: "Agent Vibes TTS - 完整安装指南"
+description: "在 macOS 上安装 Agent Vibes 文字转语音集成的分步安装指南"
 tags: [guide, tts, integration]
 ---
 
-# Agent Vibes TTS - Complete Installation Guide
+# Agent Vibes TTS - 完整安装指南
 
-**Time Required**: ~18 minutes
-**Difficulty**: Intermediate
-**System**: macOS (Apple Silicon or Intel)
+**所需时间**：约 18 分钟
+**难度**：中级
+**系统**：macOS（Apple Silicon 或 Intel）
 
 ---
 
-## Prerequisites Check
+## 前提条件检查
 
-Before starting, verify you have:
+开始前，请确认以下环境已就绪：
 
-| Requirement | Check Command | Min Version |
-|-------------|---------------|-------------|
+| 要求 | 检查命令 | 最低版本 |
+|------|----------|----------|
 | **macOS** | `sw_vers` | 10.15+ |
-| **Homebrew** | `brew --version` | Any recent |
+| **Homebrew** | `brew --version` | 任意近期版本 |
 | **Node.js** | `node --version` | 16.0.0+ |
 | **Python** | `python3 --version` | 3.10.0+ |
-| **Git** | `git --version` | Any recent |
+| **Git** | `git --version` | 任意近期版本 |
 
 ---
 
-## Installation Overview (5 Phases)
+## 安装概览（5 个阶段）
 
 ```
-Phase 1: System Dependencies     (~5 min)
+阶段 1：系统依赖        (~5 分钟)
     ├─ Bash 5.x
     ├─ sox, ffmpeg, util-linux
     └─ espeak-ng
 
-Phase 2: Agent Vibes Install     (~5 min)
-    ├─ Interactive installer
-    ├─ Provider selection (Piper)
-    ├─ Voice selection
-    └─ Configuration
+阶段 2：Agent Vibes 安装  (~5 分钟)
+    ├─ 交互式安装器
+    ├─ 提供商选择（Piper）
+    ├─ 语音选择
+    └─ 配置
 
-Phase 3: Piper TTS + Voices       (~5 min)
-    ├─ Piper via pipx
-    ├─ Download FR voices (4)
-    └─ Download EN voices (12)
+阶段 3：Piper TTS + 语音   (~5 分钟)
+    ├─ 通过 pipx 安装 Piper
+    ├─ 下载法语语音（4 个）
+    └─ 下载英语语音（12 个）
 
-Phase 4: Configuration            (~2 min)
-    ├─ Set provider: piper
-    ├─ Set voice: fr_FR-tom-medium
-    └─ Test audio
+阶段 4：配置             (~2 分钟)
+    ├─ 设置提供商：piper
+    ├─ 设置语音：fr_FR-tom-medium
+    └─ 测试音频
 
-Phase 5: Verification             (~1 min)
-    ├─ Test in Claude Code
-    └─ Verify hooks active
+阶段 5：验证             (~1 分钟)
+    ├─ 在 Claude Code 中测试
+    └─ 确认钩子已激活
 ```
 
 ---
 
-## Phase 1: System Dependencies
+## 阶段 1：系统依赖
 
-### Step 1.1: Install Bash 5.x
+### 步骤 1.1：安装 Bash 5.x
 
-Agent Vibes requires Bash 5.x (macOS ships with 3.2).
+Agent Vibes 需要 Bash 5.x（macOS 自带的是 3.2 版本）。
 
 ```bash
-# Install Bash 5.x
+# 安装 Bash 5.x
 brew install bash
 
-# Verify installation
+# 验证安装
 /opt/homebrew/bin/bash --version
-# Expected: GNU bash, version 5.x
+# 预期输出：GNU bash, version 5.x
 ```
 
-**Why**: Agent Vibes scripts use Bash 5.x features (associative arrays, etc.)
+**原因**：Agent Vibes 脚本使用了 Bash 5.x 的特性（关联数组等）。
 
-### Step 1.2: Install Audio Tools
+### 步骤 1.2：安装音频工具
 
 ```bash
-# Install audio processing tools
+# 安装音频处理工具
 brew install sox ffmpeg util-linux
 
-# Verify sox
+# 验证 sox
 sox --version
 
-# Verify ffmpeg
+# 验证 ffmpeg
 ffmpeg -version
 
-# Verify flock (from util-linux)
+# 验证 flock（来自 util-linux）
 /opt/homebrew/opt/util-linux/bin/flock --version
 ```
 
-**Note**: `util-linux` is "keg-only" (not symlinked), but Agent Vibes finds it automatically.
+**注意**：`util-linux` 是"keg-only"模式（未创建符号链接），但 Agent Vibes 会自动找到它。
 
-### Step 1.3: Install espeak-ng (Piper Dependency)
+### 步骤 1.3：安装 espeak-ng（Piper 依赖）
 
 ```bash
-# Install espeak-ng
+# 安装 espeak-ng
 brew install espeak-ng
 
-# Verify installation
+# 验证安装
 espeak-ng --version
 ```
 
-**Why**: Piper TTS requires `libespeak-ng` library for phoneme processing.
+**原因**：Piper TTS 需要 `libespeak-ng` 库来处理音素。
 
-### Checkpoint 1: Dependencies Installed ✅
+### 检查点 1：依赖安装完成 ✅
 
 ```bash
-# Verify all dependencies
+# 验证所有依赖
 command -v /opt/homebrew/bin/bash && \
 command -v sox && \
 command -v ffmpeg && \
@@ -119,53 +119,53 @@ echo "✅ All dependencies installed"
 
 ---
 
-## Phase 2: Agent Vibes Installation
+## 阶段 2：Agent Vibes 安装
 
-### Step 2.1: Launch Interactive Installer
+### 步骤 2.1：启动交互式安装器
 
 ```bash
-# Navigate to your Claude Code project
+# 进入你的 Claude Code 项目目录
 cd /path/to/your/project
 
-# Launch installer (interactive, 4 pages)
+# 启动安装器（交互式，共 4 页）
 npx agentvibes install
 ```
 
-**Expected**: ASCII art banner + welcome screen
+**预期效果**：显示 ASCII 艺术横幅和欢迎界面。
 
-### Step 2.2: Navigate Installation Pages
+### 步骤 2.2：浏览安装页面
 
-**Page 1/4: System Dependencies**
-- Review detected dependencies
-- All should show `✓` (green checkmark)
-- Click **"Next →"**
+**第 1/4 页：系统依赖**
+- 查看检测到的依赖
+- 所有项目应显示 `✓`（绿色勾选）
+- 点击 **"Next →"**
 
-**Page 2/4: Provider Selection**
-- Options: `macOS Say`, `Piper TTS`, `Termux SSH`
-- **Select**: `Piper TTS` (best quality, offline)
-- Click **"Next →"**
+**第 2/4 页：提供商选择**
+- 选项：`macOS Say`、`Piper TTS`、`Termux SSH`
+- **选择**：`Piper TTS`（质量最佳，支持离线）
+- 点击 **"Next →"**
 
-**Page 3/4: Voice Selection**
-- **For French**: Select `fr_FR-tom-medium` (male) or `fr_FR-siwis-medium` (female)
-- **For English**: Select `en_US-ryan-high` (best quality)
-- Click **"Next →"**
+**第 3/4 页：语音选择**
+- **法语**：选择 `fr_FR-tom-medium`（男声）或 `fr_FR-siwis-medium`（女声）
+- **英语**：选择 `en_US-ryan-high`（最高质量）
+- 点击 **"Next →"**
 
-**Page 4/4: Audio Settings**
-- **Reverb**: Select `Light` (recommended)
-- **Background Music**: Select `Disabled` (avoid distraction)
-- **Verbosity**: Select `Low` (less chatty)
-- Click **"Start Installation"**
+**第 4/4 页：音频设置**
+- **混响**：选择 `Light`（推荐）
+- **背景音乐**：选择 `Disabled`（避免分心）
+- **详细程度**：选择 `Low`（减少语音提示）
+- 点击 **"Start Installation"**
 
-### Step 2.3: Installation Progress
+### 步骤 2.3：安装进度
 
-Agent Vibes will install:
-- 34 slash commands
-- TTS scripts (40 bash scripts)
-- Personality templates
-- 16 background music tracks
-- 7 config files
+Agent Vibes 将安装以下内容：
+- 34 个 slash 命令
+- TTS 脚本（40 个 Bash 脚本）
+- 个性模板
+- 16 个背景音乐曲目
+- 7 个配置文件
 
-**Expected output**:
+**预期输出**：
 ```
 ✔ Installed 34 slash commands!
 ✔ Installed TTS scripts!
@@ -176,46 +176,46 @@ Agent Vibes will install:
 ✅ AgentVibes is Ready!
 ```
 
-### Checkpoint 2: Agent Vibes Installed ✅
+### 检查点 2：Agent Vibes 安装完成 ✅
 
 ```bash
-# Verify installation
+# 验证安装
 ls -la .claude/hooks/play-tts.sh
 ls -la .claude/commands/agent-vibes/
 ls -la .claude/audio/tracks/
 
-# Check provider config
+# 检查提供商配置
 cat .claude/tts-provider.txt
-# Expected: "macos" or "piper"
+# 预期："macos" 或 "piper"
 ```
 
 ---
 
-## Phase 3: Piper TTS + Voice Models
+## 阶段 3：Piper TTS + 语音模型
 
-### Step 3.1: Install Piper TTS via pipx
+### 步骤 3.1：通过 pipx 安装 Piper TTS
 
-If you chose Piper provider, Agent Vibes will attempt to install it. If it fails, manual installation:
+如果选择了 Piper 提供商，Agent Vibes 会尝试自动安装。若安装失败，请手动安装：
 
 ```bash
-# Install Piper via pipx (Python package manager)
+# 通过 pipx 安装 Piper（Python 包管理器）
 pipx install piper-tts
 
-# Verify installation
+# 验证安装
 piper --help
 ```
 
-**Common Issue**: Precompiled binary fails with `libespeak-ng.1.dylib` error.
+**常见问题**：预编译二进制文件报 `libespeak-ng.1.dylib` 错误。
 
-**Solution**: `pipx install piper-tts` works reliably (Python version, not binary).
+**解决方案**：`pipx install piper-tts` 更可靠（Python 版本，非二进制版本）。
 
-### Step 3.2: Download French Voices
+### 步骤 3.2：下载法语语音
 
 ```bash
-# Navigate to voice storage
+# 进入语音存储目录
 cd ~/.claude/piper-voices
 
-# Download 4 French voice models
+# 下载 4 个法语语音模型
 curl -L -o fr_FR-tom-medium.onnx \
   "https://huggingface.co/rhasspy/piper-voices/resolve/main/fr/fr_FR/tom/medium/fr_FR-tom-medium.onnx"
 curl -L -o fr_FR-tom-medium.onnx.json \
@@ -237,26 +237,26 @@ curl -L -o fr_FR-mls-medium.onnx.json \
   "https://huggingface.co/rhasspy/piper-voices/resolve/main/fr/fr_FR/mls/medium/fr_FR-mls-medium.onnx.json"
 ```
 
-**Size**: ~60-73MB per voice (4 voices = ~260MB total)
+**大小**：每个语音约 60-73MB（4 个语音共约 260MB）
 
-### Step 3.3: Download English Voices (Optional)
+### 步骤 3.3：下载英语语音（可选）
 
-Agent Vibes auto-downloads 12 English voices during installation. Verify:
+Agent Vibes 在安装过程中会自动下载 12 个英语语音。验证：
 
 ```bash
 ls ~/.claude/piper-voices/en_US-*.onnx
 ```
 
-**Expected**: 12 files (ryan, amy, lessac, bryce, etc.)
+**预期**：12 个文件（ryan、amy、lessac、bryce 等）
 
-### Checkpoint 3: Voices Downloaded ✅
+### 检查点 3：语音下载完成 ✅
 
 ```bash
-# Count voices
+# 统计语音数量
 ls ~/.claude/piper-voices/*.onnx | wc -l
-# Expected: 15+ files (12 EN + 4 FR minimum)
+# 预期：15 个以上文件（最少 12 个英语 + 4 个法语）
 
-# Test French voice manually
+# 手动测试法语语音
 echo "Bonjour, je suis Claude et je parle français" | \
   piper -m ~/.claude/piper-voices/fr_FR-tom-medium.onnx \
   --output-file /tmp/test-fr.wav && afplay /tmp/test-fr.wav
@@ -264,45 +264,45 @@ echo "Bonjour, je suis Claude et je parle français" | \
 
 ---
 
-## Phase 4: Configuration
+## 阶段 4：配置
 
-### Step 4.1: Set Piper as Provider
+### 步骤 4.1：设置 Piper 为提供商
 
 ```bash
-# Switch to Piper TTS (if not already set)
+# 切换至 Piper TTS（若尚未设置）
 echo "piper" > .claude/tts-provider.txt
 
-# Verify
+# 验证
 cat .claude/tts-provider.txt
-# Expected: "piper"
+# 预期："piper"
 ```
 
-### Step 4.2: Set French Male Voice
+### 步骤 4.2：设置法语男声
 
 ```bash
-# Set default voice
+# 设置默认语音
 echo "fr_FR-tom-medium" > .claude/tts-voice.txt
 
-# Verify
+# 验证
 cat .claude/tts-voice.txt
-# Expected: "fr_FR-tom-medium"
+# 预期："fr_FR-tom-medium"
 ```
 
-### Step 4.3: Test Audio Generation
+### 步骤 4.3：测试音频生成
 
 ```bash
-# Test TTS pipeline manually
+# 手动测试 TTS 管道
 ~/.claude/hooks/play-tts.sh "Ceci est un test audio"
 ```
 
-**Expected**: Audio plays with French male voice.
+**预期效果**：以法语男声播放音频。
 
-**Troubleshooting**: If no audio, see [Troubleshooting Guide](./troubleshooting.md#no-audio).
+**排错**：若无声音，请参阅[排错指南](./troubleshooting.md#no-audio)。
 
-### Checkpoint 4: Configuration Complete ✅
+### 检查点 4：配置完成 ✅
 
 ```bash
-# Verify config files
+# 验证配置文件
 test -f .claude/tts-provider.txt && \
 test -f .claude/tts-voice.txt && \
 test -f .claude/hooks/play-tts.sh && \
@@ -311,46 +311,46 @@ echo "✅ Configuration complete"
 
 ---
 
-## Phase 5: Verification in Claude Code
+## 阶段 5：在 Claude Code 中验证
 
-### Step 5.1: Launch Claude Code
+### 步骤 5.1：启动 Claude Code
 
 ```bash
-# Start Claude Code session
+# 启动 Claude Code 会话
 claude
 ```
 
-### Step 5.2: Test TTS Commands
+### 步骤 5.2：测试 TTS 命令
 
 ```bash
-# In Claude, run:
+# 在 Claude 中运行：
 /agent-vibes:whoami
-# Expected: Shows current voice and provider
+# 预期：显示当前语音和提供商
 
 /agent-vibes:list
-# Expected: Lists all 15+ voices
+# 预期：列出所有 15 个以上语音
 
-# Test TTS with simple request
+# 用简单请求测试 TTS
 > "Dis-moi bonjour en français"
-# Expected: Audio response in French
+# 预期：以法语播放音频回复
 ```
 
-### Step 5.3: Verify Hooks Active
+### 步骤 5.3：验证钩子已激活
 
 ```bash
-# Exit Claude, check hook was triggered
+# 退出 Claude，检查钩子是否已触发
 ls -la /tmp/tts-*.wav
-# Expected: Temporary audio files
+# 预期：临时音频文件
 
-# Check last played audio
+# 检查最后播放的音频
 ls -la ~/.claude/tts-last-played.wav
-# Expected: File exists
+# 预期：文件存在
 ```
 
-### Checkpoint 5: Verification Complete ✅
+### 检查点 5：验证完成 ✅
 
 ```bash
-# Final verification
+# 最终验证
 cat .claude/tts-provider.txt && \
 cat .claude/tts-voice.txt && \
 piper --help > /dev/null 2>&1 && \
@@ -360,101 +360,101 @@ echo "✅ Installation successful!"
 
 ---
 
-## Post-Installation Configuration
+## 安装后配置
 
-### Reduce Verbosity (Recommended)
+### 降低详细程度（推荐）
 
 ```bash
-# In Claude Code
+# 在 Claude Code 中执行
 /agent-vibes:verbosity low
 ```
 
-**Why**: Reduces audio narration frequency, less distracting.
+**原因**：减少音频提示频率，降低干扰。
 
-### Hide 34 Commands (Optional)
+### 隐藏 34 个命令（可选）
 
 ```bash
-# In Claude Code
+# 在 Claude Code 中执行
 /agent-vibes:hide
 ```
 
-**Why**: Declutters command palette. Use `/agent-vibes:show` to unhide.
+**原因**：整理命令面板。使用 `/agent-vibes:show` 可重新显示。
 
-### Disable Background Music
+### 关闭背景音乐
 
 ```bash
-# In Claude Code
+# 在 Claude Code 中执行
 /agent-vibes:background-music off
 ```
 
-**Why**: Background music can be distracting during focus work.
+**原因**：背景音乐在专注工作时可能造成干扰。
 
-### Set Project Mute (Optional)
+### 设置项目静音（可选）
 
 ```bash
-# Mute TTS for this project only
+# 仅对当前项目静音 TTS
 touch .claude/agentvibes-muted
 ```
 
-**Why**: Some projects don't need audio (e.g., documentation-only repos).
+**原因**：某些项目不需要音频（例如纯文档仓库）。
 
 ---
 
-## Performance Benchmarks
+## 性能基准测试
 
-**System**: M1 MacBook Pro, 16GB RAM, macOS Sequoia 24.6.0
+**测试系统**：M1 MacBook Pro，16GB RAM，macOS Sequoia 24.6.0
 
-| Metric | Piper Medium | Piper High | macOS Say |
-|--------|--------------|------------|-----------|
-| **Audio Generation** | ~200ms | ~400ms | Instant |
-| **Total Latency** | ~280ms | ~480ms | ~50ms |
-| **RAM Usage** | ~50MB | ~70MB | ~10MB |
-| **CPU Burst** | 80% (200ms) | 90% (400ms) | 5% (50ms) |
-| **Voice Quality** | ⭐️⭐️⭐️⭐️ | ⭐️⭐️⭐️⭐️⭐️ | ⭐️⭐️⭐️ |
-| **Offline** | ✅ | ✅ | ✅ |
+| 指标 | Piper Medium | Piper High | macOS Say |
+|------|-------------|------------|-----------|
+| **音频生成** | ~200ms | ~400ms | 即时 |
+| **总延迟** | ~280ms | ~480ms | ~50ms |
+| **内存占用** | ~50MB | ~70MB | ~10MB |
+| **CPU 峰值** | 80%（200ms） | 90%（400ms） | 5%（50ms） |
+| **语音质量** | ⭐️⭐️⭐️⭐️ | ⭐️⭐️⭐️⭐️⭐️ | ⭐️⭐️⭐️ |
+| **离线支持** | ✅ | ✅ | ✅ |
 
-**Recommendation**: Piper Medium = best quality/speed trade-off.
+**推荐**：Piper Medium = 质量与速度的最佳平衡。
 
 ---
 
-## Disk Usage
+## 磁盘占用
 
-| Component | Size | Location |
-|-----------|------|----------|
+| 组件 | 大小 | 位置 |
+|------|------|------|
 | **Piper TTS** | ~5MB | `~/.local/pipx/venvs/piper-tts/` |
-| **Voice Models** | ~1GB | `~/.claude/piper-voices/` (15 voices × 60MB) |
-| **Background Music** | ~300MB | `.claude/audio/tracks/` (16 tracks) |
-| **Scripts** | ~2MB | `.claude/hooks/` (40 bash scripts) |
-| **Total** | **~1.3GB** | - |
+| **语音模型** | ~1GB | `~/.claude/piper-voices/`（15 个语音 × 60MB） |
+| **背景音乐** | ~300MB | `.claude/audio/tracks/`（16 首曲目） |
+| **脚本** | ~2MB | `.claude/hooks/`（40 个 Bash 脚本） |
+| **合计** | **~1.3GB** | - |
 
-**Cleanup Tip**: Delete unused voices to save space.
+**清理建议**：删除不用的语音以节省空间。
 
 ---
 
-## Uninstall Instructions
+## 卸载说明
 
-### Automated Uninstall
+### 自动卸载
 
 ```bash
-# Uninstall Agent Vibes completely
+# 完全卸载 Agent Vibes
 npx agentvibes uninstall --yes
 ```
 
-### Manual Cleanup
+### 手动清理
 
 ```bash
-# Remove Agent Vibes files
+# 删除 Agent Vibes 文件
 rm -rf .claude/hooks/*vibes*
 rm -rf .claude/commands/agent-vibes/
 rm -rf .claude/audio/
 
-# Remove Piper TTS
+# 卸载 Piper TTS
 pipx uninstall piper-tts
 
-# Remove voice models
+# 删除语音模型
 rm -rf ~/.claude/piper-voices/
 
-# Remove config files
+# 删除配置文件
 rm .claude/tts-provider.txt
 rm .claude/tts-voice.txt
 rm .claude/agentvibes-muted 2>/dev/null
@@ -463,90 +463,90 @@ rm ~/.agentvibes-muted 2>/dev/null
 
 ---
 
-## Common Installation Issues
+## 常见安装问题
 
-### Issue 1: `libespeak-ng.1.dylib` Not Found
+### 问题 1：找不到 `libespeak-ng.1.dylib`
 
-**Symptom**:
+**症状**：
 ```
 dyld[xxx]: Library not loaded: @rpath/libespeak-ng.1.dylib
 ```
 
-**Solution**:
+**解决方案**：
 ```bash
-# Install espeak-ng
+# 安装 espeak-ng
 brew install espeak-ng
 
-# Reinstall Piper via pipx (not binary)
+# 通过 pipx 重新安装 Piper（而非二进制版本）
 pipx uninstall piper-tts
 pipx install piper-tts
 ```
 
-### Issue 2: `flock` Warning (Optional Tool)
+### 问题 2：`flock` 警告（可选工具）
 
-**Symptom**:
+**症状**：
 ```
 ⚠ flock - TTS queue locking
 ```
 
-**Impact**: Minor. TTS works without `flock`, may have audio collision with rapid messages.
+**影响**：轻微。TTS 不依赖 `flock` 也能工作，但在消息快速发送时可能出现音频冲突。
 
-**Solution** (optional):
+**解决方案**（可选）：
 ```bash
-# flock is in util-linux, already installed
-# Add to PATH if needed
+# flock 已包含在 util-linux 中
+# 若需要，将其加入 PATH
 export PATH="/opt/homebrew/opt/util-linux/bin:$PATH"
 ```
 
-### Issue 3: Agent Vibes Installer Exits
+### 问题 3：Agent Vibes 安装器意外退出
 
-**Symptom**:
+**症状**：
 ```
 ExitPromptError: User force closed the prompt
 ```
 
-**Cause**: Interactive installer requires user input (can't be automated).
+**原因**：交互式安装器需要用户手动操作，无法自动化。
 
-**Solution**: Run `npx agentvibes install` in interactive terminal (not via script).
+**解决方案**：在交互式终端中运行 `npx agentvibes install`（不要通过脚本调用）。
 
-### Issue 4: No Audio After Installation
+### 问题 4：安装后无音频
 
-**Diagnostic**:
+**诊断步骤**：
 ```bash
-# 1. Check mute status
+# 1. 检查静音状态
 ls .claude/agentvibes-muted ~/.agentvibes-muted
 
-# 2. Check provider
+# 2. 检查提供商
 cat .claude/tts-provider.txt
 
-# 3. Test Piper manually
+# 3. 手动测试 Piper
 echo "Test" | piper -m ~/.claude/piper-voices/fr_FR-tom-medium.onnx \
   --output-file /tmp/test.wav && afplay /tmp/test.wav
 ```
 
-**Solutions**: See [Troubleshooting Guide](./troubleshooting.md).
+**解决方案**：参阅[排错指南](./troubleshooting.md)。
 
 ---
 
-## Next Steps
+## 后续步骤
 
-After installation:
+安装完成后：
 
-1. **[Voice Catalog](./voice-catalog.md)** - Explore 15 voices and choose your favorite
-2. **[README](./README.md)** - Learn essential commands and use cases
-3. **[Troubleshooting](./troubleshooting.md)** - Solve common issues
-4. **[AI Ecosystem](../../../guide/ecosystem/ai-ecosystem.md#47-voice-interfaces)** - TTS in broader AI context
-
----
-
-## Resources
-
-- **Agent Vibes GitHub**: https://github.com/paulpreibisch/AgentVibes
-- **Piper Voices Repository**: https://huggingface.co/rhasspy/piper-voices
-- **Piper Voice Samples**: https://rhasspy.github.io/piper-samples/
-- **Agent Vibes Website**: https://agentvibes.org
+1. **[语音目录](./voice-catalog.md)** - 探索 15 种语音，选择你喜欢的
+2. **[README](./README.md)** - 了解常用命令和使用场景
+3. **[排错指南](./troubleshooting.md)** - 解决常见问题
+4. **[AI 生态系统](../../../guide/ecosystem/ai-ecosystem.md#47-voice-interfaces)** - TTS 在更广泛 AI 生态中的位置
 
 ---
 
-*Installation guide maintained by [Claude Code Ultimate Guide](https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide)*
-*Last updated: 2026-01-22 | Tested on: macOS Sequoia 24.6.0 (Apple Silicon)*
+## 资源链接
+
+- **Agent Vibes GitHub**：https://github.com/paulpreibisch/AgentVibes
+- **Piper 语音仓库**：https://huggingface.co/rhasspy/piper-voices
+- **Piper 语音试听**：https://rhasspy.github.io/piper-samples/
+- **Agent Vibes 官网**：https://agentvibes.org
+
+---
+
+*安装指南由 [Claude Code Ultimate Guide](https://github.com/claude-code-ultimate-guide/claude-code-ultimate-guide) 维护*
+*最后更新：2026-01-22 | 测试环境：macOS Sequoia 24.6.0（Apple Silicon）*

@@ -2,107 +2,107 @@
 
 ---
 name: design-patterns
-description: "Detect, suggest, and evaluate GoF design patterns in TypeScript/JavaScript codebases. Use when refactoring code, applying singleton/factory/observer/strategy patterns, reviewing pattern quality, or finding stack-native alternatives for React, Angular, NestJS, and Vue."
+description: "检测、建议和评估 TypeScript/JavaScript 代码库中的 GoF 设计模式。适用于重构代码、应用单例/工厂/观察者/策略模式、审查模式质量，或为 React、Angular、NestJS、Vue 寻找技术栈原生替代方案。"
 allowed-tools: Read, Grep, Glob, mcp__grepai__grepai_search
 context: fork
 agent: specialist
 effort: high
 ---
 
-# Design Patterns Analyzer Skill
+# 设计模式分析技能
 
-**Purpose**: Detect, suggest, and evaluate Gang of Four (GoF) design patterns in TypeScript/JavaScript codebases with stack-aware adaptations.
+**用途**：检测、建议和评估 TypeScript/JavaScript 代码库中的四人组（GoF）设计模式，并提供技术栈感知的适配方案。
 
-## Core Capabilities
+## 核心能力
 
-1. **Stack Detection**: Identify primary framework/library (React, Angular, NestJS, Vue, Express, RxJS, Redux, ORMs)
-2. **Pattern Detection**: Find existing implementations of 23 GoF patterns
-3. **Smart Suggestions**: Recommend patterns to fix code smells, using stack-native idioms when available
-4. **Quality Evaluation**: Assess pattern implementation quality against best practices
+1. **技术栈检测**：识别主要框架/库（React、Angular、NestJS、Vue、Express、RxJS、Redux、ORM）
+2. **模式检测**：发现 23 种 GoF 模式的现有实现
+3. **智能建议**：推荐模式以修复代码异味，优先使用技术栈原生惯用法
+4. **质量评估**：依照最佳实践评定模式实现质量
 
-## Operating Modes
+## 运行模式
 
-### Mode 1: Detection
+### 模式一：检测
 
-**Trigger**: User requests pattern detection or analysis
-**Output**: JSON report of patterns found with confidence scores and stack context
+**触发条件**：用户请求模式检测或分析
+**输出**：包含置信度评分和技术栈上下文的 JSON 报告
 
-**Workflow**:
+**工作流程**：
 ```
-1. Stack Detection (package.json, tsconfig.json, framework files)
-2. Pattern Search (Glob for candidates → Grep for signatures → Read for validation)
-3. Classification (native to stack vs custom implementations)
-4. Confidence Scoring (0.0-1.0 based on detection rules)
-5. JSON Report Generation
+1. 技术栈检测（package.json、tsconfig.json、框架文件）
+2. 模式搜索（Glob 查找候选文件 → Grep 匹配特征 → Read 验证）
+3. 分类（技术栈原生 vs 自定义实现）
+4. 置信度评分（0.0-1.0，基于检测规则）
+5. 生成 JSON 报告
 ```
 
-**Example invocation**:
+**调用示例**：
 ```
 /design-patterns detect src/
 /design-patterns analyze --format=json
 ```
 
-### Mode 2: Suggestion
+### 模式二：建议
 
-**Trigger**: User requests pattern suggestions or refactoring advice
-**Output**: Markdown report with prioritized suggestions and stack-adapted examples
+**触发条件**：用户请求模式建议或重构建议
+**输出**：带优先级建议和技术栈适配示例的 Markdown 报告
 
-**Workflow**:
+**工作流程**：
 ```
-1. Code Smell Detection (switch statements, long parameter lists, global state, etc.)
-2. Pattern Matching (map smell → applicable patterns)
-3. Stack Adaptation (prefer native framework patterns over custom implementations)
-4. Priority Ranking (impact × feasibility)
-5. Markdown Report with Code Examples
+1. 代码异味检测（switch 语句、过长参数列表、全局状态等）
+2. 模式匹配（将异味映射到适用模式）
+3. 技术栈适配（优先使用框架原生模式而非自定义实现）
+4. 优先级排序（影响力 × 可行性）
+5. 生成带代码示例的 Markdown 报告
 ```
 
-**Example invocation**:
+**调用示例**：
 ```
 /design-patterns suggest src/payment/
 /design-patterns refactor --focus=creational
 ```
 
-### Mode 3: Evaluation
+### 模式三：评估
 
-**Trigger**: User requests pattern quality assessment
-**Output**: JSON report with scores per evaluation criterion
+**触发条件**：用户请求模式质量评估
+**输出**：包含各评估标准评分的 JSON 报告
 
-**Workflow**:
+**工作流程**：
 ```
-1. Pattern Identification (which pattern is implemented)
-2. Criteria Assessment (correctness, testability, SOLID compliance, documentation)
-3. Issue Detection (common mistakes, anti-patterns)
-4. Scoring (0-10 per criterion)
-5. JSON Report with Recommendations
+1. 模式识别（确定实现了哪种模式）
+2. 标准评估（正确性、可测试性、SOLID 合规性、文档）
+3. 问题检测（常见错误、反模式）
+4. 评分（每项标准 0-10 分）
+5. 生成带建议的 JSON 报告
 ```
 
-**Example invocation**:
+**调用示例**：
 ```
 /design-patterns evaluate src/services/singleton.ts
 /design-patterns quality --pattern=observer
 ```
 
-## Methodology
+## 方法论
 
-### Phase 1: Stack Detection
+### 第一阶段：技术栈检测
 
-**Sources** (in priority order):
-1. `package.json` → Check dependencies and devDependencies
-2. Framework-specific files → `angular.json`, `next.config.*`, `nest-cli.json`, `vite.config.*`
-3. `tsconfig.json` → Check compilerOptions, paths, lib
-4. File extensions → `*.jsx`, `*.tsx`, `*.vue` presence
+**数据来源**（按优先级排序）：
+1. `package.json` → 检查 dependencies 和 devDependencies
+2. 框架专属文件 → `angular.json`、`next.config.*`、`nest-cli.json`、`vite.config.*`
+3. `tsconfig.json` → 检查 compilerOptions、paths、lib
+4. 文件扩展名 → `*.jsx`、`*.tsx`、`*.vue` 的存在
 
-**Detection Rules** (from `signatures/stack-patterns.yaml`):
-- React: `react` in deps + `*.jsx/*.tsx` files
-- Angular: `@angular/core` + `angular.json`
-- NestJS: `@nestjs/core` + `nest-cli.json`
-- Vue: `vue` v3+ + `*.vue` files
-- Express: `express` in deps + `app.use` patterns
-- RxJS: `rxjs` in deps + Observable usage
-- Redux/Zustand: `redux`/`zustand` in deps + store patterns
-- Prisma/TypeORM: `prisma`/`typeorm` in deps + schema files
+**检测规则**（来自 `signatures/stack-patterns.yaml`）：
+- React：deps 中有 `react` + `*.jsx/*.tsx` 文件
+- Angular：有 `@angular/core` + `angular.json`
+- NestJS：有 `@nestjs/core` + `nest-cli.json`
+- Vue：`vue` v3+ + `*.vue` 文件
+- Express：deps 中有 `express` + `app.use` 模式
+- RxJS：deps 中有 `rxjs` + Observable 用法
+- Redux/Zustand：deps 中有 `redux`/`zustand` + store 模式
+- Prisma/TypeORM：deps 中有 `prisma`/`typeorm` + schema 文件
 
-**Output**:
+**输出**：
 ```json
 {
   "stack_detected": {
@@ -115,111 +115,111 @@ effort: high
 }
 ```
 
-### Phase 2: Pattern Detection
+### 第二阶段：模式检测
 
-**Search Strategy**:
-1. **Glob Phase**: Find candidate files by naming convention
-   - `*Singleton*.ts`, `*Factory*.ts`, `*Strategy*.ts`, `*Observer*.ts`, etc.
-   - `*Manager*.ts`, `*Builder*.ts`, `*Adapter*.ts`, `*Proxy*.ts`, etc.
+**搜索策略**：
+1. **Glob 阶段**：按命名约定查找候选文件
+   - `*Singleton*.ts`、`*Factory*.ts`、`*Strategy*.ts`、`*Observer*.ts` 等
+   - `*Manager*.ts`、`*Builder*.ts`、`*Adapter*.ts`、`*Proxy*.ts` 等
 
-2. **Grep Phase**: Search for pattern signatures (from `signatures/detection-rules.yaml`)
-   - Primary signals: `private constructor`, `static getInstance()`, `subscribe()`, `createXxx()`, etc.
-   - Secondary signals: Interface naming, delegation patterns, method signatures
+2. **Grep 阶段**：搜索模式特征（来自 `signatures/detection-rules.yaml`）
+   - 主要信号：`private constructor`、`static getInstance()`、`subscribe()`、`createXxx()` 等
+   - 次要信号：接口命名、委托模式、方法签名
 
-3. **Read Phase**: Validate pattern structure
-   - Parse class/interface definitions
-   - Verify relationships (inheritance, composition, delegation)
-   - Check for complete pattern implementation vs partial usage
+3. **Read 阶段**：验证模式结构
+   - 解析类/接口定义
+   - 验证关系（继承、组合、委托）
+   - 检查是完整实现还是部分使用
 
-**Confidence Scoring**:
-- 0.9-1.0: All primary + secondary signals present, structure matches exactly
-- 0.7-0.89: All primary signals + some secondary, minor deviations
-- 0.5-0.69: Primary signals present, missing secondary validation
-- 0.3-0.49: Naming convention matches, weak structural evidence
-- 0.0-0.29: Insufficient evidence, likely false positive
+**置信度评分**：
+- 0.9-1.0：所有主次信号均存在，结构完全匹配
+- 0.7-0.89：所有主要信号 + 部分次要信号，轻微偏差
+- 0.5-0.69：主要信号存在，缺少次要验证
+- 0.3-0.49：命名约定匹配，结构证据较弱
+- 0.0-0.29：证据不足，可能为误判
 
-**Classification**:
-- `native`: Pattern implemented using stack-native features (React Context, Angular Services, NestJS Guards, etc.)
-- `custom`: Manual TypeScript implementation
-- `library`: Third-party library providing pattern (RxJS Subject, Redux Store, etc.)
+**分类**：
+- `native`：使用技术栈原生特性实现的模式（React Context、Angular Services、NestJS Guards 等）
+- `custom`：手动 TypeScript 实现
+- `library`：第三方库提供的模式（RxJS Subject、Redux Store 等）
 
-### Phase 3: Code Smell Detection
+### 第三阶段：代码异味检测
 
-**Target Smells** (from `signatures/code-smells.yaml`):
-1. **Switch on Type** → Strategy/Factory pattern
-2. **Long Parameter List (>4)** → Builder pattern
-3. **Global State Access** → Singleton (or preferably DI)
-4. **Duplicated Conditionals on State** → State pattern
-5. **Scattered Notification Logic** → Observer pattern
-6. **Complex Object Creation** → Factory/Abstract Factory
-7. **Tight Coupling to Concrete Classes** → Adapter/Bridge
-8. **Repetitive Interface Conversions** → Adapter pattern
-9. **Deep Nesting for Feature Addition** → Decorator pattern
-10. **Large Class with Many Responsibilities** → Facade pattern
+**目标异味**（来自 `signatures/code-smells.yaml`）：
+1. **基于类型的 switch** → 策略/工厂模式
+2. **过长参数列表（>4 个）** → 建造者模式
+3. **全局状态访问** → 单例（或优先使用依赖注入）
+4. **重复的状态条件判断** → 状态模式
+5. **分散的通知逻辑** → 观察者模式
+6. **复杂的对象创建** → 工厂/抽象工厂
+7. **与具体类的紧耦合** → 适配器/桥接
+8. **重复的接口转换** → 适配器模式
+9. **深度嵌套的功能扩展** → 装饰器模式
+10. **职责过多的大类** → 外观模式
 
-**Detection Heuristics**:
-- Grep for `switch (.*type)`, `switch (.*kind)`, `switch (.*mode)`
-- Count function parameters: `function \w+\([^)]{60,}\)` (approximation for >4 params)
-- Search for global access: `window\.`, `global\.`, `process\.env\.\w+` (not in config files)
-- Find state conditionals: `if.*state.*===.*&&.*if.*state.*===`
-- Find notification patterns: `forEach.*notify`, `map.*\.emit\(`
+**检测启发式规则**：
+- Grep 搜索 `switch (.*type)`、`switch (.*kind)`、`switch (.*mode)`
+- 统计函数参数数量：`function \w+\([^)]{60,}\)`（>4 个参数的近似匹配）
+- 搜索全局访问：`window\.`、`global\.`、`process\.env\.\w+`（不含配置文件中的用法）
+- 查找状态条件：`if.*state.*===.*&&.*if.*state.*===`
+- 查找通知模式：`forEach.*notify`、`map.*\.emit\(`
 
-### Phase 4: Stack-Aware Suggestions
+### 第四阶段：技术栈感知建议
 
-**Adaptation Logic** (from `signatures/stack-patterns.yaml`):
+**适配逻辑**（来自 `signatures/stack-patterns.yaml`）：
 
 ```
-IF pattern_detected == "custom" AND stack_has_native_equivalent:
-  SUGGEST: "Use stack-native pattern instead"
-  PROVIDE: Side-by-side comparison (current vs recommended)
+IF 检测到自定义模式 AND 技术栈有原生等效方案:
+  建议："使用技术栈原生模式替代"
+  提供：当前方案 vs 推荐方案的对比
 
-ELSE IF code_smell_detected AND pattern_missing:
-  IF stack_provides_pattern:
-    SUGGEST: Stack-native implementation with examples
+ELSE IF 检测到代码异味 AND 缺少模式:
+  IF 技术栈提供该模式:
+    建议：带示例的技术栈原生实现
   ELSE:
-    SUGGEST: Custom TypeScript implementation with best practices
+    建议：TypeScript 自定义实现及最佳实践
 
-ELSE IF pattern_implemented_incorrectly:
-  PROVIDE: Refactoring steps to fix anti-patterns
+ELSE IF 模式实现有误:
+  提供：修复反模式的重构步骤
 ```
 
-**Example Adaptations**:
+**适配示例**：
 
-| Pattern | Stack | Native Alternative | Recommendation |
+| 模式 | 技术栈 | 原生替代方案 | 建议 |
 |---------|-------|-------------------|----------------|
-| Singleton | React | Context API + Provider | Use `createContext()` instead of `getInstance()` |
-| Observer | Angular | RxJS Subject/BehaviorSubject | Use built-in Observables, not custom implementation |
-| Decorator | NestJS | @Injectable() decorators + Interceptors | Use framework interceptors |
-| Strategy | Vue 3 | Composition API composables | Use `ref()` + composables instead of classes |
-| Chain of Responsibility | Express | Middleware (`app.use()`) | Use Express middleware chain |
-| Command | Redux | Action creators + reducers | Use Redux actions, not custom command objects |
+| 单例 | React | Context API + Provider | 使用 `createContext()` 替代 `getInstance()` |
+| 观察者 | Angular | RxJS Subject/BehaviorSubject | 使用内置 Observable，不要自定义实现 |
+| 装饰器 | NestJS | @Injectable() 装饰器 + 拦截器 | 使用框架拦截器 |
+| 策略 | Vue 3 | Composition API 组合式函数 | 使用 `ref()` + 组合式函数替代类 |
+| 职责链 | Express | 中间件（`app.use()`） | 使用 Express 中间件链 |
+| 命令 | Redux | Action creators + reducers | 使用 Redux actions，不要自定义命令对象 |
 
-### Phase 5: Quality Evaluation
+### 第五阶段：质量评估
 
-**Criteria** (from `checklists/pattern-evaluation.md`):
-1. **Correctness (0-10)**: Does it match the canonical pattern structure?
-2. **Testability (0-10)**: Can dependencies be mocked/stubbed easily?
-3. **Single Responsibility (0-10)**: Does it do one thing only?
-4. **Open/Closed Principle (0-10)**: Extensible without modification?
-5. **Documentation (0-10)**: Clear intent, descriptive naming?
+**标准**（来自 `checklists/pattern-evaluation.md`）：
+1. **正确性（0-10）**：是否符合规范的模式结构？
+2. **可测试性（0-10）**：依赖项是否易于 mock/stub？
+3. **单一职责（0-10）**：是否只做一件事？
+4. **开闭原则（0-10）**：是否无需修改即可扩展？
+5. **文档（0-10）**：意图是否清晰，命名是否有描述性？
 
-**Scoring Guidelines**:
-- 9-10: Exemplary, reference-quality implementation
-- 7-8: Good, minor improvements possible
-- 5-6: Acceptable, notable issues to address
-- 3-4: Problematic, significant refactoring needed
-- 0-2: Incorrect or severely flawed
+**评分指南**：
+- 9-10：优秀，参考级别的实现
+- 7-8：良好，有小幅改进空间
+- 5-6：可接受，存在值得关注的问题
+- 3-4：有问题，需要较大范围重构
+- 0-2：实现错误或严重缺陷
 
-**Issue Detection**:
-- Hard-coded dependencies (Singleton with new inside getInstance)
-- God classes (too many responsibilities)
-- Leaky abstractions (exposing internal structure)
-- Missing error handling
-- Poor naming (Strategy1, Strategy2 instead of descriptive names)
+**问题检测**：
+- 硬编码依赖（在 getInstance 内部使用 new 的单例）
+- 上帝类（职责过多）
+- 抽象泄漏（暴露内部结构）
+- 缺少错误处理
+- 命名不当（Strategy1、Strategy2 而非描述性名称）
 
-## Output Formats
+## 输出格式
 
-### Detection Mode (JSON)
+### 检测模式（JSON）
 
 ```json
 {
@@ -289,58 +289,58 @@ ELSE IF pattern_implemented_incorrectly:
 }
 ```
 
-### Suggestion Mode (Markdown)
+### 建议模式（Markdown）
 
 ```markdown
-# Design Pattern Suggestions
+# 设计模式建议
 
-**Scope**: `src/payment/`
-**Stack**: React 18 + TypeScript + Stripe
-**Date**: 2026-01-21
+**范围**：`src/payment/`
+**技术栈**：React 18 + TypeScript + Stripe
+**日期**：2026-01-21
 
 ---
 
-## High Priority
+## 高优先级
 
-### 1. Strategy Pattern → `src/payment/processor.ts:45-89`
+### 1. 策略模式 → `src/payment/processor.ts:45-89`
 
-**Code Smell**: Switch statement on payment type (4 cases, 78 lines)
+**代码异味**：基于支付类型的 switch 语句（4 个分支，78 行）
 
-**Current Implementation** (lines 52-87):
+**当前实现**（第 52-87 行）：
 ```typescript
 switch (paymentType) {
   case 'credit':
-    // 20 lines of credit card logic
+    // 20 行信用卡逻辑
     break;
   case 'paypal':
-    // 15 lines of PayPal logic
+    // 15 行 PayPal 逻辑
     break;
   case 'crypto':
-    // 18 lines of crypto logic
+    // 18 行加密货币逻辑
     break;
   case 'bank':
-    // 12 lines of bank transfer logic
+    // 12 行银行转账逻辑
     break;
 }
 ```
 
-**Recommended (React-adapted Strategy)**:
+**推荐方案（React 适配的策略模式）**：
 ```typescript
-// Define strategy interface
+// 定义策略接口
 interface PaymentStrategy {
   process: (amount: number) => Promise<PaymentResult>;
 }
 
-// Custom hooks as strategies
+// 自定义 hook 作为策略
 const useCreditPayment = (): PaymentStrategy => ({
-  process: async (amount) => { /* credit logic */ }
+  process: async (amount) => { /* 信用卡逻辑 */ }
 });
 
 const usePaypalPayment = (): PaymentStrategy => ({
-  process: async (amount) => { /* PayPal logic */ }
+  process: async (amount) => { /* PayPal 逻辑 */ }
 });
 
-// Strategy selection hook
+// 策略选择 hook
 const usePaymentStrategy = (type: PaymentType): PaymentStrategy => {
   const strategies = {
     credit: useCreditPayment(),
@@ -351,7 +351,7 @@ const usePaymentStrategy = (type: PaymentType): PaymentStrategy => {
   return strategies[type];
 };
 
-// Usage in component
+// 在组件中使用
 const PaymentForm = ({ type }: Props) => {
   const strategy = usePaymentStrategy(type);
   const handlePay = () => strategy.process(amount);
@@ -359,32 +359,32 @@ const PaymentForm = ({ type }: Props) => {
 };
 ```
 
-**Impact**:
-- **Complexity**: Reduces cyclomatic complexity from 12 to 2
-- **Extensibility**: New payment methods = new hook, no modification to existing code
-- **Testability**: Each strategy hook can be tested in isolation
-- **Effort**: ~2 hours (extract logic into hooks, add tests)
+**收益**：
+- **复杂度**：圈复杂度从 12 降低到 2
+- **可扩展性**：新增支付方式 = 新增 hook，无需修改现有代码
+- **可测试性**：每个策略 hook 可独立测试
+- **工作量**：约 2 小时（将逻辑提取到 hook 并补充测试）
 
 ---
 
-## Medium Priority
+## 中优先级
 
-### 2. Observer Pattern → `src/cart/CartManager.ts:23-156`
+### 2. 观察者模式 → `src/cart/CartManager.ts:23-156`
 
-**Code Smell**: Manual notification logic scattered across 8 methods
+**代码异味**：手动通知逻辑分散在 8 个方法中
 
-**Current**: Manual loops calling update functions
-**Recommended**: Use Zustand store (already in dependencies)
+**当前方案**：手动循环调用更新函数
+**推荐方案**：使用 Zustand store（已在依赖中）
 
 ```typescript
-// Instead of custom observer:
+// 替代自定义观察者：
 import create from 'zustand';
 
 interface CartStore {
   items: CartItem[];
   addItem: (item: CartItem) => void;
   removeItem: (id: string) => void;
-  // Zustand automatically notifies subscribers
+  // Zustand 自动通知订阅者
 }
 
 export const useCartStore = create<CartStore>((set) => ({
@@ -393,31 +393,31 @@ export const useCartStore = create<CartStore>((set) => ({
   removeItem: (id) => set((state) => ({ items: state.items.filter(i => i.id !== id) })),
 }));
 
-// Components auto-subscribe:
+// 组件自动订阅：
 const CartDisplay = () => {
   const items = useCartStore((state) => state.items);
-  // Re-renders automatically on cart changes
+  // 购物车变化时自动重新渲染
 };
 ```
 
-**Impact**:
-- **LOC**: Reduces from 156 to ~25 lines
-- **Stack-native**: Uses existing Zustand dependency
-- **Testability**: Zustand stores are easily tested
-- **Effort**: ~1.5 hours
+**收益**：
+- **代码行数**：从 156 行减少到约 25 行
+- **技术栈原生**：使用现有 Zustand 依赖
+- **可测试性**：Zustand store 易于测试
+- **工作量**：约 1.5 小时
 
 ---
 
-## Summary
+## 汇总
 
-- **Total suggestions**: 4
-- **High priority**: 2 (Strategy, Observer)
-- **Medium priority**: 2 (Builder, Facade)
-- **Estimated total effort**: ~6 hours
-- **Primary benefits**: Reduced complexity, improved testability, stack-native idioms
+- **建议总数**：4
+- **高优先级**：2（策略、观察者）
+- **中优先级**：2（建造者、外观）
+- **预计总工作量**：约 6 小时
+- **主要收益**：降低复杂度、提升可测试性、使用技术栈原生惯用法
 ```
 
-### Evaluation Mode (JSON)
+### 评估模式（JSON）
 
 ```json
 {
@@ -482,87 +482,87 @@ const CartDisplay = () => {
 }
 ```
 
-## Constraints & Guidelines
+## 约束与指南
 
-### Read-Only Analysis
-- **No modifications**: This skill only analyzes and suggests, never modifies code
-- **No file creation**: Does not generate refactored code files
-- **User decision**: All suggestions require explicit user approval before implementation
+### 只读分析
+- **禁止修改**：本技能只分析和建议，不修改代码
+- **禁止创建文件**：不生成重构后的代码文件
+- **用户决策**：所有建议均需用户明确批准后方可实施
 
-### Language Focus
-- **Primary**: TypeScript (`.ts`, `.tsx`)
-- **Secondary**: JavaScript (`.js`, `.jsx`)
-- **Exclusions**: Other languages (Python, Java, C#) not supported
+### 语言范围
+- **主要支持**：TypeScript（`.ts`、`.tsx`）
+- **次要支持**：JavaScript（`.js`、`.jsx`）
+- **不支持**：其他语言（Python、Java、C#）
 
-### Pattern Coverage
-- **Creational (5)**: Singleton, Factory Method, Abstract Factory, Builder, Prototype
-- **Structural (7)**: Adapter, Bridge, Composite, Decorator, Facade, Flyweight, Proxy
-- **Behavioral (11)**: Chain of Responsibility, Command, Iterator, Mediator, Memento, Observer, State, Strategy, Template Method, Visitor, Interpreter
+### 模式覆盖
+- **创建型（5）**：单例、工厂方法、抽象工厂、建造者、原型
+- **结构型（7）**：适配器、桥接、组合、装饰器、外观、享元、代理
+- **行为型（11）**：职责链、命令、迭代器、中介者、备忘录、观察者、状态、策略、模板方法、访问者、解释器
 
-### Performance Considerations
-- **Large codebases (>500 files)**: Use `--scope` to limit scan to specific directories
-- **Parallel search**: Grep searches run independently for each pattern
-- **Caching**: Stack detection results cached per session to avoid redundant package.json reads
+### 性能考量
+- **大型代码库（>500 个文件）**：使用 `--scope` 限制扫描范围到特定目录
+- **并行搜索**：每种模式的 Grep 搜索独立运行
+- **缓存**：技术栈检测结果在会话内缓存，避免重复读取 package.json
 
-## Usage Examples
+## 使用示例
 
-### Basic Detection
+### 基本检测
 ```bash
-# Detect all patterns in src/
+# 检测 src/ 中的所有模式
 /design-patterns detect src/
 
-# Detect only creational patterns
+# 仅检测创建型模式
 /design-patterns detect src/ --category=creational
 
-# Focus on specific pattern
+# 专注于特定模式
 /design-patterns detect src/ --pattern=singleton
 ```
 
-### Targeted Suggestions
+### 针对性建议
 ```bash
-# Get suggestions for payment module
+# 获取支付模块的建议
 /design-patterns suggest src/payment/
 
-# Focus on specific smell
+# 专注于特定代码异味
 /design-patterns suggest src/ --smell=switch-on-type
 
-# High priority only
+# 仅高优先级建议
 /design-patterns suggest src/ --priority=high
 ```
 
-### Quality Evaluation
+### 质量评估
 ```bash
-# Evaluate specific file
+# 评估特定文件
 /design-patterns evaluate src/services/api-client.ts
 
-# Evaluate all singletons
+# 评估所有单例
 /design-patterns evaluate src/ --pattern=singleton
 
-# Full quality report
+# 完整质量报告
 /design-patterns evaluate src/ --detailed
 ```
 
-## Integration with Other Skills
+## 与其他技能的集成
 
-This skill can be inherited by:
-- `refactoring-specialist.md` → Provides pattern knowledge for refactoring
-- `code-reviewer.md` → Adds pattern detection to review process
-- `architecture-advisor.md` → Informs architectural decisions with pattern usage
+本技能可被以下技能继承：
+- `refactoring-specialist.md` → 为重构提供模式知识
+- `code-reviewer.md` → 在审查流程中加入模式检测
+- `architecture-advisor.md` → 用模式使用情况辅助架构决策
 
-## Reference Files
+## 参考文件
 
-- `reference/patterns-index.yaml` → Machine-readable index of 23 patterns with metadata
-- `reference/creational.md` → Creational patterns documentation
-- `reference/structural.md` → Structural patterns documentation
-- `reference/behavioral.md` → Behavioral patterns documentation
-- `signatures/detection-rules.yaml` → Regex patterns and heuristics for detection
-- `signatures/code-smells.yaml` → Mapping from code smells to applicable patterns
-- `signatures/stack-patterns.yaml` → Stack detection rules and native pattern equivalents
-- `checklists/pattern-evaluation.md` → Quality evaluation criteria and scoring guidelines
+- `reference/patterns-index.yaml` → 23 种模式的机器可读索引及元数据
+- `reference/creational.md` → 创建型模式文档
+- `reference/structural.md` → 结构型模式文档
+- `reference/behavioral.md` → 行为型模式文档
+- `signatures/detection-rules.yaml` → 用于检测的正则表达式模式和启发式规则
+- `signatures/code-smells.yaml` → 代码异味到适用模式的映射
+- `signatures/stack-patterns.yaml` → 技术栈检测规则及原生模式等效方案
+- `checklists/pattern-evaluation.md` → 质量评估标准与评分指南
 
-## Version
+## 版本信息
 
-**Skill Version**: 1.0.0
-**Pattern Coverage**: 23 GoF patterns
-**Supported Stacks**: 8 (React, Angular, NestJS, Vue, Express, RxJS, Redux/Zustand, ORMs)
-**Last Updated**: 2026-01-21
+**技能版本**：1.0.0
+**模式覆盖**：23 种 GoF 模式
+**支持技术栈**：8 种（React、Angular、NestJS、Vue、Express、RxJS、Redux/Zustand、ORM）
+**最后更新**：2026-01-21

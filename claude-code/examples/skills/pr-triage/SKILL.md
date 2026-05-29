@@ -2,65 +2,65 @@
 
 ---
 name: pr-triage
-description: "4-phase PR backlog management with audit, deep code review, validated comments, and optional worktree setup. Use when triaging pull requests, catching up on pending code reviews, or managing a backlog of open PRs. Args: 'all' to review all, PR numbers to focus (e.g. '42 57'), 'en'/'fr' for language, no arg = audit only."
+description: "4 阶段拉取请求待办管理：审计、深度代码审查、已验证评论发布、可选工作树设置。适用于对拉取请求进行分类处理、跟进待处理的代码审查、或管理积压的开放 PR。参数：'all' 审查全部，指定 PR 编号聚焦处理（如 '42 57'），'en'/'fr' 指定语言，无参数 = 仅审计。"
 allowed-tools: Bash Read
 effort: medium
 ---
 
-# PR Triage
+# PR 分类处理
 
-4-phase workflow for maintainers: automated audit of all open PRs, opt-in deep review via parallel agents, validated comment posting, and optional worktree setup for local review.
+面向维护者的 4 阶段工作流：自动审计所有开放 PR、按需深度审查（通过并行 Agent）、已验证评论发布、以及可选的本地审查工作树设置。
 
-## When to Use This Skill
+## 何时使用本技能
 
-| Skill | Usage | Output |
+| 技能 | 用途 | 输出 |
 |-------|-------|--------|
-| `/pr-triage` | Sort, review, and comment on a PR backlog | Triage table + reviews + posted comments |
-| `/review-pr` | Review a single PR in depth | Inline PR review |
+| `/pr-triage` | 对 PR 待办进行分类、审查并发表评论 | 分类处理表格 + 审查报告 + 已发布评论 |
+| `/review-pr` | 深度审查单个 PR | 行内 PR 审查 |
 
-**Triggers**:
-- Manually: `/pr-triage` or `/pr-triage all` or `/pr-triage 42 57`
-- Proactively: when >5 PRs open without review, or stale PR >14 days detected
-
----
-
-## Language
-
-- Check the argument passed to the skill
-- If `en` or `english` → tables and summary in English
-- If `fr`, `french`, or no argument → French (default)
-- Note: GitHub comments (Phase 3) are ALWAYS in English (international audience)
+**触发条件**：
+- 手动：`/pr-triage` 或 `/pr-triage all` 或 `/pr-triage 42 57`
+- 自动触发：当超过 5 个 PR 无人审查，或检测到超过 14 天未活动的陈旧 PR 时
 
 ---
 
-## Configuration
+## 语言
 
-Thresholds used throughout the workflow. Edit to match your project:
+- 检查传入技能的参数
+- 若为 `en` 或 `english` → 表格和摘要使用英文
+- 若为 `fr`、`french` 或无参数 → 使用法语（默认）
+- 注意：GitHub 评论（第 3 阶段）始终使用英文（面向国际受众）
 
-| Parameter | Default | Description |
+---
+
+## 配置
+
+工作流中使用的阈值，可根据项目需要编辑：
+
+| 参数 | 默认值 | 描述 |
 |-----------|---------|-------------|
-| `staleness_days` | 14 | Days without activity before flagging as stale |
-| `overlap_threshold` | 50% | Shared files % to flag as overlapping |
-| `cluster_min_prs` | 3 | Author PR count to trigger cluster suggestion |
-| `xl_cutoff_additions` | 1000 | Additions above which a PR is classified XL |
-| `xl_cutoff_files` | 10 | Changed files above which a PR is "too large" |
+| `staleness_days` | 14 | 标记为陈旧之前的无活动天数 |
+| `overlap_threshold` | 50% | 触发重叠标记的共享文件比例 |
+| `cluster_min_prs` | 3 | 触发集群建议的单作者 PR 数量 |
+| `xl_cutoff_additions` | 1000 | 超过此新增行数则分类为 XL |
+| `xl_cutoff_files` | 10 | 超过此修改文件数则认为 PR "过大" |
 
 ---
 
-## Preconditions
+## 前提条件
 
 ```bash
 git rev-parse --is-inside-work-tree
 gh auth status
 ```
 
-If either fails, stop and explain what is missing.
+若任一命令失败，停止执行并说明缺少什么。
 
 ---
 
-## Phase 1 — Audit (always executed)
+## 第 1 阶段 — 审计（始终执行）
 
-### Data Gathering (parallel commands)
+### 数据收集（并行命令）
 
 ```bash
 gh repo view --json nameWithOwner -q .nameWithOwner
@@ -69,13 +69,13 @@ gh pr list --state open --limit 50 \
 gh api "repos/{owner}/{repo}/collaborators" --jq '.[].login'
 ```
 
-**Collaborators fallback**: if `gh api .../collaborators` returns 403/404:
+**协作者回退方案**：若 `gh api .../collaborators` 返回 403/404：
 ```bash
 gh pr list --state merged --limit 10 --json author --jq '.[].author.login' | sort -u
 ```
-If still ambiguous, ask via `AskUserQuestion`.
+若仍不明确，通过 `AskUserQuestion` 询问用户。
 
-For each PR, fetch reviews and changed files:
+对每个 PR，获取审查信息和修改文件列表：
 
 ```bash
 gh api "repos/{owner}/{repo}/pulls/{num}/reviews" \
@@ -83,12 +83,12 @@ gh api "repos/{owner}/{repo}/pulls/{num}/reviews" \
 gh pr view {num} --json files --jq '[.files[].path] | join(",")'
 ```
 
-**Notes**: Fetching files requires 1 API call per PR — for 20+ PRs, prioritize overlap candidates. The `author` field is an object; always extract `.author.login`.
+**注意**：获取文件列表每个 PR 需要 1 次 API 调用——对于 20 个以上的 PR，优先处理重叠候选项。`author` 字段是对象，始终提取 `.author.login`。
 
-### Analysis
+### 分析
 
-**Size classification**:
-| Label | Additions |
+**规模分类**：
+| 标签 | 新增行数 |
 |-------|-----------|
 | XS | < 50 |
 | S | 50–200 |
@@ -96,79 +96,79 @@ gh pr view {num} --json files --jq '[.files[].path] | join(",")'
 | L | 500–1000 |
 | XL | > 1000 |
 
-Size format: `+{additions}/-{deletions}, {files} files ({label})`
+规模格式：`+{additions}/-{deletions}, {files} files ({label})`
 
-**Detections**:
-- **Overlaps**: compare file lists across PRs — if >50% files in common → cross-reference
-- **Clusters**: author with 3+ open PRs → suggest review order (smallest first)
-- **Staleness**: no activity for >14 days → flag "stale"
-- **CI status**: via `statusCheckRollup` → `clean` / `unstable` / `dirty`
-- **Reviews**: approved / changes_requested / none
+**检测项目**：
+- **重叠**：比较各 PR 的文件列表——若共享文件超过 50% → 进行交叉引用
+- **集群**：某作者有 3 个以上开放 PR → 建议审查顺序（从最小的开始）
+- **陈旧**：超过 14 天无活动 → 标记为"陈旧"
+- **CI 状态**：通过 `statusCheckRollup` 获取 → `clean`（通过）/ `unstable`（不稳定）/ `dirty`（失败）
+- **审查状态**：已批准 / 需要更改 / 无审查
 
-**PR ↔ Issue linking**:
-- Scan each PR `body` for `fixes #N`, `closes #N`, `resolves #N` (case-insensitive)
-- If found, display in the table: `Fixes #42` in the Action/Status column
+**PR ↔ 问题关联**：
+- 扫描每个 PR 的 `body`，查找 `fixes #N`、`closes #N`、`resolves #N`（不区分大小写）
+- 若找到，在表格的操作/状态列显示：`Fixes #42`
 
-**Categorization**:
+**分类规则**：
 
-_Internal PRs_: author in collaborators list
+_内部 PR_：作者在协作者列表中
 
-_External — Ready_: additions ≤ 1000 AND files ≤ 10 AND `mergeable` ≠ `CONFLICTING` AND CI clean/unstable
+_外部 — 就绪_：新增行数 ≤ 1000 且 修改文件 ≤ 10 且 `mergeable` ≠ `CONFLICTING` 且 CI 通过或不稳定
 
-_External — Problematic_: any of:
-- additions > 1000 OR files > 10
-- OR `mergeable` == `CONFLICTING` (merge conflict)
-- OR CI dirty (statusCheckRollup contains failures)
-- OR overlap with another open PR (>50% shared files)
+_外部 — 有问题_：满足以下任一条件：
+- 新增行数 > 1000 或 修改文件 > 10
+- 或 `mergeable` == `CONFLICTING`（存在合并冲突）
+- 或 CI 失败（`statusCheckRollup` 包含失败项）
+- 或与另一个开放 PR 存在重叠（共享文件超过 50%）
 
-### Output — Triage Table
+### 输出 — 分类处理表格
 
 ```
-## Open PRs ({count})
+## 开放 PR ({count})
 
-### Internal PRs
-| PR | Title | Size | CI | Status |
+### 内部 PR
+| PR | 标题 | 规模 | CI | 状态 |
 | -- | ----- | ---- | -- | ------ |
 
-### External — Ready for Review
-| PR | Author | Title | Size | CI | Reviews | Action |
+### 外部 — 待审查
+| PR | 作者 | 标题 | 规模 | CI | 审查 | 操作 |
 | -- | ------ | ----- | ---- | -- | ------- | ------ |
 
-### External — Problematic
-| PR | Author | Title | Size | Problem | Recommended Action |
+### 外部 — 有问题
+| PR | 作者 | 标题 | 规模 | 问题 | 建议操作 |
 | -- | ------ | ----- | ---- | ------- | ------------------ |
 
-### Summary
-- Quick wins: {XS/S PRs ready to merge}
-- Risks: {overlaps, XL sizes, CI dirty}
-- Clusters: {authors with 3+ PRs}
-- Stale: {PRs with no activity >14d}
-- Overlaps: {PRs touching the same files}
+### 摘要
+- 快速合并项：{可快速合并的 XS/S PR}
+- 风险项：{重叠、XL 规模、CI 失败}
+- 集群：{拥有 3 个以上 PR 的作者}
+- 陈旧项：{超过 14 天无活动的 PR}
+- 重叠项：{涉及相同文件的 PR}
 ```
 
-0 PRs → display `No open PRs.` and stop.
+0 个 PR → 显示 `No open PRs.` 并停止。
 
-### Navigation Post-Phase 1
+### 第 1 阶段结束后的导航
 
-After displaying the triage table, ask via `AskUserQuestion`:
+显示分类处理表格后，通过 `AskUserQuestion` 询问：
 
 ```
-question: "What would you like to do next?"
-header: "Next Step"
+question: "下一步您想做什么？"
+header: "下一步"
 options:
-  - label: "Phase 2 — Deep review"
-    description: "Analyze selected PRs with code-reviewer agents and generate comment drafts"
-  - label: "Phase 4 — Create worktrees"
-    description: "Set up local worktrees for hands-on review (skips comment generation)"
-  - label: "Done"
-    description: "End the workflow here"
+  - label: "第 2 阶段 — 深度审查"
+    description: "使用代码审查 Agent 分析所选 PR 并生成评论草稿"
+  - label: "第 4 阶段 — 创建工作树"
+    description: "设置本地工作树以进行实际代码审查（跳过评论生成）"
+  - label: "完成"
+    description: "在此结束工作流"
 ```
 
-Note: Phase 3 (posting comments) is NOT offered here — it requires the drafts generated in Phase 2. If the user picks "Phase 4", Phase 2 → Phase 3 remains accessible afterward.
+注意：第 3 阶段（发布评论）不在此处提供——它需要第 2 阶段生成的草稿。若用户选择"第 4 阶段"，第 2 → 第 3 阶段仍可在之后访问。
 
-### Automatic Copy
+### 自动复制
 
-After displaying the triage table, copy to clipboard using platform-appropriate command:
+显示分类处理表格后，使用平台对应命令复制到剪贴板：
 
 ```bash
 UNAME=$(uname -s)
@@ -185,46 +185,46 @@ elif command -v clip.exe &>/dev/null; then
 fi
 ```
 
-Confirm: `Triage table copied to clipboard.` (EN) / `Tableau copié dans le presse-papier.` (FR)
+确认提示：`Triage table copied to clipboard.`（英文）/ `Tableau copié dans le presse-papier.`（法文）
 
 ---
 
-## Phase 2 — Deep Review (opt-in)
+## 第 2 阶段 — 深度审查（按需）
 
-### PR Selection
+### PR 选择
 
-**If argument passed**:
-- `"all"` → all external PRs
-- Numbers (`"42 57"`) → only those PRs
-- No argument → propose via `AskUserQuestion`
+**若传入参数**：
+- `"all"` → 所有外部 PR
+- 编号（`"42 57"`）→ 仅处理这些 PR
+- 无参数 → 通过 `AskUserQuestion` 提议
 
-**If no argument**, display:
+**若无参数**，显示：
 
 ```
-question: "Which PRs do you want to review in depth?"
-header: "Deep Review"
+question: "您想深度审查哪些 PR？"
+header: "深度审查"
 multiSelect: true
 options:
-  - label: "All external"
-    description: "Review {N} external PRs with parallel code-reviewer agents"
-  - label: "Problematic only"
-    description: "Focus on {M} risky PRs (CI dirty, too large, overlaps)"
-  - label: "Ready only"
-    description: "Review {K} PRs ready to merge"
-  - label: "Skip"
-    description: "Stop here — audit only"
+  - label: "全部外部"
+    description: "使用并行代码审查 Agent 审查 {N} 个外部 PR"
+  - label: "仅有问题的"
+    description: "聚焦 {M} 个风险 PR（CI 失败、规模过大、存在重叠）"
+  - label: "仅就绪的"
+    description: "审查 {K} 个可合并的 PR"
+  - label: "跳过"
+    description: "在此停止——仅审计"
 ```
 
-**Draft PR behavior**:
-- Draft PRs are EXCLUDED from "All external" and "Ready only"
-- Draft PRs are INCLUDED in "Problematic only" (they need attention)
-- To review a draft: type its number explicitly (e.g. `42`)
+**草稿 PR 的处理方式**：
+- 草稿 PR 从"全部外部"和"仅就绪的"中排除
+- 草稿 PR 包含在"仅有问题的"中（需要关注）
+- 若要审查草稿：明确输入其编号（如 `42`）
 
-If "Skip" → end workflow.
+若选择"跳过"→ 结束工作流。
 
-### Executing Reviews
+### 执行审查
 
-For each selected PR, launch a `code-reviewer` agent via **Task tool in parallel**:
+对每个选定的 PR，通过 **Task 工具并行**启动 `code-reviewer` Agent：
 
 ```
 subagent_type: code-reviewer
@@ -253,63 +253,63 @@ prompt: |
   Be specific: quote file:line, explain the issue, suggest the fix.
 ```
 
-**Fallback if parallel agents unavailable**: run reviews sequentially, one PR at a time. Notify user: `Running sequential review (parallel agents not available).`
+**并行 Agent 不可用时的回退方案**：逐个顺序审查 PR。通知用户：`Running sequential review (parallel agents not available).`
 
-Fetch diff via:
+通过以下命令获取差异：
 ```bash
 gh pr diff {num}
 gh pr view {num} --json body,title,author -q '{body: .body, title: .title, author: .author.login}'
 ```
 
-Aggregate all reports. Display a summary after all reviews complete.
+汇总所有报告，所有审查完成后显示摘要。
 
 ---
 
-## Phase 3 — Comments (mandatory validation)
+## 第 3 阶段 — 评论（必须验证）
 
-### Draft Generation
+### 草稿生成
 
-For each reviewed PR, generate a GitHub comment using the template `templates/review-comment.md`.
+对每个已审查的 PR，使用模板 `templates/review-comment.md` 生成 GitHub 评论。
 
-**Rules**:
-- Language: **English** (international audience)
-- Tone: professional, constructive, factual
-- Always include at least 1 positive point
-- Quote code lines when relevant (format `file:42`)
+**规则**：
+- 语言：**英文**（面向国际受众）
+- 语气：专业、建设性、客观
+- 至少包含 1 个正面评价
+- 在适当时引用代码行（格式 `file:42`）
 
-### Display and Validation
+### 显示与验证
 
-**Display ALL drafted comments** in format:
+**显示全部评论草稿**，格式如下：
 
 ```
 ---
-### Draft — PR #{num}: {title}
+### 草稿 — PR #{num}: {title}
 
 {full comment}
 
 ---
 ```
 
-Then request validation via `AskUserQuestion`:
+然后通过 `AskUserQuestion` 请求验证：
 
 ```
-question: "These comments are ready. Which ones do you want to post?"
-header: "Post Comments"
+question: "这些评论已就绪，您想发布哪些？"
+header: "发布评论"
 multiSelect: true
 options:
-  - label: "All ({N} comments)"
-    description: "Post on all reviewed PRs"
+  - label: "全部（{N} 条评论）"
+    description: "发布到所有已审查的 PR"
   - label: "PR #{x} — {title_truncated}"
-    description: "Post only on this PR"
-  - label: "None"
-    description: "Cancel — post nothing"
+    description: "仅发布到此 PR"
+  - label: "无"
+    description: "取消——不发布任何内容"
 ```
 
-(Generate one option per PR + "All" + "None")
+（每个 PR 生成一个选项 + "全部" + "无"）
 
-### Posting
+### 发布
 
-For each validated comment:
+对每条已验证的评论：
 
 ```bash
 gh pr comment {num} --body-file - <<'REVIEW_EOF'
@@ -317,59 +317,59 @@ gh pr comment {num} --body-file - <<'REVIEW_EOF'
 REVIEW_EOF
 ```
 
-Confirm each post: `Comment posted on PR #{num}: {title}`
+逐条确认：`Comment posted on PR #{num}: {title}`
 
-If "None" → `No comments posted. Workflow complete.`
-
----
-
-## Project-Specific Checklist
-
-Add your stack's checklist to the agent prompt in Phase 2. Examples by stack:
-
-**Node.js / TypeScript**:
-- No `any` type without explicit justification
-- `async/await` error handling (try/catch or `.catch()`)
-- No unhandled promise rejections
-- Input validation at API boundaries
-
-**Python**:
-- Type hints on all public functions
-- Exception specificity (no bare `except:`)
-- Resource cleanup (`with` statements, context managers)
-- No mutable default arguments
-
-**Rust**:
-- `Result<T, E>` with `.context()` for error chain (no `.unwrap()` in production code)
-- No `clone()` on hot paths without justification
-- `lazy_static!` or `once_cell` for static regex
-- Lifetime annotations where ownership is non-obvious
-
-**Go**:
-- Explicit error handling (no `_` discard without comment)
-- `defer` for resource cleanup
-- Context propagation in concurrent code
-- No goroutine leaks
-
-**Generic** (stack-agnostic):
-- No secrets or hardcoded credentials
-- New public functions have tests
-- Breaking changes documented in PR body
-- Dependencies added have clear justification
+若选择"无"→ `No comments posted. Workflow complete.`
 
 ---
 
+## 项目专项检查清单
+
+在第 2 阶段将您技术栈的检查清单添加到 Agent 提示中。各技术栈示例：
+
+**Node.js / TypeScript**：
+- 使用 `any` 类型需有明确理由
+- `async/await` 错误处理（try/catch 或 `.catch()`）
+- 无未处理的 Promise 拒绝
+- 在 API 边界进行输入验证
+
+**Python**：
+- 所有公共函数添加类型注解
+- 异常要具体（不使用裸 `except:`）
+- 资源清理（使用 `with` 语句、上下文管理器）
+- 无可变默认参数
+
+**Rust**：
+- 用 `Result<T, E>` 配合 `.context()` 传递错误链（生产代码中不使用 `.unwrap()`）
+- 热路径上不无故使用 `clone()`
+- 静态正则使用 `lazy_static!` 或 `once_cell`
+- 所有权不明显时添加生命周期注解
+
+**Go**：
+- 显式错误处理（不使用 `_` 丢弃，除非有注释说明）
+- 使用 `defer` 进行资源清理
+- 并发代码中传递 Context
+- 无 goroutine 泄漏
+
+**通用**（与技术栈无关）：
+- 无密钥或硬编码凭证
+- 新的公共函数有测试覆盖
+- 破坏性变更在 PR 描述中记录
+- 新增依赖有明确的理由说明
+
 ---
 
-## Phase 4 — Worktree Setup (opt-in)
+---
 
-Creates local git worktrees for each selected PR so you can run, test, or review code without switching branches.
+## 第 4 阶段 — 工作树设置（按需）
 
-**Never triggered automatically** — only via Phase 1 navigation or explicit user request.
+为每个选定的 PR 创建本地 git 工作树，使您可以在不切换分支的情况下运行、测试或审查代码。
 
-### Step 4.1 — Cache check + PR list
+**从不自动触发**——仅通过第 1 阶段导航或用户明确请求触发。
 
-**Cache check**: before using data from Phase 1, verify it is less than 30 minutes old:
+### 步骤 4.1 — 缓存检查 + PR 列表
+
+**缓存检查**：在使用第 1 阶段的数据之前，验证其是否在 30 分钟以内：
 
 ```bash
 CACHE_FILE="/tmp/pr-triage-prs.json"
@@ -379,9 +379,9 @@ if [ "$CACHE_AGE" -gt 1800 ]; then
 fi
 ```
 
-If `STALE_CACHE` → re-run the Phase 1 data gathering before continuing.
+若显示 `STALE_CACHE` → 在继续之前重新执行第 1 阶段数据收集。
 
-**Filter**: exclude Draft PRs and bot PRs (Dependabot, renovate, etc.):
+**过滤**：排除草稿 PR 和机器人 PR（Dependabot、renovate 等）：
 
 ```bash
 python3 -c "
@@ -396,46 +396,46 @@ import sys; json.dump(filtered, sys.stdout, indent=2)
 " > /tmp/pr-triage-phase4.json
 ```
 
-If 0 PRs after filtering → display `No reviewable PRs available for worktree (all are drafts or bots).` + end Phase 4.
+过滤后 0 个 PR → 显示 `No reviewable PRs available for worktree (all are drafts or bots).` 并结束第 4 阶段。
 
-**Display grouped by author** (use display name if available, fallback to login):
+**按作者分组显示**（有显示名称时使用，否则用登录名）：
 
 ```
-## PRs available for worktree (non-draft)
+## 可创建工作树的 PR（非草稿）
 
 ### Alice Martin (@alice)
   [1] #123 — feat(auth): add OAuth2 support
-      Branch: feat/oauth2  |  Size: M  |  CI: clean
+      分支: feat/oauth2  |  规模: M  |  CI: clean
 
 ### Bob Chen (@bob)
   [2] #456 — fix(api): handle empty response
-      Branch: fix/empty-response  |  Size: S  |  CI: dirty ⚠️
+      分支: fix/empty-response  |  规模: S  |  CI: dirty ⚠️
 ```
 
-### Step 4.2 — Selection
+### 步骤 4.2 — 选择
 
-Ask via `AskUserQuestion` (multiSelect):
+通过 `AskUserQuestion` 询问（多选）：
 
 ```
-question: "Which PRs do you want to create a worktree for?"
-header: "Worktree Setup"
+question: "您想为哪些 PR 创建工作树？"
+header: "工作树设置"
 multiSelect: true
 options:
-  - label: "All"
-    description: "Create worktrees for all {N} listed PRs"
+  - label: "全部"
+    description: "为所有 {N} 个列出的 PR 创建工作树"
   - label: "[1] #{num} — {title} ({author})"
-    description: "Branch: {branch} | Size: {size} | CI: {ci}"
-  - label: "None"
-    description: "Cancel — return to menu"
+    description: "分支: {branch} | 规模: {size} | CI: {ci}"
+  - label: "无"
+    description: "取消——返回菜单"
 ```
 
-If "None" → end Phase 4.
+若选择"无"→ 结束第 4 阶段。
 
-### Step 4.3 — Sequential creation
+### 步骤 4.3 — 顺序创建
 
-**Execution model**: Claude runs **one bash command per PR**, reads its output, updates its internal state (created / existing / failed), then moves to the next. Never a bash loop wrapping all PRs.
+**执行模型**：Claude 对每个 PR **运行一个 bash 命令**，读取其输出，更新内部状态（已创建 / 已存在 / 失败），然后继续处理下一个。绝不使用循环包裹所有 PR。
 
-For each selected PR, Claude sets variables explicitly then runs:
+对每个选定的 PR，Claude 明确设置变量后运行：
 
 ```bash
 PR_NUM="123"
@@ -444,19 +444,19 @@ WORKTREE_NAME="${BRANCH_NAME//\//-}"
 REPO_ROOT="$(cd "$(git rev-parse --git-common-dir)/.." && pwd)"
 WORKTREE_DIR="$REPO_ROOT/.worktrees/$WORKTREE_NAME"
 
-# Already exists?
+# 是否已存在？
 if [ -d "$WORKTREE_DIR" ]; then
   echo "STATUS:EXISTING:$PR_NUM:$WORKTREE_DIR"
   exit 0
 fi
 
-# .gitignore check (fail-fast)
+# .gitignore 检查（快速失败）
 if ! grep -qE "^\.worktrees/?$" "$REPO_ROOT/.gitignore" 2>/dev/null; then
   echo "STATUS:GITIGNORE_MISSING:$PR_NUM"
   exit 1
 fi
 
-# Fetch remote branch
+# 拉取远程分支
 if ! git fetch origin "$BRANCH_NAME" 2>/tmp/wt-fetch-$PR_NUM.log; then
   echo "STATUS:FETCH_FAILED:$PR_NUM"
   exit 1
@@ -464,7 +464,7 @@ fi
 
 mkdir -p "$REPO_ROOT/.worktrees"
 
-# Create worktree (branch local exists or not)
+# 创建工作树（无论本地分支是否存在）
 if ! git branch --list "$BRANCH_NAME" | grep -q "$BRANCH_NAME"; then
   git worktree add -b "$BRANCH_NAME" "$WORKTREE_DIR" "origin/$BRANCH_NAME" \
     2>/tmp/wt-err-$PR_NUM.log
@@ -482,10 +482,10 @@ if [ $? -ne 0 ]; then
   exit 1
 fi
 
-# Optional: symlink node_modules (Node.js projects — avoids reinstall)
+# 可选：符号链接 node_modules（Node.js 项目——避免重新安装）
 [ -d "$REPO_ROOT/node_modules" ] && ln -sf "$REPO_ROOT/node_modules" "$WORKTREE_DIR/node_modules"
 
-# Copy project-specific files listed in .worktreeinclude (if present)
+# 复制 .worktreeinclude 中列出的项目专属文件（若存在）
 if [ -f "$REPO_ROOT/.worktreeinclude" ]; then
   while IFS= read -r entry || [ -n "$entry" ]; do
     [[ "$entry" =~ ^#.*$ || -z "$entry" ]] && continue
@@ -500,39 +500,39 @@ fi
 echo "STATUS:CREATED:$PR_NUM:$WORKTREE_DIR"
 ```
 
-**Status handling** (Claude maintains internal state between PRs):
+**状态处理**（Claude 在各 PR 之间维护内部状态）：
 
-| Status | Claude action |
+| 状态 | Claude 操作 |
 |--------|--------------|
-| `STATUS:CREATED:NUM:PATH` | Add to "created" list |
-| `STATUS:EXISTING:NUM:PATH` | Add to "existing" list → offer pull in Step 4.4 |
-| `STATUS:FETCH_FAILED:NUM` | Warn + continue to next PR |
-| `STATUS:GITIGNORE_MISSING:NUM` | Fail-fast: show fix instructions + stop Phase 4 |
-| `STATUS:ALREADY_CHECKED_OUT:NUM` | Warn: "Branch already checked out in another worktree. Run `git worktree list` to locate it." |
-| `STATUS:CREATE_FAILED:NUM` | Warn + continue to next PR |
+| `STATUS:CREATED:NUM:PATH` | 添加到"已创建"列表 |
+| `STATUS:EXISTING:NUM:PATH` | 添加到"已存在"列表 → 在步骤 4.4 提供更新选项 |
+| `STATUS:FETCH_FAILED:NUM` | 警告 + 继续处理下一个 PR |
+| `STATUS:GITIGNORE_MISSING:NUM` | 快速失败：显示修复说明 + 停止第 4 阶段 |
+| `STATUS:ALREADY_CHECKED_OUT:NUM` | 警告："该分支已在另一个工作树中检出，运行 `git worktree list` 查找。" |
+| `STATUS:CREATE_FAILED:NUM` | 警告 + 继续处理下一个 PR |
 
-**GITIGNORE_MISSING fix instructions**:
+**GITIGNORE_MISSING 修复说明**：
 ```
-.worktrees/ is not in .gitignore. Add it to avoid accidentally committing worktree files:
+.worktrees/ 不在 .gitignore 中。请添加以避免意外提交工作树文件：
   echo ".worktrees/" >> .gitignore
-Then re-run Phase 4.
+然后重新运行第 4 阶段。
 ```
 
-### Step 4.4 — Update existing worktrees
+### 步骤 4.4 — 更新已存在的工作树
 
-If any `STATUS:EXISTING` collected, offer a single prompt:
+若收集到任何 `STATUS:EXISTING`，提供单一提示：
 
 ```
-Existing worktrees detected:
+检测到已存在的工作树：
   PR #123 — .worktrees/feat-oauth2
   PR #789 — .worktrees/fix-session-leak
 
-- [Pull all] git pull --ff-only in all existing worktrees
-- [#123] Pull PR #123 only
-- [Skip] Leave as-is
+- [全部更新] 在所有已存在的工作树中执行 git pull --ff-only
+- [#123] 仅更新 PR #123
+- [跳过] 保持不变
 ```
 
-For each selected pull, Claude runs (one command per worktree):
+对每个选择更新的工作树，Claude 运行（每个工作树一个命令）：
 
 ```bash
 PR_NUM="123"
@@ -543,35 +543,35 @@ cd "$WORKTREE_DIR" && git pull origin "$BRANCH_NAME" --ff-only 2>/tmp/wt-pull-$P
 echo "PULL_STATUS:$?:$PR_NUM"
 ```
 
-If `PULL_STATUS` ≠ 0:
+若 `PULL_STATUS` ≠ 0：
 ```
-⚠️ PR #123 — --ff-only failed (branches have diverged)
-   Manual fix: cd .worktrees/feat-oauth2 && git pull --rebase
+⚠️ PR #123 — --ff-only 失败（分支已分叉）
+   手动修复：cd .worktrees/feat-oauth2 && git pull --rebase
 ```
 
-### Step 4.5 — Summary
+### 步骤 4.5 — 汇总
 
 ```
-## Worktrees ready
+## 工作树已就绪
 
-| PR | Author | Branch | Path | Status |
+| PR | 作者 | 分支 | 路径 | 状态 |
 |----|--------|--------|------|--------|
-| #123 | Alice | feat/oauth2 | .worktrees/feat-oauth2 | Created |
-| #456 | Bob | fix/empty-response | .worktrees/fix-empty-response | Created |
-| #789 | Alice | fix/session-leak | .worktrees/fix-session-leak | Updated (pull) |
-| #321 | Carol | feat/chat | .worktrees/feat-chat | Fetch failed ⚠️ |
+| #123 | Alice | feat/oauth2 | .worktrees/feat-oauth2 | 已创建 |
+| #456 | Bob | fix/empty-response | .worktrees/fix-empty-response | 已创建 |
+| #789 | Alice | fix/session-leak | .worktrees/fix-session-leak | 已更新（pull）|
+| #321 | Carol | feat/chat | .worktrees/feat-chat | 拉取失败 ⚠️ |
 
-Note: if a PR modifies package.json, install dependencies manually:
-  cd .worktrees/<branch-name> && npm install   # or pnpm/yarn/bun
+注意：若某 PR 修改了 package.json，请手动安装依赖：
+  cd .worktrees/<branch-name> && npm install   # 或 pnpm/yarn/bun
 
-Next steps:
+后续步骤：
   cd .worktrees/<branch-name>
   claude
 ```
 
-### `.worktreeinclude` convention
+### `.worktreeinclude` 约定
 
-Create a `.worktreeinclude` file at the repo root to list files Phase 4 copies into each new worktree. Useful for local config files not tracked in git:
+在仓库根目录创建 `.worktreeinclude` 文件，列出第 4 阶段复制到每个新工作树的文件。适用于未被 git 追踪的本地配置文件：
 
 ```
 # .worktreeinclude
@@ -582,46 +582,46 @@ config/local.json
 
 ---
 
-## Edge Cases
+## 边界情况
 
-| Situation | Behavior |
+| 情况 | 处理行为 |
 |-----------|----------|
-| 0 open PRs | Display `No open PRs.` + stop |
-| Draft PR | Show in table, skip for review unless explicitly selected |
-| Unknown CI | Display `?` in CI column |
-| Review agent timeout | Show partial error, continue with others |
-| `gh pr diff` empty | Skip this PR, notify user |
-| Very large PR (>5000 additions) | Warn: "Partial review, diff truncated" |
-| Collaborators API 403/404 | Fallback to last 10 merged PR authors |
-| Parallel agents unavailable | Run sequential reviews, notify user |
-| Phase 4: `.gitignore` missing `.worktrees/` | Fail-fast, show fix instructions, stop Phase 4 |
-| Phase 4: branch already checked out | Warn with `git worktree list` hint, skip this PR |
-| Phase 4: stale cache (>30min) | Re-fetch PR list before creating worktrees |
-| Phase 4: PR modifies `package.json` | Warn in summary to run install manually |
-| Phase 4: 0 non-draft PRs | Display message + end Phase 4 |
+| 0 个开放 PR | 显示 `No open PRs.` + 停止 |
+| 草稿 PR | 在表格中显示，除非明确选择否则跳过审查 |
+| 未知 CI | CI 列显示 `?` |
+| 审查 Agent 超时 | 显示部分错误，继续处理其他 PR |
+| `gh pr diff` 为空 | 跳过此 PR，通知用户 |
+| 超大 PR（> 5000 新增行数）| 警告："部分审查，差异已截断" |
+| 协作者 API 403/404 | 回退至最近 10 个合并 PR 的作者 |
+| 并行 Agent 不可用 | 顺序执行审查，通知用户 |
+| 第 4 阶段：`.gitignore` 缺少 `.worktrees/` | 快速失败，显示修复说明，停止第 4 阶段 |
+| 第 4 阶段：分支已被检出 | 显示 `git worktree list` 提示的警告，跳过此 PR |
+| 第 4 阶段：缓存过期（> 30 分钟）| 在创建工作树前重新获取 PR 列表 |
+| 第 4 阶段：PR 修改了 `package.json` | 在摘要中警告需手动运行安装 |
+| 第 4 阶段：0 个非草稿 PR | 显示提示 + 结束第 4 阶段 |
 
 ---
 
-## Notes
+## 注意事项
 
-- Always derive owner/repo via `gh repo view`, never hardcode
-- Use `gh` CLI (not `curl` GitHub API) except for collaborators list
-- `statusCheckRollup` can be null → treat as `?`
-- `mergeable` can be `MERGEABLE`, `CONFLICTING`, or `UNKNOWN` → treat `UNKNOWN` as `?`
-- Never post without explicit user validation in chat
-- Drafted comments must be visible BEFORE any `gh pr comment`
+- 始终通过 `gh repo view` 获取 owner/repo，绝不硬编码
+- 使用 `gh` CLI（而非 `curl` GitHub API），协作者列表除外
+- `statusCheckRollup` 可能为 null → 视为 `?`
+- `mergeable` 可以是 `MERGEABLE`、`CONFLICTING` 或 `UNKNOWN` → 将 `UNKNOWN` 视为 `?`
+- 未经用户在对话中明确验证，绝不发布评论
+- 评论草稿必须在任何 `gh pr comment` 执行前可见
 
 ---
 
-## Related: /review-pr
+## 关联：/review-pr
 
 | | `/pr-triage` | `/review-pr` |
 |--|-------------|--------------|
-| **Scope** | Full PR backlog | Single PR |
-| **Use when** | Catching up after accumulation, periodic triage | Reviewing a specific incoming PR |
-| **Phases** | 4 (audit + deep review + comments + worktrees) | 1 (review only) |
-| **Agents** | Parallel sub-agents per PR | Single session |
-| **Output** | Triage table + review reports + GitHub comments + local worktrees | Inline review |
-| **Validation** | AskUserQuestion before posting | Manual decision |
+| **范围** | 完整 PR 待办 | 单个 PR |
+| **适用场景** | 积压后跟进、周期性分类处理 | 审查特定的新 PR |
+| **阶段** | 4 个（审计 + 深度审查 + 评论 + 工作树） | 1 个（仅审查） |
+| **Agent** | 每个 PR 并行启动子 Agent | 单一会话 |
+| **输出** | 分类处理表格 + 审查报告 + GitHub 评论 + 本地工作树 | 行内审查 |
+| **验证** | 发布前通过 AskUserQuestion 确认 | 手动决定 |
 
-**Decision rule**: use `/pr-triage` for backlog triage (5+ PRs), `/review-pr` for focused review of a single PR. Use Phase 4 when you want to run the code locally rather than just reading the diff.
+**决策规则**：积压分类处理（5 个以上 PR）使用 `/pr-triage`，专注审查单个 PR 使用 `/review-pr`。若需在本地运行代码而非仅阅读差异，使用第 4 阶段。

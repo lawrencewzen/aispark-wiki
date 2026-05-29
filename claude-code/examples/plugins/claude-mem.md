@@ -1,76 +1,76 @@
 > 📚 **AI Spark Wiki** · Claude Code 知识库
 
 ---
-title: "claude-mem Plugin Template"
-description: "Automatic persistent memory plugin capturing tool calls and decisions across sessions"
+title: "claude-mem 插件模板"
+description: "自动持久化记忆插件，跨会话捕获工具调用和决策记录"
 tags: [plugin, memory, integration]
 ---
 
-# claude-mem Plugin Template
+# claude-mem 插件模板
 
-**Purpose**: Automatic persistent memory across Claude Code sessions
-**Repository**: https://github.com/thedotmack/claude-mem
-**Type**: Official plugin (26.5k+ stars)
-**Version**: v10.6.3
-**License**: AGPL-3.0 + PolyForm Noncommercial
-
----
-
-## What It Does
-
-claude-mem automatically captures **everything Claude does** during your coding sessions:
-- Tool calls (Read, Edit, Bash, Grep, etc.)
-- Observations and discoveries
-- Architectural decisions
-- File modifications
-
-Then **intelligently injects** relevant context when you reconnect to the project.
-
-**Result**: No more "what did we do last time?" → Claude remembers.
+**用途**：在 Claude Code 会话之间自动持久化记忆
+**仓库**：https://github.com/thedotmack/claude-mem
+**类型**：官方插件（26.5k+ stars）
+**版本**：v10.6.3
+**许可证**：AGPL-3.0 + PolyForm Noncommercial
 
 ---
 
-## Installation
+## 功能介绍
 
-### Via Plugin Marketplace (Recommended)
+claude-mem 会自动捕获**Claude 在编码会话中所做的一切**：
+- 工具调用（Read、Edit、Bash、Grep 等）
+- 观察与发现
+- 架构决策
+- 文件修改
+
+并在你重新连接项目时**智能注入**相关上下文。
+
+**效果**：再也不用问"上次我们做了什么？"——Claude 会记得。
+
+---
+
+## 安装
+
+### 通过插件市场安装（推荐）
 
 ```bash
-# Add marketplace
+# 添加插件市场
 /plugin marketplace add thedotmack/claude-mem
 
-# Install plugin
+# 安装插件
 /plugin install claude-mem
 
-# Restart Claude Code
+# 重启 Claude Code
 exit
 claude
 ```
 
-### Manual Installation
+### 手动安装
 
 ```bash
-# Requires Bun runtime (not Node) — install first if needed:
+# 需要 Bun 运行时（非 Node）——如未安装请先执行：
 # curl -fsSL https://bun.sh/install | bash
 
-# Clone repository
+# 克隆仓库
 git clone https://github.com/thedotmack/claude-mem.git ~/.claude/plugins/claude-mem
 
-# Install dependencies
+# 安装依赖
 cd ~/.claude/plugins/claude-mem
 bun install
 
-# Restart Claude Code
+# 重启 Claude Code
 ```
 
-> **Dependency**: claude-mem's worker runs on [Bun](https://bun.sh), not Node. If you only have Node installed, install Bun first. Without it, the worker won't start and sessions won't be captured (fail-open — Claude Code continues working, just without memory capture).
+> **依赖说明**：claude-mem 的 worker 运行在 [Bun](https://bun.sh) 上，而非 Node。如果你只安装了 Node，请先安装 Bun。缺少 Bun 时 worker 将无法启动，会话将不会被捕获（失败开放模式——Claude Code 仍可正常工作，只是没有记忆捕获功能）。
 
 ---
 
-## Configuration
+## 配置
 
-### Default Configuration
+### 默认配置
 
-claude-mem works **out of the box** with sensible defaults:
+claude-mem **开箱即用**，内置合理的默认值：
 
 ```json
 {
@@ -92,11 +92,11 @@ claude-mem works **out of the box** with sensible defaults:
 }
 ```
 
-> ⚠️ **Security**: Always use `host: "127.0.0.1"`, never `"0.0.0.0"`. The `GET /api/settings` endpoint returns API keys in plain text — any local process (browser extension, npm package) can read it. Localhost-only binding reduces the attack surface but does not eliminate it on shared machines.
+> ⚠️ **安全提示**：始终使用 `host: "127.0.0.1"`，切勿使用 `"0.0.0.0"`。`GET /api/settings` 接口会以明文返回 API 密钥——任何本地进程（浏览器扩展、npm 包）都可以读取到。仅绑定本地回环地址可减少攻击面，但在共享机器上并不能完全消除风险。
 
-### Custom Configuration
+### 自定义配置
 
-Create `~/.claude-mem/config.json`:
+创建 `~/.claude-mem/config.json`：
 
 ```json
 {
@@ -119,115 +119,115 @@ Create `~/.claude-mem/config.json`:
 }
 ```
 
-**Options**:
+**配置项说明**：
 
-| Option | Values | Description |
-|--------|--------|-------------|
-| `compression.enabled` | true/false | Enable AI compression (default: true) |
-| `compression.summaryLength` | short/medium/long | Summary verbosity |
-| `privacy.autoDetectSecrets` | true/false | Auto-detect API keys (default: false) |
-| `storage.maxObservations` | number | Max observations to store |
-| `storage.retentionDays` | number | Auto-delete after N days |
-
----
-
-## Usage
-
-### Automatic Capture (Default Behavior)
-
-**No commands needed** — claude-mem automatically:
-
-1. **Captures** tool usage via lifecycle hooks
-2. **Compresses** observations with AI summaries
-3. **Indexes** via Chroma vector database
-4. **Injects** relevant context at session start
-
-**Example Session Flow**:
-
-```
-Session 1 (Day 1):
-User: "Explore auth module"
-Claude: [Reads auth.service.ts, session.middleware.ts]
-claude-mem: [Captures] "Auth exploration: JWT validation, session middleware"
-
-Session 2 (Day 2):
-Claude: [Auto-injected]
-"Previously: Explored auth module.
- Files: auth.service.ts, session.middleware.ts
- Key finding: JWT validation in validateToken()"
-User: "Refactor auth to use jose library"
-Claude: [Already has context, no re-reading]
-```
+| 配置项 | 可选值 | 说明 |
+|--------|--------|------|
+| `compression.enabled` | true/false | 启用 AI 压缩（默认：true） |
+| `compression.summaryLength` | short/medium/long | 摘要详细程度 |
+| `privacy.autoDetectSecrets` | true/false | 自动检测 API 密钥（默认：false） |
+| `storage.maxObservations` | 数字 | 最大存储观察条数 |
+| `storage.retentionDays` | 数字 | N 天后自动删除 |
 
 ---
 
-### Available Skills
+## 使用方法
 
-claude-mem ships 5 skills accessible via `/claude-mem:<skill>`:
+### 自动捕获（默认行为）
 
-| Skill | Trigger | Use case |
-|-------|---------|----------|
-| `mem-search` | "How did we fix X?" | Search session history by natural language |
-| `smart-explore` | "Explore the auth module" | AST-based code navigation (token-efficient) |
-| `make-plan` | "Plan a refactor of Y" | Phased implementation plan with doc discovery |
-| `do` | "Execute the plan" | Runs a `make-plan` output via sub-agents |
-| `timeline-report` | "Show my journey" | Narrative report of full project history |
+**无需任何命令**——claude-mem 会自动：
 
-### Natural Language Search (`mem-search` Skill)
+1. **捕获**通过生命周期钩子触发的工具调用
+2. **压缩**观察记录并生成 AI 摘要
+3. **索引**至 Chroma 向量数据库
+4. **注入**会话开始时的相关上下文
 
-Search your session history using natural language:
+**会话示例流程**：
+
+```
+会话 1（第 1 天）：
+用户："探索 auth 模块"
+Claude：[读取 auth.service.ts、session.middleware.ts]
+claude-mem：[捕获] "Auth 探索：JWT 验证，会话中间件"
+
+会话 2（第 2 天）：
+Claude：[自动注入]
+"上次：探索了 auth 模块。
+ 文件：auth.service.ts、session.middleware.ts
+ 关键发现：validateToken() 中的 JWT 验证"
+用户："将 auth 重构为使用 jose 库"
+Claude：[已有上下文，无需重新读取]
+```
+
+---
+
+### 可用技能
+
+claude-mem 内置 5 个技能，通过 `/claude-mem:<技能名>` 调用：
+
+| 技能 | 触发方式 | 使用场景 |
+|------|----------|----------|
+| `mem-search` | "我们是怎么修复 X 的？" | 通过自然语言搜索会话历史 |
+| `smart-explore` | "探索 auth 模块" | 基于 AST 的代码导航（节省 token） |
+| `make-plan` | "规划 Y 的重构" | 生成带文档发现的分阶段实施计划 |
+| `do` | "执行计划" | 通过子智能体运行 `make-plan` 输出 |
+| `timeline-report` | "展示我的历程" | 生成完整项目历史的叙述报告 |
+
+### 自然语言搜索（`mem-search` 技能）
+
+用自然语言搜索你的会话历史：
 
 ```bash
-# Search for specific topics
-"Search my memory for authentication decisions"
-"What files did we modify for the payment bug?"
-"Remind me why we chose Zod over Yup"
-"Show me all sessions where we worked on the API"
+# 搜索特定主题
+"搜索我的记忆中关于认证的决策"
+"我们为修复支付 bug 改了哪些文件？"
+"提醒我为什么选了 Zod 而不是 Yup"
+"展示所有我们处理 API 的会话"
 ```
 
-The skill returns:
-- Matching sessions with summaries
-- Relevant observations (typed: DISCOVERY / CHANGE / FEATURE / BUGFIX)
-- File modification history
-- Architectural decisions
+技能返回内容：
+- 匹配会话及摘要
+- 相关观察记录（类型：DISCOVERY / CHANGE / FEATURE / BUGFIX）
+- 文件修改历史
+- 架构决策
 
 ---
 
-### Web Dashboard
+### Web 控制台
 
-Access real-time UI at `http://localhost:37777`:
+访问 `http://localhost:37777` 查看实时 UI：
 
 ```bash
-# Open dashboard
+# 打开控制台
 open http://localhost:37777
 
-# Features:
-# - Timeline view (all sessions chronologically)
-# - Natural language search bar
-# - Observation details (tool calls + results)
-# - Session statistics (duration, tool usage, files modified)
-# - Export/import functionality
+# 功能：
+# - 时间线视图（按时间顺序展示所有会话）
+# - 自然语言搜索栏
+# - 观察记录详情（工具调用 + 结果）
+# - 会话统计（时长、工具使用量、修改文件数）
+# - 导出/导入功能
 ```
 
-**Dashboard Sections**:
+**控制台模块**：
 
-| Section | Description |
-|---------|-------------|
-| **Timeline** | Chronological view of all sessions |
-| **Search** | Natural language query interface |
-| **Sessions** | List view with filters |
-| **Statistics** | Usage analytics and trends |
-| **Settings** | Privacy controls, storage management |
+| 模块 | 说明 |
+|------|------|
+| **时间线** | 所有会话的时间顺序视图 |
+| **搜索** | 自然语言查询界面 |
+| **会话** | 带过滤器的列表视图 |
+| **统计** | 使用分析与趋势 |
+| **设置** | 隐私控制、存储管理 |
 
 ---
 
-### Privacy Controls
+### 隐私控制
 
-#### Using `<private>` Tags
+#### 使用 `<private>` 标签
 
 ```markdown
-<!-- In your prompts -->
-Modify the database connection to use:
+<!-- 在你的提示中使用 -->
+请将数据库连接修改为：
 <private>
 Host: prod-db-123.aws.com
 Username: admin
@@ -235,64 +235,64 @@ Password: super-secret-password
 API Key: sk-1234567890abcdef
 </private>
 
-<!-- claude-mem excludes content between <private> tags -->
+<!-- claude-mem 会排除 <private> 标签之间的内容 -->
 ```
 
-#### Manually Exclude Observations
+#### 手动删除观察记录
 
 ```bash
-# Delete specific observation
+# 删除特定观察记录
 curl -X DELETE http://localhost:37777/api/observations/obs_123
 
-# Clear all observations for a session
+# 清除某个会话的所有观察记录
 curl -X DELETE http://localhost:37777/api/sessions/session_456/observations
 ```
 
-#### Data Location
+#### 数据存储位置
 
 ```bash
-# Database location
+# 数据库位置
 ~/.claude-mem/claude-mem.db
 
-# Chroma index
+# Chroma 索引
 ~/.claude-mem/chroma/
 
-# View database size
+# 查看数据库大小
 du -sh ~/.claude-mem/
 ```
 
 ---
 
-## Advanced Features
+## 高级功能
 
-### Progressive Disclosure
+### 渐进式披露
 
-claude-mem uses a 3-layer approach to minimize tokens:
+claude-mem 采用 3 层方式最小化 token 消耗：
 
 ```
-Layer 1: Search (50-100 tokens)
-├─ Query: "Find authentication work"
-├─ Returns: 5 session summaries
+第 1 层：搜索（50-100 个 token）
+├─ 查询："查找认证相关工作"
+├─ 返回：5 个会话摘要
 │
-Layer 2: Timeline (500-1000 tokens)
-├─ Query: "Show session abc123 timeline"
-├─ Returns: Observation list
+第 2 层：时间线（500-1000 个 token）
+├─ 查询："显示会话 abc123 的时间线"
+├─ 返回：观察记录列表
 │
-Layer 3: Details (full context)
-└─ Query: "Get observation obs_456 details"
-    Returns: Complete tool call + result
+第 3 层：详情（完整上下文）
+└─ 查询："获取观察记录 obs_456 的详情"
+    返回：完整工具调用 + 结果
 ```
 
-**Token savings**: ~10x reduction vs loading full history.
+**节省 token**：相比加载完整历史，约减少 10 倍。
 
 ---
 
-### Endless Mode (Beta)
+### 无限模式（Beta）
 
-Experimental feature for extended sessions:
+用于长时间会话的实验性功能：
 
 ```bash
-# Enable in config
+# 在配置中启用
 {
   "experimental": {
     "endlessMode": true
@@ -300,34 +300,34 @@ Experimental feature for extended sessions:
 }
 ```
 
-**Claims** (not independently verified):
-- ~95% context reduction
-- 20x more tool calls before hitting limits
-- Aggressive compression + smart summarization
+**声称效果**（未经独立验证）：
+- 上下文减少约 95%
+- 触及限制前可执行 20 倍以上的工具调用
+- 激进压缩 + 智能摘要
 
-⚠️ **Note**: Beta feature, use with caution in production.
+⚠️ **注意**：Beta 功能，生产环境谨慎使用。
 
 ---
 
-### Export/Import
+### 导出/导入
 
-**Export session history**:
+**导出会话历史**：
 
 ```bash
-# Via dashboard
+# 通过控制台
 http://localhost:37777/export
 
-# Via CLI
+# 通过 CLI
 curl http://localhost:37777/api/export > claude-mem-backup.json
 ```
 
-**Import on another machine**:
+**在其他机器上导入**：
 
 ```bash
-# Via dashboard
+# 通过控制台
 http://localhost:37777/import
 
-# Via CLI
+# 通过 CLI
 curl -X POST http://localhost:37777/api/import \
   -H "Content-Type: application/json" \
   -d @claude-mem-backup.json
@@ -335,20 +335,20 @@ curl -X POST http://localhost:37777/api/import \
 
 ---
 
-## Cost Considerations
+## 费用说明
 
-### API Compression Costs
+### API 压缩费用
 
-| Usage Level | Sessions/Month | Observations | Est. Cost (Claude Haiku) | Est. Cost (Gemini Lite) |
-|-------------|----------------|--------------|--------------------------|-------------------------|
-| **Light** | 10-20 | 200-400 | $0.30-0.60 | ~$0.05 |
-| **Medium** | 50-80 | 1000-1600 | $1.50-2.40 | ~$0.20 |
-| **Heavy** | 100-150 | 2000-3000 | $3.00-4.50 | ~$0.45 |
-| **Very heavy** | ~400 sessions | ~8000 | ~$102 | ~$14 |
+| 使用强度 | 会话数/月 | 观察条数 | 预估费用（Claude Haiku） | 预估费用（Gemini Lite） |
+|----------|-----------|----------|--------------------------|------------------------|
+| **轻度** | 10-20 | 200-400 | $0.30-0.60 | ~$0.05 |
+| **中度** | 50-80 | 1000-1600 | $1.50-2.40 | ~$0.20 |
+| **重度** | 100-150 | 2000-3000 | $3.00-4.50 | ~$0.45 |
+| **极重度** | ~400 次会话 | ~8000 | ~$102 | ~$14 |
 
-**Formula**: ~$0.15 per 100 observations (Claude Haiku) vs ~$0.02 (Gemini 2.5 Flash Lite)
+**计算公式**：每 100 条观察约 $0.15（Claude Haiku）或约 $0.02（Gemini 2.5 Flash Lite）
 
-**Switch to Gemini for -86% cost**:
+**切换至 Gemini 可降低 86% 费用**：
 
 ```json
 // ~/.claude-mem/settings.json
@@ -359,9 +359,9 @@ curl -X POST http://localhost:37777/api/import \
 }
 ```
 
-> **Flash vs Flash Lite tradeoff**: Gemini 2.5 Flash Lite costs less but generates weaker summaries. For most projects this is acceptable. For complex long-running projects where injected context precision matters, consider Gemini 2.5 Flash (non-Lite).
+> **Flash 与 Flash Lite 的权衡**：Gemini 2.5 Flash Lite 成本更低，但生成的摘要质量较弱。对大多数项目来说是可以接受的。对于上下文注入精度要求较高的复杂长期项目，建议使用 Gemini 2.5 Flash（非 Lite 版）。
 
-**Reducing costs further (batching)**:
+**进一步降低费用（批处理）**：
 
 ```json
 {
@@ -372,21 +372,21 @@ curl -X POST http://localhost:37777/api/import \
 }
 ```
 
-Batch compression (hourly) reduces API calls vs per-observation compression.
+批量压缩（按小时执行）相比逐条压缩可减少 API 调用次数。
 
 ---
 
-### Storage Costs
+### 存储费用
 
-**Local storage** (SQLite + Chroma):
+**本地存储**（SQLite + Chroma）：
 
-| Usage Level | Storage |
-|-------------|---------|
-| **Light** (10 sessions/week) | 10-20 MB/month |
-| **Medium** (50 sessions/week) | 50-100 MB/month |
-| **Heavy** (100 sessions/week) | 100-200 MB/month |
+| 使用强度 | 存储量 |
+|----------|--------|
+| **轻度**（10 次会话/周） | 每月 10-20 MB |
+| **中度**（50 次会话/周） | 每月 50-100 MB |
+| **重度**（100 次会话/周） | 每月 100-200 MB |
 
-**Cleanup strategies**:
+**清理策略**：
 
 ```json
 {
@@ -399,148 +399,148 @@ Batch compression (hourly) reduces API calls vs per-observation compression.
 
 ---
 
-## Troubleshooting
+## 排错
 
-### Dashboard Not Loading
+### 控制台无法加载
 
 ```bash
-# Check if worker is running
+# 检查 worker 是否正在运行
 curl http://localhost:37777/health
-# Expected: {"status":"ok"}
+# 预期：{"status":"ok"}
 
-# Restart worker
+# 重启 worker
 claude-mem restart
 
-# Check logs
+# 查看日志
 tail -f ~/.claude-mem/logs/worker.log
 ```
 
 ---
 
-### High API Costs
+### API 费用过高
 
 ```bash
-# Check observation count
+# 查看观察记录数量
 curl http://localhost:37777/api/stats
-# Returns: {"observations": 5234, "sessions": 123}
+# 返回：{"observations": 5234, "sessions": 123}
 
-# If too many observations:
-# 1. Enable batching
-# 2. Increase compression interval
-# 3. Lower retention days
+# 若观察记录过多：
+# 1. 启用批处理
+# 2. 增大压缩间隔
+# 3. 缩短保留天数
 ```
 
 ---
 
-### Memory Not Injected
+### 记忆未被注入
 
 ```bash
-# Verify indexation
+# 验证索引状态
 curl http://localhost:37777/api/index/status
-# Expected: {"indexed": true, "observations": 1234}
+# 预期：{"indexed": true, "observations": 1234}
 
-# Manually trigger re-indexation
+# 手动触发重建索引
 curl -X POST http://localhost:37777/api/index/rebuild
 ```
 
 ---
 
-### Database Corruption
+### 数据库损坏
 
 ```bash
-# Backup first
+# 先备份
 cp ~/.claude-mem/claude-mem.db ~/.claude-mem/claude-mem.db.backup
 
-# Rebuild index
+# 重建索引
 claude-mem index rebuild
 
-# If still broken, reset (⚠️ loses all data)
+# 若仍无法修复，重置（⚠️ 将丢失所有数据）
 rm -rf ~/.claude-mem/
 claude-mem init
 ```
 
 ---
 
-## License Considerations
+## 许可证说明
 
 ### AGPL-3.0
 
-**What it means**:
+**含义**：
 
-- ✅ Free for personal use
-- ✅ Free for open-source projects
-- ⚠️ Network use = must disclose source
-- ⚠️ Modifications = must disclose source
-- ❌ Can't use in closed-source SaaS without compliance
+- ✅ 个人使用免费
+- ✅ 开源项目免费
+- ⚠️ 网络使用 = 必须披露源代码
+- ⚠️ 修改代码 = 必须披露源代码
+- ❌ 不合规情况下不可用于闭源 SaaS
 
-**Commercial use**:
+**商业使用**：
 
-If using in commercial product:
-1. Review AGPL-3.0 requirements
-2. Consider legal compliance
-3. Alternative: Contact author for commercial license
+若用于商业产品：
+1. 审查 AGPL-3.0 要求
+2. 考虑法律合规性
+3. 替代方案：联系作者获取商业授权
 
-**PolyForm Noncommercial** (ragtime/ directory):
-- Separate license for specific components
-- Stricter commercial restrictions
-
----
-
-## When to Use claude-mem
-
-### ✅ Use When:
-
-- Multi-session projects (>1 week)
-- Need to remember decisions across days/weeks
-- Frequently reconnect to same project
-- Value automatic capture over manual note-taking
-- Want web dashboard for exploration
-
-### ❌ Don't Use When:
-
-- One-off quick tasks (<10 minutes)
-- Extremely sensitive data (consider manual Serena instead)
-- Commercial projects without AGPL compliance review
-- Need cross-machine sync (not supported natively)
-- Budget constraints (<$5/month for API compression)
+**PolyForm Noncommercial**（ragtime/ 目录）：
+- 特定组件的独立许可证
+- 商业限制更为严格
 
 ---
 
-## Comparison to Alternatives
+## 适用场景
 
-| Tool | Purpose | Capture | Query |
-|------|---------|---------|-------|
-| **claude-mem** | Session memory | Auto (hooks) | Natural language |
-| **Serena** | Symbol memory | Manual (`write_memory`) | Key lookup |
-| **grepai** | Semantic search | N/A (search only) | Semantic |
-| **CLAUDE.md** | Project context | Manual (write file) | Claude reads on start |
+### ✅ 推荐使用：
 
-**Best used together**:
-- claude-mem: Automatic session capture
-- Serena: Manual architectural decisions
-- grepai: Code discovery
-- CLAUDE.md: Project guidelines
+- 多会话项目（超过 1 周）
+- 需要跨天/跨周记住决策
+- 频繁重新连接同一项目
+- 相比手动记录，更倾向自动捕获
+- 需要 Web 控制台进行探索
+
+### ❌ 不推荐使用：
+
+- 一次性快速任务（不足 10 分钟）
+- 极度敏感的数据（建议改用手动方式的 Serena）
+- 未经 AGPL 合规审查的商业项目
+- 需要跨机器同步（原生不支持）
+- 预算有限（API 压缩费用 < $5/月）
 
 ---
 
-## Resources
+## 与同类工具对比
 
-**Official**:
-- [GitHub Repository](https://github.com/thedotmack/claude-mem)
-- [Documentation](https://github.com/thedotmack/claude-mem/wiki)
-- [Release Notes](https://github.com/thedotmack/claude-mem/releases)
+| 工具 | 用途 | 捕获方式 | 查询方式 |
+|------|------|----------|----------|
+| **claude-mem** | 会话记忆 | 自动（钩子） | 自然语言 |
+| **Serena** | 符号记忆 | 手动（`write_memory`） | 键值查找 |
+| **grepai** | 语义搜索 | 不适用（仅搜索） | 语义 |
+| **CLAUDE.md** | 项目上下文 | 手动（写文件） | Claude 启动时读取 |
 
-**Guides**:
-- [Corti.com: Deep Dive](https://corti.com/claude-mem-persistent-memory-for-ai-coding-assistants/)
-- [yuv.ai: Setup Guide](https://yuv.ai/blog/claude-mem)
-- [YouTube: 5-Minute Setup](https://www.youtube.com/watch?v=ryqpGVWRQxA)
+**最佳组合使用**：
+- claude-mem：自动会话捕获
+- Serena：手动架构决策
+- grepai：代码发现
+- CLAUDE.md：项目规范
 
-**Community**:
+---
+
+## 资源链接
+
+**官方**：
+- [GitHub 仓库](https://github.com/thedotmack/claude-mem)
+- [文档](https://github.com/thedotmack/claude-mem/wiki)
+- [发布说明](https://github.com/thedotmack/claude-mem/releases)
+
+**指南**：
+- [Corti.com：深度解析](https://corti.com/claude-mem-persistent-memory-for-ai-coding-assistants/)
+- [yuv.ai：安装指南](https://yuv.ai/blog/claude-mem)
+- [YouTube：5 分钟快速配置](https://www.youtube.com/watch?v=ryqpGVWRQxA)
+
+**社区**：
 - [GitHub Issues](https://github.com/thedotmack/claude-mem/issues)
 - [GitHub Discussions](https://github.com/thedotmack/claude-mem/discussions)
 
 ---
 
-**Template Version**: 1.1.0
-**Last Updated**: 2026-03-30
-**Guide Version**: 3.38.1
+**模板版本**：1.1.0
+**最后更新**：2026-03-30
+**指南版本**：3.38.1

@@ -1,134 +1,134 @@
 > 📚 **AI Spark Wiki** · Claude Code 知识库
 
 ---
-title: "Design Pattern Quality Evaluation Checklist"
-description: "Systematic scoring criteria for evaluating design pattern implementation quality"
+title: "设计模式质量评估检查清单"
+description: "用于评估设计模式实现质量的系统化评分标准"
 tags: [cheatsheet, design-patterns, code-review]
 ---
 
-# Design Pattern Quality Evaluation Checklist
+# 设计模式质量评估检查清单
 
-Systematic criteria for evaluating the quality of design pattern implementations.
+用于评估设计模式实现质量的系统化标准。
 
-## Evaluation Criteria
+## 评估标准
 
-Each criterion is scored **0-10**, where:
-- **9-10**: Exemplary, reference-quality implementation
-- **7-8**: Good, minor improvements possible
-- **5-6**: Acceptable, notable issues to address
-- **3-4**: Problematic, significant refactoring needed
-- **0-2**: Incorrect or severely flawed
+每项标准评分范围为 **0-10**，其中：
+- **9-10**：典范级，可作为参考实现的质量
+- **7-8**：良好，有小幅改进空间
+- **5-6**：可接受，存在需要处理的明显问题
+- **3-4**：有问题，需要大规模重构
+- **0-2**：错误或存在严重缺陷
 
-**Overall Score** = Average of all criteria scores
-
----
-
-## 1. Correctness (0-10)
-
-**Question**: Does the implementation correctly follow the canonical pattern structure?
-
-### Scoring Guidelines
-
-| Score | Description |
-|-------|-------------|
-| 9-10  | Perfect adherence to pattern structure, all roles present and correctly implemented |
-| 7-8   | Minor deviations that don't compromise pattern intent |
-| 5-6   | Some structural issues but pattern is recognizable and functional |
-| 3-4   | Significant structural problems, pattern only partially implemented |
-| 0-2   | Incorrect implementation, doesn't match pattern at all |
-
-### Checklist
-
-**Singleton**:
-- [ ] Private constructor
-- [ ] Static getInstance() method
-- [ ] Private static instance field
-- [ ] Thread-safe (if relevant)
-- [ ] Returns same instance every time
-
-**Observer**:
-- [ ] Subject interface with attach/detach/notify
-- [ ] Observer interface with update method
-- [ ] Subject maintains list of observers
-- [ ] Notify calls update on all observers
-- [ ] Observers can be added/removed dynamically
-
-**Strategy**:
-- [ ] Strategy interface defining algorithm
-- [ ] Context holds strategy reference
-- [ ] Context delegates to strategy
-- [ ] Strategies are interchangeable
-- [ ] Client can set strategy at runtime
-
-**Factory Method**:
-- [ ] Factory method returns interface/abstract class
-- [ ] Subclasses override factory method
-- [ ] Client code depends on interface, not concrete classes
-- [ ] Creation logic is encapsulated
-
-**Decorator**:
-- [ ] Decorator implements same interface as wrapped object
-- [ ] Decorator holds reference to wrapped object
-- [ ] Decorator delegates to wrapped object
-- [ ] Can stack multiple decorators
-- [ ] Maintains interface contract
-
-### Common Mistakes (Deductions)
-
-- **-2**: Missing key component (e.g., Singleton without private constructor)
-- **-3**: Incorrect delegation (e.g., Decorator not calling wrapped object)
-- **-4**: Breaking pattern invariants (e.g., Singleton returning different instances)
+**综合得分** = 所有标准分数的平均值
 
 ---
 
-## 2. Testability (0-10)
+## 1. 正确性（0-10）
 
-**Question**: How easy is it to write unit tests for this implementation?
+**问题**：实现是否正确遵循了规范的模式结构？
 
-### Scoring Guidelines
+### 评分指南
 
-| Score | Description |
+| 分数 | 描述 |
 |-------|-------------|
-| 9-10  | Easily mockable, injectable dependencies, no global state |
-| 7-8   | Testable with minor setup, some coupling exists |
-| 5-6   | Requires significant test setup, moderate coupling |
-| 3-4   | Hard to test, tight coupling, global state |
-| 0-2   | Nearly impossible to test, static dependencies, no injection points |
+| 9-10  | 完全遵循模式结构，所有角色均存在且正确实现 |
+| 7-8   | 存在轻微偏差，但不影响模式意图 |
+| 5-6   | 存在一些结构问题，但模式可识别且功能正常 |
+| 3-4   | 存在重大结构问题，模式仅部分实现 |
+| 0-2   | 实现错误，与模式完全不符 |
 
-### Checklist
+### 检查清单
 
-- [ ] Dependencies are injected (not created internally)
-- [ ] Interfaces are used (can be mocked)
-- [ ] No hard-coded dependencies
-- [ ] No global state access (or minimal)
-- [ ] Test isolation is possible (tests don't affect each other)
-- [ ] No static methods that can't be mocked
-- [ ] Side effects are minimized or controllable
+**单例模式（Singleton）**：
+- [ ] 私有构造函数
+- [ ] 静态 getInstance() 方法
+- [ ] 私有静态实例字段
+- [ ] 线程安全（如适用）
+- [ ] 每次返回相同实例
 
-### Red Flags (Deductions)
+**观察者模式（Observer）**：
+- [ ] Subject 接口包含 attach/detach/notify 方法
+- [ ] Observer 接口包含 update 方法
+- [ ] Subject 维护观察者列表
+- [ ] notify 调用所有观察者的 update
+- [ ] 观察者可以动态添加和移除
 
-- **-2**: Using `getInstance()` instead of dependency injection
-- **-2**: Hard-coded concrete class instantiation
-- **-3**: Accessing global state (window, global, process.env in business logic)
-- **-3**: Static methods with side effects
-- **-4**: No way to inject test doubles
+**策略模式（Strategy）**：
+- [ ] Strategy 接口定义算法
+- [ ] Context 持有策略引用
+- [ ] Context 委托给策略执行
+- [ ] 各策略可互换
+- [ ] 客户端可以在运行时设置策略
 
-### Examples
+**工厂方法模式（Factory Method）**：
+- [ ] 工厂方法返回接口或抽象类
+- [ ] 子类重写工厂方法
+- [ ] 客户端代码依赖接口而非具体类
+- [ ] 创建逻辑被封装
 
-**Bad Testability (Score: 2/10)**:
+**装饰器模式（Decorator）**：
+- [ ] 装饰器实现与被包装对象相同的接口
+- [ ] 装饰器持有被包装对象的引用
+- [ ] 装饰器委托给被包装对象
+- [ ] 可以叠加多个装饰器
+- [ ] 保持接口契约
+
+### 常见错误（扣分项）
+
+- **-2**：缺少关键组件（例如，单例模式缺少私有构造函数）
+- **-3**：委托不正确（例如，装饰器未调用被包装对象）
+- **-4**：破坏模式不变量（例如，单例模式返回不同实例）
+
+---
+
+## 2. 可测试性（0-10）
+
+**问题**：为该实现编写单元测试的难易程度如何？
+
+### 评分指南
+
+| 分数 | 描述 |
+|-------|-------------|
+| 9-10  | 易于模拟，依赖可注入，无全局状态 |
+| 7-8   | 仅需少量准备即可测试，存在一定耦合 |
+| 5-6   | 需要大量测试准备，耦合程度中等 |
+| 3-4   | 难以测试，紧耦合，存在全局状态 |
+| 0-2   | 几乎不可测试，静态依赖，无注入点 |
+
+### 检查清单
+
+- [ ] 依赖通过注入提供（而非内部创建）
+- [ ] 使用接口（可被模拟）
+- [ ] 无硬编码依赖
+- [ ] 无全局状态访问（或最小化）
+- [ ] 测试可以相互隔离（测试之间互不影响）
+- [ ] 无无法被模拟的静态方法
+- [ ] 副作用最小化或可控
+
+### 危险信号（扣分项）
+
+- **-2**：使用 `getInstance()` 而非依赖注入
+- **-2**：硬编码具体类实例化
+- **-3**：访问全局状态（业务逻辑中使用 window、global、process.env）
+- **-3**：带副作用的静态方法
+- **-4**：无法注入测试替身
+
+### 示例
+
+**可测试性差（得分：2/10）**：
 ```typescript
 class PaymentService {
   processPayment(amount: number) {
-    // Hard to test: creates dependency internally
+    // 难以测试：内部创建依赖
     const gateway = PaymentGateway.getInstance();
-    // Hard to test: accesses global config
+    // 难以测试：访问全局配置
     const apiKey = process.env.PAYMENT_API_KEY;
     return gateway.charge(amount, apiKey);
   }
 }
 ```
 
-**Good Testability (Score: 9/10)**:
+**可测试性好（得分：9/10）**：
 ```typescript
 class PaymentService {
   constructor(
@@ -142,7 +142,7 @@ class PaymentService {
   }
 }
 
-// Easy to test with mocks
+// 使用模拟对象轻松测试
 const mockGateway = { charge: jest.fn() };
 const mockConfig = { getPaymentApiKey: () => 'test-key' };
 const service = new PaymentService(mockGateway, mockConfig);
@@ -150,38 +150,38 @@ const service = new PaymentService(mockGateway, mockConfig);
 
 ---
 
-## 3. Single Responsibility Principle (0-10)
+## 3. 单一职责原则（0-10）
 
-**Question**: Does the component have one, clearly defined responsibility?
+**问题**：组件是否拥有一个明确定义的职责？
 
-### Scoring Guidelines
+### 评分指南
 
-| Score | Description |
+| 分数 | 描述 |
 |-------|-------------|
-| 9-10  | Single, focused responsibility; class has one reason to change |
-| 7-8   | Mostly focused, minor secondary concerns |
-| 5-6   | Multiple related responsibilities |
-| 3-4   | Several unrelated responsibilities |
-| 0-2   | God class with many responsibilities |
+| 9-10  | 职责单一且聚焦，类只有一个变更原因 |
+| 7-8   | 职责基本聚焦，存在少量次要关注点 |
+| 5-6   | 存在多个相关职责 |
+| 3-4   | 存在多个不相关职责 |
+| 0-2   | 上帝类，承担过多职责 |
 
-### Checklist
+### 检查清单
 
-- [ ] Class/module has one clear purpose
-- [ ] All methods relate to the primary responsibility
-- [ ] Changing one requirement doesn't necessitate changing this class
-- [ ] Class name clearly reflects its responsibility
-- [ ] No "and" in class name or description (e.g., "UserManagerAndLogger" is bad)
+- [ ] 类或模块有一个明确的目的
+- [ ] 所有方法均与主要职责相关
+- [ ] 更改某个需求不会导致必须修改此类
+- [ ] 类名清晰反映其职责
+- [ ] 类名或描述中不含"and"（例如，"UserManagerAndLogger"是不好的做法）
 
-### Red Flags (Deductions)
+### 危险信号（扣分项）
 
-- **-2**: Class handles 2 distinct concerns
-- **-3**: Class handles 3+ concerns
-- **-4**: God class (>20 methods, >300 lines)
-- **-1**: Methods unrelated to primary responsibility
+- **-2**：类处理 2 个不同的关注点
+- **-3**：类处理 3 个及以上关注点
+- **-4**：上帝类（方法超过 20 个，代码超过 300 行）
+- **-1**：存在与主要职责无关的方法
 
-### Examples
+### 示例
 
-**Poor SRP (Score: 3/10)**:
+**单一职责原则较差（得分：3/10）**：
 ```typescript
 class UserService {
   createUser(data: UserData) { /* ... */ }
@@ -189,11 +189,11 @@ class UserService {
   sendWelcomeEmail(user: User) { /* ... */ }
   logUserActivity(activity: string) { /* ... */ }
   generateReport(userId: string) { /* ... */ }
-  // Too many responsibilities: creation, validation, email, logging, reporting
+  // 职责过多：创建、验证、发邮件、日志记录、报告生成
 }
 ```
 
-**Good SRP (Score: 9/10)**:
+**单一职责原则良好（得分：9/10）**：
 ```typescript
 class UserService {
   constructor(
@@ -203,7 +203,7 @@ class UserService {
   ) {}
 
   createUser(data: UserData): User {
-    // Focuses only on user creation orchestration
+    // 仅专注于用户创建的编排
     this.validator.validate(data);
     const user = new User(data);
     this.emailService.sendWelcomeEmail(user);
@@ -215,51 +215,51 @@ class UserService {
 
 ---
 
-## 4. Open/Closed Principle (0-10)
+## 4. 开闭原则（0-10）
 
-**Question**: Can the component be extended without modifying its source code?
+**问题**：组件是否可以在不修改源代码的情况下进行扩展？
 
-### Scoring Guidelines
+### 评分指南
 
-| Score | Description |
+| 分数 | 描述 |
 |-------|-------------|
-| 9-10  | Fully extensible via inheritance or composition, no modification needed |
-| 7-8   | Mostly extensible, minor modifications might be needed |
-| 5-6   | Some extension points exist but limited |
-| 3-4   | Hard to extend, requires modification in multiple places |
-| 0-2   | Closed for extension, must modify source code |
+| 9-10  | 完全可通过继承或组合进行扩展，无需修改 |
+| 7-8   | 大体可扩展，可能需要少量修改 |
+| 5-6   | 存在一定扩展点但受限 |
+| 3-4   | 难以扩展，需要在多处进行修改 |
+| 0-2   | 对扩展封闭，必须修改源代码 |
 
-### Checklist
+### 检查清单
 
-- [ ] Uses interfaces or abstract classes
-- [ ] New behavior can be added via new classes, not modifications
-- [ ] Configuration or strategy pattern for varying behavior
-- [ ] No switch statements on types (if adding new type requires modification)
-- [ ] Dependency inversion (depends on abstractions)
+- [ ] 使用接口或抽象类
+- [ ] 新行为可通过新增类而非修改现有类来添加
+- [ ] 使用配置或策略模式来支持行为变化
+- [ ] 无基于类型的 switch 语句（添加新类型需要修改代码）
+- [ ] 依赖倒置（依赖于抽象）
 
-### Red Flags (Deductions)
+### 危险信号（扣分项）
 
-- **-2**: Switch on type (adding new type requires modification)
-- **-3**: No interfaces (concrete dependencies everywhere)
-- **-3**: Hard-coded behavior (no extension points)
-- **-4**: Modifying existing methods is the only way to add features
+- **-2**：基于类型的 switch（添加新类型需要修改）
+- **-3**：无接口（处处依赖具体实现）
+- **-3**：硬编码行为（无扩展点）
+- **-4**：添加功能的唯一方式是修改现有方法
 
-### Examples
+### 示例
 
-**Closed for Extension (Score: 2/10)**:
+**对扩展封闭（得分：2/10）**：
 ```typescript
 class PaymentProcessor {
   process(type: string, amount: number) {
     switch (type) {
       case 'credit': return this.processCreditCard(amount);
       case 'paypal': return this.processPaypal(amount);
-      // Adding crypto payment requires modifying this class
+      // 添加加密货币支付需要修改此类
     }
   }
 }
 ```
 
-**Open for Extension (Score: 9/10)**:
+**对扩展开放（得分：9/10）**：
 ```typescript
 interface PaymentStrategy {
   process(amount: number): Promise<Receipt>;
@@ -275,7 +275,7 @@ class PaymentProcessor {
   }
 }
 
-// Add new payment method without modifying PaymentProcessor
+// 无需修改 PaymentProcessor 即可添加新支付方式
 class CryptoPaymentStrategy implements PaymentStrategy {
   process(amount: number) { /* ... */ }
 }
@@ -283,40 +283,40 @@ class CryptoPaymentStrategy implements PaymentStrategy {
 
 ---
 
-## 5. Documentation (0-10)
+## 5. 文档（0-10）
 
-**Question**: Is the implementation well-documented with clear intent and usage?
+**问题**：实现是否有完善的文档，清晰说明意图和用法？
 
-### Scoring Guidelines
+### 评分指南
 
-| Score | Description |
+| 分数 | 描述 |
 |-------|-------------|
-| 9-10  | Comprehensive documentation: intent, usage, examples, edge cases |
-| 7-8   | Good documentation, covers main use cases |
-| 5-6   | Basic documentation, minimal but present |
-| 3-4   | Sparse documentation, unclear intent |
-| 0-2   | No documentation or misleading documentation |
+| 9-10  | 文档完整：意图、用法、示例、边界情况均有说明 |
+| 7-8   | 文档良好，涵盖主要使用场景 |
+| 5-6   | 基础文档，有但最少 |
+| 3-4   | 文档稀少，意图不明 |
+| 0-2   | 无文档或存在误导性文档 |
 
-### Checklist
+### 检查清单
 
-- [ ] Class/interface has JSDoc/TSDoc comment explaining purpose
-- [ ] Pattern intent is documented ("This is a Singleton because...")
-- [ ] Public methods have documentation
-- [ ] Complex logic has inline comments
-- [ ] Usage examples are provided (in README or comments)
-- [ ] Invariants and constraints are documented
-- [ ] Naming is self-documenting (clear, descriptive names)
+- [ ] 类或接口有 JSDoc/TSDoc 注释说明其用途
+- [ ] 模式意图已记录（"这是一个单例，因为……"）
+- [ ] 公共方法有文档说明
+- [ ] 复杂逻辑有行内注释
+- [ ] 提供了使用示例（在 README 或注释中）
+- [ ] 不变量和约束已记录
+- [ ] 命名具有自文档性（清晰、描述性的名称）
 
-### Red Flags (Deductions)
+### 危险信号（扣分项）
 
-- **-2**: No class-level documentation
-- **-2**: Public API methods undocumented
-- **-3**: Cryptic naming (x, foo, temp, data)
-- **-1**: Complex logic without explanation
+- **-2**：无类级文档
+- **-2**：公共 API 方法未记录
+- **-3**：晦涩命名（x、foo、temp、data）
+- **-1**：复杂逻辑缺乏说明
 
-### Examples
+### 示例
 
-**Poor Documentation (Score: 2/10)**:
+**文档质量差（得分：2/10）**：
 ```typescript
 class S {
   private static i: S;
@@ -329,13 +329,13 @@ class S {
 }
 ```
 
-**Good Documentation (Score: 9/10)**:
+**文档质量好（得分：9/10）**：
 ```typescript
 /**
- * Configuration service implemented as a Singleton to ensure
- * all components share the same configuration state.
+ * 以单例模式实现的配置服务，确保所有组件
+ * 共享相同的配置状态。
  *
- * Use `ConfigService.getInstance()` to access the singleton instance.
+ * 使用 `ConfigService.getInstance()` 访问单例实例。
  *
  * @example
  * const config = ConfigService.getInstance();
@@ -345,18 +345,18 @@ class ConfigService {
   private static instance: ConfigService;
 
   /**
-   * Private constructor prevents direct instantiation.
-   * Use `getInstance()` instead.
+   * 私有构造函数，防止直接实例化。
+   * 请使用 `getInstance()` 代替。
    */
   private constructor() {
-    // Load configuration from environment
+    // 从环境变量加载配置
   }
 
   /**
-   * Returns the singleton instance of ConfigService.
-   * Creates the instance on first call (lazy initialization).
+   * 返回 ConfigService 的单例实例。
+   * 首次调用时创建实例（懒初始化）。
    *
-   * @returns The singleton ConfigService instance
+   * @returns ConfigService 单例实例
    */
   public static getInstance(): ConfigService {
     if (!ConfigService.instance) {
@@ -366,10 +366,10 @@ class ConfigService {
   }
 
   /**
-   * Retrieves a configuration value by key.
+   * 通过键名获取配置值。
    *
-   * @param key - Configuration key
-   * @returns Configuration value or undefined if not found
+   * @param key - 配置键名
+   * @returns 配置值，若不存在则返回 undefined
    */
   public get(key: string): string | undefined {
     return process.env[key];
@@ -379,151 +379,151 @@ class ConfigService {
 
 ---
 
-## Pattern-Specific Evaluation
+## 模式专项评估
 
-### Singleton Specific
+### 单例模式专项
 
-**Additional Checklist**:
-- [ ] Lazy initialization (if appropriate)
-- [ ] Thread-safety considered (less critical in JS)
-- [ ] Subclassing is prevented or controlled
-- [ ] No public constructor
-- [ ] Reset mechanism for tests (or DI alternative mentioned)
+**附加检查清单**：
+- [ ] 懒初始化（如适用）
+- [ ] 考虑线程安全（在 JavaScript 中不太关键）
+- [ ] 子类化已被阻止或受控
+- [ ] 无公共构造函数
+- [ ] 提供测试用的重置机制（或提及 DI 替代方案）
 
-**Deductions**:
-- **-3**: Public constructor (defeats purpose)
-- **-2**: Multiple getInstance() methods returning different instances
-- **-2**: No consideration of test isolation
+**扣分项**：
+- **-3**：公共构造函数（破坏模式目的）
+- **-2**：多个 getInstance() 方法返回不同实例
+- **-2**：未考虑测试隔离
 
-### Observer Specific
+### 观察者模式专项
 
-**Additional Checklist**:
-- [ ] Observers can unsubscribe
-- [ ] No memory leaks (observers are properly removed)
-- [ ] Notification order is deterministic (if it matters)
-- [ ] Observers don't depend on notification order
-- [ ] Subject doesn't know concrete observer types
+**附加检查清单**：
+- [ ] 观察者可以取消订阅
+- [ ] 无内存泄漏（观察者被正确移除）
+- [ ] 通知顺序是确定的（如有必要）
+- [ ] 观察者不依赖通知顺序
+- [ ] Subject 不知道具体的观察者类型
 
-**Deductions**:
-- **-3**: No unsubscribe mechanism (memory leak risk)
-- **-2**: Subject depends on concrete observer types
-- **-2**: Notification order matters but isn't guaranteed
+**扣分项**：
+- **-3**：无取消订阅机制（存在内存泄漏风险）
+- **-2**：Subject 依赖具体观察者类型
+- **-2**：通知顺序有影响但未保证
 
-### Strategy Specific
+### 策略模式专项
 
-**Additional Checklist**:
-- [ ] Strategies implement common interface
-- [ ] Context doesn't depend on concrete strategies
-- [ ] Strategies are interchangeable
-- [ ] Strategy can be set at runtime
-- [ ] Strategies don't share state (unless explicitly designed to)
+**附加检查清单**：
+- [ ] 各策略实现共同接口
+- [ ] Context 不依赖具体策略
+- [ ] 各策略可互换
+- [ ] 策略可在运行时设置
+- [ ] 各策略不共享状态（除非有明确设计）
 
-**Deductions**:
-- **-3**: Context depends on concrete strategies
-- **-2**: Strategies are not truly interchangeable
-- **-2**: No way to change strategy at runtime
+**扣分项**：
+- **-3**：Context 依赖具体策略
+- **-2**：各策略无法真正互换
+- **-2**：无法在运行时更改策略
 
 ---
 
-## Overall Assessment Formula
+## 综合评分公式
 
 ```
-Overall Score = (
-  Correctness × 0.30 +
-  Testability × 0.25 +
-  Single Responsibility × 0.20 +
-  Open/Closed × 0.15 +
-  Documentation × 0.10
+综合得分 = (
+  正确性 × 0.30 +
+  可测试性 × 0.25 +
+  单一职责 × 0.20 +
+  开闭原则 × 0.15 +
+  文档 × 0.10
 ) / 5
 ```
 
-**Weighted** because correctness is most important, followed by testability.
+**加权说明**：正确性最重要，其次是可测试性。
 
 ---
 
-## Interpretation Guide
+## 解读指南
 
-| Overall Score | Interpretation | Action |
+| 综合得分 | 解读 | 建议操作 |
 |--------------|----------------|--------|
-| 9.0 - 10.0   | Excellent | Reference-quality, minimal changes needed |
-| 7.0 - 8.9    | Good | Minor improvements, production-ready |
-| 5.0 - 6.9    | Acceptable | Notable issues, refactoring recommended |
-| 3.0 - 4.9    | Poor | Significant problems, refactoring required |
-| 0.0 - 2.9    | Critical | Fundamentally flawed, redesign needed |
+| 9.0 - 10.0   | 优秀 | 参考级质量，几乎无需改动 |
+| 7.0 - 8.9    | 良好 | 小幅改进，可生产使用 |
+| 5.0 - 6.9    | 可接受 | 存在明显问题，建议重构 |
+| 3.0 - 4.9    | 较差 | 存在重大问题，必须重构 |
+| 0.0 - 2.9    | 严重 | 存在根本性缺陷，需要重新设计 |
 
 ---
 
-## Example Evaluation Report
+## 评估报告示例
 
-### Pattern: Singleton
-**File**: `src/services/config-singleton.ts`
-**Lines**: 5-34
+### 模式：单例模式（Singleton）
+**文件**：`src/services/config-singleton.ts`
+**行数**：5-34
 
-#### Scores
+#### 得分
 
-| Criterion | Score | Rationale |
+| 标准 | 得分 | 理由 |
 |-----------|-------|-----------|
-| Correctness | 8/10 | Implements singleton correctly, minor: no thread-safety (not critical in JS) |
-| Testability | 4/10 | Hard to mock, no reset mechanism, global state makes tests interdependent |
-| Single Responsibility | 9/10 | Focuses solely on configuration management |
-| Open/Closed | 7/10 | Can add new config keys, but config sources are hard-coded |
-| Documentation | 6/10 | Has JSDoc but missing rationale for singleton choice |
+| 正确性 | 8/10 | 正确实现单例，轻微问题：未考虑线程安全（在 JavaScript 中不关键） |
+| 可测试性 | 4/10 | 难以模拟，无重置机制，全局状态导致测试相互依赖 |
+| 单一职责 | 9/10 | 仅专注于配置管理 |
+| 开闭原则 | 7/10 | 可添加新配置键，但配置来源被硬编码 |
+| 文档 | 6/10 | 有 JSDoc 但缺少选择单例模式的理由说明 |
 
-**Overall Score**: **6.8/10** (Acceptable)
+**综合得分**：**6.8/10**（可接受）
 
-#### Issues Identified
+#### 已识别问题
 
-1. **High Priority**: Add `resetInstance()` method for test isolation
-   - Current: Tests must run in specific order
-   - Fix: Add `public static resetInstance()` guarded by environment check
+1. **高优先级**：添加 `resetInstance()` 方法以实现测试隔离
+   - 当前状况：测试必须按特定顺序运行
+   - 修复方案：添加受环境检查保护的 `public static resetInstance()`
 
-2. **Medium Priority**: Document singleton rationale
-   - Current: Unclear why global state is necessary
-   - Fix: Add JSDoc explaining choice (e.g., "Singleton ensures consistent config across all services")
+2. **中优先级**：记录单例选择的理由
+   - 当前状况：不清楚为何需要全局状态
+   - 修复方案：添加 JSDoc 说明选择原因（例如，"单例确保所有服务使用一致的配置"）
 
-3. **Low Priority**: Consider dependency injection alternative
-   - Current: Hard to test, tight coupling
-   - Recommendation: Evaluate using DI container or React Context
+3. **低优先级**：考虑依赖注入替代方案
+   - 当前状况：难以测试，紧耦合
+   - 建议：评估使用 DI 容器或 React Context
 
-#### Recommendations
+#### 建议
 
 ```typescript
-// Add test-friendly reset
+// 添加测试友好的重置方法
 public static resetInstance(): void {
   if (process.env.NODE_ENV === 'test') {
     ConfigService.instance = null!;
   }
 }
 
-// Better yet: refactor to DI
+// 更佳方案：重构为 DI
 class ConfigService {
   constructor(private envVars: EnvVars) {}
 }
 
-// Inject in DI container or provider
+// 在 DI 容器或 provider 中注入
 const config = new ConfigService(process.env);
 ```
 
 ---
 
-## Usage in Skill
+## 在技能中的使用方式
 
-When the design-patterns skill runs in **Evaluation Mode**, it:
+当设计模式技能以**评估模式**运行时，它会：
 
-1. Identifies which pattern is implemented
-2. Applies relevant checklist items
-3. Scores each criterion (0-10)
-4. Calculates weighted overall score
-5. Generates detailed report with:
-   - Scores table
-   - Issues found (priority-ranked)
-   - Specific recommendations with code examples
-   - Stack-native alternatives if applicable
+1. 识别实现的是哪种模式
+2. 应用相关检查清单项
+3. 对每个标准评分（0-10）
+4. 计算加权综合得分
+5. 生成详细报告，包含：
+   - 得分表格
+   - 发现的问题（按优先级排序）
+   - 附代码示例的具体建议
+   - 适用时提供技术栈原生替代方案
 
 ---
 
-## References
+## 参考资料
 
-- *Clean Code* by Robert C. Martin (SOLID principles)
-- *Refactoring: Improving the Design of Existing Code* by Martin Fowler
-- *Design Patterns: Elements of Reusable Object-Oriented Software* (Gang of Four)
+- *Clean Code*，作者 Robert C. Martin（SOLID 原则）
+- *Refactoring: Improving the Design of Existing Code*，作者 Martin Fowler
+- *Design Patterns: Elements of Reusable Object-Oriented Software*（Gang of Four）
