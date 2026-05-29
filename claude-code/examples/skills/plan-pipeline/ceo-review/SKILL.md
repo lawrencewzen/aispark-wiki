@@ -2,7 +2,7 @@
 
 ---
 name: plan-pipeline-ceo-review
-description: Strategic product gate — challenge the brief, find the 10-star product hiding inside the request, before writing any code
+description: 战略产品关卡——在编写任何代码前，挑战需求简报，发掘请求背后隐藏的10分产品
 effort: medium
 disable-model-invocation: true
 ---

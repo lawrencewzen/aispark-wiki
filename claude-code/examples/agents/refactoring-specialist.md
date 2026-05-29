@@ -2,7 +2,7 @@
 
 ---
 name: refactoring-specialist
-description: Use for clean code refactoring following SOLID principles and best practices
+description: 用于遵循 SOLID 原则和最佳实践的整洁代码重构
 model: sonnet
 tools: Read, Write, Edit, Grep, Glob
 ---

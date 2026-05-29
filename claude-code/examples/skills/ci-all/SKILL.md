@@ -2,7 +2,7 @@
 
 ---
 name: ci-all
-description: "Full CI pipeline: run local tests, type check, push branch, and return the pipeline URL. The only command you need before opening a PR."
+description: "完整 CI 流水线：运行本地测试、类型检查、推送分支并返回流水线 URL，开 PR 前唯一需要的命令"
 argument-hint: "[--skip-tests | --e2e]"
 allowed-tools: [Bash]
 model: haiku

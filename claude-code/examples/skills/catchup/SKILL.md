@@ -2,7 +2,7 @@
 
 ---
 name: catchup
-description: Restore context after /clear by summarizing recent work and project state
+description: 在 /clear 后通过汇总近期工作与项目状态恢复上下文
 argument-hint: "[branch] [--since <date>]"
 effort: low
 disable-model-invocation: true

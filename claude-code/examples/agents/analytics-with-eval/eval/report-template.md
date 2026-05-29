@@ -1,7 +1,7 @@
 > 📚 **AI Spark Wiki** · Claude Code 知识库
 
 ---
-title: "Analytics Agent Evaluation Report"
+title: "分析智能体评估报告"
 description: "用于评分分析智能体性能与准确性的月度评估模板"
 tags: [template, agents, testing]
 ---

@@ -1,7 +1,7 @@
 > 📚 **AI Spark Wiki** · Claude Code 知识库
 
 ---
-title: "Agent Vibes TTS - Text-to-Speech for Claude Code"
+title: "Agent Vibes TTS - Claude Code 文字转语音"
 description: "为 Claude Code 添加文字转语音功能的社区 MCP 服务器"
 tags: [mcp, integration, plugin]
 ---

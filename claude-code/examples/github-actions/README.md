@@ -1,7 +1,7 @@
 > 📚 **AI Spark Wiki** · Claude Code 知识库
 
 ---
-title: "GitHub Actions Workflows for Claude Code"
+title: "GitHub Actions 工作流 - Claude Code 集成"
 description: "开箱即用的 CI/CD 工作流，将 Claude Code 集成到 GitHub Actions"
 tags: [ci-cd, devops, template, workflows]
 ---

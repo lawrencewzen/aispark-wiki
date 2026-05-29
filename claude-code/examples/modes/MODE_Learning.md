@@ -1,8 +1,8 @@
 > 📚 **AI Spark Wiki** · Claude Code 知识库
 
 ---
-title: "Learning Mode"
-description: "CLAUDE.md mode for just-in-time skill explanations when techniques are first used"
+title: "学习模式"
+description: "即学即用式技能说明 CLAUDE.md 模式，在技术手段首次使用时提供上下文解释"
 tags: [config, workflows, agents]
 ---
 

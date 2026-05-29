@@ -1,7 +1,7 @@
 > 📚 **AI Spark Wiki** · Claude Code 知识库
 
 ---
-title: "Scripts"
+title: "实用脚本"
 description: "Claude Code 高级用户实用脚本：审计、健康检查与会话管理"
 tags: [template, debugging, security, workflows]
 ---

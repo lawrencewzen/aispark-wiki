@@ -1,7 +1,7 @@
 > 📚 **AI Spark Wiki** · Claude Code 知识库
 
 ---
-title: "Database Branch Setup with Worktrees"
+title: "使用 Worktree 配置数据库分支"
 description: "使用 Neon 或 PlanetScale 数据库分支进行隔离功能开发的指南"
 tags: [workflow, git, devops]
 ---

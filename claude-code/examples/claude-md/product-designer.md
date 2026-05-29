@@ -1,7 +1,7 @@
 > 📚 **AI Spark Wiki** · Claude Code 知识库
 
 ---
-title: "Product Designer CLAUDE.md Template"
+title: "产品设计师 CLAUDE.md 模板"
 description: "使用 Figma MCP 的设计到代码工作流 CLAUDE.md 配置"
 tags: [claude-md, template, design-patterns, mcp]
 ---

@@ -2,7 +2,7 @@
 
 ---
 name: mcp-integration-reference
-description: "Template for skills that integrate with an MCP server. Demonstrates the reference file pattern: Claude reads a domain-specific MCP cheatsheet before making any tool calls, reducing query failures caused by server-specific gotchas. Fork this skill and replace the Sentry example with your target MCP."
+description: "集成 MCP 服务器的技能模板。演示引用文件模式：Claude 在调用任何工具前先读取专属 MCP 速查表，减少因服务器特性差异导致的查询失败。复刻此技能并将 Sentry 示例替换为目标 MCP 即可"
 allowed-tools: Read mcp__<your-mcp>__*
 effort: high
 metadata:
